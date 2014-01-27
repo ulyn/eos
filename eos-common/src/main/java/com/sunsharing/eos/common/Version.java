@@ -23,6 +23,7 @@ public final class Version {
 
     private static final String VERSION = getVersion(Version.class, "1.0.0");
 
+
     static {
         // 检查是否存在重复的jar包
         Version.checkDuplicate(Version.class);

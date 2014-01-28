@@ -62,7 +62,7 @@ public class ServiceCache {
      * @param appId
      * @param serviceId
      * @param version
-     * @return
+     * @return 返回服务的注册信息
      */
     public synchronized String getServiceData(String appId,String serviceId,String version)
     {

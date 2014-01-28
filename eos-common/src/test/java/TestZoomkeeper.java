@@ -37,10 +37,11 @@ public class TestZoomkeeper {
         obj.put("version", version);
         byte[]arr = obj.toJSONString().getBytes("UTF-8");
         //zk.delete("/EOS_STATE/criss/abc",-1);
-        zk.create("/SERVICE_STATE/criss/abc2",arr
-                ,ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL);
+//        zk.create("/SERVICE_STATE/criss/abc2",arr
+//                ,ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL);
 
-        Thread.sleep(1000000);
+
+//        Thread.sleep(1000000);
 
 
         // 创建一个子目录节点

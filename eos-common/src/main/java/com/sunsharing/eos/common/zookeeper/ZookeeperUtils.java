@@ -97,8 +97,11 @@ public class ZookeeperUtils {
         if(stat==null)
         {
             logger.info("创建"+path+"节点");
-            zookeeper.create(path, data.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+            zookeeper.create(path, data.getBytes("UTF-8"), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     mode);
+        }else
+        {
+            zookeeper.setData(path,data.getBytes("UTF-8"),-1);
         }
     }
 
@@ -135,12 +138,20 @@ public class ZookeeperUtils {
         List<String> childern = zookeeper.getChildren(path,true);
         for(String key:childern)
         {
-            if(zookeeper.getChildren(path+"/"+key,true).size()==0)
+            String pre = "";
+            if(path.equals("/"))
             {
-                logger.info(path + "/" + key);
+                pre = "";
             }else
             {
-                printNode(path + "/" + key);
+                pre = path;
+            }
+            if(zookeeper.getChildren(pre+"/"+key,true).size()==0)
+            {
+                logger.info(pre + "/" + key);
+            }else
+            {
+                printNode(pre + "/" + key);
             }
         }
     }

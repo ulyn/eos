@@ -11,8 +11,10 @@ public class EosState {
 
     Logger logger = Logger.getLogger(EosState.class);
 
-    /**存储EOS状态的所有节点*/
+    /**存储服务状态的所有节点*/
     public static String SERVICE_STATE="/SERVICE_STATE";
+    /**存储EOS状态*/
+    public static String EOS_STATE = "/EOS_STATE";
     /**监控数据节点*/
     public static String EOS_MONITOR="/EOS_MONITOR";
     /**应用KEY*/

@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.manager;
+package com.sunsharing.eos.manager.sys;
 
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
@@ -28,7 +28,7 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
  * <br> 系统配置参数类，配置文件名为eos.properties。系统初始化时调用：
  * <br>  ConfigContext.instancesBean(SysProp.class);
  * <br> 注意事项:
- * <br>  使用前一定要有先调用过一次（一次即可，一般在系统初始化时候做） ConfigContext.instancesBean(SysProp.class);否则得不到预期的值。
+ * <br>  使用前一定要先调用 ConfigContext.instancesBean(SysProp.class);否则得不到预期的值。
  * <br>
  * <br>----------------------------------------------------------------------
  * <br>
@@ -36,12 +36,22 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
 @Configuration(value = "eos.properties")
 public class SysProp {
 
-    @ParamField(name = "zookeeper_ip", must = false)
-    @IpValidate
+    @ParamField(name="zookeeper_ip",must = false)
     public static String zookeeperIp = "localhost";
 
-    @ParamField(name = "zookeeper_port", must = false)
+    @ParamField(name="zookeeper_port",must = false)
     @NumValidate
-    public static String zookeeperPort = "2181";
+    public static int zookeeperPort = 2181;
+
+    @ParamField(name="eos_ip",must = false)
+    public static String eosIp = "localhost";
+
+    @ParamField(name="eos_port",must = false)
+    @NumValidate
+    public static int eosPort = 12345;
+
+    @ParamField(name="eos_id",must = true)
+    public static String eosId="";
+
 }
 

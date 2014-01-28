@@ -77,12 +77,12 @@ public class ZookeeperUtils {
                 //3.是Watcher对象的实例。Watcher对象接受ZooKeeper的响应，并通知它各种事件。
                 // ZooKeeper客户端正是通过注册Watcher的方法来获取状态变化的信息。
                 logger.info("连接"+zooKeeperIP +":"+zooKeeperPort);
-                zookeeper =new ZooKeeper(zooKeeperIP +":"+zooKeeperPort, 30000, new DefaultWatcher());
+                zookeeper =new ZooKeeper(zooKeeperIP +":"+zooKeeperPort, 5000 , new DefaultWatcher());
                 logger.info("连接完成");
                 //在使用zookeeper对象前，等待连接建立。这里利用Java的CountDownLatch类
                 //（java.util.concurrent.CountDownLatch）来阻塞，直到zookeeper实例准备好。
                 connectedSignal.await();
-                connected =true;
+                connected = true;
                 connectedSignal = null;
             } catch(Exception e) {
                 logger.info("连接Zookper失败",e);
@@ -93,12 +93,57 @@ public class ZookeeperUtils {
 
     public void createNode(String path,String data,CreateMode mode)throws Exception
     {
-        Stat stat = zookeeper.exists(path,false);
+        Stat stat = zookeeper.exists(path,true);
         if(stat==null)
         {
+            logger.info("创建"+path+"节点");
             zookeeper.create(path, data.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     mode);
         }
+    }
+
+    public void deleteNode(String path)throws Exception
+    {
+        if(zookeeper.exists(path,true)==null)
+        {
+            return;
+        }else
+        {
+            List<String> childern = zookeeper.getChildren(path,true);
+            for(String key:childern)
+            {
+                if(zookeeper.getChildren(path+"/"+key,true).size()==0)
+                {
+                    zookeeper.delete(path+"/"+key,-1);
+                }else
+                {
+                    deleteNode(path+"/"+key);
+                }
+            }
+            zookeeper.delete(path,-1);
+        }
+    }
+
+    public void printNode(String path)throws Exception
+    {
+        logger.info(path);
+        List<String> childern = zookeeper.getChildren(path,true);
+        for(String key:childern)
+        {
+            if(zookeeper.getChildren(path+"/"+key,true).size()==0)
+            {
+                logger.info(path + "/" + key);
+            }else
+            {
+                printNode(path + "/" + key);
+            }
+        }
+    }
+
+    public void watchNode(String path)throws Exception
+    {
+        zookeeper.exists(path,true);
+        zookeeper.getChildren(path,true);
     }
 
     public List<String> getChildren(String path) throws Exception
@@ -140,6 +185,7 @@ public class ZookeeperUtils {
     private class DefaultWatcher implements Watcher {
         @Override
         public void process(WatchedEvent event) {
+            logger.info("已经触发了" + event.getType() + "事件！::path:"+event.getPath());
             if(event.getState() == Event.KeeperState.SyncConnected && connectedSignal !=null)
             {
                 //在收到连接事件KeeperState.SyncConnected时，
@@ -166,7 +212,6 @@ public class ZookeeperUtils {
                     callBack.watchNodeChange(event);
                 }
             }
-            logger.warn("zookeeper state change: " + event.getState());
         }
 
     }

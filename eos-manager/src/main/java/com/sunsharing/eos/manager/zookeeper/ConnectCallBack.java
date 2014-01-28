@@ -6,6 +6,7 @@ import com.sunsharing.eos.manager.sys.SysProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 
 /**
  * Created by criss on 14-1-27.
@@ -18,11 +19,14 @@ public class ConnectCallBack implements ZookeeperCallBack {
         {
             logger.info("登录成功了开始调用回调");
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
+            utils.printNode(EosState.EOS_STATE);
             utils.createNode(EosState.EOS_STATE,"", CreateMode.PERSISTENT);
             //创建EOS节点
-            utils.createNode(EosState.EOS_STATE+"/"+ SysProp.eosId,"",CreateMode.EPHEMERAL);
+            utils.createNode(EosState.EOS_STATE+"/"+ SysProp.eosId,"",CreateMode.PERSISTENT);
             //添加监听
-            //utils.watchPath(EosState.EOS_STATE+"/"+ SysProp.eosId);
+            utils.watchNode(EosState.EOS_STATE + "/" + SysProp.eosId);
+            //添加子路径监听
+            utils.getChildren(EosState.EOS_STATE+"/"+ SysProp.eosId);
         }catch (Exception e)
         {
             logger.error("初始化EOS出错",e);
@@ -31,6 +35,9 @@ public class ConnectCallBack implements ZookeeperCallBack {
 
     @Override
     public void watchNodeChange(WatchedEvent event) {
-        logger.info("观测更改,event:"+event.getPath()+"::"+event.getType());
+        if(event.getType()==Watcher.Event.EventType.NodeChildrenChanged)
+        {
+            ServiceCache.getInstance().resetServiceMap();
+        }
     }
 }

@@ -23,7 +23,7 @@ public class ServiceCache {
 
     static ServiceCache cache = new ServiceCache();
 
-    private static  ServiceCache getInstance()
+    public static  ServiceCache getInstance()
     {
         return cache;
     }
@@ -33,6 +33,7 @@ public class ServiceCache {
 
     public synchronized void resetServiceMap()
     {
+        logger.info("开始更新配置");
         try
         {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
@@ -40,7 +41,8 @@ public class ServiceCache {
             serviceMap.clear();
             for(String path:list)
             {
-                String p = new String(utils.getData(path),"UTF-8");
+                String p = new String(utils.getData(EosState.EOS_STATE+"/"+ SysProp.eosId+"/"+path),"UTF-8");
+                logger.info("更新service:"+p);
                 JSONObject obj = JSONObject.parseObject(p);
                 String appId = obj.getString(EosState.APPID_KEY);
                 String serviceId = obj.getString(EosState.SERVICE_ID_KEY);
@@ -50,12 +52,18 @@ public class ServiceCache {
 
         }catch (Exception e)
         {
-            logger.error("获取"+SysProp.eosId+"节点信息失败");
+            logger.error("获取"+SysProp.eosId+"节点信息失败",e);
         }
 
     }
 
-
+    /**
+     * 根据APPID,ServiceId，Version查找服务
+     * @param appId
+     * @param serviceId
+     * @param version
+     * @return
+     */
     public synchronized String getServiceData(String appId,String serviceId,String version)
     {
         return serviceMap.get(appId+serviceId+version);

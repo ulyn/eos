@@ -16,8 +16,14 @@ public class Eos {
     {
         ConfigContext.instancesBean(SysProp.class);
 
-        EosState state = new EosState();
-        state.connect();
+        new Thread(){
+            public void run()
+            {
+                EosState state = new EosState();
+                state.connect();
+            }
+        }.start();
+
 
         //命令循环
         while(true)

@@ -1,6 +1,7 @@
 package com.sunsharing.eos.manager.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.manager.sys.SysProp;
 import org.apache.log4j.Logger;
@@ -37,16 +38,16 @@ public class ServiceCache {
         try
         {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            List<String> list = utils.getChildren(EosState.SERVICE_STATE+"/"+ SysProp.eosId);
+            List<String> list = utils.getChildren(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId);
             serviceMap.clear();
             for(String path:list)
             {
-                String p = new String(utils.getData(EosState.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path),"UTF-8");
+                String p = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path),"UTF-8");
                 logger.info("更新service:"+p);
                 JSONObject obj = JSONObject.parseObject(p);
-                String appId = obj.getString(EosState.APPID_KEY);
-                String serviceId = obj.getString(EosState.SERVICE_ID_KEY);
-                String version = obj.getString(EosState.VERSION_KEY);
+                String appId = obj.getString(PathConstant.APPID_KEY);
+                String serviceId = obj.getString(PathConstant.SERVICE_ID_KEY);
+                String version = obj.getString(PathConstant.VERSION_KEY);
                 serviceMap.put(appId+serviceId+version,p);
             }
 

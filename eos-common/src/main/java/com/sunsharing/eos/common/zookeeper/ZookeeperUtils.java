@@ -61,7 +61,10 @@ public class ZookeeperUtils {
         return utils;
     }
 
-
+    public static ZookeeperUtils newInstance()
+    {
+        return new ZookeeperUtils();
+    }
 
     /**
      *建立连接:实例化一个新的ZooKeeper对象，且维护着客户端与ZooKeeper服务的链接。
@@ -158,8 +161,16 @@ public class ZookeeperUtils {
 
     public void watchNode(String path)throws Exception
     {
-        zookeeper.exists(path,true);
-        zookeeper.getChildren(path,true);
+        Stat s = zookeeper.exists(path,true);
+        if(s!=null)
+        {
+            zookeeper.getChildren(path,true);
+        }
+    }
+
+    public boolean isExists(String path)throws Exception
+    {
+        return zookeeper.exists(path,true)!=null;
     }
 
     public List<String> getChildren(String path) throws Exception

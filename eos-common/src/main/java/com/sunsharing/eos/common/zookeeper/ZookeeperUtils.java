@@ -126,6 +126,11 @@ public class ZookeeperUtils {
 
     public void printNode(String path)throws Exception
     {
+
+        if(zookeeper.exists(path,true)==null)
+        {
+            return;
+        }
         logger.info(path);
         List<String> childern = zookeeper.getChildren(path,true);
         for(String key:childern)

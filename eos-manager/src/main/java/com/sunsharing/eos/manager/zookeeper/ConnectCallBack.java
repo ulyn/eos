@@ -19,14 +19,14 @@ public class ConnectCallBack implements ZookeeperCallBack {
         {
             logger.info("登录成功了开始调用回调");
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            utils.printNode(EosState.EOS_STATE);
-            utils.createNode(EosState.EOS_STATE,"", CreateMode.PERSISTENT);
+            utils.printNode(EosState.SERVICE_STATE);
+            utils.createNode(EosState.SERVICE_STATE,"", CreateMode.PERSISTENT);
             //创建EOS节点
-            utils.createNode(EosState.EOS_STATE+"/"+ SysProp.eosId,"",CreateMode.PERSISTENT);
+            utils.createNode(EosState.SERVICE_STATE+"/"+ SysProp.eosId,"",CreateMode.PERSISTENT);
             //添加监听
-            utils.watchNode(EosState.EOS_STATE + "/" + SysProp.eosId);
+            utils.watchNode(EosState.SERVICE_STATE + "/" + SysProp.eosId);
             //添加子路径监听
-            utils.getChildren(EosState.EOS_STATE+"/"+ SysProp.eosId);
+            utils.getChildren(EosState.SERVICE_STATE+"/"+ SysProp.eosId);
         }catch (Exception e)
         {
             logger.error("初始化EOS出错",e);

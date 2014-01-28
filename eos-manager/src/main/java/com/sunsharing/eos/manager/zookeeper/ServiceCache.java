@@ -37,11 +37,11 @@ public class ServiceCache {
         try
         {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            List<String> list = utils.getChildren(EosState.EOS_STATE+"/"+ SysProp.eosId);
+            List<String> list = utils.getChildren(EosState.SERVICE_STATE+"/"+ SysProp.eosId);
             serviceMap.clear();
             for(String path:list)
             {
-                String p = new String(utils.getData(EosState.EOS_STATE+"/"+ SysProp.eosId+"/"+path),"UTF-8");
+                String p = new String(utils.getData(EosState.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path),"UTF-8");
                 logger.info("更新service:"+p);
                 JSONObject obj = JSONObject.parseObject(p);
                 String appId = obj.getString(EosState.APPID_KEY);

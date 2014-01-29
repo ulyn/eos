@@ -39,19 +39,19 @@ public class ServiceRegister {
         utils.connect();
     }
 
-    /**
-     * 先注册EOS
-     * @param eosIds
-     */
-    public synchronized void registerEos(String eosIds) throws Exception
-    {
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        String []eosArr = eosIds.split(",");
-        for(int i=0;i<eosArr.length;i++)
-        {
-            utils.watchNode(PathConstant.EOS_STATE+"/"+eosArr[i]);
-        }
-    }
+//    /**
+//     * 先注册EOS
+//     * @param eosIds
+//     */
+//    public synchronized void registerEos(String eosIds) throws Exception
+//    {
+//        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+//        String []eosArr = eosIds.split(",");
+//        for(int i=0;i<eosArr.length;i++)
+//        {
+//            utils.watchNode(PathConstant.EOS_STATE+"/"+eosArr[i]);
+//        }
+//    }
 
     /**
      *
@@ -76,12 +76,13 @@ public class ServiceRegister {
             String eosId = ids[i];
             try
             {
-                boolean r = utils.isExists(PathConstant.EOS_STATE+"/"+eosId);
-                if(!r)
-                {
-                    logger.warn("EOS:"+eosId+",不在线无法注册");
-                    continue;
-                }
+//                boolean r = utils.isExists(PathConstant.EOS_STATE+"/"+eosId);
+//                if(!r)
+//                {
+//                    logger.warn("EOS:"+eosId+",不在线无法注册");
+//                    continue;
+//                }
+                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId,"",CreateMode.PERSISTENT);
                 utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json, CreateMode.EPHEMERAL);
                 result = true;
             }catch (Exception e)

@@ -31,7 +31,7 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
             utils.createNode(PathConstant.EOS_STATE+"/"+SysProp.eosId,SysProp.eosIp+":"+SysProp.eosPort,
                     CreateMode.EPHEMERAL);
 
-            utils.printNode("/");
+            //utils.printNode("/");
 
         }catch (Exception e)
         {

@@ -12,8 +12,8 @@ import org.apache.zookeeper.Watcher;
 /**
  * Created by criss on 14-1-27.
  */
-public class ConnectCallBack implements ZookeeperCallBack {
-    Logger logger = Logger.getLogger(ConnectCallBack.class);
+public class ManagerConnectCallBack implements ZookeeperCallBack {
+    Logger logger = Logger.getLogger(ManagerConnectCallBack.class);
     @Override
     public void afterConnect(WatchedEvent event) {
         try
@@ -25,8 +25,6 @@ public class ConnectCallBack implements ZookeeperCallBack {
             utils.createNode(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId,"",CreateMode.PERSISTENT);
             //添加监听
             utils.watchNode(PathConstant.SERVICE_STATE + "/" + SysProp.eosId);
-            //添加子路径监听
-            utils.getChildren(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId);
 
             //EOS状态
             utils.createNode(PathConstant.EOS_STATE,"", CreateMode.PERSISTENT);
@@ -43,18 +41,12 @@ public class ConnectCallBack implements ZookeeperCallBack {
 
     @Override
     public void watchNodeChange(WatchedEvent event) {
-        try
-        {
-            ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            utils.watchNode(event.getPath());
-        }catch (Exception e)
-        {
-            logger.error("初始化EOS出错",e);
-        }
-
         if(event.getType()==Watcher.Event.EventType.NodeChildrenChanged)
         {
-            ServiceCache.getInstance().resetServiceMap();
+            if(event.getPath().startsWith(PathConstant.SERVICE_STATE))
+            {
+                ServiceCache.getInstance().resetServiceMap();
+            }
         }
     }
 }

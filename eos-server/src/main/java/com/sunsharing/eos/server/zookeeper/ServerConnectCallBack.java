@@ -1,4 +1,4 @@
-package com.sunsharing.eos.client.zookeeper;
+package com.sunsharing.eos.server.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
@@ -11,8 +11,8 @@ import org.apache.zookeeper.Watcher;
 /**
  * Created by criss on 14-1-27.
  */
-public class ConnectCallBack implements ZookeeperCallBack {
-    Logger logger = Logger.getLogger(ConnectCallBack.class);
+public class ServerConnectCallBack implements ZookeeperCallBack {
+    Logger logger = Logger.getLogger(ServerConnectCallBack.class);
     @Override
     public void afterConnect(WatchedEvent event) {
         try
@@ -21,7 +21,18 @@ public class ConnectCallBack implements ZookeeperCallBack {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
             utils.watchNode(PathConstant.EOS_STATE);
 
+            ServiceRegister serviceRegister = ServiceRegister.getInstance();
+            //先注册EOSID可以多个
+            serviceRegister.registerEos("criss");
+
             //你可以在这里注册服务下面是示例
+            JSONObject obj = new JSONObject();
+            obj.put("appId","appId");
+            obj.put("serviceId","serveId");
+            obj.put("version", "1.0");
+
+            serviceRegister.registerService("criss",obj.toJSONString());
+
 //            utils.printNode("/");
         }catch (Exception e)
         {
@@ -31,9 +42,10 @@ public class ConnectCallBack implements ZookeeperCallBack {
 
     @Override
     public void watchNodeChange(WatchedEvent event) {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
         try
         {
-            ZookeeperUtils utils = ZookeeperUtils.getInstance();
+
             utils.watchNode(event.getPath());
         }catch (Exception e)
         {

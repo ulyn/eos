@@ -18,7 +18,7 @@ public class EosState {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
-        utils.setCallBack(new ConnectCallBack());
+        utils.setCallBack(new ManagerConnectCallBack());
         //如果ZoomKeeper没启动的话是会同步等待的
         utils.connect();
         logger.info("connect end");

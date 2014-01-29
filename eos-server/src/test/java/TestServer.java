@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 /**
  * Created by criss on 14-1-26.
  */
-public class TestRegest {
+public class TestServer {
 
     public static void main(String[]a) throws Exception
     {

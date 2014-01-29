@@ -1,5 +1,6 @@
 package com.sunsharing.eos.server.zookeeper;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.server.sys.SysProp;
@@ -33,9 +34,23 @@ public class ServiceRegister {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
-        utils.setCallBack(new ConnectCallBack());
+        utils.setCallBack(new ServerConnectCallBack());
         //如果zookeeper没有启动，会同步重试，请用线程初始化
         utils.connect();
+    }
+
+    /**
+     * 先注册EOS
+     * @param eosIds
+     */
+    public synchronized void registerEos(String eosIds) throws Exception
+    {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        String []eosArr = eosIds.split(",");
+        for(int i=0;i<eosArr.length;i++)
+        {
+            utils.watchNode(PathConstant.EOS_STATE+"/"+eosArr[i]);
+        }
     }
 
     /**
@@ -51,6 +66,10 @@ public class ServiceRegister {
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         String[] ids = eosIds.split(",");
+        JSONObject obj = JSONObject.parseObject(json);
+        String servicePath = obj.getString(PathConstant.APPID_KEY)+
+                obj.getString(PathConstant.SERVICE_ID_KEY)+
+                obj.getString(PathConstant.VERSION_KEY);
         boolean result = false;
         for(int i=0;i<ids.length;i++)
         {
@@ -63,7 +82,7 @@ public class ServiceRegister {
                     logger.warn("EOS:"+eosId+",不在线无法注册");
                     continue;
                 }
-                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId,json, CreateMode.EPHEMERAL);
+                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json, CreateMode.EPHEMERAL);
                 result = true;
             }catch (Exception e)
             {

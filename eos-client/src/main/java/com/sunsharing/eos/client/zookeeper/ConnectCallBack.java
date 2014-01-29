@@ -1,11 +1,10 @@
-package com.sunsharing.eos.server.zookeeper;
+package com.sunsharing.eos.client.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import org.apache.log4j.Logger;
-import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
@@ -23,14 +22,6 @@ public class ConnectCallBack implements ZookeeperCallBack {
             utils.watchNode(PathConstant.EOS_STATE);
 
             //你可以在这里注册服务下面是示例
-            JSONObject obj = new JSONObject();
-            obj.put("appId","appId");
-            obj.put("serviceId","serveId");
-            obj.put("version", "1.0");
-
-            ServiceRegister serviceRegister = ServiceRegister.getInstance();
-            serviceRegister.registerService("criss",obj.toJSONString());
-
 //            utils.printNode("/");
         }catch (Exception e)
         {

@@ -16,7 +16,7 @@ public class TestRegest {
         new Thread(){
             public void run()
             {
-                ServiceRegister serviceRegister = new ServiceRegister();
+                ServiceRegister serviceRegister =  ServiceRegister.getInstance();
                 serviceRegister.init();
             }
         }.start();

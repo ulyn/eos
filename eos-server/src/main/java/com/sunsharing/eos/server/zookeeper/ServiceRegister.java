@@ -13,12 +13,28 @@ public class ServiceRegister {
 
     Logger logger = Logger.getLogger(ServiceRegister.class);
 
+    static ServiceRegister register = new ServiceRegister();
+
+    private ServiceRegister()
+    {
+
+    }
+
+    public static ServiceRegister getInstance()
+    {
+        return register;
+    }
+
+    /**
+     * 用线程初始化
+     */
     public void init()
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
         utils.setCallBack(new ConnectCallBack());
+        //如果zookeeper没有启动，会同步重试，请用线程初始化
         utils.connect();
     }
 
@@ -31,7 +47,7 @@ public class ServiceRegister {
      *  obj.put("serviceId",serviceId);
      *  obj.put("version", version);
      */
-    public boolean registerService(String eosIds,String json)
+    public synchronized boolean registerService(String eosIds,String json)
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         String[] ids = eosIds.split(",");

@@ -1,13 +1,17 @@
 package com.sunsharing.eos.common.utils;
 
-import com.sunsharing.eos.common.io.UnsafeStringWriter;
 import org.apache.log4j.Logger;
 
-import java.io.PrintWriter;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * StringUtils
+ */
 
 public final class StringUtils {
 
@@ -36,6 +40,7 @@ public final class StringUtils {
             return true;
         return false;
     }
+
 
     /**
      * is not empty string.
@@ -94,72 +99,6 @@ public final class StringUtils {
         return true;
     }
 
-
-    /**
-     * @param values
-     * @param value
-     * @return contains
-     */
-    public static boolean isContains(String[] values, String value) {
-        if (value != null && value.length() > 0 && values != null && values.length > 0) {
-            for (String v : values) {
-                if (value.equals(v)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean isNumeric(String str) {
-        if (str == null) {
-            return false;
-        }
-        int sz = str.length();
-        for (int i = 0; i < sz; i++) {
-            if (Character.isDigit(str.charAt(i)) == false) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * @param e
-     * @return string
-     */
-    public static String toString(Throwable e) {
-        UnsafeStringWriter w = new UnsafeStringWriter();
-        PrintWriter p = new PrintWriter(w);
-        p.print(e.getClass().getName());
-        if (e.getMessage() != null) {
-            p.print(": " + e.getMessage());
-        }
-        p.println();
-        try {
-            e.printStackTrace(p);
-            return w.toString();
-        } finally {
-            p.close();
-        }
-    }
-
-    /**
-     * @param msg
-     * @param e
-     * @return string
-     */
-    public static String toString(String msg, Throwable e) {
-        UnsafeStringWriter w = new UnsafeStringWriter();
-        w.write(msg + "\n");
-        PrintWriter p = new PrintWriter(w);
-        try {
-            e.printStackTrace(p);
-            return w.toString();
-        } finally {
-            p.close();
-        }
-    }
 
     /**
      * translat.
@@ -279,107 +218,227 @@ public final class StringUtils {
         return sb.toString();
     }
 
+    public static String genUUID() {
+        String s = UUID.randomUUID().toString();
+        //去掉“-”符号
+        return s.substring(0, 8) + s.substring(9, 13) + s.substring(14, 18) + s.substring(19, 23) + s.substring(24);
+    }
+
+    public static String getClassPath() throws Exception {
+
+        String keyfilePath = URLDecoder.decode(StringUtils.class.getProtectionDomain().
+                getCodeSource().getLocation().getFile(), "UTF-8");
+        keyfilePath = keyfilePath.replaceAll("\\\\", "/");
+        File temp = new File(keyfilePath);
+        if (temp.isFile() && keyfilePath.endsWith("jar") == true) {
+            keyfilePath = keyfilePath.substring(0, keyfilePath.lastIndexOf("/")) + "/";
+        } else if (keyfilePath.indexOf("classes") != -1) {
+            keyfilePath = keyfilePath.substring(0, keyfilePath.indexOf("classes") + 7) + "/";
+        }
+        return keyfilePath;
+    }
+
+    public static String transXMLCDADA(String input) {
+        if (input.indexOf("&") != -1
+                || input.indexOf("<") != -1
+                || input.indexOf(">") != -1
+                || input.indexOf("\"") != -1
+                || input.indexOf("'") != -1
+                ) {
+            return "<![CDATA[" + input + "]]>";
+        } else {
+            return input;
+        }
+    }
+
+    public static String getCurrentDateHour() {
+        Date d = new Date();
+        SimpleDateFormat sf = new SimpleDateFormat();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH");
+        return format.format(d);
+    }
+
+    public static String getCurrentTime() {
+        Date d = new Date();
+        SimpleDateFormat sf = new SimpleDateFormat();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        return format.format(d);
+    }
+
+    public static String getCurrentDisTime() {
+        Date d = new Date();
+        SimpleDateFormat sf = new SimpleDateFormat();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return format.format(d);
+    }
+
+    public static byte[] intToBytes(int n) {
+        byte[] b = new byte[4];
+        b[3] = (byte) (n & 0xff);
+        b[2] = (byte) (n >> 8 & 0xff);
+        b[1] = (byte) (n >> 16 & 0xff);
+        b[0] = (byte) (n >> 24 & 0xff);
+        return b;
+    }
+
+
     /**
-     * parse key-value pair.
+     * 通过byte数组取到int
      *
-     * @param str           string.
-     * @param itemSeparator item separator.
-     * @return key-value map;
+     * @param bb 第几位开始
+     * @return
      */
-    private static Map<String, String> parseKeyValuePair(String str, String itemSeparator) {
-        String[] tmp = str.split(itemSeparator);
-        Map<String, String> map = new HashMap<String, String>(tmp.length);
-        for (int i = 0; i < tmp.length; i++) {
-            Matcher matcher = KVP_PATTERN.matcher(tmp[i]);
-            if (matcher.matches() == false)
-                continue;
-            map.put(matcher.group(1), matcher.group(2));
-        }
-        return map;
-    }
-
-    public static String getQueryStringValue(String qs, String key) {
-        Map<String, String> map = StringUtils.parseQueryString(qs);
-        return map.get(key);
+    public static int getInt(byte[] bb) {
+        return (int) ((((bb[0] & 0xff) << 24)
+                | ((bb[1] & 0xff) << 16)
+                | ((bb[2] & 0xff) << 8) | ((bb[3] & 0xff) << 0)));
     }
 
     /**
-     * parse query string to Parameters.
+     * 转换long型为byte数组
      *
-     * @param qs query string.
-     * @return Parameters instance.
+     * @param x
      */
-    public static Map<String, String> parseQueryString(String qs) {
-        if (qs == null || qs.length() == 0)
-            return new HashMap<String, String>();
-        return parseKeyValuePair(qs, "\\&");
+    public static byte[] longToBytes(long x) {
+        byte[] bb = new byte[8];
+        bb[0] = (byte) (x >> 56);
+        bb[1] = (byte) (x >> 48);
+        bb[2] = (byte) (x >> 40);
+        bb[3] = (byte) (x >> 32);
+        bb[4] = (byte) (x >> 24);
+        bb[5] = (byte) (x >> 16);
+        bb[6] = (byte) (x >> 8);
+        bb[7] = (byte) (x >> 0);
+        return bb;
     }
 
+    /**
+     * 通过byte数组取到long
+     *
+     * @param bb
+     * @return
+     */
+    public static long bytesTolong(byte[] bb) {
+        return ((((long) bb[0] & 0xff) << 56)
+                | (((long) bb[1] & 0xff) << 48)
+                | (((long) bb[2] & 0xff) << 40)
+                | (((long) bb[3] & 0xff) << 32)
+                | (((long) bb[4] & 0xff) << 24)
+                | (((long) bb[5] & 0xff) << 16)
+                | (((long) bb[6] & 0xff) << 8) | (((long) bb[7] & 0xff) << 0));
+    }
 
-    public static String toQueryString(Map<String, String> ps) {
-        StringBuilder buf = new StringBuilder();
-        if (ps != null && ps.size() > 0) {
-            for (Map.Entry<String, String> entry : new TreeMap<String, String>(ps).entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (key != null && key.length() > 0
-                        && value != null && value.length() > 0) {
-                    if (buf.length() > 0) {
-                        buf.append("&");
-                    }
-                    buf.append(key);
-                    buf.append("=");
-                    buf.append(value);
-                }
+    /**
+     * 转换int为byte数组
+     *
+     * @param bb
+     * @param x
+     * @param index
+     */
+    public static void putInt(byte[] bb, int x, int index) {
+        bb[index] = (byte) (x >>> 24);
+        bb[index + 1] = (byte) (x >>> 16);
+        bb[index + 2] = (byte) (x >>> 8);
+        bb[index + 3] = (byte) x;
+    }
+
+    /**
+     * 通过byte数组取到int
+     *
+     * @param bb
+     * @param index 第几位开始
+     * @return
+     */
+    public static int getInt(byte[] bb, int index) {
+        return (bb[index] & 0xff) << 24 |
+                (bb[index + 1] & 0xff) << 16 |
+                (bb[index + 2] & 0xff) << 8 |
+                bb[index + 3] & 0xff;
+    }
+
+    /**
+     * 转换long型为byte数组
+     *
+     * @param bb
+     * @param x
+     * @param index
+     */
+    public static void putLong(byte[] bb, long x, int index) {
+        for (int i = 0; i < 8; i++) {
+            bb[index + i] = (byte) (x >>> (56 - (i * 8)));
+        }
+    }
+
+    /**
+     * 通过byte数组取到long
+     *
+     * @param bb
+     * @param index
+     * @return
+     */
+    public static long getLong(byte[] bb, int index) {
+        return ((long) bb[index] & 0xff) << 56 |
+                ((long) bb[index + 1] & 0xff) << 48 |
+                ((long) bb[index + 2] & 0xff) << 40 |
+                ((long) bb[index + 3] & 0xff) << 32 |
+                ((long) bb[index + 4] & 0xff) << 24 |
+                ((long) bb[index + 5] & 0xff) << 16 |
+                ((long) bb[index + 6] & 0xff) << 8 |
+                (long) bb[index + 7] & 0xff;
+    }
+
+    /**
+     * 将String写入byte数组
+     *
+     * @param bb
+     * @param str
+     * @param index
+     */
+    public static void putString(byte[] bb, String str, int index) {
+        try {
+            byte[] cc = str.getBytes("UTF-8");
+            int maxLen = cc.length;
+            if (maxLen > bb.length - index) {
+                maxLen = bb.length - index;
             }
-        }
-        return buf.toString();
-    }
-
-    public static String camelToSplitName(String camelName, String split) {
-        if (camelName == null || camelName.length() == 0) {
-            return camelName;
-        }
-        StringBuilder buf = null;
-        for (int i = 0; i < camelName.length(); i++) {
-            char ch = camelName.charAt(i);
-            if (ch >= 'A' && ch <= 'Z') {
-                if (buf == null) {
-                    buf = new StringBuilder();
-                    if (i > 0) {
-                        buf.append(camelName.substring(0, i));
-                    }
-                }
-                if (i > 0) {
-                    buf.append(split);
-                }
-                buf.append(Character.toLowerCase(ch));
-            } else if (buf != null) {
-                buf.append(ch);
+            for (int i = 0; i < maxLen; i++) {
+                bb[i + index] = cc[i];
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return buf == null ? camelName : buf.toString();
     }
 
-//	public static String toArgumentString(Object[] args) {
-//	    StringBuilder buf = new StringBuilder();
-//        for (Object arg : args) {
-//            if (buf.length() > 0) {
-//                buf.append(Constants.COMMA_SEPARATOR);
-//            }
-//            if (arg == null || ReflectUtils.isPrimitives(arg.getClass())) {
-//                buf.append(arg);
-//            } else {
-//                try {
-//                    buf.append(JSON.toJSONString().json(arg));
-//                } catch (IOException e) {
-//                    logger.warn(e.getMessage(), e);
-//                    buf.append(arg);
-//                }
-//            }
-//        }
-//        return buf.toString();
-//	}
+    /**
+     * 获取byte数组下长度的字符串值trim值
+     *
+     * @param bb
+     * @param len
+     * @param index
+     * @return
+     */
+    public static String getString(byte[] bb, int len, int index) {
+        try {
+            byte[] bytes = new byte[len];
+            if (len > bb.length - index) {
+                len = bb.length - index;
+            }
+            for (int i = 0; i < len; i++) {
+                bytes[i] = bb[i + index];
+            }
+            return new String(bytes, "UTF-8").trim();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String transToDbDate(long datetime) {
+        Date d = new Date(datetime);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmms");
+        String dd = sdf.format(d);
+        return dd;
+    }
 
     private StringUtils() {
     }

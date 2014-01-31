@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.test;
+package com.sunsharing.eos.client.test;
 
 import com.sunsharing.eos.common.annotation.EosService;
 

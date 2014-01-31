@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.client;
 
+import com.sunsharing.eos.client.proxy.AbstractProxy;
+import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.utils.ClassFilter;
@@ -48,12 +50,17 @@ public class ServiceContext extends AbstractServiceContext {
     @Override
     protected void createBean(final Class interfaces, ServiceConfig config) {
         //客户端,找实现代理类
-
+        AbstractProxy proxy = ProxyFactory.createProxy(config.getProxy());
+        services.put(interfaces.getName(), proxy.getProxy(interfaces, config));
     }
 
     //取得服务bean
-    public <T> T getBean(Class<T> clazz) {
-        return (T) this.services.get(clazz.getName());
+    public static <T> T getBean(Class<T> clazz) {
+        Object o = services.get(clazz.getName());
+        if (o == null) {
+            return null;
+        }
+        return (T) o;
     }
 
     public static void main(String[] args) {

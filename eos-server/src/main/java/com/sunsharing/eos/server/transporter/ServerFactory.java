@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.server;
+package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.rpc.Server;
 import com.sunsharing.eos.server.sys.SysProp;

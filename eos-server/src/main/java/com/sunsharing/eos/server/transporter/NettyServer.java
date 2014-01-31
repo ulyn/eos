@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.server;
+package com.sunsharing.eos.server.transporter;
 
 /**
  * <pre></pre>

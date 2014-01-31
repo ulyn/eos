@@ -21,7 +21,7 @@ import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.rpc.Server;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
-import com.sunsharing.eos.server.server.ServerFactory;
+import com.sunsharing.eos.server.transporter.ServerFactory;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 

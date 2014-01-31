@@ -1,11 +1,11 @@
 /**
- * @(#)TestService
+ * @(#)TestServiceContext
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午8:13
+ *<br> 14-2-1 上午12:52
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,9 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.test;
 
-import com.sunsharing.eos.common.annotation.EosService;
+import com.sunsharing.eos.client.ServiceContext;
+import com.sunsharing.eos.client.test.TestService;
 
 /**
  * <pre></pre>
@@ -29,13 +29,11 @@ import com.sunsharing.eos.common.annotation.EosService;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.0", transporter = "socket")
-public interface TestService {
-    /**
-     * 输出
-     *
-     * @return "你好啊！"
-     */
-    String sayHello();
+public class TestServiceContext {
+    public static void main(String[] args) {
+        ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
+        TestService testService = serviceContext.getBean(TestService.class);
+        System.out.println("called:" + testService.sayHello());
+    }
 }
 

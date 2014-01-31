@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.server;
+package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
@@ -22,6 +22,7 @@ import com.sunsharing.eos.common.serialize.ObjectInput;
 import com.sunsharing.eos.common.serialize.ObjectOutput;
 import com.sunsharing.eos.common.serialize.Serialization;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
+import com.sunsharing.eos.common.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,7 +73,7 @@ public class SocketServer extends AbstractServer {
                         InputStream inputStream = client.getInputStream();
                         byte[] bytes = new byte[20];
                         inputStream.read(bytes);
-                        String serializationType = new String(bytes, "utf-8");
+                        String serializationType = StringUtils.getString(bytes, 20, 0);
 
                         Serialization serialization = SerializationFactory.createSerialization(serializationType);
                         ObjectInput objectInput = serialization.deserialize(client.getInputStream());

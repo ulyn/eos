@@ -34,28 +34,18 @@ import java.util.Arrays;
  */
 public class RpcInvocation implements Invocation, Serializable {
 
-    private String interfaces;
-    private String implClassName;
+    private String id;
     private String methodName;
     private Class<?>[] parameterTypes;
     private Object[] arguments;
 
-    @Override
-    public String getInterfaces() {
-        return interfaces;
+
+    public String getId() {
+        return id;
     }
 
-    public void setInterfaces(String interfaces) {
-        this.interfaces = interfaces;
-    }
-
-    @Override
-    public String getImplClassName() {
-        return implClassName;
-    }
-
-    public void setImplClassName(String implClassName) {
-        this.implClassName = implClassName;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

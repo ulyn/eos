@@ -34,18 +34,22 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EosService {
 
-    public String id() default "";
+    String id() default "";
 
-    public String version();
+    String version();
 
-    public String proxy() default "jdk";
+    String proxy() default "jdk";
 
-    public String serialization() default "hessian";
+    String serialization() default "hessian";
 
-    public String transporter() default "netty";
+    String transporter() default "netty";
 
-    public String appId() default "";
+    String appId() default "";
 
-    public boolean mock() default false;
+    String impl() default "";
+
+    int timeout() default 30000;
+
+    boolean mock() default false;
 }
 

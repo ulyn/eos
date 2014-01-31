@@ -1,11 +1,11 @@
 /**
- * @(#)Client
+ * @(#)TestService
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-22 下午9:12
+ *<br> 14-1-31 下午8:13
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,9 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc;
+package com.sunsharing.eos.server.test;
 
-import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.annotation.EosService;
 
 /**
  * <pre></pre>
@@ -29,10 +29,7 @@ import com.sunsharing.eos.common.config.ServiceConfig;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface Client {
-
-    <T> T getProxy(final Class<T> clazz, final ServiceConfig serviceConfig) throws RpcException;
-
-
+@EosService(version = "1.0", transporter = "socket")
+public interface TestService {
 }
 

@@ -1,11 +1,11 @@
 /**
- * @(#)RpcServer
+ * @(#)SocketServer
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-26 下午4:37
+ *<br> 14-1-31 下午10:49
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,21 +14,20 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server;
+package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.Server;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
-import com.sunsharing.eos.common.serialize.*;
-import com.sunsharing.eos.common.serialize.support.hessian.Hessian2Serialization;
+import com.sunsharing.eos.common.serialize.ObjectInput;
+import com.sunsharing.eos.common.serialize.ObjectOutput;
+import com.sunsharing.eos.common.serialize.Serialization;
+import com.sunsharing.eos.common.serialize.SerializationFactory;
+import com.sunsharing.eos.common.utils.StringUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <pre></pre>
@@ -41,58 +40,11 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class RpcServer implements Server {
-    private int port = 20382;
+public class SocketServer extends AbstractServer {
 
-    private boolean isRunning = false;
-    private Map<String, Object> serviceEngine = new HashMap<String, Object>();
-
-    @Override
-    public int getPort() {
-        return port;
+    public SocketServer(int port) {
+        super(port);
     }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    @Override
-    public void register(Class interfaceDefiner, Object impl) {
-        try {
-            this.serviceEngine.put(impl.getClass().getName(), impl);
-            System.out.println(serviceEngine);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Result call(Invocation invocation) {
-        Object obj = serviceEngine.get(invocation.getImplClassName());
-        RpcResult result = new RpcResult();
-        if (obj != null) {
-            try {
-                Method m = obj.getClass().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
-                Object o = m.invoke(obj, invocation.getArguments());
-                result.setValue(o);
-            } catch (Throwable th) {
-                result.setException(th);
-            }
-        } else {
-            result.setException(new IllegalArgumentException("has no these class"));
-        }
-        return result;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void setRunning(boolean isRunning) {
-        this.isRunning = isRunning;
-    }
-
 
     @Override
     public void stop() {
@@ -118,13 +70,16 @@ public class RpcServer implements Server {
                     try {
                         Socket client = socket.accept();
                         long startTime = System.currentTimeMillis();
-//                        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-//                        Invocation invo = (Invocation) ois.readObject();
-                        Serialization serialization = new Hessian2Serialization();
+                        InputStream inputStream = client.getInputStream();
+                        byte[] bytes = new byte[20];
+                        inputStream.read(bytes);
+                        String serializationType = StringUtils.getString(bytes, 20, 0);
+
+                        Serialization serialization = SerializationFactory.createSerialization(serializationType);
                         ObjectInput objectInput = serialization.deserialize(client.getInputStream());
                         Invocation invo = objectInput.readObject(Invocation.class);
                         System.out.println("socket 读取参数对象耗时:" + (System.currentTimeMillis() - startTime));
-                        System.out.println("远程调用:" + invo.getImplClassName() + "." + invo.getMethodName());
+                        System.out.println("远程调用:" + serviceEngine.get(invo.getId()) + "." + invo.getMethodName());
 
                         startTime = System.currentTimeMillis();
                         Result result = call(invo);
@@ -135,11 +90,6 @@ public class RpcServer implements Server {
                         ObjectOutput objectOutput = serialization.serialize(client.getOutputStream());
                         objectOutput.writeObject(result);
                         objectOutput.flushBuffer();
-//                        ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-//                        oos.writeObject(result);
-//                        oos.flush();
-//                        oos.close();
-//                        ois.close();
                         System.out.println("socket 写回数据耗时:" + (System.currentTimeMillis() - startTime));
                     } catch (Exception e) {
                         e.printStackTrace();

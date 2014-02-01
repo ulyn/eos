@@ -5,7 +5,7 @@
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-22 下午9:12
+ *<br> 14-1-31 下午11:43
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -15,6 +15,9 @@
  *————————————————————————————————
  */
 package com.sunsharing.eos.common.rpc;
+
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.serialize.Serialization;
 
 /**
  * <pre></pre>
@@ -28,9 +31,15 @@ package com.sunsharing.eos.common.rpc;
  * <br>
  */
 public interface Client {
-
-    <T> T getProxy(final Class<T> clazz, final String implClassName) throws RpcException;
-
-
+    /**
+     * 执行远程调用的方法
+     *
+     * @param invocation
+     * @param serializationType
+     * @param url
+     * @param port
+     * @return
+     */
+    RpcResult doRpc(Invocation invocation, String serializationType, String url, int port) throws Throwable;
 }
 

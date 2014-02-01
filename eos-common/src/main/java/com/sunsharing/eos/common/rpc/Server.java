@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.common.rpc;
 
+import com.sunsharing.eos.common.config.ServiceConfig;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -30,7 +32,7 @@ package com.sunsharing.eos.common.rpc;
 public interface Server {
     int getPort();
 
-    void register(Class interfaceDefiner, Object impl);
+    void register(Object impl, ServiceConfig config);
 
     Result call(Invocation invocation);
 

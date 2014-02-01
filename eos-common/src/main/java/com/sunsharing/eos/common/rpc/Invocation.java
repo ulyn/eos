@@ -29,9 +29,7 @@ package com.sunsharing.eos.common.rpc;
  */
 public interface Invocation {
 
-    String getInterfaces();
-
-    String getImplClassName();
+    String getId();
 
     /**
      * get method name.

@@ -32,9 +32,13 @@ import com.sunsharing.eos.common.annotation.EosService;
 public interface TestInterfaceAnno {
     /**
      * 输出
-     *
-     * @return "你好啊！"
+     * @param name 入参
+     * @return
+     * [success]当入参name="criss"为成功输出
+     * {"success":"成功了"}
+     * [error]当入参为其他时为错误输出
+     * {"error":"错误了"}
      */
-    String sayHello();
+    String sayHello(String name);
 }
 

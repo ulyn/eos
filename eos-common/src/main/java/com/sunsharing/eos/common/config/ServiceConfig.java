@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.common.config;
 
+import com.sunsharing.eos.common.Constants;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -30,12 +32,12 @@ package com.sunsharing.eos.common.config;
 public class ServiceConfig {
     private String id = "";
     private String version;
-    private String proxy = "jdk";
-    private String serialization = "hessian";
-    private String transporter = "netty";
+    private String proxy = Constants.DEFAULT_PROXY;
+    private String serialization = Constants.DEFAULT_SERIALIZATION;
+    private String transporter = Constants.DEFAULT_TRANSPORTER;
     private String appId = "";
     private int timeout = 30000;
-    private boolean mock = false;
+    private String mock = "";
 
     private String impl = "";
 
@@ -96,10 +98,14 @@ public class ServiceConfig {
     }
 
     public boolean isMock() {
+        return null == mock || "".equals(mock);
+    }
+
+    public String getMock() {
         return mock;
     }
 
-    public void setMock(boolean mock) {
+    public void setMock(String mock) {
         this.mock = mock;
     }
 

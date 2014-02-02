@@ -50,6 +50,5 @@ public @interface EosService {
 
     int timeout() default 30000;
 
-    boolean mock() default false;
 }
 

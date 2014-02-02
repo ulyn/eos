@@ -36,6 +36,6 @@ public interface TestService {
      *
      * @return "你好啊！"
      */
-    String sayHello();
+    String sayHello(String name);
 }
 

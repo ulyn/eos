@@ -1,0 +1,5 @@
+<beans>
+    <bean id="beanId" proxy="jdk" serialization="hessian" transporter="netty"
+          interface="com.sunsharing.eos.server.test.TestService"
+          ref="com.sunsharing.eos.server.test.TestServiceImpl"/>
+</beans>

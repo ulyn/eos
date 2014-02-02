@@ -46,7 +46,7 @@ public class ServiceContext extends AbstractServiceContext {
     }
 
     @Override
-    protected void createBean(final Class interfaces, ServiceConfig config) {
+    protected Object createBean(final Class interfaces, ServiceConfig config) {
         //服务端,找实现类
         if (!config.getImpl().equals("")) {
             //有配置实现类，直接使用
@@ -106,7 +106,7 @@ public class ServiceContext extends AbstractServiceContext {
         Server server = ServerFactory.getServer(config.getTransporter());
         server.register(this.services.get(interfaces.getName()), config);
 
-
+        return this.services.get(interfaces.getName());
     }
 
     public static void main(String[] args) {

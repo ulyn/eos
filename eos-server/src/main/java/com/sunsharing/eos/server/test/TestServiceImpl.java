@@ -29,8 +29,8 @@ package com.sunsharing.eos.server.test;
  */
 public class TestServiceImpl implements TestService {
     @Override
-    public String sayHello() {
-        return "你好，我是ulyn";
+    public String sayHello(String name) {
+        return name + "，你好，我是ulyn";
     }
 }
 

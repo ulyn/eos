@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,20 +42,31 @@ import java.util.Map;
 public class ServiceContext extends AbstractServiceContext {
     Logger logger = Logger.getLogger(ServiceContext.class);
 
+    //存储服务对象,key为服务name
+    protected static Map<String, Object> interfaceServiceMap = new HashMap<String, Object>();
+
     public ServiceContext(ApplicationContext ctx, String packagePath) {
         super(ctx, packagePath);
     }
 
     @Override
-    protected void createBean(final Class interfaces, ServiceConfig config) {
+    protected Object createBean(final Class interfaces, ServiceConfig config) {
         //客户端,找实现代理类
         AbstractProxy proxy = ProxyFactory.createProxy(config.getProxy());
-        services.put(interfaces.getName(), proxy.getProxy(interfaces, config));
+        Object bean = proxy.getProxy(interfaces, config);
+        interfaceServiceMap.put(interfaces.getName(), bean);
+        return bean;
     }
 
-    //取得服务bean
+    /**
+     * 根据接口取得服务bean
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     public static <T> T getBean(Class<T> clazz) {
-        Object o = services.get(clazz.getName());
+        Object o = interfaceServiceMap.get(clazz.getName());
         if (o == null) {
             return null;
         }

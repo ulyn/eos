@@ -1,11 +1,11 @@
 /**
- * @(#)TestService
+ * @(#)ProFactory
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午8:13
+ *<br> 14-2-5 上午1:42
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,9 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.test;
+package com.sunsharing.eos.common.rpc.protocol;
 
-import com.sunsharing.eos.common.annotation.EosService;
+import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
  * <pre></pre>
@@ -29,13 +29,20 @@ import com.sunsharing.eos.common.annotation.EosService;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.0", transporter = "netty")
-public interface TestService {
-    /**
-     * 输出
-     *
-     * @return "你好啊！"
-     */
-    String sayHello(String name);
+public class ProFactory {
+    public static BaseProtocol createPro(ChannelBuffer buffer) {
+        if (buffer.readableBytes() < 1) {
+            return null;
+        }
+        buffer.markReaderIndex();
+        byte action = buffer.readByte();
+        buffer.resetReaderIndex();
+        if (action == BaseProtocol.REQUEST_MSG) {
+            return new RequestPro().createFromChannel(buffer);
+        } else if (action == BaseProtocol.REQUEST_MSG_RESULT) {
+            return new ResponsePro().createFromChannel(buffer);
+        }
+        return null;
+    }
 }
 

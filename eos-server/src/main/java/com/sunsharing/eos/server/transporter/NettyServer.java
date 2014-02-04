@@ -16,6 +16,9 @@
  */
 package com.sunsharing.eos.server.transporter;
 
+import com.sunsharing.eos.server.transporter.netty.ServerPineLineFactory;
+import org.apache.log4j.Logger;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -28,6 +31,8 @@ package com.sunsharing.eos.server.transporter;
  * <br>
  */
 public class NettyServer extends AbstractServer {
+    Logger logger = Logger.getLogger(NettyServer.class);
+    com.sunsharing.eos.common.rpc.server.netty.NettyServer nettyServer;
 
     public NettyServer(int port) {
         super(port);
@@ -36,11 +41,24 @@ public class NettyServer extends AbstractServer {
     @Override
     public void stop() {
         setRunning(false);
+        if (nettyServer != null) {
+            try {
+                nettyServer.shutdown();
+            } catch (Exception e) {
+                logger.error("关闭netty服务器失败！", e);
+            }
+        }
     }
 
     @Override
     public void start() {
         setRunning(true);
+        nettyServer = new com.sunsharing.eos.common.rpc.server.netty.NettyServer(this.port, new ServerPineLineFactory());
+        try {
+            nettyServer.startup();
+        } catch (Exception e) {
+            logger.error("启动netty服务器失败！", e);
+        }
     }
 }
 

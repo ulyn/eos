@@ -197,12 +197,27 @@ public class ServiceLocation {
     public synchronized JSONObject getServiceLocation
             (String appId,String serviceId,String version)
     {
+        return getServiceLocation( appId, serviceId, version,false);
+    }
+
+    /**
+     * 获得在线的EOS
+     * @return  {“ip”:"","port":""} 如果是null，表示不存在这个
+     */
+    public synchronized JSONObject getOnlineEOS()
+    {
+        return getServiceLocation( null, null, null,true);
+    }
+
+    private JSONObject getServiceLocation
+            (String appId,String serviceId,String version,boolean mock)
+    {
         JSONArray ips = new JSONArray();
         String servicePath = appId+serviceId+version;
         for(String eosId:eosMap.keySet())
         {
             JSONObject eos = eosMap.get(eosId);
-            if(eos.getJSONObject("services").get(servicePath)!=null)
+            if(mock || eos.getJSONObject("services").get(servicePath)!=null)
             {
                 JSONObject obj = new JSONObject();
                 obj.put("ip",eos.get("ip"));

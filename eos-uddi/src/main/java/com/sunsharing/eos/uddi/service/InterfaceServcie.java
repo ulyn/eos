@@ -46,7 +46,8 @@ public class InterfaceServcie {
                 {
                     l = l.substring(0,l.length()-1);
                 }
-                return l.trim();
+                String name = l.trim();
+                return Character.toLowerCase(name.charAt(0)) + name.substring(1);
             }
         }
         throw new RuntimeException("取不到接口名");

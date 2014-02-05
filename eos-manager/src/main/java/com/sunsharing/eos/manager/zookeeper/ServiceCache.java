@@ -103,6 +103,9 @@ public class ServiceCache {
      * @param version
      * @param method 方法名
      * @return
+     * [{"content":"{\"error\":\"错误了3\"}","desc":"当入参为其他时为错误输出","status":"error"},
+     * {"content":"{\"success\":\"成功了2\",\"haha\":\"haha2\"}","desc":"当入参name=\"criss\"为成功输出",
+     * "status":"success"}]
      */
     public JSONArray getTestCode(String appId,String serviceId,String version,String method)throws Exception
     {

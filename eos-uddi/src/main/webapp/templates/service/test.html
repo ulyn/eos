@@ -1,0 +1,40 @@
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">测试报文</h3>
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="simple_buttons">
+            <div class="bwIcon i_16_help" ng-click="returnlist()">返回</div>
+        </div>
+    </div>
+
+    <div class="g_12 separator"><span></span></div>
+
+    <div class="g_12" ng-repeat="method in methods">
+        <div class="widget_header">
+            <h4 class="widget_header_title wwIcon i_16_forms">{{method.methodName}}</h4>
+        </div>
+        <div class="widget_contents noPadding">
+                <div class="line_grid" ng-repeat="r in method.mockResult">
+                    <div class="g_3"><span class="label">{{r.status}}</span></div>
+                    <div class="g_9">
+                        <div class="label">{{r.desc}}</div>
+                        <textarea  class="simple_field" name="{{r.status}}_{{method.methodId}}"   placeholder="">{{r.content}}</textarea>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="g_12">
+        <div class="line_grid">
+            <div class="g_12"><input class="submitIt simple_buttons" ng-click="saveMethod()" value="edit" type="button">
+            <span class="label">注意：只是修改测试数据，不能修改结构，如果要修改结构请联系开发人员</span>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+</div>

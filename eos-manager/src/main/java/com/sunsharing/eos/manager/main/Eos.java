@@ -1,7 +1,9 @@
 package com.sunsharing.eos.manager.main;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.manager.sys.SysProp;
+import com.sunsharing.eos.manager.zookeeper.EosMonitor;
 import com.sunsharing.eos.manager.zookeeper.EosState;
 
 import java.io.BufferedReader;
@@ -21,6 +23,9 @@ public class Eos {
             {
                 EosState state = new EosState();
                 state.connect();
+                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
+                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
+                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
             }
         }.start();
 
@@ -42,6 +47,8 @@ public class Eos {
                     System.out.println("sta -> 显示状态");
                 }else if(line.equals("sta"))
                 {
+                    ZookeeperUtils utils = ZookeeperUtils.getInstance();
+                    utils.printNode("/");
 //                    sta.run();
                 }
                 else

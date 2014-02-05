@@ -13,6 +13,7 @@
         <module>eos-manager</module>
         <module>eos-client</module>
         <module>eos-server</module>
+        <module>eos-uddi</module>
     </modules>
 
     <properties>
@@ -54,8 +55,18 @@
                 <version>${resvalidate_version}</version>
             </dependency>
             <dependency>
+                <groupId>com.sunsharing.component</groupId>
+                <artifactId>utils</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
+                <version>${springframework_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
                 <version>${springframework_version}</version>
             </dependency>
         </dependencies>

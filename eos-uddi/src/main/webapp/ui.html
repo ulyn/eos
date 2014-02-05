@@ -1,0 +1,830 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Kanrisha - A Premium HTML5 Responsive Admin Template</title>
+	<!--[if lt IE 9]>
+		<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="Javascript/Flot/excanvas.js"></script>
+	<![endif]-->
+	<!-- The Fonts -->
+	<link href="http://fonts.googleapis.com/css?family=Oswald|Droid+Sans:400,700" rel="stylesheet" />
+	<!-- The Main CSS File -->
+	<link rel="stylesheet" href="CSS/style.css" />
+	<!-- jQuery -->
+	<script src="Javascript/jQuery/jquery-1.7.2.min.js"></script>
+	<!-- Flot -->
+	<script src="Javascript/Flot/jquery.flot.js"></script>
+	<script src="Javascript/Flot/jquery.flot.resize.js"></script>
+	<script src="Javascript/Flot/jquery.flot.pie.js"></script>
+	<!-- DataTables -->
+	<script src="Javascript/DataTables/jquery.dataTables.min.js"></script>
+	<!-- ColResizable -->
+	<script src="Javascript/ColResizable/colResizable-1.3.js"></script>
+	<!-- jQuryUI -->
+	<script src="Javascript/jQueryUI/jquery-ui-1.8.21.min.js"></script>
+	<!-- Uniform -->
+	<script src="Javascript/Uniform/jquery.uniform.js"></script>
+	<!-- Tipsy -->
+	<script src="Javascript/Tipsy/jquery.tipsy.js"></script>
+	<!-- Elastic -->
+	<script src="Javascript/Elastic/jquery.elastic.js"></script>
+	<!-- ColorPicker -->
+	<script src="Javascript/ColorPicker/colorpicker.js"></script>
+	<!-- SuperTextarea -->
+	<script src="Javascript/SuperTextarea/jquery.supertextarea.min.js"></script>
+	<!-- UISpinner -->
+	<script src="Javascript/UISpinner/ui.spinner.js"></script>
+	<!-- MaskedInput -->
+	<script src="Javascript/MaskedInput/jquery.maskedinput-1.3.js"></script>
+	<!-- ClEditor -->
+	<script src="Javascript/ClEditor/jquery.cleditor.js"></script>
+	<!-- Full Calendar -->
+	<script src="Javascript/FullCalendar/fullcalendar.js"></script>
+	<!-- Color Box -->
+	<script src="Javascript/ColorBox/jquery.colorbox.js"></script>
+	<!-- Kanrisha Script -->
+	<script src="Javascript/kanrisha.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<body>
+	<!-- Change Pattern -->
+	<div class="changePattern">
+		<span id="pattern1"></span>
+		<span id="pattern2"></span>
+		<span id="pattern3"></span>
+		<span id="pattern4"></span>
+		<span id="pattern5"></span>
+		<span id="pattern6"></span>
+	</div>
+	<!-- Top Panel -->
+	<div class="top_panel">
+		<div class="wrapper">
+			<div class="user">
+				<img src="Images/user_avatar.png" alt="user_avatar" class="user_avatar" />
+				<span class="label">John Alex</span>
+				<!-- Top Tooltip -->
+				<div class="top_tooltip">
+					<div>
+						<ul class="user_options">
+							<li class="i_16_profile"><a href="#" title="Profile"></a></li>
+							<li class="i_16_tasks"><a href="#" title="Tasks"></a></li>
+							<li class="i_16_notes"><a href="#" title="Notes"></a></li>
+							<li class="i_16_options"><a href="#" title="Options"></a></li>
+							<li class="i_16_logout"><a href="#" title="Log-Out"></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="top_links">
+				<ul>
+					<li class="i_22_search search_icon">
+						<div class="top_tooltip right_direction">
+							<div>
+								<form class="top_search_form" />
+									<input type="text" class="top_search_input" />
+									<input type="submit" class="top_search_submit" value="" />
+								</form>
+							</div>
+						</div>
+					</li>
+					<li class="i_22_settings">
+						<a href="#" title="Settings">
+							<span class="label">Settings</span>
+						</a>
+					</li>
+					<li class="i_22_upload">
+						<a href="#" title="Upload">
+							<span class="label">Upload</span>
+						</a>
+						<!-- Drop Menu -->
+						<ul class="drop_menu menu_with_icons right_direction">
+							<li>
+								<a class="i_16_add" href="#" title="New Flie">
+									<span class="label">New File</span>
+								</a>									
+							</li>
+							<li>
+								<a class="i_16_progress" href="#" title="2 Files Left">
+									<span class="label">Files Left</span>
+									<span class="small_count">2</span>
+								</a>
+							</li>
+							<li>
+								<a class="i_16_files" href="#" title="Browse Files">
+									<span class="label">Browse Files</span>
+								</a>
+							</li>
+						</ul>
+					</li>
+					<li class="i_22_inbox top_inbox">
+						<a href="#" title="Inbox">
+							<span class="label lasCount">Inbox</span>
+							<span class="small_count">3</span>
+						</a>
+					</li>
+					<li class="i_22_pages">
+						<a href="#" title="Pages">
+							<span class="label">Pages</span>
+						</a>
+						<!-- Drop Menu -->
+						<ul class="drop_menu menu_without_icons">
+							<li>
+								<a title="403 Page" href="403.html">
+									<span class="label">403 Forbidden</span>
+								</a>									
+							</li>
+							<li>
+								<a href="404.html" title="404 Page">
+									<span class="label">404 Not Found</span>
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<header class="main_header">
+		<div class="wrapper">
+			<div class="logo">
+				<a href="#" title="Kanrisha Home">
+					<img src="Images/kanrisha_logo.png" alt="kanrisha_logo" />
+				</a>
+			</div>
+			<nav class="top_buttons">
+				<ul>
+					<li class="big_button">
+						<div class="out_border">
+							<div class="button_wrapper">
+								<div class="in_border">
+									<a href="#" title="Analytics" class="the_button">
+										<span class="i_32_statistic"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="big_button">
+						<div class="big_count">
+							<span>7</span>
+						</div>
+						<div class="out_border">
+							<div class="button_wrapper">
+								<div class="in_border">
+									<a href="#" title="Support" class="the_button">
+										<span class="i_32_support"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="big_button">
+						<div class="out_border">
+							<div class="button_wrapper">
+								<div class="in_border">
+									<a href="#" title="Delivery" class="the_button">
+										<span class="i_32_delivery"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="big_button">
+						<div class="out_border">
+							<div class="button_wrapper">
+								<div class="in_border">
+									<a href="#" title="Earning" class="the_button">
+										<span class="i_32_dollar"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<div class="wrapper small_menu">
+		<ul class="menu_small_buttons">
+			<li><a title="General Info" class="i_22_dashboard" href="index.html"></a></li>
+			<li><a title="Your Messages" class="i_22_inbox" href="inbox.html"></a></li>
+			<li><a title="Visual Data" class="i_22_charts" href="charts.html"></a></li>
+			<li><a title="Kit elements" class="i_22_ui smActive" href="ui.html"></a></li>
+			<li><a title="Some Rows" class="i_22_tables" href="tables.html"></a></li>
+			<li><a title="Some Fields" class="i_22_forms" href="forms.html"></a></li>
+		</ul>
+	</div>
+
+	<div class="wrapper contents_wrapper">
+		
+		<aside class="sidebar">
+			<ul class="tab_nav">
+				<li class="i_32_dashboard">
+					<a href="index.html" title="General Info">
+						<span class="tab_label">Dashboard</span>
+						<span class="tab_info">General Info</span>
+					</a>
+				</li>
+				<li class="i_32_inbox">
+					<a href="inbox.html" title="Your Messages">
+						<span class="tab_label">Inbox</span>
+						<span class="tab_info">Your Messages</span>
+					</a>
+				</li>
+				<li class="i_32_charts">
+					<a href="charts.html" title="Visual Data">
+						<span class="tab_label">Charts</span>
+						<span class="tab_info">Visual Data</span>
+					</a>
+				</li>
+				<li class="active_tab i_32_ui">
+					<a href="ui.html" title="Kit elements">
+						<span class="tab_label">UI</span>
+						<span class="tab_info">Kit elements</span>
+					</a>
+				</li>
+				<li class="i_32_tables">
+					<a href="tables.html" title="Some Rows">
+						<span class="tab_label">Tables</span>
+						<span class="tab_info">Some Rows</span>
+					</a>
+				</li>
+				<li class="i_32_forms">
+					<a href="forms.html" title="Some Fields">
+						<span class="tab_label">Forms</span>
+						<span class="tab_info">Some Fields</span>
+					</a>
+				</li>
+			</ul>
+		</aside>
+		<div class="contents">
+			<div class="grid_wrapper">
+				<div class="g_6 contents_header">
+					<h3 class="i_16_ui tab_label">UI</h3>
+					<div><span class="label">The Basic Kit Elements</span></div>
+				</div>
+				<div class="g_6 contents_options">
+					<div class="simple_buttons">
+						<div class="bwIcon i_16_help">Help</div>
+					</div>
+					<div class="simple_buttons">
+						<div class="bwIcon i_16_settings">Settings</div>
+						<div class="buttons_arrow">
+							<!-- Drop Menu -->
+							<ul class="drop_menu menu_with_icons right_direction">
+								<li>
+									<a class="i_16_add" href="#" title="New Flie">
+										<span class="label">New File</span>
+									</a>									
+								</li>
+								<li>
+									<a class="i_16_progress" href="#" title="2 Files Left">
+										<span class="label">Files Left</span>
+										<span class="small_count">2</span>
+									</a>
+								</li>
+								<li>
+									<a class="i_16_files" href="#" title="Browse Files">
+										<span class="label">Browse Files</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="g_12 separator"><span></span></div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_valid">Sliders</h4>
+					</div>
+					<div class="widget_contents noPadding">
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Simple Slider</span></div>
+							<div class="g_9">
+								<div class="slider sSimple"></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Slider With Min</span>
+								<div class="field_notice">Min is $80</div>
+							</div>
+							<div class="g_9">
+								<div class="slider swMin scBlue"></div>
+								<div class="field_notice">Min: <span class="must swmLabel">$80</span>
+								</div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Slider With Max</span>
+								<div class="field_notice">Max is $376</div></div>
+							<div class="g_9">
+								<div class="slider swMax scBlue"></div>
+								<div class="field_notice">Max: <span class="must swnLabel">$376</span></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Slider With Range</span>
+								<div class="field_notice">$80 to $376</div></div>
+							<div class="g_9">
+								<div class="slider swRange scBlue"></div>
+								<div class="field_notice">Price Range: <span class="must swrLabel">$75 - $300</span></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Vertical Slider</span>
+							</div>
+							<div class="g_9">
+								<div id="swVer-1" class="slider scBlue sVertical"></div>
+								<div id="swVer-2" class="slider scBlue sVertical"></div>
+								<div id="swVer-3" class="slider scBlue sVertical"></div>
+								<div id="swVer-4" class="slider scBlue sVertical"></div>
+								<div id="swVer-5" class="slider scBlue sVertical"></div>
+								<div id="swVer-6" class="slider scBlue sVertical"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_wysiwyg">Sliders Colors</h4>
+					</div>
+					<div class="widget_contents noPadding">
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Blue</span></div>
+							<div class="g_9">
+								<div class="slider swMin-1 scBlue"></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Light Green</span></div>
+							<div class="g_9">
+								<div class="slider swMin-2 scGreen"></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Darken Pink</span></div>
+							<div class="g_9">
+								<div class="slider swMin-3 scDPink"></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Darken Red</span></div>
+							<div class="g_9">
+								<div class="slider swMin-4 scDRed"></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Darken Yellow</span></div>
+							<div class="g_9">
+								<div class="slider swMin-5 scDYellow"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_progress">Progress Bar</h4>
+					</div>
+					<div class="widget_contents noPadding">
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Simple Progress</span></div>
+							<div class="g_9">
+								<div class="progress sProgress scBlue"></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Animated Progress</span></div>
+							<div class="g_9">
+								<div class="progress pwAnimate scBlue"></div>
+								<div class="field_notice">Value: <span class="must paValue">0%</span></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Upload Example</span></div>
+							<div class="g_9">
+								<div class="progress pwuAnimate scBlue"></div>
+								<div class="field_notice">Uploading: <span class="must pauValue">0 Mb</span> / 1024 Mb</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="g_12 separator"><span></span></div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_calendar">Inline DatePicker</h4>
+					</div>
+					<div class="widget_contents noPadding">
+						<div class="line_grid">
+							<div class="g_12">
+								<div class="pick_date"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header wwOptions">
+						<h4 class="widget_header_title wwIcon i_16_settings_small">Options on Header</h4>
+						<div class="w_Options i_16_settings">
+							<!-- Drop Menu -->
+							<ul class="drop_menu menu_with_icons right_direction">
+								<li>
+									<a class="i_16_add" href="#" title="New Flie">
+										<span class="label">New File</span>
+									</a>									
+								</li>
+								<li>
+									<a class="i_16_progress" href="#" title="2 Files Left">
+										<span class="label">Files Left</span>
+										<span class="small_count">2</span>
+									</a>
+								</li>
+								<li>
+									<a class="i_16_files" href="#" title="Browse Files">
+										<span class="label">Browse Files</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="widget_contents">
+						<span class="label lwParagraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis urna dui. Vestibulum adipiscing venenatis elementum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam nec sapien vel leo semper ultricies. Suspendisse id lectus eros.</span>
+					</div>
+				</div>
+				<div class="g_6" id="table_wTabs">
+					<div class="widget_header wwOptions">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Header Tabs</h4>
+						<ul class="w_Tabs">
+							<li><a href="#table_wTabs-1" title="Tab 1">Tab 1</a></li>
+							<li><a href="#table_wTabs-2" title="Tab 2">Tab 2</a></li>
+						</ul>
+					</div>
+					<div class="widget_contents">
+						<div id="table_wTabs-1">
+							<span class="label lwParagraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis urna dui. Vestibulum adipiscing venenatis elementum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam nec sapien vel leo semper ultricies. Suspendisse id lectus eros. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</span>	
+						</div>
+						<div id="table_wTabs-2">
+							<span class="label lwParagraph">Etiam at massa sit amet lacus congue mattis ut interdum orci. Integer fermentum sem lacus. Nullam eget libero enim. Praesent quis dolor justo, eu vehicula mauris. Aenean dapibus diam a odio dapibus sollicitudin. Nullam sed tortor felis, ut dignissim odio. Ut mattis vehicula leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</span>
+						</div>
+					</div>
+				</div>
+				<div class="g_12 separator"><span></span></div>
+				<div class="g_6">
+					<div class="widget_header cwhToggle">
+						<h4 class="widget_header_title wwIcon i_16_downT">Toogle Widget (Opened)</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label lwParagraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis urna dui. Vestibulum adipiscing venenatis elementum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam nec sapien vel leo semper ultricies. Suspendisse id lectus eros.</span>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header cwhToggle">
+						<h4 class="widget_header_title wwIcon i_16_cHorizontal">Toogle Widget (Closed)</h4>
+					</div>
+					<div class="widget_contents cwClose noPadding">
+						<span class="label lwParagraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis urna dui. Vestibulum adipiscing venenatis elementum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam nec sapien vel leo semper ultricies. Suspendisse id lectus eros.</span>
+					</div>
+				</div>
+				<div class="g_12 separator"><span></span></div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tables">Some Buttons</h4>
+					</div>
+					<div class="widget_contents lgNoPadding">
+						<div class="line_grid">
+							<div class="g_6">
+								<span class="label">Simple Buttons</span>
+							</div>
+							<div class="g_6">
+								<div class="simple_buttons">
+									<div>Button</div>
+								</div>
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div class="line_grid">
+							<div class="g_6">
+								<span class="label">Buttons With Icon</span>
+							</div>
+							<div class="g_6">
+								<div class="simple_buttons">
+									<div class="bwIcon i_16_settings">Settings</div>
+								</div>
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div class="line_grid">
+							<div class="g_6">
+								<span class="label">Buttons With Drop Menu</span>
+							</div>
+							<div class="g_6">
+								<div class="simple_buttons">
+									<div>Drop Me</div>
+									<div class="buttons_arrow">
+										<!-- Drop Menu -->
+										<ul class="drop_menu menu_with_icons right_direction">
+											<li>
+												<a class="i_16_add" href="#" title="New Flie">
+													<span class="label">New File</span>
+												</a>									
+											</li>
+											<li>
+												<a class="i_16_progress" href="#" title="2 Files Left">
+													<span class="label">Files Left</span>
+													<span class="small_count">2</span>
+												</a>
+											</li>
+											<li>
+												<a class="i_16_files" href="#" title="Browse Files">
+													<span class="label">Browse Files</span>
+												</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="clear"></div>
+						</div>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tooltip">ToolTip</h4>
+					</div>
+					<div class="widget_contents noPadding">
+						<div class="line_grid">
+							<div class="g_12 exbT">
+								<div class="simple_buttons" id="btTop" title="Top Tooltip">
+									<div>Top</div>
+								</div>
+								<div class="simple_buttons" id="btLeft" title="Left Tooltip">
+									<div>Left</div>
+								</div>
+								<div class="simple_buttons" id="btBottom" title="Bottom Tooltip">
+									<div>Bottom</div>
+								</div>
+								<div class="simple_buttons" id="btRight" title="Right Tooltip">
+									<div>Right</div>
+								</div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Fading</span></div>
+							<div class="g_9">
+								<div class="simple_buttons" id="btTopF" title="Hello World!">
+									<div>Fade Effects</div>
+								</div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_3"><span class="label">Delay</span></div>
+							<div class="g_9">
+								<div class="simple_buttons" id="btTopD" title="Wait 2s for Hide!">
+									<div>Wait to hide</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tables">Pagination</h4>
+					</div>
+					<div class="widget_contents">
+						<div class="dtPagination pCenter">
+							<a>First</a>
+							<a>Previous</a>
+							<a class="paginate_active">1</a>
+							<a>2</a>
+							<a>3</a>
+							<a>4</a>
+							<a>5</a>
+							<a>Next</a>
+							<a>Last</a>
+						</div>
+					</div>
+				</div>
+				<div class="g_12 separator"><span></span></div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_icons">Sample Icons</h4>
+					</div>
+					<div class="widget_contents iphO">
+						<div class="iPreview"><img src="Images/Icons/Preview/adidas_shirt.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/analysis_analytics.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/barcode_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/battery_emtpy_0_percent.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/beer_glass.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/books_multiple.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/books_multiple.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/chat_talk_speak.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/clock_alarm.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/clock_time_watch.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/cloud_upload_arrow.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/cloudy_rain_sun.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/coda_leaf_nature.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/contact_card_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/cover_flow.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/date_calendar.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/directions_sign.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/download_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/e.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/email_envelope.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/excel_spreasheet_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/expand_left.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/file.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/film_movie_clip.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/film_movie_clip_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/film_record.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/finish_line.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/folder_locked.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/folder_music.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/foot_steps_feet.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/hd_high_definition_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/house_home_building.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/image_landscape.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/inbox_4.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/inbox_outbox.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/ipod_classic.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/key_password.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/lemonade_stand_shop.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/light_buld_idea.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/like_thumbs_up.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/link_seo.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/money_coins_cash.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/paper_camera_file.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/paypal_2.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/photography_camera.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/power_chord.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/screen_monitor_computer.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/shopping_cart.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/shopping_cart_webshop.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/speak_yell_blog_advertising.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/plane.png" alt="icon" /></div>
+						<div class="iPreview"><img src="Images/Icons/Preview/price_money_tag.png" alt="icon" /></div>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_progress">Ajax Load</h4>
+						<div class="w_AT"><img src="Images/Icons/Load/load-8.gif" alt="load" /></div>
+					</div>
+					<div class="widget_contents iphO">
+						<div class="iPreview"><img src="Images/Icons/Load/load-1.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-2.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-3.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-4.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-5.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-6.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-7.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-8.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-9.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-10.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-11.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-12.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-13.gif" alt="load" /></div>
+						<div class="iPreview"><img src="Images/Icons/Load/load-14.gif" alt="load" /></div>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tooltip">Dialog</h4>
+					</div>
+					<div class="widget_contents noPadding">
+						<div class="line_grid">
+							<div class="g_6">
+								<span class="label">Simple Dialog</span>		
+							</div>
+							<div class="g_6">
+								<div class="simple_buttons bdC">
+									<div>Click me</div>
+								</div>
+								<div class="dialog bDialog" title="Basic Dialog"><span class="label lwParagraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis urna dui. Vestibulum adipiscing venenatis elementum.</span></div>
+							</div>
+						</div>
+						<div class="line_grid">
+							<div class="g_6">
+								<span class="label">A Confirmation</span>		
+							</div>
+							<div class="g_6">
+								<div class="simple_buttons bdcC">
+									<div>Confirm this</div>
+								</div>
+								<div class="dialog dConf" title="Do you agree?"><span class="label lwParagraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis urna dui. Vestibulum adipiscing venenatis elementum.</span></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="separator g_12"><span></span></div>
+				<div class="g_12"><div class="success iDialog">Yeah you are WIN!</div></div>
+				<div class="g_12"><div class="alert iDialog">Ooops, Something not well ..</div></div>
+				<div class="g_12"><div class="error iDialog">Ahhhhhhg! This is a  Fatal Error?</div></div>
+				<div class="g_12"><div class="info iDialog">Emmmmm! This is an Information</div></div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_icons">LightBox</h4>
+					</div>
+					<div class="widget_contents lPreview">
+						<a href="Images/LightBox/preview_big.png" class="lightbox">
+							<img src="Images/LightBox/preview.png" alt="lightbox" />
+						</a>
+						<a href="Images/LightBox/preview_big.png" class="lightbox">
+							<img src="Images/LightBox/preview.png" alt="lightbox" />
+						</a>
+						<a href="Images/LightBox/preview_big.png" class="lightbox">
+							<img src="Images/LightBox/preview.png" alt="lightbox" />
+						</a>
+						<a href="Images/LightBox/preview_big.png" class="lightbox">
+							<img src="Images/LightBox/preview.png" alt="lightbox" />
+						</a>
+					</div>
+				</div>
+				<div class="separator g_12"><span></span></div>
+				<div class="g_2">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid2</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 2</span>
+					</div>
+				</div>
+				<div class="g_10">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 10</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 10</span>
+					</div>
+				</div>
+				<div class="g_3">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 3</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 3</span>
+					</div>
+				</div>
+				<div class="g_9">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 9</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 9</span>
+					</div>
+				</div>
+				<div class="g_4">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 4</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 4</span>
+					</div>
+				</div>
+				<div class="g_8">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 8</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 8</span>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 6</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 6</span>
+					</div>
+				</div>
+				<div class="g_6">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 6</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 6</span>
+					</div>
+				</div>
+				<div class="g_12">
+					<div class="widget_header">
+						<h4 class="widget_header_title wwIcon i_16_tabs">Grid 12</h4>
+					</div>
+					<div class="widget_contents">
+						<span class="label">Grid 12</span>
+					</div>
+				</div>
+			</div>		
+		</div>
+	</div>
+	<footer>
+		<div class="wrapper">
+			<span class="copyright">
+				&copy; Copyright &copy; 2013.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a>
+			</span>
+		</div>
+	</footer>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>

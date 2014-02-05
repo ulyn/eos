@@ -1,5 +1,6 @@
 package com.sunsharing.eos.server.zookeeper;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -69,21 +70,22 @@ public class ServiceRegister {
         JSONObject obj = JSONObject.parseObject(json);
         String servicePath = obj.getString(PathConstant.APPID_KEY)+
                 obj.getString(PathConstant.SERVICE_ID_KEY)+
-                obj.getString(PathConstant.VERSION_KEY);
+                obj.getString(PathConstant.VERSION_KEY)+"_";
         boolean result = false;
         for(int i=0;i<ids.length;i++)
         {
             String eosId = ids[i];
             try
             {
-//                boolean r = utils.isExists(PathConstant.EOS_STATE+"/"+eosId);
-//                if(!r)
-//                {
-//                    logger.warn("EOS:"+eosId+",不在线无法注册");
-//                    continue;
-//                }
                 utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId,"",CreateMode.PERSISTENT);
-                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json, CreateMode.EPHEMERAL);
+//                JSONArray array = new JSONArray();
+//                if(utils.isExists(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath))
+//                {
+//                    String str = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath),"UTF-8");
+//                    array = JSONArray.parseArray(str);
+//                }
+//                array.add(JSONObject.parseObject(json));
+                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json, CreateMode.EPHEMERAL_SEQUENTIAL);
                 result = true;
             }catch (Exception e)
             {

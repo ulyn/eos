@@ -1,0 +1,40 @@
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">用户管理</h3>
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+    <div class="g_12 separator"><span></span></div>
+
+    <div class="g_12">
+        <div class="widget_header">
+            <h4 class="widget_header_title wwIcon i_16_forms">User</h4>
+        </div>
+        <div class="widget_contents noPadding">
+            <div class="line_grid">
+                <div class="g_3"><span class="label">角色</span></div>
+                <div class="g_9">
+                    <input id="cxy" type="radio" name="role" value="1" class="simple_form" /><span class="label">程序员</span>
+                    <input id="xzz" type="radio" name="role" value="2" class="simple_form" /><span class="label">小组长</span>
+                    <input id="gly" type="radio" name="role" value="3" class="simple_form" /><span class="label">管理员</span>
+                </div>
+            </div>
+
+            <div class="line_grid">
+                <div class="g_3"><span class="label">授权应用</span></div>
+                <div class="g_9">
+                    <span ng-repeat="row in apps">
+                    <input  type="checkbox" name="app"    value="{{row.appId}}" class="simple_form" /><span class="label">{{row.appName}}</span>
+                    </span>
+                    <span class="label">[有个BUG无法默认选中，你选中的应用为:{{selectApp}}]</span>
+                </div>
+            </div>
+            <div class="line_grid">
+                <div class="g_6"><input class="submitIt simple_buttons" ng-click="updateUser()"  value="Update" type="button">
+                </div>
+                <div class="clear"></div>
+            </div>
+
+        </div>
+    </div>
+</div>

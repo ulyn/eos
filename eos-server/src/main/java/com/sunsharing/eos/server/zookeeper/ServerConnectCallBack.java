@@ -28,7 +28,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
             //你可以在这里注册服务下面是示例
             JSONObject obj = new JSONObject();
             obj.put("appId","appId");
-            obj.put("serviceId","serveId");
+            obj.put("serviceId","serviceId");
             obj.put("version", "1.0");
 
             serviceRegister.registerService("criss",obj.toJSONString());

@@ -47,8 +47,29 @@ public class TestServiceContext {
             long e = System.currentTimeMillis();
             l += (e - s);
         }
+
         System.out.println("执行sayHello(" + count + "次)的平均耗时：" + m / count);
         System.out.println("执行getList(" + size + ")(" + count + "次)的平均耗时：" + l / count);
+
+        System.out.println("执行测试多线程");
+        for (int i = 0; i < 100; i++) {
+            new Thread(new Test(testService)).start();
+        }
+        System.out.println("执行测试多线程结束");
+    }
+
+}
+
+class Test implements Runnable {
+    private TestService testService;
+
+    public Test(TestService testService) {
+        this.testService = testService;
+    }
+
+    @Override
+    public void run() {
+        testService.getList(100);
     }
 }
 

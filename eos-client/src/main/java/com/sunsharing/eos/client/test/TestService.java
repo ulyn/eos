@@ -48,5 +48,4 @@ public interface TestService {
      */
     List getList(int num);
 
-    List getList1(int num);
 }

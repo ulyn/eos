@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ public abstract class AbstractServiceContext {
 
     //存储服务对象,key为服务id
     protected static Map<String, Object> services = new HashMap<String, Object>();
+    protected static List<ServiceConfig> serviceConfigList = new ArrayList<ServiceConfig>();
 
     public AbstractServiceContext(ApplicationContext ctx, String packagePath) {
         this.ctx = ctx;
@@ -96,6 +98,7 @@ public abstract class AbstractServiceContext {
             }
 
             Object bean = createBean(c, config);
+            serviceConfigList.add(config);
             services.put(config.getId(), bean);
         }
     }
@@ -138,6 +141,10 @@ public abstract class AbstractServiceContext {
             id = Character.toLowerCase(id.charAt(0)) + id.substring(1);
         }
         return id;
+    }
+
+    public static List<ServiceConfig> getServiceConfigList() {
+        return serviceConfigList;
     }
 
     /**

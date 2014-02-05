@@ -16,10 +16,17 @@
  */
 package com.sunsharing.eos.manager.agent.process;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
+import com.sunsharing.eos.common.utils.StringUtils;
+import com.sunsharing.eos.manager.sys.SysProp;
+import com.sunsharing.eos.manager.zookeeper.ServiceCache;
 import org.apache.log4j.Logger;
 
 /**
@@ -43,11 +50,32 @@ public class RemoteProcess implements Process {
             String appId = req.getAppId();
             String serviceId = req.getServiceId();
             String serviceVersion = req.getServiceVersion();
-            //todo 取得服务的ip和port
-            String ip = "localhost";
-            int port = 2000;
-            int timeout = 10000;
-            String transporter = "netty";
+            //取得服务的ip和port
+            JSONArray jsonArray = ServiceCache.getInstance().getServiceData(appId, serviceId, serviceVersion);
+            if (jsonArray == null) {
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION,
+                        "eos没有取到在线的服务端！appId=" + appId + "，serviceId=" + serviceId + ",version=" + serviceVersion);
+            }
+            JSONObject config = null;
+            if (!StringUtils.isBlank(req.getDebugServerIp()) && !Constants.EOS_MODE_PRO.equalsIgnoreCase(SysProp.eosMode)) {
+                //走联调模式
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject jo = jsonArray.getJSONObject(i);
+                    if (jo.getString("ip").equals(req.getDebugServerIp())) {
+                        config = jo;
+                        break;
+                    }
+                }
+                if (config == null) {
+                    throw new RpcException(RpcException.DEBUG_SERVER_OUTLINE_EXCEPTION, "没有找到联调服务器（" + req.getDebugServerIp() + "）在线");
+                }
+            } else {
+                config = jsonArray.getJSONObject(0);
+            }
+            String ip = config.getString("ip");
+            int port = config.getIntValue("port");
+            int timeout = config.getIntValue("timeout");
+            String transporter = config.getString("transporter");
 
             RemoteHelper remoteHelper = new RemoteHelper();
             ResponsePro responsePro = remoteHelper.call(req, ip, port, transporter, timeout);
@@ -60,6 +88,7 @@ public class RemoteProcess implements Process {
                 res.setStatus((byte) 1);
             }
         }
+        processChain.doProcess(req, res, processChain);
     }
 }
 

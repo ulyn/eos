@@ -18,6 +18,7 @@ package com.sunsharing.eos.client.sys;
 
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
+import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
 
 /**
@@ -35,12 +36,16 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
 @Configuration(value = "eos.properties")
 public class SysProp {
 
-    @ParamField(name="zookeeper_ip",must = false)
+    @ParamField(name = "zookeeper_ip", must = false)
     public static String zookeeperIp = "localhost";
 
-    @ParamField(name="zookeeper_port",must = false)
+    @ParamField(name = "zookeeper_port", must = false)
     @NumValidate
     public static int zookeeperPort = 2181;
+
+    @ParamField(name = "zookeeper_ip", must = false)
+    @IpValidate
+    public static String debugServerIp = "";
 
 }
 

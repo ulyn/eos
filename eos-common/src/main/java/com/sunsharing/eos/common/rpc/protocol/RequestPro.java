@@ -43,6 +43,8 @@ public class RequestPro extends BaseProtocol {
     protected String serviceVersion;
     //模拟取值字段(20)
     protected String mock;
+    //联调ip(20)
+    protected String debugServerIp;
     //请求参数对象序列化的字节(bodyLength)
     protected byte[] invocationBytes;
 
@@ -68,6 +70,14 @@ public class RequestPro extends BaseProtocol {
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getDebugServerIp() {
+        return debugServerIp;
+    }
+
+    public void setDebugServerIp(String debugServerIp) {
+        this.debugServerIp = debugServerIp;
     }
 
     public String getMock() {
@@ -118,11 +128,12 @@ public class RequestPro extends BaseProtocol {
     public ChannelBuffer generate() {
         setAction(REQUEST_MSG);
 
-        byte[] subHeader = new byte[82];
+        byte[] subHeader = new byte[102];
         StringUtils.putString(subHeader, appId, 0);
         StringUtils.putString(subHeader, serviceId, 32);
         StringUtils.putString(subHeader, serviceVersion, 52);
         StringUtils.putString(subHeader, mock, 62);
+        StringUtils.putString(subHeader, debugServerIp, 82);
 
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());
@@ -133,7 +144,7 @@ public class RequestPro extends BaseProtocol {
 
     @Override
     public BaseProtocol createFromChannel(ChannelBuffer buffer) {
-        if (buffer.readableBytes() < 52 + 82) {
+        if (buffer.readableBytes() < 52 + 102) {
             return null;
         }
         buffer.markReaderIndex();
@@ -145,6 +156,7 @@ public class RequestPro extends BaseProtocol {
         pro.serviceId = readString(20, buffer);
         pro.serviceVersion = readString(10, buffer);
         pro.mock = readString(20, buffer);
+        pro.debugServerIp = readString(20, buffer);
 
         if (buffer.readableBytes() < pro.bodyLength) {
             buffer.resetReaderIndex();

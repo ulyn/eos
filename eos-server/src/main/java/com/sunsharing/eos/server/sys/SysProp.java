@@ -18,6 +18,7 @@ package com.sunsharing.eos.server.sys;
 
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
+import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
 
 /**
@@ -34,6 +35,8 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
  */
 @Configuration(value = "eos.properties")
 public class SysProp {
+    @ParamField(name = "app_id")
+    public static String appId;
 
     @ParamField(name = "zookeeper_ip", must = false)
     public static String zookeeperIp = "localhost";
@@ -42,11 +45,16 @@ public class SysProp {
     @NumValidate
     public static int zookeeperPort = 2181;
 
+    @ParamField(name = "eos_id", must = true)
+    public static String eosId = "";
+
+    @ParamField(name = "local_ip")
+    @IpValidate
+    public static String localIp = "localhost";
+
     @ParamField(name = "netty_server_port", must = false)
     @NumValidate
-    public static int nettyServerPort = 20382;
-    @ParamField(name = "socket_server_port", must = false)
-    @NumValidate
-    public static int socketServerPort = 20383;
+    public static int nettyServerPort = 5555;
+
 }
 

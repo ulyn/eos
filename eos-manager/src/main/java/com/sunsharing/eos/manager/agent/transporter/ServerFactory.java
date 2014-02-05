@@ -16,9 +16,7 @@
  */
 package com.sunsharing.eos.manager.agent.transporter;
 
-import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.manager.agent.transporter.netty.NettyAgentServer;
-import com.sunsharing.eos.manager.agent.transporter.socket.SocketAgentServer;
 import com.sunsharing.eos.manager.sys.SysProp;
 
 import java.util.HashMap;
@@ -42,9 +40,7 @@ public class ServerFactory {
         AbstractAgentServer server = serverMap.get(transporter);
         if (server == null) {
             if ("netty".equals(transporter)) {
-                server = new NettyAgentServer(SysProp.nettyServerPort);
-            } else if ("socket".equals(transporter)) {
-                server = new SocketAgentServer(SysProp.socketServerPort);
+                server = new NettyAgentServer(SysProp.eosPort);
             } else throw new RuntimeException("没有该transporter的实现Server:" + transporter);
         }
         return server;

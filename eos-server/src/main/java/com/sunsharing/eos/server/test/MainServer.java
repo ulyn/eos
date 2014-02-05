@@ -1,10 +1,9 @@
-import com.alibaba.fastjson.JSONObject;
+package com.sunsharing.eos.server.test;
+
 import com.sunsharing.component.resvalidate.config.ConfigContext;
 import com.sunsharing.eos.server.ServiceContext;
 import com.sunsharing.eos.server.sys.SysProp;
 import com.sunsharing.eos.server.zookeeper.ServiceRegister;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,7 +11,7 @@ import java.io.InputStreamReader;
 /**
  * Created by criss on 14-1-26.
  */
-public class TestServer {
+public class MainServer {
 
     public static void main(String[] a) throws Exception {
         ConfigContext.instancesBean(SysProp.class);

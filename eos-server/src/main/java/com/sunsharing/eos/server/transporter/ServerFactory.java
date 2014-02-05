@@ -41,8 +41,6 @@ public class ServerFactory {
         if (server == null) {
             if ("netty".equals(transporter)) {
                 server = new NettyRpcServer(SysProp.nettyServerPort);
-            } else if ("socket".equals(transporter)) {
-                server = new SocketRpcServer(SysProp.socketServerPort);
             } else throw new RuntimeException("没有该transporter的实现Server:" + transporter);
         }
         return server;

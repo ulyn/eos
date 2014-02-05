@@ -53,12 +53,8 @@ public class SysProp {
     @ParamField(name = "eos_id", must = true)
     public static String eosId = "";
 
-
-    @ParamField(name = "netty_server_port", must = false)
-    @NumValidate
-    public static int nettyServerPort = 20382;
-    @ParamField(name = "socket_server_port", must = false)
-    @NumValidate
-    public static int socketServerPort = 20383;
+    //PRO,DEV
+    @ParamField(name = "eos_mode", must = false)
+    public static String eosMode = "PRO";
 }
 

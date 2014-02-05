@@ -17,6 +17,8 @@
 package com.sunsharing.eos.manager.agent;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.manager.agent.transporter.AbstractAgentServer;
+import com.sunsharing.eos.manager.agent.transporter.ServerFactory;
 
 /**
  * <pre></pre>
@@ -37,6 +39,8 @@ public class ServiceServer {
      * @return
      */
     public static boolean startUp() {
+        AbstractAgentServer server = ServerFactory.getServer("netty");
+        server.start();
         return true;
     }
 }

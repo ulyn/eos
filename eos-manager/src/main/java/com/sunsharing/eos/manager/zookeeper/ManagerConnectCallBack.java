@@ -21,6 +21,7 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
             logger.info("登录成功了开始调用回调");
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
             utils.createNode(PathConstant.SERVICE_STATE,"", CreateMode.PERSISTENT);
+
             //创建EOS节点
             utils.createNode(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId,"",CreateMode.PERSISTENT);
             //添加监听
@@ -28,6 +29,11 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
 
             //EOS状态
             utils.createNode(PathConstant.EOS_STATE,"", CreateMode.PERSISTENT);
+            while(utils.isExists(PathConstant.EOS_STATE+"/"+SysProp.eosId))
+            {
+                logger.info("存在节点:"+utils.isExists(PathConstant.EOS_STATE+"/"+SysProp.eosId)+"等待关闭");
+                Thread.sleep(1000);
+            }
             utils.createNode(PathConstant.EOS_STATE+"/"+SysProp.eosId,SysProp.eosIp+":"+SysProp.eosPort,
                     CreateMode.EPHEMERAL);
 

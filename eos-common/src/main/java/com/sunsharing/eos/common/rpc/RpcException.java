@@ -48,6 +48,7 @@ public final class RpcException extends RuntimeException {
     public static final int SERVICE_NO_FOUND_EXCEPTION = 7;
 
     public static final int DEBUG_SERVER_OUTLINE_EXCEPTION = 8;
+    public static final int REFLECT_INVOKE_EXCEPTION = 9;
 
     private int code; // RpcException不能有子类，异常类型用ErrorCode表示，以便保持兼容。
 

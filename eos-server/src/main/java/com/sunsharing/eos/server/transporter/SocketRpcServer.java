@@ -1,5 +1,5 @@
 /**
- * @(#)SocketServer
+ * @(#)SocketRpcServer
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
@@ -40,9 +40,9 @@ import java.net.Socket;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class SocketServer extends AbstractServer {
+public class SocketRpcServer extends AbstractServer {
 
-    public SocketServer(int port) {
+    public SocketRpcServer(int port) {
         super(port);
     }
 

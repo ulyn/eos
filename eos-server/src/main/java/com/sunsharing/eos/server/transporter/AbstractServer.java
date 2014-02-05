@@ -19,7 +19,7 @@ package com.sunsharing.eos.server.transporter;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.Server;
+import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 
 import java.lang.reflect.Method;
@@ -37,7 +37,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public abstract class AbstractServer implements Server {
+public abstract class AbstractServer implements RpcServer {
 
     //服务器端口
     protected int port = 20382;
@@ -78,6 +78,8 @@ public abstract class AbstractServer implements Server {
                 Method m = obj.getClass().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
                 Object o = m.invoke(obj, invocation.getArguments());
                 result.setValue(o);
+            } catch (NoSuchMethodException e) {
+                result.setException(new IllegalArgumentException("server has no NoSuchMethodException", e));
             } catch (Throwable th) {
                 result.setException(th);
             }

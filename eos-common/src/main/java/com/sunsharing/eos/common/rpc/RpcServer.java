@@ -1,11 +1,11 @@
 /**
- * @(#)NettyServer
+ * @(#)RpcServer
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午10:13
+ *<br> 14-1-22 下午3:07
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,7 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.transporter;
+package com.sunsharing.eos.common.rpc;
+
+import com.sunsharing.eos.common.config.ServiceConfig;
 
 /**
  * <pre></pre>
@@ -27,20 +29,17 @@ package com.sunsharing.eos.server.transporter;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class NettyServer extends AbstractServer {
+public interface RpcServer {
+    int getPort();
 
-    public NettyServer(int port) {
-        super(port);
-    }
+    void register(Object impl, ServiceConfig config);
 
-    @Override
-    public void stop() {
-        setRunning(false);
-    }
+    Result call(Invocation invocation);
 
-    @Override
-    public void start() {
-        setRunning(true);
-    }
+    boolean isRunning();
+
+    void stop();
+
+    void start();
 }
 

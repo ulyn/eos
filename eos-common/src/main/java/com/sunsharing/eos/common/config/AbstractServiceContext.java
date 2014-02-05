@@ -18,10 +18,12 @@ package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.utils.ClassFilter;
+import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -40,16 +42,22 @@ import java.util.Map;
  * <br>
  */
 public abstract class AbstractServiceContext {
+    Logger logger = Logger.getLogger(AbstractServiceContext.class);
 
     protected ApplicationContext ctx;
     protected String packagePath;
 
-    //存储服务对象
+    //存储服务对象,key为服务id
     protected static Map<String, Object> services = new HashMap<String, Object>();
 
     public AbstractServiceContext(ApplicationContext ctx, String packagePath) {
         this.ctx = ctx;
         this.packagePath = packagePath;
+
+        String xmlConfigFileName = "EosServiceConfig.xml";
+        //key为接口name
+        Map<String, ServiceConfig> xmlServiceConfigMap = loadXmlServiceConfig(xmlConfigFileName);
+
         ClassFilter filter = new ClassFilter() {
             @Override
             public boolean accept(Class clazz) {
@@ -68,14 +76,9 @@ public abstract class AbstractServiceContext {
             ServiceConfig config = new ServiceConfig();
             EosService ann = (EosService) c.getAnnotation(EosService.class);
 
-            String id = ann.id();
-            if (id.equals("")) {
-                id = c.getSimpleName();
-                id = Character.toLowerCase(id.charAt(0)) + id.substring(1);
-            }
+            String id = getBeanId(c, ann.id());
             config.setId(id);
             config.setAppId(ann.appId());
-            config.setMock(ann.mock());
             config.setProxy(ann.proxy());
             config.setSerialization(ann.serialization());
             config.setTimeout(ann.timeout());
@@ -83,10 +86,67 @@ public abstract class AbstractServiceContext {
             config.setVersion(ann.version());
             config.setImpl(ann.impl());
 
-            createBean(c, config);
+            if (xmlServiceConfigMap.containsKey(c.getName())) {
+                //有xml配置的使用xml配置
+                ServiceConfig xmlConfig = xmlServiceConfigMap.get(c.getName());
+                config.setMock(xmlConfig.getMock());
+                if (!"".equals(xmlConfig.getImpl())) {
+                    config.setImpl(xmlConfig.getImpl());
+                }
+            }
+
+            Object bean = createBean(c, config);
+            services.put(config.getId(), bean);
         }
     }
 
-    protected abstract void createBean(Class interfaces, ServiceConfig config);
+    /**
+     * 从xml文件加载服务配置,目前只读接口的mock参数
+     *
+     * @param fileName
+     * @return
+     */
+    private Map<String, ServiceConfig> loadXmlServiceConfig(String fileName) {
+        Map<String, ServiceConfig> configMap = new HashMap<String, ServiceConfig>();
+        InputStream is = ClassHelper.getClassLoader(ServiceConfig.class).getResourceAsStream(fileName);
+        if (is == null) {
+            logger.info("没有找到eos服务的xml配置...");
+        } else {
+            //TODO 加载xml生成configMap
+        }
+        return configMap;
+    }
+
+    /**
+     * 根据服务id取得服务bean，接口服务id不能有重复，否则可能得不到想要的结果
+     *
+     * @param id
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(String id) {
+        Object o = services.get(id);
+        if (o == null) {
+            return null;
+        }
+        return (T) o;
+    }
+
+    private String getBeanId(Class interfaces, String id) {
+        if (id.equals("")) {
+            id = interfaces.getSimpleName();
+            id = Character.toLowerCase(id.charAt(0)) + id.substring(1);
+        }
+        return id;
+    }
+
+    /**
+     * 创建bean对象
+     *
+     * @param interfaces
+     * @param config
+     * @return
+     */
+    protected abstract Object createBean(Class interfaces, ServiceConfig config);
 }
 

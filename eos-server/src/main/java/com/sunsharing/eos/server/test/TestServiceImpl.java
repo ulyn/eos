@@ -16,6 +16,11 @@
  */
 package com.sunsharing.eos.server.test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -29,8 +34,23 @@ package com.sunsharing.eos.server.test;
  */
 public class TestServiceImpl implements TestService {
     @Override
-    public String sayHello() {
-        return "你好，我是ulyn";
+    public String sayHello(String name) {
+        return name + "，你好，我是ulyn";
+    }
+
+    @Override
+    public List getList(int num) {
+        List list = new ArrayList();
+        for (int i = 0; i < num; i++) {
+            Map map = new HashMap();
+            map.put("test1", "2323");
+            map.put("test2", "2323");
+            map.put("test3", "2323");
+            map.put("test4", "2323");
+            map.put("test5", "2323");
+            list.add(map);
+        }
+        return list;
     }
 }
 

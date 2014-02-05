@@ -33,7 +33,43 @@ public class TestServiceContext {
     public static void main(String[] args) {
         ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
         TestService testService = serviceContext.getBean(TestService.class);
-        System.out.println("called:" + testService.sayHello());
+        long m = 0, l = 0;
+        int count = 1000, size = 1000;
+        for (int i = 0; i < count; i++) {
+            long s = System.currentTimeMillis();
+            testService.sayHello("criss");
+            long e = System.currentTimeMillis();
+            m += (e - s);
+        }
+        for (int i = 0; i < count; i++) {
+            long s = System.currentTimeMillis();
+            testService.getList(size);
+            long e = System.currentTimeMillis();
+            l += (e - s);
+        }
+
+        System.out.println("执行sayHello(" + count + "次)的平均耗时：" + m / count);
+        System.out.println("执行getList(" + size + ")(" + count + "次)的平均耗时：" + l / count);
+
+        System.out.println("执行测试多线程");
+        for (int i = 0; i < 100; i++) {
+            new Thread(new Test(testService)).start();
+        }
+        System.out.println("执行测试多线程结束");
+    }
+
+}
+
+class Test implements Runnable {
+    private TestService testService;
+
+    public Test(TestService testService) {
+        this.testService = testService;
+    }
+
+    @Override
+    public void run() {
+        testService.getList(100);
     }
 }
 

@@ -16,7 +16,7 @@
  */
 package com.sunsharing.eos.server.transporter;
 
-import com.sunsharing.eos.common.rpc.Server;
+import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.server.sys.SysProp;
 
 import java.util.HashMap;
@@ -34,15 +34,15 @@ import java.util.Map;
  * <br>
  */
 public class ServerFactory {
-    static Map<String, Server> serverMap = new HashMap<String, Server>();
+    static Map<String, RpcServer> serverMap = new HashMap<String, RpcServer>();
 
-    public static Server getServer(String transporter) {
-        Server server = serverMap.get(transporter);
+    public static RpcServer getServer(String transporter) {
+        RpcServer server = serverMap.get(transporter);
         if (server == null) {
             if ("netty".equals(transporter)) {
-                server = new NettyServer(SysProp.nettyServerPort);
+                server = new NettyRpcServer(SysProp.nettyServerPort);
             } else if ("socket".equals(transporter)) {
-                server = new SocketServer(SysProp.socketServerPort);
+                server = new SocketRpcServer(SysProp.socketServerPort);
             } else throw new RuntimeException("没有该transporter的实现Server:" + transporter);
         }
         return server;

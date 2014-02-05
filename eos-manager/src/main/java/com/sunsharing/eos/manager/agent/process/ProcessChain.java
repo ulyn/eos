@@ -1,11 +1,11 @@
 /**
- * @(#)RpcClient
+ * @(#)ProcessChain
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午11:43
+ *<br> 14-2-5 下午3:11
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,10 +14,13 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc;
+package com.sunsharing.eos.manager.agent.process;
 
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <pre></pre>
@@ -30,16 +33,24 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface RpcClient {
-    /**
-     * 执行远程调用的方法
-     *
-     * @param pro
-     * @param ip
-     * @param port
-     * @param timeout
-     * @return
-     */
-    ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable;
+public class ProcessChain implements Process {
+
+    private List<Process> list = new ArrayList<Process>();
+
+    public ProcessChain addProcess(Process process) {
+        list.add(process);
+        return this;
+    }
+
+    int index = 0;
+
+    @Override
+    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) {
+        if (index == list.size()) return;
+        Process f = list.get(index);
+        index++;
+        //依次执行下一个过滤器，直到整个过滤器链执行完
+        f.doProcess(req, res, processChain);
+    }
 }
 

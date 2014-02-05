@@ -133,7 +133,7 @@ public class RequestPro extends BaseProtocol {
 
     @Override
     public BaseProtocol createFromChannel(ChannelBuffer buffer) {
-        if (buffer.readableBytes() < 51 + 82) {
+        if (buffer.readableBytes() < 52 + 82) {
             return null;
         }
         buffer.markReaderIndex();

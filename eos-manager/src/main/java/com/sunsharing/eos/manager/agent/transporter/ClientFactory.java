@@ -1,11 +1,11 @@
 /**
- * @(#)RpcClient
+ * @(#)ClientFactory
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午11:43
+ *<br> 14-2-5 下午3:34
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,10 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc;
-
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+package com.sunsharing.eos.manager.agent.transporter;
 
 /**
  * <pre></pre>
@@ -30,16 +27,6 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface RpcClient {
-    /**
-     * 执行远程调用的方法
-     *
-     * @param pro
-     * @param ip
-     * @param port
-     * @param timeout
-     * @return
-     */
-    ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable;
+public class ClientFactory {
 }
 

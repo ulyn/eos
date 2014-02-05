@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.common.rpc.remoting.netty;
 
+import com.sunsharing.eos.common.rpc.RpcClient;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
@@ -45,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class NettyClient {
+public class NettyClient implements RpcClient {
     Logger logger = Logger.getLogger(NettyClient.class);
 
     public static final int CONNECT_TIMEOUT = 5000;
@@ -60,8 +61,8 @@ public class NettyClient {
             Executors.newCachedThreadPool());
     private ClientBootstrap clientBootstrap;
 
-    public ResponsePro sendMsg(String ip, int port, RequestPro pro, int timeout) throws Throwable {
-
+    @Override
+    public ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable {
         ChannelFuture future = null;
         clientBootstrap = new ClientBootstrap(clientSocketChannelFactory);
         ChannelPipeline pipeline = clientBootstrap.getPipeline();

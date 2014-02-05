@@ -17,6 +17,7 @@
 package com.sunsharing.eos.common.rpc.protocol;
 
 import com.sunsharing.eos.common.rpc.Result;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
@@ -32,8 +33,20 @@ import org.jboss.netty.buffer.ChannelBuffers;
  * <br>
  */
 public class ResponsePro extends BaseProtocol {
+    /**
+     * status 0 正常 1异常
+     */
+    byte status = 0;
 
     byte[] resultBytes;
+
+    public byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(byte status) {
+        this.status = status;
+    }
 
     public byte[] getResultBytes() {
         return resultBytes;
@@ -44,6 +57,9 @@ public class ResponsePro extends BaseProtocol {
     }
 
     public void setResult(Result result) throws Exception {
+        if (result.hasException()) {
+            status = 1;
+        }
         setResultBytes(getSerializationBytes(result));
     }
 
@@ -51,7 +67,8 @@ public class ResponsePro extends BaseProtocol {
         if (resultBytes == null) {
             return null;
         }
-        return serializationBytesToObject(resultBytes, Result.class);
+        Result result = serializationBytesToObject(resultBytes, Result.class);
+        return result;
     }
 
     @Override
@@ -67,19 +84,21 @@ public class ResponsePro extends BaseProtocol {
 
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());
+        buffer.writeByte(status);
         buffer.writeBytes(resultBytes);
         return buffer;
     }
 
     @Override
     public BaseProtocol createFromChannel(ChannelBuffer buffer) {
-        if (buffer.readableBytes() < 51) {
+        if (buffer.readableBytes() < 53) {
             return null;
         }
         buffer.markReaderIndex();
 
         ResponsePro pro = new ResponsePro();
         setHeader(pro, buffer);
+        status = buffer.readByte();
 
         if (buffer.readableBytes() < pro.bodyLength) {
             buffer.resetReaderIndex();

@@ -1,11 +1,11 @@
 /**
- * @(#)RpcClient
+ * @(#)ServiceServer
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午11:43
+ *<br> 14-2-5 下午2:03
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,10 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc;
+package com.sunsharing.eos.manager.agent;
 
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.config.ServiceConfig;
 
 /**
  * <pre></pre>
@@ -30,16 +29,15 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface RpcClient {
+public class ServiceServer {
+
     /**
-     * 执行远程调用的方法
+     * 启动注册的服务代理服务器
      *
-     * @param pro
-     * @param ip
-     * @param port
-     * @param timeout
      * @return
      */
-    ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable;
+    public static boolean startUp() {
+        return true;
+    }
 }
 

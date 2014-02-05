@@ -1,11 +1,11 @@
 /**
- * @(#)AbstractClient
+ * @(#)Process
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午11:53
+ *<br> 14-2-5 下午3:07
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,9 +14,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.client.rpc;
+package com.sunsharing.eos.manager.agent.process;
 
-import com.sunsharing.eos.common.rpc.RpcClient;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
 /**
  * <pre></pre>
@@ -29,7 +30,7 @@ import com.sunsharing.eos.common.rpc.RpcClient;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public abstract class AbstractClient implements RpcClient {
-
+public interface Process {
+    void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain);
 }
 

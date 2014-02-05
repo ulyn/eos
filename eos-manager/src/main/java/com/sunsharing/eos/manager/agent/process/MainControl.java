@@ -1,11 +1,11 @@
 /**
- * @(#)ClientFactory
+ * @(#)MainControl
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-2-1 上午12:20
+ *<br> 14-2-5 下午3:21
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,9 +14,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.client.rpc;
+package com.sunsharing.eos.manager.agent.process;
 
-import com.sunsharing.eos.common.rpc.RpcClient;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
 /**
  * <pre></pre>
@@ -29,16 +30,16 @@ import com.sunsharing.eos.common.rpc.RpcClient;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class ClientFactory {
+public class MainControl {
 
-    public static RpcClient getClient(String transporter) {
-        if ("netty".equals(transporter)) {
-            return new NettyRpcClient();
-        } else if ("socket".equals(transporter)) {
-            return new SocketRpcClient();
-        } else {
-            throw new RuntimeException("没有该transporter的实现client:" + transporter);
-        }
+    Process[] processes = new Process[]{
+            new RemoteProcess()
+    };
+
+    public void process(RequestPro req, ResponsePro res) {
+        ProcessChain processChain = new ProcessChain();
+        processChain.addProcess(new RemoteProcess());
+        processChain.doProcess(req, res, processChain);
     }
 }
 

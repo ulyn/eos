@@ -16,13 +16,13 @@
  */
 package com.sunsharing.eos.client.proxy;
 
-import com.sunsharing.eos.client.rpc.ClientFactory;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.rpc.RpcClient;
 import com.sunsharing.eos.common.rpc.ClientProxy;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
 
 /**
  * <pre></pre>
@@ -42,7 +42,6 @@ public abstract class AbstractProxy implements ClientProxy {
         String url = "localhost";
         int port = 20382;
 
-        RpcClient client = ClientFactory.getClient(config.getTransporter());
         RequestPro pro = new RequestPro();
         pro.setAppId(config.getAppId());
         pro.setServiceId(config.getId());
@@ -51,7 +50,10 @@ public abstract class AbstractProxy implements ClientProxy {
         pro.setMock(config.getMock());
         pro.setInvocation(invocation);
 
-        Result rpcResult = client.doRpc(pro, url, port, config.getTimeout());
+        RemoteHelper helper = new RemoteHelper();
+        ResponsePro responsePro = helper.call(pro, url, port, config.getTransporter(), config.getTimeout());
+        Result rpcResult = responsePro.toResult();
+
         if (rpcResult.hasException()) {
             throw rpcResult.getException();
         } else return rpcResult.getValue();

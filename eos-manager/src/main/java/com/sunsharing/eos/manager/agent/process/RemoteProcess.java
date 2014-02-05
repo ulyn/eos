@@ -54,7 +54,7 @@ public class RemoteProcess implements Process {
             JSONArray jsonArray = ServiceCache.getInstance().getServiceData(appId, serviceId, serviceVersion);
             if (jsonArray == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION,
-                        "eos没有取到在线的服务端！appId=" + appId + "，serviceId=" + serviceId + ",version=" + serviceVersion);
+                        "eos没有取到在线的服务端！appId=" + appId + ",serviceId=" + serviceId + ",version=" + serviceVersion);
             }
             JSONObject config = null;
             if (!StringUtils.isBlank(req.getDebugServerIp()) && !Constants.EOS_MODE_PRO.equalsIgnoreCase(SysProp.eosMode)) {

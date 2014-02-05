@@ -25,15 +25,13 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * <pre></pre>
@@ -63,7 +61,6 @@ public class NettyClient implements RpcClient {
 
     @Override
     public ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable {
-        ChannelFuture future = null;
         clientBootstrap = new ClientBootstrap(clientSocketChannelFactory);
         ChannelPipeline pipeline = clientBootstrap.getPipeline();
         pipeline.addLast("decoder", new ExDecode());
@@ -74,40 +71,50 @@ public class NettyClient implements RpcClient {
         clientBootstrap.setOption("keepAlive", true);
         clientBootstrap.setOption("connectTimeoutMillis", CONNECT_TIMEOUT);
         //clientBootstrap.setOption("reuseAddress", true); //注意child前缀
-        future = clientBootstrap.connect(new InetSocketAddress(ip, port));
-        boolean ret = future.awaitUninterruptibly(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-        if (ret && future.isSuccess()) {
-            logger.info("client is connected to netty server " + ip + ":" + port);
-            if (StringUtils.isBlank(pro.getMsgId())) {
-                pro.setMsgId(StringUtils.genUUID());
+        ChannelFuture future = clientBootstrap.connect(new InetSocketAddress(ip, port));
+        final CountDownLatch channelLatch = new CountDownLatch(1);
+        final String ipFinal = ip;
+        future.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture cf) throws Exception {
+                if (cf.isSuccess()) {
+//                    channel = cf.getChannel();
+                    channelLatch.countDown();
+                } else {
+                    throw new RpcException(RpcException.CONNECT_EXCEPTION, "client failed to connect to server "
+                            + ipFinal + ", error message is:" + cf.getCause() == null ? "unknown" : cf.getCause().getMessage(), cf.getCause());
+                }
             }
-            result.put(pro.getMsgId(), new ArrayBlockingQueue<ResponsePro>(1));
-            try {
+        });
 
-                future.getChannel().write(pro);
+        channelLatch.await();
+        logger.info("client is connected to netty server " + ip + ":" + port);
+        if (StringUtils.isBlank(pro.getMsgId())) {
+            pro.setMsgId(StringUtils.genUUID());
+        }
+        result.put(pro.getMsgId(), new ArrayBlockingQueue<ResponsePro>(1));
+        try {
 
-                //等待返回
-                ArrayBlockingQueue<ResponsePro> blockingQueue = result.get(pro.getMsgId());
-                ResponsePro result = blockingQueue.poll(timeout, TimeUnit.MILLISECONDS);
-                logger.debug("返回结果:" + result);
-                if (result == null) {
-                    logger.error("等待结果超时!");
-                    throw new RpcException(RpcException.TIMEOUT_EXCEPTION);
-                }
-                return result;
-            } catch (Exception e) {
-                logger.error("请求出错！", e);
-                throw e;
-            } finally {
-                result.remove(pro.getMsgId());
-                if (future != null) {
-                    future.getChannel().close();
-                }
+            future.getChannel().write(pro);
+
+            //等待返回
+            ArrayBlockingQueue<ResponsePro> blockingQueue = result.get(pro.getMsgId());
+            ResponsePro result = blockingQueue.poll(timeout, TimeUnit.MILLISECONDS);
+            logger.debug("返回结果:" + result);
+            if (result == null) {
+                logger.error("等待结果超时!");
+                throw new RpcException(RpcException.TIMEOUT_EXCEPTION);
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("请求出错！", e);
+            throw e;
+        } finally {
+            result.remove(pro.getMsgId());
+            if (future != null) {
+                future.getChannel().close();
+            }
 //                clientBootstrap.releaseExternalResources();
-            }
-        } else {
-            throw new RpcException(RpcException.CONNECT_EXCEPTION, "client failed to connect to server "
-                    + ip + ", error message is:" + future.getCause() == null ? "unknown" : future.getCause().getMessage(), future.getCause());
         }
     }
 }

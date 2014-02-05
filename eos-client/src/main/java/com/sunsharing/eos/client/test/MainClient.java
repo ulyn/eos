@@ -25,7 +25,7 @@ public class MainClient {
             }
         }.start();
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
         MainClient client = new MainClient();
         client.test();
 

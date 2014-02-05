@@ -23,9 +23,9 @@ public class Eos {
             {
                 EosState state = new EosState();
                 state.connect();
-                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
-                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
-                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
+//                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
+//                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
+//                EosMonitor.getInstance().addServiceCallCount("appId","serviceId","1.0");
             }
         }.start();
 

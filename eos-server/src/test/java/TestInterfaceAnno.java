@@ -28,7 +28,7 @@ import com.sunsharing.eos.common.annotation.EosService;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(id = "testInterfaceAnno", version = "1.6", appId = "abc")
+@EosService(id = "testInterfaceAnno", version = "1.7", appId = "abc")
 public interface TestInterfaceAnno {
     /**
      * 输出

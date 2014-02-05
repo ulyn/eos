@@ -96,5 +96,24 @@ public class ServiceCache {
         return utils.isExists(PathConstant.ACL+"/"+appId+serviceId+version);
     }
 
+    /**
+     * 获得测试代码
+     * @param appId
+     * @param serviceId
+     * @param version
+     * @param method 方法名
+     * @return
+     */
+    public JSONArray getTestCode(String appId,String serviceId,String version,String method)throws Exception
+    {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+version))
+        {
+            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+version),"UTF-8");
+            return (JSONArray)(JSONObject.parseObject(obj).get(method));
+        }
+        return null;
+    }
+
 
 }

@@ -5,9 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.sun.tools.internal.ws.ToolVersion;
 import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
+import com.sunsharing.eos.common.zookeeper.PathConstant;
+import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.sys.SysInit;
+import org.apache.zookeeper.CreateMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +134,11 @@ public class Service {
             serviceDao.saveOrUpdate(service);
         }
         versionDao.saveOrUpdate(v);
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        if(utils.isExists(PathConstant.ACL+"/"+(app.getAppCode()+infaceName+version)))
+        {
+            utils.deleteNode(PathConstant.ACL+"/"+(app.getAppCode()+infaceName+version));
+        }
 
     }
 
@@ -201,11 +209,66 @@ public class Service {
         return result;
     }
 
-    public void commit(String versionId)
+    public void commit(String versionId) throws Exception
     {
         TServiceVersion version = versionDao.get(new Integer(versionId));
         version.setStatus("1");
+
+        String appCode = version.getAppCode();
+        String serviceId =  version.getService().getServiceCode();
+        String ver = version.getVersion();
+
+        List<TMethod> methods = version.getMethods();
+        JSONObject obj = new JSONObject();
+        for(TMethod me : methods)
+        {
+            String arr = "";
+            if(StringUtils.isBlank(me.getMockResult()))
+            {
+                arr = "[]";
+            }else
+            {
+                arr = me.getMockResult();
+            }
+            obj.put(me.getMethodName(),JSONArray.parseArray(arr));
+        }
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        utils.createNode(PathConstant.ACL,"",CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL+"/"+(appCode+serviceId+ver),obj.toJSONString(), CreateMode.PERSISTENT);
+
     }
+    public void updateTestCode(String methodId) throws Exception
+    {
+        TMethod method = methodDao.get(new Integer(methodId));
+        if(method.getVersion().getStatus().equals("0"))
+        {
+            throw new RuntimeException("未审批");
+        }
+        List<TMethod> methods = method.getVersion().getMethods();
+        String appCode = method.getVersion().getAppCode();
+        String serviceId =  method.getVersion().getService().getServiceCode();
+        String ver = method.getVersion().getVersion();
+        JSONObject obj = new JSONObject();
+        for(TMethod me : methods)
+        {
+            String arr = "";
+            if(StringUtils.isBlank(me.getMockResult()))
+            {
+                arr = "[]";
+            }else
+            {
+                arr = me.getMockResult();
+            }
+            obj.put(me.getMethodName(),JSONArray.parseArray(arr));
+        }
+
+
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        utils.createNode(PathConstant.ACL,"",CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL+"/"+(appCode+serviceId+ver),obj.toJSONString(), CreateMode.PERSISTENT);
+
+    }
+
     public void changeTest(String versionId)
     {
         TServiceVersion version = versionDao.get(new Integer(versionId));

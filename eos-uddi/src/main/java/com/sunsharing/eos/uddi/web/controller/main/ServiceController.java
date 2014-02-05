@@ -184,18 +184,21 @@ public class ServiceController {
 
     @RequestMapping(value={"/saveMethod.do"},method = RequestMethod.POST)
     public void getMethods(
-                           HttpServletResponse response,HttpServletRequest request)
+                           HttpServletResponse response,HttpServletRequest request) throws Exception
     {
         Map<String,String[]> m =  request.getParameterMap();
+        String m2 = "";
         for(String key:m.keySet())
         {
             String content = m.get(key)[0];
 
             String status = key.split("_")[0];
             String methodId = key.split("_")[1];
+            m2 = methodId;
             service.saveMethod(methodId,status,content);
         }
         //TODO 判断是否审批通过，审批通过直接更新测试报文
+        service.updateTestCode(m2);
 
         String result2 = ResponseHelper.covert2Json(true,"","");
         ResponseHelper.printOut(response,result2);
@@ -230,7 +233,7 @@ public class ServiceController {
     }
     @RequestMapping(value={"/commit.do"},method = RequestMethod.GET)
     public void commit(String versionId,
-                       HttpServletResponse response,HttpServletRequest request)
+                       HttpServletResponse response,HttpServletRequest request) throws Exception
     {
         TUser u = (TUser)request.getSession().getAttribute("user");
         if(u.getRole().equals("1"))
@@ -238,6 +241,8 @@ public class ServiceController {
             throw new RuntimeException("对不起你没有审批权限");
         }
         service.commit(versionId);
+
+
         ResponseHelper.printOut(response,true,"","");
     }
 

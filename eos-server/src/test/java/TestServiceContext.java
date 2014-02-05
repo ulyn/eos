@@ -30,7 +30,7 @@ import com.sunsharing.eos.server.ServiceContext;
  */
 public class TestServiceContext {
     public static void main(String[] args) {
-        //ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
+        ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
 
     }
 }

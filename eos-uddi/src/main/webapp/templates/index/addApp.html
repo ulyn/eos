@@ -1,0 +1,49 @@
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">应用管理</h3>
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="simple_buttons">
+            <a href="#applist"><div class="bwIcon i_16_help">返回</div></a>
+        </div>
+    </div>
+
+    <div class="g_12 separator"><span></span></div>
+
+    <div class="g_12">
+        <div class="widget_header">
+            <h4 class="widget_header_title wwIcon i_16_forms">App</h4>
+        </div>
+        <div class="widget_contents noPadding">
+            <div class="line_grid">
+                <div class="g_3"><span class="label">应用英文名</span></div>
+                <div class="g_9">
+                    <input ng-model="appCode" class="simple_field" name="app_en" id="app_en" type="text" placeholder="">
+                </div>
+            </div>
+            <div class="line_grid">
+                <div class="g_3"><span class="label">应用中文名</span></div>
+                <div class="g_9">
+                    <input ng-model="appName" class="simple_field" name="app_cn" id="app_cn" type="text" placeholder="">
+                </div>
+            </div>
+
+            <div class="line_grid">
+                <div class="g_3"><span class="label">模块组成</span></div>
+                <div class="g_9">
+                    <input ng-model="module" class="simple_field" name="app_modules" id="app_modules" type="text" placeholder="填写中文，多个模块用逗号分隔">
+                </div>
+            </div>
+            <input type="hidden" id="appId" name="appId" ng-model="appId" />
+            <div class="line_grid">
+                <div class="g_6"><input class="submitIt simple_buttons" ng-click="saveApp()" value="Add" type="button">
+                </div>
+                <div class="clear"></div>
+            </div>
+
+        </div>
+    </div>
+</div>

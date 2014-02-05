@@ -7,6 +7,7 @@ import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -87,15 +88,24 @@ public class ServiceLocation {
     /**
      * 更新服务变化
      * @param eosId
-     * @param onlineService
+     * @param onlineServices
      * @throws Exception
      */
     public synchronized  void updateEosServices
-            (String eosId,List<String> onlineService)throws Exception
+            (String eosId,List<String> onlineServices)throws Exception
     {
+        List<String> realOnline = new ArrayList<String>();
+        //处理online
+        for(String servicePath:onlineServices)
+        {
+            int i = servicePath.lastIndexOf("_");
+            String real = servicePath.substring(0,i);
+            realOnline.add(real);
+        }
+
         JSONObject eos = eosMap.get(eosId);
         JSONObject service = eos.getJSONObject("services");
-        for(String online:onlineService)
+        for(String online:realOnline)
         {
             if(!service.containsKey(online))
             {
@@ -105,7 +115,7 @@ public class ServiceLocation {
         }
         for(String ser:service.keySet())
         {
-            if(!onlineService.contains(ser))
+            if(!realOnline.contains(ser))
             {
                 logger.info("Service:"+ser+"下线");
                 service.remove(ser);
@@ -114,54 +124,9 @@ public class ServiceLocation {
     }
 
 
-    /**
-     * 服务上线添加服务
-     * @param eosId
-     * @param servicePath appId+serviceId+version;
-     */
-    private  void addService(String eosId,String servicePath)
-            throws Exception
-    {
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        //判断EOS是否在线
-        boolean isonline = utils.isExists(PathConstant.EOS_STATE+"/"+eosId);
-        if(isonline)
-        {
-            JSONObject obj = eosMap.get(eosId);
-            if(obj==null)
-            {
-                addEos(eosId);
-                obj = eosMap.get(eosId);
-            }
-            JSONObject serviceArr = (JSONObject)obj.get("services");
-            serviceArr.put(servicePath,"AA");
-            eosMap.put(eosId,obj);
-        }
-    }
 
-    /**
-     * 移除Service
-     * @param eosId
-     * @param servicePath
-     */
-    private  void removeService(String eosId,String servicePath) throws Exception
-    {
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        //判断EOS是否在线
-        boolean isonline = utils.isExists(PathConstant.EOS_STATE+"/"+eosId);
-        if(isonline)
-        {
-            JSONObject obj = eosMap.get(eosId);
-            if(obj==null)
-            {
-                addEos(eosId);
-                obj = eosMap.get(eosId);
-            }
-            JSONObject serviceArr = (JSONObject)obj.get("services");
-            serviceArr.remove(servicePath);
-            eosMap.put(eosId,obj);
-        }
-    }
+
+
 
 
     /**
@@ -189,8 +154,10 @@ public class ServiceLocation {
         List<String> services = utils.getChildren(PathConstant.SERVICE_STATE+"/"+eosId);
         for(String service:services)
         {
-            logger.info("sercice:"+service);
-            servicesObj.put(service,"AA");
+            int i = service.lastIndexOf("_");
+            String realpath = service.substring(0,i);
+            logger.info("sercice:"+realpath);
+            servicesObj.put(realpath,"AA");
         }
         eosObj.put("services",servicesObj);
         eosMap.put(eosId,eosObj);

@@ -28,7 +28,7 @@ import com.sunsharing.eos.common.annotation.EosService;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(id = "testInterfaceAnno", version = "1.0", appId = "abc")
+@EosService(id = "testInterfaceAnno", version = "1.6", appId = "abc")
 public interface TestInterfaceAnno {
     /**
      * 输出
@@ -42,5 +42,17 @@ public interface TestInterfaceAnno {
      * {"error":"错误了"}
      */
     String sayHello(String name);
+
+    /**
+     * 输出
+     * @param name 入参
+     * @return [success]当入参name="criss"为成功输出
+     * {"success":"成功了2",
+     * "haha":"haha2"}
+     *
+     * [error]当入参为其他时为错误输出
+     * {"error":"错误了2"}
+     */
+    String sayHello2(String name);
 }
 

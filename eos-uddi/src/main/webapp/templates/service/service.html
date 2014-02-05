@@ -1,0 +1,73 @@
+<style>
+    .notest
+    {
+        color:red;
+    }
+    .test{
+        color: green;
+    }
+</style>
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">服务管理-{{appname}}</h3>
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="simple_buttons">
+            <div class="bwIcon i_16_help" ng-click="addService()">添加</div>
+        </div>
+    </div>
+
+    <div class="g_12 separator"><span></span></div>
+
+    <div class="g_12">
+        <div class="widget_header wwOptions">
+            <h4 class="widget_header_title wwIcon i_16_data">DataTables</h4>
+
+        </div>
+        <input id="appId" type="hidden" value="{{appId}}"/>
+        <div class="widget_contents noPadding">
+            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid"><div class="dtTop"><div class="dtShowPer"><div id="DataTables_Table_0_length" class="dataTables_length"><label>模块
+                <div class="selector" id="uniform-undefined"><span>选择</span>
+                <select id="mo" onchange="changemodule()" size="1" name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" style="opacity: 0;">
+                    <option value="0">选择</option>
+                    <option value="{{module.moduleId}}" ng-repeat="module in modules">{{module.moduleName}}</option>
+                </select>
+               </div></label></div></div><div class="dtFilter">
+                <div class="dataTables_filter" id="DataTables_Table_0_filter">
+                    <label>版本:&nbsp;<span style="color: red">红色:未审批通过</span>&nbsp;
+                        <span style="color: green">绿色:审批通过</span>&nbsp;
+                        <label>服务ID:&nbsp;<span style="color: red">红色:不可测</span>&nbsp;
+                            <span style="color: green">绿色:可测</span>&nbsp;
+                    </label></div></div></div><div class="dtTables"><table class="datatable tables dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <thead>
+                <tr role="row">
+                    <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 249px;">服务ID</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 149px;">服务名称</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 200px;">模块</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 150px;">创建人</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="width: 215px;">创建时间</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="width: 215px;">测试报文</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="width: 215px;">下载、审批</th>
+                </tr>
+                </thead>
+
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr class="{{row.rowclass}}" ng-repeat="row in serviceList">
+                    <td class="sorting_1" style="color: {{row.color}}">{{row.serviceCode}}</td>
+                    <td class="sorting_1">{{row.serviceName}}</td>
+                    <td class=" ">{{row.module}}</td>
+                    <td class=" ">{{row.user.userName}}</td>
+                    <td class=" ">{{row.createTime}}</td>
+                    <td class=" "><a class="{{v.class}}" style="margin-left: 5px" href="#method/{{row.appId}}/{{row.serviceId}}/{{v.version}}" ng-repeat="v in row.versions">{{v.version}}</a></td>
+                    <td class=" "><a class="{{v.class}}" style="margin-left: 5px" href="#getjava/{{row.appId}}/{{v.versionId}}" ng-repeat="v in row.versions">{{v.version}}</a></td>
+                </tr>
+                </tbody></table></div>
+                <div class="dtBottom">
+                    <div class="dtInfo"><div class="dataTables_info" id="DataTables_Table_0_info">Showing 1 to 10 of 57 entries</div></div><div class="dtPagination"><div class="dataTables_paginate paging_full_numbers" id="DataTables_Table_0_paginate"><a tabindex="0" class="first paginate_button paginate_button_disabled" id="DataTables_Table_0_first">First</a><a tabindex="0" class="previous paginate_button paginate_button_disabled" id="DataTables_Table_0_previous">Previous</a><span><a tabindex="0" class="paginate_active">1</a><a tabindex="0" class="paginate_button">2</a><a tabindex="0" class="paginate_button">3</a><a tabindex="0" class="paginate_button">4</a><a tabindex="0" class="paginate_button">5</a></span><a tabindex="0" class="next paginate_button" id="DataTables_Table_0_next">Next</a><a tabindex="0" class="last paginate_button" id="DataTables_Table_0_last">Last</a></div></div></div></div>
+        </div>
+    </div>
+
+</div>

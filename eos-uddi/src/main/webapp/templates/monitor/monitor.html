@@ -1,0 +1,23 @@
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">EOS状态</h3>
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="simple_buttons">
+            <div class="bwIcon i_16_help">帮助</div>
+        </div>
+    </div>
+
+    <div class="g_12 separator"><span></span></div>
+
+    <div class="g_3 quick_stats" ng-click="click($index)" ng-repeat="eos in eoss">
+        <div class="big_stats {{eos.class}}">
+            {{eos.num}}
+        </div>
+        <h5 class="stats_info">{{eos.eosId}}</h5>
+    </div>
+
+</div>

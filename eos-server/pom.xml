@@ -17,5 +17,6 @@
             <artifactId>eos-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 </project>

@@ -183,6 +183,11 @@ public class ZookeeperUtils {
         return zookeeper.getData(path,true,null);
     }
 
+    public void setData(String path,byte[]arr)throws Exception
+    {
+         zookeeper.setData(path,arr,-1);
+    }
+
 
 
     public synchronized void close()

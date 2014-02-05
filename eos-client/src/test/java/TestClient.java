@@ -1,4 +1,6 @@
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
+import com.sunsharing.eos.common.zookeeper.PathConstant;
+import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,6 +16,14 @@ public class TestClient {
             public void run()
             {
                 ServiceLocation.getInstance().connect();
+                ZookeeperUtils utils =ZookeeperUtils.getInstance();
+                try
+                {
+                    System.out.println("ss");
+                }catch (Exception e)
+                {
+
+                }
             }
         }.start();
 

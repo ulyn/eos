@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="eos-uddi:war">
+    <output-path>$PROJECT_DIR$/eos-uddi/target</output-path>
+    <root id="archive" name="eos-uddi-1.0.0.war">
+      <element id="artifact" artifact-name="eos-uddi:war exploded" />
+    </root>
+  </artifact>
+</component>

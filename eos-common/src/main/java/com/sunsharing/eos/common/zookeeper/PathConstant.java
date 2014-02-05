@@ -10,7 +10,9 @@ public class PathConstant {
     /**存储EOS状态*/
     public static String EOS_STATE = "/EOS_STATE";
     /**监控数据节点*/
-    public static String EOS_MONITOR="/EOS_MONITOR";
+    public static String EOS_MONITOR = "/EOS_MONITOR";
+    /**授权*/
+    public static String ACL = "/ACL";
     /**应用KEY*/
     public static String APPID_KEY="appId";
     /**ServiceId的KEY*/

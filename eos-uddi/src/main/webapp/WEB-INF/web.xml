@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+
+    <display-name>COBWeb_LogServer</display-name>
+
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>classpath:log4j.properties</param-value>
+    </context-param>
+
+    <!-- ======================过滤器Filter======================== -->
+    <!-- 字符集过滤器，处理字符集编码  -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- 在servlet2.4规范下配置以下 -->
+    <filter>
+        <filter-name>requestContextFilter</filter-name>
+        <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>requestContextFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--
+        OpenSessionInViewFilter的主要功能是使每个请求过程绑定一个 Hibernate Session,它将自动被
+        Spring 的事务管理器探测到, 让Spring为我们自动管理session，无需我们手动开、关Hibernate中的session
+    -->
+    <filter>
+        <filter-name>hibernateFilter</filter-name>
+        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>hibernateFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--<filter>-->
+    <!--<filter-name>myFilter</filter-name>-->
+    <!--<filter-class>com.sunsharing.eshare.web.common.ServletFilter</filter-class>-->
+    <!--</filter>-->
+    <!--<filter-mapping>-->
+    <!--<filter-name>myFilter</filter-name>-->
+    <!--<url-pattern>/webapp/*</url-pattern>-->
+    <!--</filter-mapping>-->
+    <!-- ======================监听器Listener======================== -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+    <!-- Spring 刷新Introspector防止内存泄露 -->
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
+
+    <!-- ======================系统初始化的servlet配置======================== -->
+    <!--Spring ApplicationContext 载入,老版本使用-->
+
+
+    <servlet>
+        <servlet-name>SysInit</servlet-name>
+        <servlet-class>com.sunsharing.eos.uddi.sys.SysInit</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>springDispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springDispatcherServlet</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/errors/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/errors/500.jsp</location>
+    </error-page>
+    <!-- 润乾报表配置 -->
+    <!-- <servlet>
+         <servlet-name>reportServlet</servlet-name>
+         <servlet-class>com.runqian.report4.view.ReportServlet</servlet-class>
+         <init-param>
+             <param-name>configFile</param-name>
+             <param-value>/WEB-INF/reportConfig.xml</param-value>
+         </init-param>
+         <load-on-startup>3</load-on-startup>
+     </servlet>
+     <servlet-mapping>
+         <servlet-name>reportServlet</servlet-name>
+         <url-pattern>/reportServlet</url-pattern>
+     </servlet-mapping>-->
+
+    <!-- begin XFire 配置
+    <servlet>
+        <servlet-name>XFireServlet</servlet-name>
+        <servlet-class>org.codehaus.xfire.spring.XFireSpringServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>XFireServlet</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+    -->
+
+    <!-- ======================其它配置======================== -->
+    <welcome-file-list>
+        <welcome-file>Login.html</welcome-file>
+    </welcome-file-list>
+
+    <!-- session超时定义,单位为分钟 -->
+    <session-config>
+        <session-timeout>120</session-timeout>
+    </session-config>
+
+    <jsp-config>
+    </jsp-config>
+
+    <mime-mapping>
+        <extension>rar</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+
+
+</web-app>

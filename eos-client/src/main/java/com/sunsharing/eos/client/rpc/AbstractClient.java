@@ -16,7 +16,7 @@
  */
 package com.sunsharing.eos.client.rpc;
 
-import com.sunsharing.eos.common.rpc.Client;
+import com.sunsharing.eos.common.rpc.RpcClient;
 
 /**
  * <pre></pre>
@@ -29,7 +29,7 @@ import com.sunsharing.eos.common.rpc.Client;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public abstract class AbstractClient implements Client {
+public abstract class AbstractClient implements RpcClient {
 
 }
 

@@ -17,13 +17,12 @@
 package com.sunsharing.eos.client.proxy;
 
 import com.sunsharing.eos.client.rpc.ClientFactory;
-import com.sunsharing.eos.client.rpc.SocketClient;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.rpc.Client;
+import com.sunsharing.eos.common.rpc.RpcClient;
 import com.sunsharing.eos.common.rpc.ClientProxy;
-import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 
 /**
  * <pre></pre>
@@ -41,10 +40,18 @@ public abstract class AbstractProxy implements ClientProxy {
     protected Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
         //zookeeper取得服务的url
         String url = "localhost";
-        int port = 20383;
+        int port = 20382;
 
-        Client client = ClientFactory.getClient(config.getTransporter());
-        RpcResult rpcResult = client.doRpc(invocation, config.getSerialization(), url, port);
+        RpcClient client = ClientFactory.getClient(config.getTransporter());
+        RequestPro pro = new RequestPro();
+        pro.setAppId(config.getAppId());
+        pro.setServiceId(config.getId());
+        pro.setServiceVersion(config.getVersion());
+        pro.setSerialization(config.getSerialization());
+        pro.setMock(config.getMock());
+        pro.setInvocation(invocation);
+
+        Result rpcResult = client.doRpc(pro, url, port, config.getTimeout());
         if (rpcResult.hasException()) {
             throw rpcResult.getException();
         } else return rpcResult.getValue();

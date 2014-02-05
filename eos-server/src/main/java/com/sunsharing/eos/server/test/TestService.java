@@ -18,6 +18,8 @@ package com.sunsharing.eos.server.test;
 
 import com.sunsharing.eos.common.annotation.EosService;
 
+import java.util.List;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -37,5 +39,13 @@ public interface TestService {
      * @return "你好啊！"
      */
     String sayHello(String name);
-}
 
+    /**
+     * 取得num条List
+     *
+     * @param num
+     * @return
+     */
+    List getList(int num);
+
+}

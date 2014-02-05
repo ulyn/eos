@@ -18,6 +18,8 @@ package com.sunsharing.eos.client.test;
 
 import com.sunsharing.eos.common.annotation.EosService;
 
+import java.util.List;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -29,7 +31,7 @@ import com.sunsharing.eos.common.annotation.EosService;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.0", transporter = "socket")
+@EosService(version = "1.0", transporter = "netty")
 public interface TestService {
     /**
      * 输出
@@ -37,5 +39,14 @@ public interface TestService {
      * @return "你好啊！"
      */
     String sayHello(String name);
-}
 
+    /**
+     * 取得num条List
+     *
+     * @param num
+     * @return
+     */
+    List getList(int num);
+
+    List getList1(int num);
+}

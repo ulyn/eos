@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc.server.netty;
+package com.sunsharing.eos.common.rpc.remoting.netty;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -79,9 +79,9 @@ public class NettyServer {
             //future.awaitUninterruptibly();//阻塞，直到服务器关闭
             serverBootstrap.releaseExternalResources();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("主动关闭eos netty server失败！", e);
         } finally {
-            logger.info("productServer is shutdown on port " + port);
+            logger.info("eos netty server is shutdown on port " + port);
             System.exit(1);
         }
     }

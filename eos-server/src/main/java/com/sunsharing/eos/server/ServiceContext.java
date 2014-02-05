@@ -18,7 +18,7 @@ package com.sunsharing.eos.server;
 
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.rpc.Server;
+import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import com.sunsharing.eos.server.transporter.ServerFactory;
@@ -103,7 +103,7 @@ public class ServiceContext extends AbstractServiceContext {
             }
         }
         //创建bean结束，服务端注册
-        Server server = ServerFactory.getServer(config.getTransporter());
+        RpcServer server = ServerFactory.getServer(config.getTransporter());
         server.register(this.services.get(interfaces.getName()), config);
 
         return this.services.get(interfaces.getName());

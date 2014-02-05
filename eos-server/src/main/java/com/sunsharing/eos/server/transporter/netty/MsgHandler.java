@@ -1,5 +1,11 @@
 package com.sunsharing.eos.server.transporter.netty;
 
+import com.sunsharing.eos.common.rpc.Result;
+import com.sunsharing.eos.common.rpc.RpcServer;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
@@ -13,11 +19,25 @@ import org.jboss.netty.channel.*;
 public class MsgHandler extends SimpleChannelHandler {
     private static final Logger logger = Logger.getLogger(MsgHandler.class);
 
+    RpcServer rpcServer;
+
+    public MsgHandler(RpcServer server) {
+        this.rpcServer = server;
+    }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-//        BasePro basePro = (BasePro)e.getMessage();
+        RequestPro basePro = (RequestPro) e.getMessage();
+        logger.info("收到请求：" + basePro);
 //        basePro.handler(ctx.getChannel());
+
+        Result result = rpcServer.call(basePro.toInvocation());
+
+        ResponsePro responsePro = new ResponsePro();
+        responsePro.setSerialization(basePro.getSerialization());
+        responsePro.setMsgId(basePro.getMsgId());
+        responsePro.setResult(result);
+        ctx.getChannel().write(responsePro);
     }
 
     @Override
@@ -29,25 +49,25 @@ public class MsgHandler extends SimpleChannelHandler {
 
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        logger.info("channelConnected");
+//        logger.info("channelConnected");
     }
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        //logger.debug("channelClosed");
+//        logger.info("channelClosed");
         //删除通道
         //XLServer.allChannels.remove(e.getChannel());
     }
 
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        //logger.debug("channelDisconnected");
+//        logger.info("channelDisconnected");
         super.channelDisconnected(ctx, e);
     }
 
     @Override
     public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        logger.debug("channelOpen");
+//        logger.info("channelOpen");
         //增加通道
         //XLServer.allChannels.add(e.getChannel());
     }

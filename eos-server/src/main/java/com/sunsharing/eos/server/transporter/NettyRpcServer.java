@@ -1,5 +1,5 @@
 /**
- * @(#)NettyServer
+ * @(#)NettyRpcServer
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
@@ -16,8 +16,16 @@
  */
 package com.sunsharing.eos.server.transporter;
 
-import com.sunsharing.eos.server.transporter.netty.ServerPineLineFactory;
+import com.sunsharing.eos.common.rpc.RpcServer;
+import com.sunsharing.eos.common.rpc.remoting.netty.ExDecode;
+import com.sunsharing.eos.common.rpc.remoting.netty.ExEncode;
+import com.sunsharing.eos.common.rpc.remoting.netty.NettyServer;
+import com.sunsharing.eos.server.transporter.netty.MsgHandler;
 import org.apache.log4j.Logger;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+
+import static org.jboss.netty.channel.Channels.pipeline;
 
 /**
  * <pre></pre>
@@ -30,11 +38,11 @@ import org.apache.log4j.Logger;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class NettyServer extends AbstractServer {
-    Logger logger = Logger.getLogger(NettyServer.class);
-    com.sunsharing.eos.common.rpc.server.netty.NettyServer nettyServer;
+public class NettyRpcServer extends AbstractServer {
+    Logger logger = Logger.getLogger(NettyRpcServer.class);
+    com.sunsharing.eos.common.rpc.remoting.netty.NettyServer nettyServer;
 
-    public NettyServer(int port) {
+    public NettyRpcServer(int port) {
         super(port);
     }
 
@@ -53,7 +61,17 @@ public class NettyServer extends AbstractServer {
     @Override
     public void start() {
         setRunning(true);
-        nettyServer = new com.sunsharing.eos.common.rpc.server.netty.NettyServer(this.port, new ServerPineLineFactory());
+        final RpcServer rpcServer = this;
+        nettyServer = new NettyServer(this.port, new ChannelPipelineFactory() {
+            @Override
+            public ChannelPipeline getPipeline() throws Exception {
+                ChannelPipeline pipeline = pipeline();
+                pipeline.addLast("decoder", new ExDecode());
+                pipeline.addLast("encoder", new ExEncode());
+                pipeline.addLast("handler", new MsgHandler(rpcServer));
+                return pipeline;
+            }
+        });
         try {
             nettyServer.startup();
         } catch (Exception e) {

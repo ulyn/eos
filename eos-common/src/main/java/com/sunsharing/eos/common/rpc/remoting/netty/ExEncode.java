@@ -1,4 +1,4 @@
-package com.sunsharing.eos.common.rpc.server.netty;
+package com.sunsharing.eos.common.rpc.remoting.netty;
 
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import org.apache.log4j.Logger;
@@ -35,7 +35,7 @@ public class ExEncode implements ChannelDownstreamHandler {
 
     protected Object encode(
             ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        logger.info("encode:" + msg);
+//        logger.info("encode:" + msg);
         if (msg instanceof BaseProtocol) {
             BaseProtocol pro = (BaseProtocol) msg;
             return pro.generate();

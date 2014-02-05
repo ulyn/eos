@@ -33,15 +33,22 @@ public class TestServiceContext {
     public static void main(String[] args) {
         ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
         TestService testService = serviceContext.getBean(TestService.class);
-        long m = 0;
-        int count = 1000;
+        long m = 0, l = 0;
+        int count = 1000, size = 1000;
         for (int i = 0; i < count; i++) {
             long s = System.currentTimeMillis();
-            System.out.println("called:" + testService.sayHello("criss"));
+            testService.sayHello("criss");
             long e = System.currentTimeMillis();
             m += (e - s);
         }
-        System.out.println("执行" + count + "次的平均耗时：" + m / count);
+        for (int i = 0; i < count; i++) {
+            long s = System.currentTimeMillis();
+            testService.getList(size);
+            long e = System.currentTimeMillis();
+            l += (e - s);
+        }
+        System.out.println("执行sayHello(" + count + "次)的平均耗时：" + m / count);
+        System.out.println("执行getList(" + size + ")(" + count + "次)的平均耗时：" + l / count);
     }
 }
 

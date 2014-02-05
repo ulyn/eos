@@ -1,4 +1,4 @@
-package com.sunsharing.eos.common.rpc.server.netty;
+package com.sunsharing.eos.common.rpc.remoting.netty;
 
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.ProFactory;
@@ -21,9 +21,9 @@ public class ExDecode extends FrameDecoder {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
-        logger.info("decode:" + buffer);
+//        logger.info("decode:" + buffer);
         BaseProtocol pro = ProFactory.createPro(buffer);
-        logger.info("decode:" + pro);
+//        logger.info("decode:" + pro);
         return pro;
     }
 }

@@ -37,11 +37,13 @@ public final class RpcException extends RuntimeException {
 
     public static final int TIMEOUT_EXCEPTION = 2;
 
-    public static final int BIZ_EXCEPTION = 3;
+    public static final int CONNECT_EXCEPTION = 3;
 
-    public static final int FORBIDDEN_EXCEPTION = 4;
+    public static final int BIZ_EXCEPTION = 4;
 
-    public static final int SERIALIZATION_EXCEPTION = 5;
+    public static final int FORBIDDEN_EXCEPTION = 5;
+
+    public static final int SERIALIZATION_EXCEPTION = 6;
 
     private int code; // RpcException不能有子类，异常类型用ErrorCode表示，以便保持兼容。
 

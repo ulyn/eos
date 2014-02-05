@@ -1,5 +1,5 @@
 /**
- * @(#)SocketClient
+ * @(#)SocketRpcClient
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
@@ -17,7 +17,9 @@
 package com.sunsharing.eos.client.rpc;
 
 import com.sunsharing.eos.common.rpc.Invocation;
+import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.serialize.ObjectInput;
 import com.sunsharing.eos.common.serialize.ObjectOutput;
 import com.sunsharing.eos.common.serialize.Serialization;
@@ -39,9 +41,8 @@ import java.net.Socket;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class SocketClient extends AbstractClient {
+public class SocketRpcClient extends AbstractClient {
 
-    @Override
     public RpcResult doRpc(Invocation invocation,
                            String serializationType, String url, int port) throws Throwable {
         Socket socket = null;
@@ -65,6 +66,11 @@ public class SocketClient extends AbstractClient {
         RpcResult result = objectInput.readObject(RpcResult.class);
         System.out.println("socket 读回结果耗时:" + (System.currentTimeMillis() - startTime));
         return result;
+    }
+
+    @Override
+    public Result doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
 

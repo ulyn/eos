@@ -55,7 +55,7 @@ public abstract class BaseProtocol {
     protected int bodyLength;
 
     protected byte[] getHeaderBytes() {
-        byte[] header = new byte[51];
+        byte[] header = new byte[52];
         header[0] = action;
         StringUtils.putString(header, msgId, 1);
         StringUtils.putString(header, serialization, 33);

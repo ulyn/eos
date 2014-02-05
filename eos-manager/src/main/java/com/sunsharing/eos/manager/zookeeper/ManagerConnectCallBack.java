@@ -38,6 +38,7 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
                     CreateMode.EPHEMERAL);
 
             //utils.printNode("/");
+            ServiceCache.getInstance().resetServiceMap();
 
         }catch (Exception e)
         {

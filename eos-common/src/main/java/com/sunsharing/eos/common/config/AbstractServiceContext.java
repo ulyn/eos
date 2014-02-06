@@ -50,7 +50,7 @@ public abstract class AbstractServiceContext {
 
     //存储服务对象,key为服务id
     protected static Map<String, Object> services = new HashMap<String, Object>();
-    protected static List<ServiceConfig> serviceConfigList = new ArrayList<ServiceConfig>();
+    protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();
 
     public AbstractServiceContext(ApplicationContext ctx, String packagePath) {
         this.ctx = ctx;
@@ -98,7 +98,7 @@ public abstract class AbstractServiceContext {
             }
 
             Object bean = createBean(c, config);
-            serviceConfigList.add(config);
+            serviceConfigMap.put(config.getId(), config);
             services.put(config.getId(), bean);
         }
     }
@@ -143,8 +143,16 @@ public abstract class AbstractServiceContext {
         return id;
     }
 
+    public static Map<String, ServiceConfig> getServiceConfigMap() {
+        return serviceConfigMap;
+    }
+
+    public static ServiceConfig getServiceConfig(String beanId) {
+        return serviceConfigMap.get(beanId);
+    }
+
     public static List<ServiceConfig> getServiceConfigList() {
-        return serviceConfigList;
+        return new ArrayList<ServiceConfig>(serviceConfigMap.values());
     }
 
     /**

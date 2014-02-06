@@ -20,6 +20,7 @@ import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,10 +36,14 @@ import java.util.List;
  */
 public class ProcessChain implements Process {
 
-    private List<Process> list = new ArrayList<Process>();
+    private List<Process> processList = new ArrayList<Process>();
+
+    public void setProcessList(Process[] processes) {
+        this.processList = Arrays.asList(processes);
+    }
 
     public ProcessChain addProcess(Process process) {
-        list.add(process);
+        processList.add(process);
         return this;
     }
 
@@ -46,8 +51,8 @@ public class ProcessChain implements Process {
 
     @Override
     public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) {
-        if (index == list.size()) return;
-        Process f = list.get(index);
+        if (index == processList.size()) return;
+        Process f = processList.get(index);
         index++;
         //依次执行下一个过滤器，直到整个过滤器链执行完
         f.doProcess(req, res, processChain);

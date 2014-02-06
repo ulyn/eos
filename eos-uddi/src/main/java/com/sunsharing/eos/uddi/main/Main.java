@@ -11,17 +11,14 @@ import java.net.URLDecoder;
  */
 public class Main {
 
-    public static void main(String[]a)throws Exception
-    {
+    public static void main(String[] a) throws Exception {
         start(8100);
     }
 
-    public static void start(int port)throws Exception
-    {
-        String webapp = "/Users/criss/Desktop/projectDev/eosgit/eos-uddi/src/main/webapp";
+    public static void start(int port) throws Exception {
+        String webapp = "E:\\workplace\\sunsharing\\component\\eos\\eos\\eos-uddi\\src\\main\\webapp";
 
-        if(port==0)
-        {
+        if (port == 0) {
             port = 8099;
         }
 
@@ -35,39 +32,34 @@ public class Main {
         server.start();
     }
 
-    public  static String getPath(String webapp)
-    {
+    public static String getPath(String webapp) {
         String classPath = null;
-        try
-        {
+        try {
             classPath = getClassPath();
-            if(classPath.endsWith("classes/"))
-            {
+            if (classPath.endsWith("classes/")) {
                 classPath = webapp;
-            }else
-            {
-                classPath = classPath.substring(0,classPath.length()-4)+ "webapp/";
+            } else {
+                classPath = classPath.substring(0, classPath.length() - 4) + "webapp/";
             }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException("获取ClassPath路径出错");
         }
-        if(!new File(classPath).exists())
-        {
+        if (!new File(classPath).exists()) {
             new File(classPath).mkdirs();
         }
         return classPath;
     }
-    public static String getClassPath() throws Exception{
+
+    public static String getClassPath() throws Exception {
 
         String keyfilePath = URLDecoder.decode(Main.class.getProtectionDomain().
                 getCodeSource().getLocation().getFile(), "UTF-8");
         keyfilePath = keyfilePath.replaceAll("\\\\", "/");
         File temp = new File(keyfilePath);
-        if(temp.isFile() && keyfilePath.endsWith("jar") ==true){
+        if (temp.isFile() && keyfilePath.endsWith("jar") == true) {
             keyfilePath = keyfilePath.substring(0, keyfilePath.lastIndexOf("/")) + "/";
-        }else if(keyfilePath.indexOf("classes") != -1){
-            keyfilePath = keyfilePath.substring(0, keyfilePath.indexOf("classes")+7) + "/";
+        } else if (keyfilePath.indexOf("classes") != -1) {
+            keyfilePath = keyfilePath.substring(0, keyfilePath.indexOf("classes") + 7) + "/";
         }
         return keyfilePath;
     }

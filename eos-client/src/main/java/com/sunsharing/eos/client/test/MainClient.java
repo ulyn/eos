@@ -56,23 +56,21 @@ public class MainClient {
     }
 
     public void test() {
+
         TestService testService = ServiceContext.getBean(TestService.class);
         long m = 0, l = 0;
-        int count = 1000, size = 1000;
+        int count = 1000000, size = 1000;
+        long s = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            long s = System.currentTimeMillis();
             testService.sayHello("criss");
-            long e = System.currentTimeMillis();
-            m += (e - s);
         }
+        long e = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            long s = System.currentTimeMillis();
             testService.getList(size);
-            long e = System.currentTimeMillis();
-            l += (e - s);
         }
+        long ll = System.currentTimeMillis();
 
-        System.out.println("执行sayHello(" + count + "次)的平均耗时：" + m / count);
-        System.out.println("执行getList(" + size + ")(" + count + "次)的平均耗时：" + l / count);
+        System.out.println("执行sayHello(" + count + "次)的平均耗时：" + (e - s) / count);
+        System.out.println("执行getList(" + size + ")(" + count + "次)的平均耗时：" + (ll - e) / count);
     }
 }

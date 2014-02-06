@@ -19,6 +19,7 @@ package com.sunsharing.eos.client.proxy;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.rpc.ClientProxy;
 import com.sunsharing.eos.common.rpc.Result;
@@ -42,7 +43,7 @@ import com.sunsharing.eos.common.utils.StringUtils;
  */
 public abstract class AbstractProxy implements ClientProxy {
 
-    protected Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
+    public Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
         //zookeeper取得服务的ip
         JSONObject jo;
         if (StringUtils.isBlank(config.getMock())) {
@@ -72,10 +73,19 @@ public abstract class AbstractProxy implements ClientProxy {
         RemoteHelper helper = new RemoteHelper();
         ResponsePro responsePro = helper.call(pro, ip, port, config.getTransporter(), config.getTimeout());
         Result rpcResult = responsePro.toResult();
-
-        if (rpcResult.hasException()) {
-            throw rpcResult.getException();
-        } else return rpcResult.getValue();
+        if (responsePro.getStatus() == Constants.STATUS_ERROR) {
+            if (rpcResult.hasException()) {
+                throw rpcResult.getException();
+            } else {
+                String error = "服务调用失败！"
+                        + pro.getAppId() + "-"
+                        + pro.getServiceId() + "-"
+                        + pro.getServiceVersion();
+                throw new RpcException(RpcException.UNKNOWN_EXCEPTION, error);
+            }
+        } else {
+            return rpcResult.getValue();
+        }
     }
 }
 

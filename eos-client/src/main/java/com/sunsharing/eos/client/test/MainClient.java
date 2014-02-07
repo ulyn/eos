@@ -59,10 +59,10 @@ public class MainClient {
 
         TestService testService = ServiceContext.getBean(TestService.class);
         long m = 0, l = 0;
-        int count = 1000000, size = 1000;
+        int count = 10, size = 1000;
         long s = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            testService.sayHello("criss");
+            System.out.println(testService.sayHello("criss"));
         }
         long e = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {

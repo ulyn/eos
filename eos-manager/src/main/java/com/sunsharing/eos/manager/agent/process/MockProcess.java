@@ -53,7 +53,7 @@ public class MockProcess implements Process {
             String methodName = null;
             try {
                 Invocation invocation = req.toInvocation();
-                invocation.getMethodName();
+                methodName = invocation.getMethodName();
             } catch (Exception e) {
                 String error = "反序列化服务Invocation失败！";
                 logger.error(error, e);

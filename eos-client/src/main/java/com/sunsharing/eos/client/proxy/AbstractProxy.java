@@ -84,7 +84,18 @@ public abstract class AbstractProxy implements ClientProxy {
                 throw new RpcException(RpcException.UNKNOWN_EXCEPTION, error);
             }
         } else {
-            return rpcResult.getValue();
+            Object value = rpcResult.getValue();
+            if (!StringUtils.isBlank(pro.getMock())) {
+                String typeName = invocation.getRetType();
+                Class type = Class.forName(typeName);
+                try {
+                    return JSONObject.parseObject((String) value, type);
+                } catch (Exception e) {
+                    System.out.println("转换异常");
+                    return value;
+                }
+            }
+            return value;
         }
     }
 }

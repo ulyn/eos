@@ -31,7 +31,7 @@ import java.util.List;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(appId = "eos_demo", version = "1.0", transporter = "netty")
+@EosService(appId = "criss", version = "1.0", transporter = "netty")
 public interface TestService {
     /**
      * 输出

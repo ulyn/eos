@@ -36,7 +36,12 @@ public interface TestService {
     /**
      * 输出
      *
-     * @return "你好啊！"
+     * @return [success]当入参name="criss"为成功输出
+     *         {"success":"成功了2",
+     *         "haha":"haha2"}
+     *         <p/>
+     *         [error]当入参为其他时为错误输出
+     *         {"error":"错误了2"}
      */
     String sayHello(String name);
 
@@ -44,7 +49,12 @@ public interface TestService {
      * 取得num条List
      *
      * @param num
-     * @return
+     * @return [success]当入参name="criss"为成功输出
+     *         {"success":"成功了2",
+     *         "haha":"haha2"}
+     *         <p/>
+     *         [error]当入参为其他时为错误输出
+     *         {"error":"错误了2"}
      */
     List getList(int num);
 

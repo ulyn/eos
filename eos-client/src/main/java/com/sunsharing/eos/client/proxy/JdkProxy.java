@@ -49,6 +49,7 @@ public class JdkProxy extends AbstractProxy {
                 invo.setMethodName(method.getName());
                 invo.setParameterTypes(method.getParameterTypes());
                 invo.setArguments(args);
+                invo.setRetType(method.getReturnType().getName());
 
                 return getRpcResult(invo, serviceConfig);
             }

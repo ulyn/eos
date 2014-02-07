@@ -38,6 +38,7 @@ public class RpcInvocation implements Invocation, Serializable {
     private String methodName;
     private Class<?>[] parameterTypes;
     private Object[] arguments;
+    private String retType;
 
 
     public String getId() {
@@ -73,6 +74,14 @@ public class RpcInvocation implements Invocation, Serializable {
 
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
+    }
+
+    public String getRetType() {
+        return retType;
+    }
+
+    public void setRetType(String retType) {
+        this.retType = retType;
     }
 
     @Override

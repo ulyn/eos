@@ -65,7 +65,7 @@ public class ResponsePro extends BaseProtocol {
     }
 
     public Result toResult() throws Exception {
-        if (resultBytes == null) {
+        if (resultBytes == null || resultBytes.length == 0) {
             return null;
         }
         Result result = serializationBytesToObject(resultBytes, Result.class);
@@ -86,7 +86,9 @@ public class ResponsePro extends BaseProtocol {
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());
         buffer.writeByte(status);
-        buffer.writeBytes(resultBytes);
+        if (resultBytes != null) {
+            buffer.writeBytes(resultBytes);
+        }
         return buffer;
     }
 

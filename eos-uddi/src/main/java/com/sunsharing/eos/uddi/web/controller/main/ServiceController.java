@@ -104,11 +104,13 @@ public class ServiceController {
                     FileOutputStream w = null;
                     try
                     {
-                        reader = new BufferedReader(new FileReader(source));
+                        //reader = new BufferedReader(new FileReader(source));
+                        reader = new BufferedReader(new InputStreamReader(new FileInputStream(source),"UTF-8"));
                         List<String> str2 = new ArrayList<String>();
                         String line = "";
                         while((line = reader.readLine())!=null)
                         {
+                            System.out.println(line);
                             str2.add(line);
                         }
                         String [] lines = str2.toArray(new String[]{});

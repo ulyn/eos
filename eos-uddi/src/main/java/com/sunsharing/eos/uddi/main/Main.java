@@ -1,5 +1,7 @@
 package com.sunsharing.eos.uddi.main;
 
+import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.eos.uddi.sys.SysProp;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -16,7 +18,10 @@ public class Main {
     }
 
     public static void start(int port) throws Exception {
-        String webapp = "E:\\workplace\\sunsharing\\component\\eos\\eos\\eos-uddi\\src\\main\\webapp";
+
+        ConfigContext.instancesBean(SysProp.class);
+
+        String webapp = "/Users/criss/Desktop/projectDev/eosgit/eos-uddi/src/main/webapp";
 
         if (port == 0) {
             port = 8099;

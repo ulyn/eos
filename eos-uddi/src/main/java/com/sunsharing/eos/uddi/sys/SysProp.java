@@ -36,7 +36,7 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
 public class SysProp {
 
     @ParamField(name="zookeeper_ip",must = false)
-    public static String zookeeperIp = "localhost";
+    public static String zookeeperIp = "192.168.0.224";
 
     @ParamField(name="zookeeper_port",must = false)
     @NumValidate

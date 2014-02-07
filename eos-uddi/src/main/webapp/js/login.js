@@ -63,8 +63,7 @@ sampleApp.controller('ShowOrderController', function($scope, $routeParams,$http)
     $scope.saveUser = function()
     {
         var username = $('#regname').val();
-        var pwd = $('#pwd').val();
-
+        var pwd = $('#hehe').val();
         $http({
             url: '/saveUser.do',
             method: "POST",

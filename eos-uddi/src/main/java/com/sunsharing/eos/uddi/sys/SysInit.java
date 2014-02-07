@@ -1,5 +1,6 @@
 package com.sunsharing.eos.uddi.sys;
 
+import com.sunsharing.component.resvalidate.config.ConfigContext;
 import com.sunsharing.eos.uddi.zookeeper.StatZoo;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +29,8 @@ public class SysInit extends HttpServlet {
     public static String path = "";
 
 	public void init(){
+
+        ConfigContext.instancesBean(SysProp.class);
 		
 		ServletContext sc = this.getServletContext();
 		logger.info("系统开始初始化...");

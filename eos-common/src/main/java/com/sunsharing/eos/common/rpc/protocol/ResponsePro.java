@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.common.rpc.protocol;
 
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -58,7 +59,7 @@ public class ResponsePro extends BaseProtocol {
 
     public void setResult(Result result) throws Exception {
         if (result.hasException()) {
-            status = 1;
+            status = Constants.STATUS_ERROR;
         }
         setResultBytes(getSerializationBytes(result));
     }
@@ -98,7 +99,7 @@ public class ResponsePro extends BaseProtocol {
 
         ResponsePro pro = new ResponsePro();
         setHeader(pro, buffer);
-        status = buffer.readByte();
+        pro.setStatus(buffer.readByte());
 
         if (buffer.readableBytes() < pro.bodyLength) {
             buffer.resetReaderIndex();

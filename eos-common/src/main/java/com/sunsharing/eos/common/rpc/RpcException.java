@@ -39,7 +39,7 @@ public final class RpcException extends RuntimeException {
 
     public static final int CONNECT_EXCEPTION = 3;
 
-    public static final int BIZ_EXCEPTION = 4;
+    public static final int MOCK_EXCEPTION = 4;
 
     public static final int FORBIDDEN_EXCEPTION = 5;
 
@@ -48,6 +48,7 @@ public final class RpcException extends RuntimeException {
     public static final int SERVICE_NO_FOUND_EXCEPTION = 7;
 
     public static final int DEBUG_SERVER_OUTLINE_EXCEPTION = 8;
+    public static final int REFLECT_INVOKE_EXCEPTION = 9;
 
     private int code; // RpcException不能有子类，异常类型用ErrorCode表示，以便保持兼容。
 
@@ -93,25 +94,5 @@ public final class RpcException extends RuntimeException {
 
     public int getCode() {
         return code;
-    }
-
-    public boolean isBiz() {
-        return code == BIZ_EXCEPTION;
-    }
-
-    public boolean isForbidded() {
-        return code == FORBIDDEN_EXCEPTION;
-    }
-
-    public boolean isTimeout() {
-        return code == TIMEOUT_EXCEPTION;
-    }
-
-    public boolean isNetwork() {
-        return code == NETWORK_EXCEPTION;
-    }
-
-    public boolean isSerialization() {
-        return code == SERIALIZATION_EXCEPTION;
     }
 }

@@ -16,10 +16,14 @@
  */
 package com.sunsharing.eos.common.rpc.remoting;
 
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.RpcClient;
+import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.netty.NettyClient;
+import org.apache.log4j.Logger;
 
 /**
  * <pre></pre>
@@ -33,6 +37,7 @@ import com.sunsharing.eos.common.rpc.remoting.netty.NettyClient;
  * <br>
  */
 public class RemoteHelper {
+    static Logger logger = Logger.getLogger(RemoteHelper.class);
 
     public ResponsePro call(RequestPro requestPro, String ip, int port, String transporter, int timeout) throws Throwable {
         RpcClient client = null;
@@ -41,5 +46,15 @@ public class RemoteHelper {
         }
         return client.doRpc(requestPro, ip, port, timeout);
     }
+
+    public static void setRpcException(ResponsePro res, Throwable e) {
+        try {
+            res.setResult(new RpcResult(e));
+        } catch (Exception e1) {
+            logger.error("eos代理返回异常结果序列化出错！", e1);
+            res.setStatus(Constants.STATUS_ERROR);
+        }
+    }
+
 }
 

@@ -12,4 +12,9 @@ public class Constants {
     //eos的开发模式
     public static final String EOS_MODE_DEV = "dev";
 
+    //正常
+    public static final byte STATUS_SUCCESS = 0;
+    //失败
+    public static final byte STATUS_ERROR = 1;
+
 }

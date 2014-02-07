@@ -29,6 +29,8 @@ import com.sunsharing.eos.manager.sys.SysProp;
 import com.sunsharing.eos.manager.zookeeper.ServiceCache;
 import org.apache.log4j.Logger;
 
+import java.util.Random;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -70,7 +72,13 @@ public class RemoteProcess implements Process {
                     throw new RpcException(RpcException.DEBUG_SERVER_OUTLINE_EXCEPTION, "没有找到联调服务器（" + req.getDebugServerIp() + "）在线");
                 }
             } else {
-                config = jsonArray.getJSONObject(0);
+                Random r = new Random();
+                int size = jsonArray.size();
+                int index = r.nextInt(size);
+                if (index >= size) {
+                    index = 0;
+                }
+                config = jsonArray.getJSONObject(index);
             }
             String ip = config.getString("ip");
             int port = config.getIntValue("port");
@@ -80,15 +88,11 @@ public class RemoteProcess implements Process {
             RemoteHelper remoteHelper = new RemoteHelper();
             ResponsePro responsePro = remoteHelper.call(req, ip, port, transporter, timeout);
             res.setResultBytes(responsePro.getResultBytes());
+            processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            try {
-                res.setResult(new RpcResult(e));
-            } catch (Exception e1) {
-                logger.error("eos代理返回异常结果序列化出错！", e);
-                res.setStatus((byte) 1);
-            }
+            logger.error(e);
+            RemoteHelper.setRpcException(res, e);
         }
-        processChain.doProcess(req, res, processChain);
     }
 }
 

@@ -51,6 +51,10 @@ indexApp.config(['$routeProvider',
                 templateUrl: 'templates/monitor/service.html',
                 //template:'criss',
                 controller: 'monitorservice'
+            }).when('/',{
+                templateUrl: 'templates/service/blank.html'
+                //template:'criss',
+                //controller: 'userEdit'
             });
 //            .otherwise({redirectTo: '/servicelist'});
     }]);

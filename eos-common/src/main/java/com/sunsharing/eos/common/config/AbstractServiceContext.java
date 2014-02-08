@@ -21,7 +21,6 @@ import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;

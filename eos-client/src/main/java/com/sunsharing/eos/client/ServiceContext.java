@@ -20,10 +20,7 @@ import com.sunsharing.eos.client.proxy.AbstractProxy;
 import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.utils.ClassFilter;
-import com.sunsharing.eos.common.utils.ClassUtils;
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -20,7 +20,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>${springframework_version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

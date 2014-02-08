@@ -53,6 +53,12 @@
                 <groupId>com.sunsharing.component</groupId>
                 <artifactId>resvalidate</artifactId>
                 <version>${resvalidate_version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-jdbc</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.sunsharing.component</groupId>

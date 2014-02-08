@@ -91,7 +91,7 @@ public class RemoteProcess implements Process {
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
             logger.error(e);
-            RemoteHelper.setRpcException(res, e);
+            res.setExceptionResult(e);
         }
     }
 }

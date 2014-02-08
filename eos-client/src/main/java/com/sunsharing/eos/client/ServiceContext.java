@@ -45,8 +45,8 @@ public class ServiceContext extends AbstractServiceContext {
     //存储服务对象,key为服务name
     protected static Map<String, Object> interfaceServiceMap = new HashMap<String, Object>();
 
-    public ServiceContext(ApplicationContext ctx, String packagePath) {
-        super(ctx, packagePath);
+    public ServiceContext(String packagePath) {
+        super(packagePath);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ServiceContext extends AbstractServiceContext {
     }
 
     public static void main(String[] args) {
-        ServiceContext context = new ServiceContext(null, "com.sunsharing.eos");
+        ServiceContext context = new ServiceContext("com.sunsharing.eos");
 
     }
 }

@@ -16,7 +16,7 @@ public class MainClient {
 
     public static void main(String[] a) throws Exception {
         ConfigContext.instancesBean(SysProp.class);
-        ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
+        ServiceContext serviceContext = new ServiceContext("com.sunsharing.eos");
 
         new Thread() {
             public void run() {

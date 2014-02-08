@@ -45,15 +45,15 @@ import java.util.Map;
 public abstract class AbstractServiceContext {
     Logger logger = Logger.getLogger(AbstractServiceContext.class);
 
-    protected ApplicationContext ctx;
+    //    protected ApplicationContext ctx;
     protected String packagePath;
 
     //存储服务对象,key为服务id
     protected static Map<String, Object> services = new HashMap<String, Object>();
     protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();
 
-    public AbstractServiceContext(ApplicationContext ctx, String packagePath) {
-        this.ctx = ctx;
+    public AbstractServiceContext(String packagePath) {
+//        this.ctx = ctx;
         this.packagePath = packagePath;
 
         String xmlConfigFileName = "EosServiceConfig.xml";

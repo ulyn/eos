@@ -22,6 +22,7 @@ import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
+import com.sunsharing.eos.manager.sys.SysProp;
 import com.sunsharing.eos.manager.zookeeper.ServiceCache;
 import org.apache.log4j.Logger;
 
@@ -41,22 +42,24 @@ public class ACLProcess implements Process {
 
     @Override
     public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) {
-        try {
-            boolean acl = ServiceCache.getInstance().getACL(req.getAppId(), req.getServiceId(), req.getServiceVersion());
-            if (acl) {
-                processChain.doProcess(req, res, processChain);
-            } else {
-                String error = "服务调用失败，未通过审核的服务！"
-                        + req.getAppId() + "-"
-                        + req.getServiceId() + "-"
-                        + req.getServiceVersion();
-                logger.info(error);
-                RemoteHelper.setRpcException(res, new RpcException(RpcException.FORBIDDEN_EXCEPTION, error));
+        if (SysProp.eosMode.equals(Constants.EOS_MODE_DEV)) {
+            try {
+                boolean acl = ServiceCache.getInstance().getACL(req.getAppId(), req.getServiceId(), req.getServiceVersion());
+                if (acl) {
+                    processChain.doProcess(req, res, processChain);
+                } else {
+                    String error = "服务调用失败，未通过审核的服务！"
+                            + req.getAppId() + "-"
+                            + req.getServiceId() + "-"
+                            + req.getServiceVersion();
+                    logger.info(error);
+                    res.setExceptionResult(new RpcException(RpcException.FORBIDDEN_EXCEPTION, error));
+                }
+            } catch (Exception e) {
+                String error = "权限验证异常!";
+                logger.error(error, e);
+                res.setExceptionResult(new RpcException(RpcException.FORBIDDEN_EXCEPTION, error));
             }
-        } catch (Exception e) {
-            String msg = "权限验证异常!";
-            logger.error(msg, e);
-            RemoteHelper.setRpcException(res, new RpcException(RpcException.FORBIDDEN_EXCEPTION, msg));
         }
     }
 

@@ -47,14 +47,5 @@ public class RemoteHelper {
         return client.doRpc(requestPro, ip, port, timeout);
     }
 
-    public static void setRpcException(ResponsePro res, Throwable e) {
-        try {
-            res.setResult(new RpcResult(e));
-        } catch (Exception e1) {
-            logger.error("eos代理返回异常结果序列化出错！", e1);
-            res.setStatus(Constants.STATUS_ERROR);
-        }
-    }
-
 }
 

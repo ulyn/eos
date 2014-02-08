@@ -19,6 +19,7 @@ package com.sunsharing.eos.common.rpc.protocol;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
@@ -34,6 +35,8 @@ import org.jboss.netty.buffer.ChannelBuffers;
  * <br>
  */
 public class ResponsePro extends BaseProtocol {
+    Logger logger = Logger.getLogger(ResponsePro.class);
+
     /**
      * status 0 正常 1异常
      */
@@ -57,11 +60,20 @@ public class ResponsePro extends BaseProtocol {
         this.resultBytes = resultBytes;
     }
 
-    public void setResult(Result result) throws Exception {
+    public void setResult(Result result) {
         if (result.hasException()) {
-            status = Constants.STATUS_ERROR;
+            setStatus(Constants.STATUS_ERROR);
         }
-        setResultBytes(getSerializationBytes(result));
+        try {
+            setResultBytes(getSerializationBytes(result));
+        } catch (Exception e1) {
+            logger.error("eos代理返回异常结果序列化出错！", e1);
+            setStatus(Constants.STATUS_ERROR);
+        }
+    }
+
+    public void setExceptionResult(Throwable throwable) {
+        setResult(new RpcResult(throwable));
     }
 
     public Result toResult() throws Exception {

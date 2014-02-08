@@ -66,7 +66,11 @@ public abstract class AbstractProxy implements ClientProxy {
         pro.setServiceId(config.getId());
         pro.setServiceVersion(config.getVersion());
         pro.setSerialization(config.getSerialization());
-        pro.setMock(config.getMock());
+        if (config.getMethodMockMap() != null && config.getMethodMockMap().get(invocation.getMethodName()) != null) {
+            pro.setMock(config.getMethodMockMap().get(invocation.getMethodName()));
+        } else {
+            pro.setMock(config.getMock());
+        }
         pro.setInvocation(invocation);
         pro.setDebugServerIp(SysProp.debugServerIp);
 

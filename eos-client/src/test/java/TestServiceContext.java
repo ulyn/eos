@@ -31,7 +31,7 @@ import com.sunsharing.eos.client.test.TestService;
  */
 public class TestServiceContext {
     public static void main(String[] args) {
-        ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
+        ServiceContext serviceContext = new ServiceContext("com.sunsharing.eos");
         TestService testService = serviceContext.getBean(TestService.class);
 //        long m = 0, l = 0;
 //        int count = 1000, size = 1000;

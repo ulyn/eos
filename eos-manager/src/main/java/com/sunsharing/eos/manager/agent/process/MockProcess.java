@@ -57,7 +57,7 @@ public class MockProcess implements Process {
             } catch (Exception e) {
                 String error = "反序列化服务Invocation失败！";
                 logger.error(error, e);
-                RemoteHelper.setRpcException(res, new RpcException(RpcException.SERIALIZATION_EXCEPTION, error));
+                res.setExceptionResult(new RpcException(RpcException.SERIALIZATION_EXCEPTION, error));
             }
             if (methodName != null) {
                 try {
@@ -75,12 +75,12 @@ public class MockProcess implements Process {
                     if (!findMock) {
                         String error = "服务接口没有配置指定的mock:" + req.getMock();
                         logger.error(error);
-                        RemoteHelper.setRpcException(res, new RpcException(RpcException.MOCK_EXCEPTION, error));
+                        res.setExceptionResult(new RpcException(RpcException.MOCK_EXCEPTION, error));
                     }
                 } catch (Exception e) {
                     String error = "获取模拟测试值异常！";
                     logger.error(error, e);
-                    RemoteHelper.setRpcException(res, new RpcException(RpcException.MOCK_EXCEPTION, error));
+                    res.setExceptionResult(new RpcException(RpcException.MOCK_EXCEPTION, error));
                 }
             }
         } else {

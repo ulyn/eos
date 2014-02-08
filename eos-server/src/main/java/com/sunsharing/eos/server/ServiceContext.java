@@ -41,8 +41,26 @@ import java.util.*;
 public class ServiceContext extends AbstractServiceContext {
     Logger logger = Logger.getLogger(ServiceContext.class);
 
+    ApplicationContext ctx;
+
+    /**
+     * 没有结合spring的构造
+     *
+     * @param packagePath
+     */
+    public ServiceContext(String packagePath) {
+        super(packagePath);
+    }
+
+    /**
+     * 结合spring的构造
+     *
+     * @param ctx
+     * @param packagePath
+     */
     public ServiceContext(ApplicationContext ctx, String packagePath) {
-        super(ctx, packagePath);
+        super(packagePath);
+        this.ctx = ctx;
     }
 
     @Override

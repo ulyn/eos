@@ -21,8 +21,13 @@ import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -45,15 +50,15 @@ import java.util.Map;
 public abstract class AbstractServiceContext {
     Logger logger = Logger.getLogger(AbstractServiceContext.class);
 
-    protected ApplicationContext ctx;
+    //    protected ApplicationContext ctx;
     protected String packagePath;
 
     //存储服务对象,key为服务id
     protected static Map<String, Object> services = new HashMap<String, Object>();
     protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();
 
-    public AbstractServiceContext(ApplicationContext ctx, String packagePath) {
-        this.ctx = ctx;
+    public AbstractServiceContext(String packagePath) {
+//        this.ctx = ctx;
         this.packagePath = packagePath;
 
         String xmlConfigFileName = "EosServiceConfig.xml";
@@ -88,10 +93,11 @@ public abstract class AbstractServiceContext {
             config.setVersion(ann.version());
             config.setImpl(ann.impl());
 
-            if (xmlServiceConfigMap.containsKey(c.getName())) {
+            if (xmlServiceConfigMap.containsKey(id)) {
                 //有xml配置的使用xml配置
                 ServiceConfig xmlConfig = xmlServiceConfigMap.get(c.getName());
                 config.setMock(xmlConfig.getMock());
+                config.setMethodMockMap(xmlConfig.getMethodMockMap());
                 if (!"".equals(xmlConfig.getImpl())) {
                     config.setImpl(xmlConfig.getImpl());
                 }
@@ -115,7 +121,41 @@ public abstract class AbstractServiceContext {
         if (is == null) {
             logger.info("没有找到eos服务的xml配置...");
         } else {
-            //TODO 加载xml生成configMap
+            try {
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                int ch;
+                while ((ch = is.read()) != -1) {
+                    byteStream.write(ch);
+                }
+                byte[] bytes = byteStream.toByteArray();
+                byteStream.close();
+                String result = new String(bytes, "UTF-8");
+                Document doc = DocumentHelper.parseText(result);
+                Element root = doc.getRootElement();
+                List<Element> elements = root.elements();
+                for (Element el : elements) {
+                    ServiceConfig config = new ServiceConfig();
+                    config.setId(el.attributeValue("id"));
+                    config.setMock(el.attributeValue("mock"));
+                    config.setImpl(el.attributeValue("impl"));
+
+                    Element methodsEl = el.element("methods");
+                    if (methodsEl != null) {
+                        //set methodMock
+                        List<Element> methodEls = methodsEl.elements();
+                        Map<String, String> methodMockMap = new HashMap<String, String>();
+                        for (Element methodEl : methodEls) {
+                            methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
+                        }
+                        config.setMethodMockMap(methodMockMap);
+                    }
+
+                    configMap.put(el.attributeValue("id"), config);
+                }
+            } catch (Exception e) {
+                logger.error("读取eos服务的xml配置异常，请检查xml配置是否正确", e);
+                throw new RuntimeException(e);
+            }
         }
         return configMap;
     }

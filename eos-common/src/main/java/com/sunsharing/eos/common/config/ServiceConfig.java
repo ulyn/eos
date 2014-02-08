@@ -18,6 +18,8 @@ package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.Constants;
 
+import java.util.Map;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -40,6 +42,8 @@ public class ServiceConfig {
     private String mock = "";
 
     private String impl = "";
+
+    private Map<String, String> methodMockMap;
 
     public String getId() {
         return id;
@@ -115,6 +119,14 @@ public class ServiceConfig {
 
     public void setImpl(String impl) {
         this.impl = impl;
+    }
+
+    public Map<String, String> getMethodMockMap() {
+        return methodMockMap;
+    }
+
+    public void setMethodMockMap(Map<String, String> methodMockMap) {
+        this.methodMockMap = methodMockMap;
     }
 }
 

@@ -1,0 +1,8 @@
+<beans>
+    <bean id="beanId" mock="success">
+        <methods>
+            <sayHello mock="error"/>
+            <getList mock="error"/>
+        </methods>
+    </bean>
+</beans>

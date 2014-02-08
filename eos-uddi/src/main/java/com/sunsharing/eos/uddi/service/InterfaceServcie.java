@@ -178,14 +178,14 @@ public class InterfaceServcie {
         {
             String l = (String)iter.next();
             //System.out.println(l);
-            if(l.startsWith("[")==true)
+            if(l.startsWith("${")==true)
             {
                 if(tmp!=null)
                 {
                     functionMap.put(tmp.get("status"),tmp);
                 }
                 tmp = new HashMap();
-                int index = l.indexOf("]");
+                int index = l.indexOf("}");
                 String status = l.substring(1,index);
                 tmp.put("status",status);
                 tmp.put("desc",l.substring(index+1));

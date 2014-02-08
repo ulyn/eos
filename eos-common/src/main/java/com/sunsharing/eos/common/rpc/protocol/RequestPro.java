@@ -42,7 +42,7 @@ public class RequestPro extends BaseProtocol {
     //服务版本(10)
     protected String serviceVersion;
     //模拟取值字段(20)
-    protected String mock;
+    protected String mock = "";
     //联调ip(20)
     protected String debugServerIp;
     //请求参数对象序列化的字节(bodyLength)

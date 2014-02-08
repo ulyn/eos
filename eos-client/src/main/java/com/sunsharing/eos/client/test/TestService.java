@@ -31,12 +31,15 @@ import java.util.List;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(appId = "criss", version = "1.0", transporter = "netty")
+@EosService(version = "1.1", appId = "ihome")
 public interface TestService {
     /**
      * 输出
      *
-     * @return "你好啊！"
+     * @return ${success}当入参name="criss"为成功输出
+     *         成功了2
+     *         ${error}当入参为其他时为错误输出
+     *         错误了2
      */
     String sayHello(String name);
 
@@ -44,7 +47,11 @@ public interface TestService {
      * 取得num条List
      *
      * @param num
-     * @return
+     * @return ${success}当入参name="criss"为成功输出
+     *         [{"success":"成功了2",
+     *         "haha":"haha2"}]
+     *         ${error}当入参为其他时为错误输出
+     *         [{"error":"错误了2"}]
      */
     List getList(int num);
 

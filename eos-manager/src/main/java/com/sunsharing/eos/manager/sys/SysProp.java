@@ -20,6 +20,7 @@ import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
 import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
+import com.sunsharing.eos.common.Constants;
 
 /**
  * <pre></pre>
@@ -36,25 +37,27 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
 @Configuration(value = "eos.properties")
 public class SysProp {
 
-    @ParamField(name = "zookeeper_ip", must = false)
-    public static String zookeeperIp = "localhost";
+    @ParamField(name = "zookeeper_ip", required = false)
+    @IpValidate
+    public static String zookeeperIp = "127.0.0.1";
 
-    @ParamField(name = "zookeeper_port", must = false)
+    @ParamField(name = "zookeeper_port", required = false)
     @NumValidate
     public static int zookeeperPort = 2181;
 
-    @ParamField(name = "eos_ip", must = false)
-    public static String eosIp = "localhost";
+    @ParamField(name = "local_ip", required = false)
+    @IpValidate
+    public static String localIp = "127.0.0.1";
 
-    @ParamField(name = "eos_port", must = false)
+    @ParamField(name = "eos_port", required = false)
     @NumValidate
-    public static int eosPort = 12345;
+    public static int eosPort = 5555;
 
-    @ParamField(name = "eos_id", must = true)
+    @ParamField(name = "eos_id")
     public static String eosId = "";
 
     //PRO,DEV
-    @ParamField(name = "eos_mode", must = false)
-    public static String eosMode = "PRO";
+    @ParamField(name = "eos_mode", required = false)
+    public static String eosMode = Constants.EOS_MODE_PRO;
 }
 

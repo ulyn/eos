@@ -36,16 +36,18 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
 @Configuration(value = "eos.properties")
 public class SysProp {
 
-    @ParamField(name = "zookeeper_ip", must = false)
+    @ParamField(name = "zookeeper_ip", required = false)
     public static String zookeeperIp = "localhost";
 
-    @ParamField(name = "zookeeper_port", must = false)
+    @ParamField(name = "zookeeper_port", required = false)
     @NumValidate
     public static int zookeeperPort = 2181;
 
-    @ParamField(name = "zookeeper_ip", must = false)
-    @IpValidate
+    @ParamField(name = "debugging_server_ip", required = false)
+    @IpValidate(allowEmpty = true)
     public static String debugServerIp = "";
 
+    @ParamField(name = "use_mock", required = false)
+    public static boolean use_mock = false;
 }
 

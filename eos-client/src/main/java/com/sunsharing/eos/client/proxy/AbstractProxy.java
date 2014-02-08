@@ -29,6 +29,7 @@ import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
 import com.sunsharing.eos.common.utils.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * <pre></pre>
@@ -42,8 +43,10 @@ import com.sunsharing.eos.common.utils.StringUtils;
  * <br>
  */
 public abstract class AbstractProxy implements ClientProxy {
+    Logger logger = Logger.getLogger(AbstractProxy.class);
 
     public Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
+        logger.info("调用eos服务入参：" + invocation);
         //zookeeper取得服务的ip
         JSONObject jo;
         if (StringUtils.isBlank(config.getMock())) {
@@ -66,10 +69,13 @@ public abstract class AbstractProxy implements ClientProxy {
         pro.setServiceId(config.getId());
         pro.setServiceVersion(config.getVersion());
         pro.setSerialization(config.getSerialization());
-        if (config.getMethodMockMap() != null && config.getMethodMockMap().get(invocation.getMethodName()) != null) {
-            pro.setMock(config.getMethodMockMap().get(invocation.getMethodName()));
-        } else {
-            pro.setMock(config.getMock());
+        if (SysProp.use_mock) {
+            if (config.getMethodMockMap() != null && config.getMethodMockMap().get(invocation.getMethodName()) != null) {
+                pro.setMock(config.getMethodMockMap().get(invocation.getMethodName()));
+            } else {
+                pro.setMock(config.getMock());
+            }
+            logger.info(pro.getServiceId() + "." + invocation.getMethodName() + " use mock:" + pro.getMock());
         }
         pro.setInvocation(invocation);
         pro.setDebugServerIp(SysProp.debugServerIp);

@@ -38,21 +38,22 @@ public class SysProp {
     @ParamField(name = "app_id")
     public static String appId;
 
-    @ParamField(name = "zookeeper_ip", must = false)
-    public static String zookeeperIp = "localhost";
+    @ParamField(name = "zookeeper_ip", required = false)
+    @IpValidate
+    public static String zookeeperIp = "127.0.0.1";
 
-    @ParamField(name = "zookeeper_port", must = false)
+    @ParamField(name = "zookeeper_port", required = false)
     @NumValidate
     public static int zookeeperPort = 2181;
 
-    @ParamField(name = "eos_id", must = true)
+    @ParamField(name = "eos_id")
     public static String eosId = "";
 
     @ParamField(name = "local_ip")
     @IpValidate
-    public static String localIp = "localhost";
+    public static String localIp = "127.0.0.1";
 
-    @ParamField(name = "netty_server_port", must = false)
+    @ParamField(name = "netty_server_port", required = false)
     @NumValidate
     public static int nettyServerPort = 5555;
 

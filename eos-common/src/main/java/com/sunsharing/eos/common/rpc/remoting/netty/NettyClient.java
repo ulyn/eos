@@ -88,7 +88,7 @@ public class NettyClient implements RpcClient {
         });
 
         channelLatch.await();
-        logger.info("client is connected to netty server " + ip + ":" + port);
+        logger.debug("client is connected to netty server " + ip + ":" + port);
         if (StringUtils.isBlank(pro.getMsgId())) {
             pro.setMsgId(StringUtils.genUUID());
         }

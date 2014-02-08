@@ -28,7 +28,7 @@ public class MsgHandler extends SimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         RequestPro basePro = (RequestPro) e.getMessage();
-        logger.info("收到请求：" + basePro);
+        logger.debug("收到请求：" + basePro);
 //        basePro.handler(ctx.getChannel());
 
         Result result = rpcServer.call(basePro.toInvocation());

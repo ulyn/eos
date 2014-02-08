@@ -42,7 +42,7 @@ public class ClientHandler extends SimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         ResponsePro basePro = (ResponsePro) e.getMessage();
-        logger.info("收到请求结果：" + basePro);
+        logger.debug("收到请求结果：" + basePro);
         ArrayBlockingQueue<ResponsePro> queue = NettyClient.result.get(basePro.getMsgId());
         if (queue != null) {
             queue.add(basePro);

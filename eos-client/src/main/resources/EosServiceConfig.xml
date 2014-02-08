@@ -1,5 +1,5 @@
 <beans>
-    <bean id="beanId" mock="success">
+    <bean id="testService" mock="success">
         <methods>
             <sayHello mock="error"/>
             <getList mock="error"/>

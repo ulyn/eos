@@ -95,7 +95,7 @@ public abstract class AbstractServiceContext {
 
             if (xmlServiceConfigMap.containsKey(id)) {
                 //有xml配置的使用xml配置
-                ServiceConfig xmlConfig = xmlServiceConfigMap.get(c.getName());
+                ServiceConfig xmlConfig = xmlServiceConfigMap.get(id);
                 config.setMock(xmlConfig.getMock());
                 config.setMethodMockMap(xmlConfig.getMethodMockMap());
                 if (!"".equals(xmlConfig.getImpl())) {

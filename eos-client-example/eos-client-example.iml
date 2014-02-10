@@ -11,17 +11,6 @@
         </webroots>
       </configuration>
     </facet>
-    <facet type="Spring" name="Spring">
-      <configuration />
-    </facet>
-    <facet type="hibernate" name="Hibernate">
-      <configuration>
-        <datasource-map>
-          <unit-entry name="sessionFactory" value="ca6f2d60-3278-4f37-8080-b427b15f7b99" />
-        </datasource-map>
-        <naming-strategy-map />
-      </configuration>
-    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
@@ -33,6 +22,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax:javaee-web-api:6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-entitymanager:3.3.2.GA" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate:3.2.6.ga" level="project" />
@@ -74,25 +64,7 @@
     <orderEntry type="library" name="Maven: commons-pool:commons-pool:1.4" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging-api:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.1.23" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty.aggregate:jetty-all-server:7.6.0.v20120127" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.mail:mail:1.4.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jaspic_1.0_spec:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-annotation_1.0_spec:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: asm:asm-commons:3.1" level="project" />
-    <orderEntry type="library" name="Maven: asm:asm-tree:3.1" level="project" />
-    <orderEntry type="library" name="Maven: jetty:jasper-compiler:4.2.20RC0" level="project" />
-    <orderEntry type="library" name="Maven: jetty:jasper-runtime:4.2.20RC0" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet.jsp:jsp-api:2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ant:ant:1.8.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ant:ant-launcher:1.8.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.axis:axis:1.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml:jaxrpc-api:1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.axis:axis-jaxrpc:1.4" level="project" />
-    <orderEntry type="library" name="Maven: commons-discovery:commons-discovery:0.2" level="project" />
-    <orderEntry type="library" name="Maven: wsdl4j:wsdl4j:1.6.2" level="project" />
+    <orderEntry type="module" module-name="eos-client" />
     <orderEntry type="module" module-name="eos-common" />
     <orderEntry type="library" name="Maven: com.caucho:hessian:4.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.5" level="project" />
@@ -102,9 +74,6 @@
     <orderEntry type="library" name="Maven: com.sunsharing.component:resvalidate:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.sunsharing.component:utils:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:15.0" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
-    <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
-    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.28" level="project" />
   </component>
 </module>
 

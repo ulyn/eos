@@ -17,11 +17,14 @@
 package com.sunsharing.eos.client;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.sunsharing.eos.client.proxy.AbstractProxy;
 import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -32,6 +35,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,11 +76,38 @@ public class RpcServlet extends HttpServlet {
             if (serviceConfig == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
             }
-            //todo 组装参数
-            RpcInvocation invocation = new RpcInvocation();
-            invocation.setMethodName(req.getParameter("method_name"));
-            invocation.setId(serviceId);
 
+            String methodName = req.getParameter("method_name");
+            ServiceMethod serviceMethod = serviceConfig.getMethod(methodName);
+            if (serviceMethod == null) {
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "指定的服务接口：" + serviceId + "没有方法名：" + methodName);
+            }
+
+            RpcInvocation invocation = new RpcInvocation();
+            invocation.setMethodName(methodName);
+            invocation.setId(serviceId);
+            invocation.setRetType(serviceMethod.getRetType().getName());
+            invocation.setParameterTypes(serviceMethod.getParameterTypes());
+
+            //方法入参
+            if (serviceMethod.getParameterTypes() != null) {
+                String arguments = req.getParameter("arguments");
+                JSONArray argsArr = JSONArray.parseArray(arguments);
+                Class<?>[] parameterTypes = serviceMethod.getParameterTypes();
+                if (argsArr.size() != parameterTypes.length) {
+                    throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION,
+                            "指定的服务接口：" + serviceId + "的方法：" + methodName + "入参个数不匹配，方法入参：" +
+                                    Arrays.toString(parameterTypes) + "实际入参：" + arguments);
+                }
+                List argsList = new ArrayList();
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    Class parameterType = parameterTypes[i];
+                    argsList.add(CompatibleTypeUtils.compatibleTypeConvert(argsArr.getString(i), parameterType));
+                }
+                invocation.setArguments(argsList.toArray());
+            }
+
+            //是否模拟的参数
             String mock = req.getParameter("mock");
             if (!StringUtils.isBlank(mock)) {
                 serviceConfig.setMock(mock);
@@ -83,7 +116,7 @@ public class RpcServlet extends HttpServlet {
             AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
             Object o = proxy.getRpcResult(invocation, serviceConfig);
 
-            printOutContent(resp, (String) o);
+            printOutContent(resp, CompatibleTypeUtils.objectToString(o));
         } catch (Throwable throwable) {
             throw new RpcException(throwable);
         }

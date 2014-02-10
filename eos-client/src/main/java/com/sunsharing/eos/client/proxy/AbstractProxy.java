@@ -28,6 +28,7 @@ import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
+import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -65,6 +66,9 @@ public abstract class AbstractProxy implements ClientProxy {
         int port = jo.getInteger("port");
 
         RequestPro pro = new RequestPro();
+        if (StringUtils.isBlank(config.getAppId())) {
+            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
+        }
         pro.setAppId(config.getAppId());
         pro.setServiceId(config.getId());
         pro.setServiceVersion(config.getVersion());
@@ -98,11 +102,10 @@ public abstract class AbstractProxy implements ClientProxy {
             if (!StringUtils.isBlank(pro.getMock())) {
                 String typeName = invocation.getRetType();
                 Class type = Class.forName(typeName);
-                try {
-                    return JSONObject.parseObject((String) value, type);
-                } catch (Exception e) {
-                    System.out.println("转换异常");
-                    return value;
+                //返回的类型一样，则不需要进行转换，返回类型是string或者不是模拟返回
+                //返回的类型不一样，则需要进行转换
+                if (value.getClass() != type) {
+                    value = CompatibleTypeUtils.compatibleTypeConvert((String) value, type);
                 }
             }
             return value;

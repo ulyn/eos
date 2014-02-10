@@ -30,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,6 +93,7 @@ public abstract class AbstractServiceContext {
             config.setTransporter(ann.transporter());
             config.setVersion(ann.version());
             config.setImpl(ann.impl());
+            config.setServiceMethodList(getInterfaceMethodList(c));
 
             if (xmlServiceConfigMap.containsKey(id)) {
                 //有xml配置的使用xml配置
@@ -181,6 +183,23 @@ public abstract class AbstractServiceContext {
             id = Character.toLowerCase(id.charAt(0)) + id.substring(1);
         }
         return id;
+    }
+
+    /**
+     * 取得类的公有方法
+     *
+     * @param interfaces
+     * @return
+     */
+    private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
+        List<ServiceMethod> list = new ArrayList<ServiceMethod>();
+        Method[] methods = interfaces.getDeclaredMethods();
+        for (Method method : methods) {
+            ServiceMethod serviceMethod = new ServiceMethod(
+                    ServiceMethod.AccessType.PUBLIC, method.getReturnType(), method.getName(), method.getParameterTypes());
+            list.add(serviceMethod);
+        }
+        return list;
     }
 
     public static Map<String, ServiceConfig> getServiceConfigMap() {

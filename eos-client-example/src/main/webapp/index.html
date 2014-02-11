@@ -11,14 +11,14 @@
     $(document).ready(function () {
         $.eosRemote({
             url: "/remote",
-            id: "testService1",
+            id: "testService",
             method: "sayHello",
             data: {"name": "hi"},
             success: function (data) {
                 console.info("返回结果：" + data);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                console.info(XMLHttpRequest, textStatus, errorThrown);
+                alert(errorThrown);
             }
         });
     });

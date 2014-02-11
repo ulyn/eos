@@ -43,7 +43,7 @@ jQuery.eosRemote = function (opts) {
                 option.success(data.result, status);
             } else {
                 //内部处理出错
-                option.error(data.result, 400, status);
+                option.error(null, data.result, new Error(data.result));
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -55,13 +55,13 @@ jQuery.eosRemote = function (opts) {
                 try {
                     eval("var eval_data=" + XMLHttpRequest.responseText);
                     if (eval_data.status) {
-                        option.success(eval_data.result, status);
+                        option.success(eval_data.result, eval_data.status);
                     } else {
                         //内部处理出错
-                        option.error(eval_data.result, 400, status);
+                        option.error(XMLHttpRequest, eval_data.result, eval_data.status);
                     }
                 } catch (e) {
-                    option.error("解析返回数据异常！");
+                    option.error(XMLHttpRequest, "解析返回数据异常！", e);
                 }
             } else {
                 option.error(XMLHttpRequest, textStatus, errorThrown);

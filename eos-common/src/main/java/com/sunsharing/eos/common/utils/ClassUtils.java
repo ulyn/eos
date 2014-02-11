@@ -18,8 +18,11 @@ package com.sunsharing.eos.common.utils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -89,11 +92,19 @@ public class ClassUtils {
         ckeckNullPackageName(packageName);
         //实例化一个篮子 P: 放置class
         final List<Class> classes = new ArrayList<Class>();
-        // 遍历在classpath 下面的jar包，class文件夹(现在没有包括 java jre)
-        for (String classPath : getClassPathArray()) {
-            // 填充 classes
-            fillClasses(new File(classPath), getWellFormedPackageName(packageName), classFilter, classes);
+
+        String packageDirName = packageName.replace('.', '/');
+        Enumeration<URL> dirs;
+        try {
+            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            while (dirs.hasMoreElements()) {
+                URL url = dirs.nextElement();
+                fillClasses(new File(url.getPath()), getWellFormedPackageName(packageName), classFilter, classes);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
         return classes;
     }
 
@@ -202,7 +213,7 @@ public class ClassUtils {
         //不包括 jre
         return System.getProperty("java.class.path").split(System.getProperty("path.separator"));
         /* 包括 jre
-		return System.getProperty("java.class.path").
+        return System.getProperty("java.class.path").
 			   concat(System.getProperty("path.separator")).
 			   concat(System.getProperty("java.home")).
 			   split(System.getProperty("path.separator"));*/

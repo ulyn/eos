@@ -7,7 +7,7 @@
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>eos-common</module>
         <module>eos-manager</module>
@@ -22,7 +22,7 @@
         <hessian_version>4.0.7</hessian_version>
         <junit_version>3.8.2</junit_version>
         <log4j_version>1.2.16</log4j_version>
-        <zookeeper_version>1.2.16</zookeeper_version>
+        <zookeeper_version>3.4.5</zookeeper_version>
         <resvalidate_version>1.0.2</resvalidate_version>
         <springframework_version>3.0.2.RELEASE</springframework_version>
     </properties>
@@ -47,7 +47,7 @@
             <dependency>
                 <groupId>org.apache.zookeeper</groupId>
                 <artifactId>zookeeper</artifactId>
-                <version>3.4.5</version>
+                <version>${zookeeper_version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sunsharing.component</groupId>

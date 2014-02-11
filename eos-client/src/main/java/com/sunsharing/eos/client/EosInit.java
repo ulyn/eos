@@ -34,20 +34,25 @@ import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
  */
 public class EosInit {
 
+    private static boolean inited = false;
+
     /**
      * 初始化eos系统
      *
      * @param packagePath
      */
     public static void start(String packagePath) {
-        ConfigContext.instancesBean(SysProp.class);
-        ServiceContext serviceContext = new ServiceContext(packagePath);
-        new Thread() {
-            public void run() {
-                ServiceLocation.getInstance().connect();
-                ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            }
-        }.start();
+        if (!inited) {
+            ConfigContext.instancesBean(SysProp.class);
+            ServiceContext serviceContext = new ServiceContext(packagePath);
+            new Thread() {
+                public void run() {
+                    ServiceLocation.getInstance().connect();
+                    ZookeeperUtils utils = ZookeeperUtils.getInstance();
+                }
+            }.start();
+            inited = true;
+        }
     }
 }
 

@@ -17,17 +17,16 @@
 package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.annotation.EosService;
+import com.sunsharing.eos.common.annotation.ParameterNames;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -106,6 +105,7 @@ public abstract class AbstractServiceContext {
             }
 
             Object bean = createBean(c, config);
+            logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
             serviceConfigMap.put(config.getId(), config);
             services.put(config.getId(), bean);
         }
@@ -195,8 +195,19 @@ public abstract class AbstractServiceContext {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
         for (Method method : methods) {
+            ParameterNames ann = method.getAnnotation(ParameterNames.class);
+            String[] parameterNames = null;
+            if (ann != null) {
+                parameterNames = ann.value();
+                int paramSize = method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
+                int annParamSize = parameterNames == null ? 0 : parameterNames.length;
+                if (paramSize != annParamSize) {
+                    throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
+                }
+            }
             ServiceMethod serviceMethod = new ServiceMethod(
-                    ServiceMethod.AccessType.PUBLIC, method.getReturnType(), method.getName(), method.getParameterTypes());
+                    ServiceMethod.AccessType.PUBLIC, method.getReturnType(), method.getName(),
+                    method.getParameterTypes(), parameterNames);
             list.add(serviceMethod);
         }
         return list;

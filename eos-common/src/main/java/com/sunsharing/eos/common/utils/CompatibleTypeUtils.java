@@ -102,14 +102,11 @@ public class CompatibleTypeUtils {
      * @return
      */
     public static String objectToString(Object o) {
-        String value = "";
-        Class type = o.getClass();
-        if (type == Class.class) {
-            value = JSONObject.toJSONString(o);
+        if (o instanceof String) {
+            return (String) o;
         } else {
-            value = o.toString();
+            return JSONObject.toJSONString(o);
         }
-        return value;
     }
 }
 

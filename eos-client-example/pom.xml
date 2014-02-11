@@ -216,7 +216,7 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
@@ -245,6 +245,7 @@
                             <port>8098</port>
                         </connector>
                     </connectors>
+                    <contextPath>/</contextPath>
                     <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
                 </configuration>
             </plugin>

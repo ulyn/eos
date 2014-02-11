@@ -52,5 +52,33 @@ public class TestServiceImpl implements TestService {
         }
         return list;
     }
+
+    @Override
+    public void testVoid() {
+        System.out.println("testVoid");
+    }
+
+    @Override
+    public Map getMap() {
+        Map map = new HashMap();
+        map.put("test1", "2323");
+        map.put("test2", "2323");
+        map.put("test3", "2323");
+        map.put("test4", "2323");
+        map.put("test5", "2323");
+        return map;
+    }
+
+    @Override
+    public Map testMapParam(Map paramMap) {
+        System.out.println("收到paramMap:" + paramMap);
+        return paramMap;
+    }
+
+    @Override
+    public List testListParam(List paramList) {
+        System.out.println("收到paramList:" + paramList);
+        return paramList;
+    }
 }
 

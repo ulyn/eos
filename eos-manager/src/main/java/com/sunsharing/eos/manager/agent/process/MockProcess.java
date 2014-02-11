@@ -63,22 +63,31 @@ public class MockProcess implements Process {
                 try {
                     JSONArray array = ServiceCache.getInstance().getTestCode(req.getAppId(), req.getServiceId(), req.getServiceVersion(), methodName);
                     boolean findMock = false;
-                    for (int i = 0; i < array.size(); i++) {
-                        JSONObject jo = array.getJSONObject(i);
-                        if (req.getMock().equals(jo.getString("status"))) {
-                            String content = jo.getString("content");
-                            res.setResult(new RpcResult(content));
-                            findMock = true;
-                            break;
+                    if (array != null) {
+                        for (int i = 0; i < array.size(); i++) {
+                            JSONObject jo = array.getJSONObject(i);
+                            if (req.getMock().equals(jo.getString("status"))) {
+                                String content = jo.getString("content");
+                                res.setResult(new RpcResult(content));
+                                findMock = true;
+                                break;
+                            }
                         }
                     }
                     if (!findMock) {
-                        String error = "服务接口没有配置指定的mock:" + req.getMock();
+                        String error = "服务接口" + req.getAppId() + "-"
+                                + req.getServiceId() + "-"
+                                + req.getServiceVersion() + "-"
+                                + methodName + "没有配置指定的mock:" + req.getMock();
                         logger.error(error);
                         res.setExceptionResult(new RpcException(RpcException.MOCK_EXCEPTION, error));
                     }
                 } catch (Exception e) {
-                    String error = "获取模拟测试值异常！";
+                    String error = "获取模拟测试值异常！" + req.getAppId() + "-"
+                            + req.getServiceId() + "-"
+                            + req.getServiceVersion() + "-"
+                            + methodName + "-"
+                            + req.getMock();
                     logger.error(error, e);
                     res.setExceptionResult(new RpcException(RpcException.MOCK_EXCEPTION, error));
                 }

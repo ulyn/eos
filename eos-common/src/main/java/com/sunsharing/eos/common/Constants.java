@@ -12,6 +12,9 @@ public class Constants {
     //eos的开发模式
     public static final String EOS_MODE_DEV = "dev";
 
+    //void的mock
+    public static final String MOCK_VOID = "void";
+
     //正常
     public static final byte STATUS_SUCCESS = 0;
     //失败

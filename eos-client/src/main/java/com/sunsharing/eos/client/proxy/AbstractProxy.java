@@ -80,7 +80,7 @@ public abstract class AbstractProxy implements ClientProxy {
                 pro.setMock(config.getMock());
             }
             //如果方法是void的并且要走mock,那么直接设置mock为void
-            if ("void".equals(invocation.getRetType()) && !StringUtils.isBlank(pro.getMock())) {
+            if (Constants.RETURN_TYPE_VOID.equals(invocation.getRetType()) && !StringUtils.isBlank(pro.getMock())) {
                 pro.setMock(Constants.MOCK_VOID);
             }
             logger.info(pro.getServiceId() + "." + invocation.getMethodName() + " use mock:" + pro.getMock());
@@ -105,7 +105,7 @@ public abstract class AbstractProxy implements ClientProxy {
             Object value = rpcResult.getValue();
             if (!StringUtils.isBlank(pro.getMock())) {
                 String typeName = invocation.getRetType();
-                if ("void".equals(typeName) || value == null) {
+                if (Constants.RETURN_TYPE_VOID.equals(typeName) || value == null) {
                     return null;
                 }
                 Class type = Class.forName(typeName);

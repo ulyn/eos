@@ -14,6 +14,7 @@ public class Constants {
 
     //void的mock
     public static final String MOCK_VOID = "void";
+    public static final String RETURN_TYPE_VOID = "void";
 
     //正常
     public static final byte STATUS_SUCCESS = 0;

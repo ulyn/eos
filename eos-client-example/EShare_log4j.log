@@ -186,3 +186,65 @@ com.sunsharing.component.resvalidate.exception.ValidateException: 加载文件eo
 2014-02-10 15:50:50,789  INFO [Thread-7-EventThread] (ClientConnectCallBack.java:28) - ````````````````````````````
 2014-02-10 15:50:50,836  INFO [Thread-7-EventThread] (ServiceLocation.java:165) - eosId:225--{"eos_ip":"192.168.100.225","eos_port":"5555","services":{}}
 2014-02-10 15:50:50,836  INFO [Thread-7-EventThread] (ClientConnectCallBack.java:30) - ````````````````````````````
+2014-02-11 12:08:30,126  INFO [main] (ContextLoader.java:187) - Root WebApplicationContext: initialization started
+2014-02-11 12:08:30,175  INFO [main] (AbstractApplicationContext.java:454) - Refreshing Root WebApplicationContext: startup date [Tue Feb 11 12:08:30 CST 2014]; root of context hierarchy
+2014-02-11 12:08:30,225  INFO [main] (XmlBeanDefinitionReader.java:315) - Loading XML bean definitions from class path resource [applicationContext.xml]
+2014-02-11 12:08:30,642  INFO [main] (DefaultListableBeanFactory.java:538) - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@15664f1a: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,systemInterceptor,mainController,org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter#0,exceptionResolver]; root of factory hierarchy
+2014-02-11 12:08:30,833  INFO [main] (ContextLoader.java:214) - Root WebApplicationContext: initialization completed in 703 ms
+2014-02-11 12:08:30,927  INFO [main] (SysInit.java:31) - 系统开始初始化...
+2014-02-11 12:08:30,928  INFO [main] (ServiceLocator.java:36) - 初始化ApplicationContext对象完毕...
+2014-02-11 12:08:30,929  INFO [main] (SysInit.java:34) - 系统初始化上下文结束...
+2014-02-11 12:08:30,929  INFO [main] (SysInit.java:36) - 初始化其它参数...
+2014-02-11 12:08:30,936  INFO [main] (ConfigContext.java:95) - ******实例化Bean:com.sunsharing.eos.client.sys.SysProp...
+2014-02-11 12:08:30,939  INFO [main] (ConfigContext.java:131) - 开始加载配置文件：eos.properties
+2014-02-11 12:08:30,940  INFO [main] (ConfigContext.java:133) - 配置文件完整路径：/Users/criss/Desktop/projectDev/eosgit/eos-client-example/target/classes/eos.properties
+2014-02-11 12:08:30,940  INFO [main] (ConfigContext.java:138) - filePath = /Users/criss/Desktop/projectDev/eosgit/eos-client-example/target/classes/eos.properties
+2014-02-11 12:08:30,941  INFO [main] (ConfigContext.java:309) - 加载参数：zookeeper_ip=192.168.0.224
+2014-02-11 12:08:30,941  INFO [main] (ConfigContext.java:309) - 加载参数：zookeeper_port=2181
+2014-02-11 12:08:30,942  INFO [main] (ConfigContext.java:309) - 加载参数：debugging_server_ip=192.168.100.60
+2014-02-11 12:08:30,943  INFO [main] (ConfigContext.java:309) - 加载参数：use_mock=true
+2014-02-11 12:08:30,945  INFO [main] (ConfigContext.java:152) - 加载属性配置文件结束！
+2014-02-11 12:08:30,945  INFO [main] (ConfigContext.java:153) - 开始设置bean的值.....
+2014-02-11 12:08:30,955  INFO [main] (ConfigContext.java:277) - zookeeperIp（zookeeper_ip）=192.168.0.224
+2014-02-11 12:08:30,959  INFO [main] (ConfigContext.java:277) - zookeeperPort（zookeeper_port）=2181
+2014-02-11 12:08:30,963  INFO [main] (ConfigContext.java:277) - debugServerIp（debugging_server_ip）=192.168.100.60
+2014-02-11 12:08:30,964  INFO [main] (ConfigContext.java:277) - use_mock（use_mock）=true
+2014-02-11 12:08:30,964  INFO [main] (ConfigContext.java:98) - ******实例化Bean:com.sunsharing.eos.client.sys.SysProp结束
+2014-02-11 12:08:31,021  INFO [main] (SysInit.java:45) - 初始化其它参数结束...
+2014-02-11 12:08:31,035  INFO [Thread-7] (ZookeeperUtils.java:75) - ZookeeperCacheSynchronizer:connect
+2014-02-11 12:08:31,040  INFO [Thread-7] (ZookeeperUtils.java:82) - 连接192.168.0.224:2181
+2014-02-11 12:08:31,058  INFO [main] (FrameworkServlet.java:301) - FrameworkServlet 'springDispatcherServlet': initialization started
+2014-02-11 12:08:31,064  INFO [main] (AbstractApplicationContext.java:454) - Refreshing WebApplicationContext for namespace 'springDispatcherServlet-servlet': startup date [Tue Feb 11 12:08:31 CST 2014]; parent: Root WebApplicationContext
+2014-02-11 12:08:31,067  INFO [main] (XmlBeanDefinitionReader.java:315) - Loading XML bean definitions from class path resource [spring-servlet.xml]
+2014-02-11 12:08:31,177  INFO [main] (DefaultListableBeanFactory.java:538) - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@660e5025: defining beans [systemInterceptor,mainController,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping#0,viewResolver,multipartResolver]; parent: org.springframework.beans.factory.support.DefaultListableBeanFactory@15664f1a
+2014-02-11 12:08:31,242  INFO [main] (AbstractUrlHandlerMapping.java:410) - Mapped URL path [/login.do] onto handler [com.sunsharing.component.web.controller.main.MainController@51927ba1]
+2014-02-11 12:08:31,307  INFO [main] (FrameworkServlet.java:320) - FrameworkServlet 'springDispatcherServlet': initialization completed in 248 ms
+2014-02-11 12:08:35,585  INFO [Thread-7] (Environment.java:100) - Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2014-02-11 12:08:35,586  INFO [Thread-7] (Environment.java:100) - Client environment:host.name=192.168.137.103
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.version=1.6.0_65
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.vendor=Apple Inc.
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.home=/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.class.path=/Users/criss/Desktop/tools/apache-maven-3.0.5/boot/plexus-classworlds-2.4.jar:/Applications/IntelliJ IDEA 13.app/lib/idea_rt.jar
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.library.path=.:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.io.tmpdir=/var/folders/kw/2j8r0qcd6g5gs6mqnx988jj40000gn/T/
+2014-02-11 12:08:35,587  INFO [Thread-7] (Environment.java:100) - Client environment:java.compiler=<NA>
+2014-02-11 12:08:35,588  INFO [Thread-7] (Environment.java:100) - Client environment:os.name=Mac OS X
+2014-02-11 12:08:35,588  INFO [Thread-7] (Environment.java:100) - Client environment:os.arch=x86_64
+2014-02-11 12:08:35,588  INFO [Thread-7] (Environment.java:100) - Client environment:os.version=10.9.1
+2014-02-11 12:08:35,588  INFO [Thread-7] (Environment.java:100) - Client environment:user.name=criss
+2014-02-11 12:08:35,588  INFO [Thread-7] (Environment.java:100) - Client environment:user.home=/Users/criss
+2014-02-11 12:08:35,588  INFO [Thread-7] (Environment.java:100) - Client environment:user.dir=/Users/criss/Desktop/projectDev/eosgit/eos-client-example
+2014-02-11 12:08:35,590  INFO [Thread-7] (ZooKeeper.java:438) - Initiating client connection, connectString=192.168.0.224:2181 sessionTimeout=5000 watcher=com.sunsharing.eos.common.zookeeper.ZookeeperUtils$DefaultWatcher@190d0630
+2014-02-11 12:08:36,256  INFO [Thread-7] (ZookeeperUtils.java:84) - 连接完成
+2014-02-11 12:08:40,558  INFO [Thread-7-SendThread(192.168.0.224:2181)] (ClientCnxn.java:966) - Opening socket connection to server 192.168.0.224/192.168.0.224:2181. Will not attempt to authenticate using SASL (无法定位登录配置)
+2014-02-11 12:08:40,572  INFO [Thread-7-SendThread(192.168.0.224:2181)] (ClientCnxn.java:849) - Socket connection established to 192.168.0.224/192.168.0.224:2181, initiating session
+2014-02-11 12:08:40,594  INFO [Thread-7-SendThread(192.168.0.224:2181)] (ClientCnxn.java:1207) - Session establishment complete on server 192.168.0.224/192.168.0.224:2181, sessionid = 0x1440b8b5812003d, negotiated timeout = 5000
+2014-02-11 12:08:40,596  INFO [Thread-7-EventThread] (ZookeeperUtils.java:220) - 已经触发了None事件！::path:null
+2014-02-11 12:08:40,596  INFO [Thread-7-EventThread] (ZookeeperUtils.java:228) - 连接结束connectedSignal.countDown...
+2014-02-11 12:08:40,596  INFO [Thread-7-EventThread] (ClientConnectCallBack.java:21) - 登录成功了开始调用回调
+2014-02-11 12:08:40,746  INFO [Thread-7-EventThread] (ServiceLocation.java:56) - jiazai:225
+2014-02-11 12:08:40,761  INFO [Thread-7-EventThread] (ServiceLocation.java:126) - 监听:/SERVICE_STATE/225
+2014-02-11 12:08:40,776  INFO [Thread-7-EventThread] (ServiceLocation.java:128) - isonline:true
+2014-02-11 12:08:40,805  INFO [Thread-7-EventThread] (ClientConnectCallBack.java:28) - ````````````````````````````
+2014-02-11 12:08:40,857  INFO [Thread-7-EventThread] (ServiceLocation.java:165) - eosId:225--{"eos_ip":"192.168.100.225","eos_port":"5555","services":{}}
+2014-02-11 12:08:40,857  INFO [Thread-7-EventThread] (ClientConnectCallBack.java:30) - ````````````````````````````

@@ -171,7 +171,7 @@ public class Service {
             byte[] arr = new byte[1024];
             int len = 0;
             while ((len = input.read(arr)) != -1) {
-                sb.append(new String(arr, 0, len,"UTF-8"));
+                sb.append(new String(arr, 0, len));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

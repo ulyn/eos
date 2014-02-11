@@ -25,4 +25,5 @@ public class MainController extends BaseController {
     public String relogin(Model model,HttpServletRequest request) throws Exception {
         return "login";
     }
+
 }

@@ -110,12 +110,17 @@ public class ServiceController {
                         String line = "";
                         while((line = reader.readLine())!=null)
                         {
-                            System.out.println(line);
+
                             str2.add(line);
                         }
                         String [] lines = str2.toArray(new String[]{});
                         InterfaceServcie service = new InterfaceServcie();
                         service.addAppCode(appcode,lines);
+                        lines = service.addParams(lines);
+                        for(int i=0;i<lines.length;i++)
+                        {
+                            //System.out.println(lines[i]);
+                        }
                         String version = service.getVersion(lines);
                         System.out.println(version);
                         String name = service.getInterfaceName(lines);
@@ -224,6 +229,7 @@ public class ServiceController {
         //application/octet-stream
         String java = service.getJava(versionId);
         String name = service.getName(versionId);
+        name = name.substring(0,1).toUpperCase()+name.substring(1);
         name +=".java";
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"

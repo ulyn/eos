@@ -22,7 +22,7 @@ import java.lang.annotation.*;
  * <pre></pre>
  * <br>----------------------------------------------------------------------
  * <br> <b>功能描述:</b>
- * <br> Eos服务的注解
+ * <br> 方法参数名注解
  * <br> 注意事项:
  * <br>
  * <br>
@@ -30,25 +30,9 @@ import java.lang.annotation.*;
  * <br>
  */
 @Documented
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EosService {
-
-    String id() default "";
-
-    String version();
-
-    String proxy() default "jdk";
-
-    String serialization() default "hessian";
-
-    String transporter() default "netty";
-
-    String appId() default "";
-
-    String impl() default "";
-
-    int timeout() default 30000;
-
+public @interface ParameterNames {
+    String[] value() default {};
 }
 

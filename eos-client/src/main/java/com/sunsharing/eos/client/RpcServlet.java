@@ -35,10 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <pre></pre>
@@ -61,6 +58,12 @@ public class RpcServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        logger.info("eos framework init RpcServlet....");
+        String scanPackage = config.getInitParameter("scanPackage");
+        if (StringUtils.isBlank(scanPackage)) {
+            scanPackage = "com.sunsharing";
+        }
+        EosInit.start(scanPackage);
     }
 
     @Override
@@ -70,14 +73,15 @@ public class RpcServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Map rtnMap = new HashMap();
         try {
-            String serviceId = req.getParameter("service_id");
+            String serviceId = req.getParameter("eos_service_id");
             ServiceConfig serviceConfig = ServiceContext.getServiceConfig(serviceId);
             if (serviceConfig == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
             }
 
-            String methodName = req.getParameter("method_name");
+            String methodName = req.getParameter("eos_method_name");
             ServiceMethod serviceMethod = serviceConfig.getMethod(methodName);
             if (serviceMethod == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "指定的服务接口：" + serviceId + "没有方法名：" + methodName);
@@ -91,24 +95,27 @@ public class RpcServlet extends HttpServlet {
 
             //方法入参
             if (serviceMethod.getParameterTypes() != null) {
-                String arguments = req.getParameter("arguments");
-                JSONArray argsArr = JSONArray.parseArray(arguments);
+
                 Class<?>[] parameterTypes = serviceMethod.getParameterTypes();
-                if (argsArr.size() != parameterTypes.length) {
-                    throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION,
-                            "指定的服务接口：" + serviceId + "的方法：" + methodName + "入参个数不匹配，方法入参：" +
-                                    Arrays.toString(parameterTypes) + "实际入参：" + arguments);
-                }
+                String[] parameterNames = serviceMethod.getParameterNames();
+
                 List argsList = new ArrayList();
                 for (int i = 0; i < parameterTypes.length; i++) {
                     Class parameterType = parameterTypes[i];
-                    argsList.add(CompatibleTypeUtils.compatibleTypeConvert(argsArr.getString(i), parameterType));
+                    String parameterName = parameterNames[i];
+                    String parameterValue = req.getParameter(parameterName);
+                    if (parameterValue == null) {
+                        logger.warn("指定的服务接口：" + serviceId + "的方法：" + methodName + "参数" + parameterName + "值为null");
+                    }
+                    argsList.add(CompatibleTypeUtils.compatibleTypeConvert(parameterValue, parameterType));
                 }
-                invocation.setArguments(argsList.toArray());
+                if (argsList.size() > 0) {
+                    invocation.setArguments(argsList.toArray());
+                }
             }
 
             //是否模拟的参数
-            String mock = req.getParameter("mock");
+            String mock = req.getParameter("eos_mock");
             if (!StringUtils.isBlank(mock)) {
                 serviceConfig.setMock(mock);
             }
@@ -116,10 +123,14 @@ public class RpcServlet extends HttpServlet {
             AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
             Object o = proxy.getRpcResult(invocation, serviceConfig);
 
-            printOutContent(resp, CompatibleTypeUtils.objectToString(o));
+            rtnMap.put("status", true);
+            rtnMap.put("result", o);
         } catch (Throwable throwable) {
-            throw new RpcException(throwable);
+            logger.error("remote操作异常！", throwable);
+            rtnMap.put("status", false);
+            rtnMap.put("result", throwable.getMessage());
         }
+        printOutContent(resp, CompatibleTypeUtils.objectToString(rtnMap));
     }
 
     @Override

@@ -35,6 +35,7 @@ public class ServiceMethod {
 
     private String methodName;
     private Class<?>[] parameterTypes;
+    private String[] parameterNames;
     private Class retType;
     private AccessType accessType;
 
@@ -42,11 +43,12 @@ public class ServiceMethod {
     }
 
     public ServiceMethod(AccessType accessType, Class retType,
-                         String methodName, Class<?>[] parameterTypes) {
+                         String methodName, Class<?>[] parameterTypes, String[] parameterNames) {
         this.methodName = methodName;
         this.accessType = accessType;
         this.retType = retType;
         this.parameterTypes = parameterTypes;
+        this.parameterNames = parameterNames;
     }
 
     public String getMethodName() {
@@ -79,6 +81,14 @@ public class ServiceMethod {
 
     public void setAccessType(AccessType accessType) {
         this.accessType = accessType;
+    }
+
+    public String[] getParameterNames() {
+        return parameterNames;
+    }
+
+    public void setParameterNames(String[] parameterNames) {
+        this.parameterNames = parameterNames;
     }
 }
 

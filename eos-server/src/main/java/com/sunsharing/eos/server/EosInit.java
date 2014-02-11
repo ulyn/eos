@@ -33,6 +33,7 @@ import org.springframework.context.ApplicationContext;
  * <br>
  */
 public class EosInit {
+    private static boolean inited = false;
 
     /**
      * 初始化eos系统，没有使用spring
@@ -50,14 +51,17 @@ public class EosInit {
      * @param packagePath
      */
     public static void start(ApplicationContext ctx, String packagePath) {
-        ConfigContext.instancesBean(SysProp.class);
-        ServiceContext serviceContext = new ServiceContext(ctx, packagePath);
-        new Thread() {
-            public void run() {
-                ServiceRegister serviceRegister = ServiceRegister.getInstance();
-                serviceRegister.init();
-            }
-        }.start();
+        if (!inited) {
+            ConfigContext.instancesBean(SysProp.class);
+            ServiceContext serviceContext = new ServiceContext(ctx, packagePath);
+            new Thread() {
+                public void run() {
+                    ServiceRegister serviceRegister = ServiceRegister.getInstance();
+                    serviceRegister.init();
+                }
+            }.start();
+            inited = true;
+        }
     }
 }
 

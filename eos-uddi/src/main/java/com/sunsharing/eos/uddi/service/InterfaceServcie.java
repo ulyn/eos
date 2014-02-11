@@ -66,6 +66,7 @@ public class InterfaceServcie {
                 Properties t = new Properties();
                 t.load(new ByteArrayInputStream(value.getBytes("UTF-8")));
                 t.put("appId",appCode);
+                t.put("id",getInterfaceName(lines));
                 String result = "";
                 for(Iterator iter = t.keySet().iterator();iter.hasNext();)
                 {

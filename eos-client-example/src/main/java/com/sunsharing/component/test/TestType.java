@@ -49,7 +49,7 @@ public interface TestType {
      * @return
      * ${success} 如果s="1"成功返回
      * 1
-     * ${error} 如果s="-1"异常返
+     * ${error} 如果s="-1"异常返��
      * -1
      *
      */
@@ -66,7 +66,7 @@ public interface TestType {
      */
     Map testMap(
             Map m,
-            String l2
+                String l2
     );
 
     /**

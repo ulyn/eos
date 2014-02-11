@@ -1,0 +1,8 @@
+<beans>
+        <bean id="testType" mock="success">
+            <methods>
+                <testInt mock="success"/>
+                <testString mock="success"/>
+            </methods>
+        </bean>
+</beans>

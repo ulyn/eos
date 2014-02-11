@@ -84,6 +84,100 @@ public class InterfaceServcie {
             }
         }
     }
+    //添加入参的注解
+    public String[] addParams(String[] lines) throws Exception
+    {
+        boolean start = false;
+        boolean functionstart = false;
+        StringBuffer functions = new StringBuffer();
+        Map parMap = new HashMap();
+        List<Map> funs = new ArrayList<Map>();
+        for(int i=0;i<lines.length;i++)
+        {
+            if(lines[i].trim().startsWith("public interface"))
+            {
+                start = true;
+            }
+            if(start && !lines[i].trim().startsWith("public interface"))
+            {
+                if(functionstart)
+                {
+                    if(!StringUtils.isBlank(lines[i]))
+                    functions.append(lines[i]);
+                }
+                //开始处理
+                if(functionstart==false && !StringUtils.isBlank(lines[i].trim()) && !lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*"))
+                {
+                    functionstart = true;
+                    functions.append(lines[i]);
+                    parMap.put("index",i);
+                }
+
+
+                if(lines[i].trim().endsWith(");"))
+                {
+                    functionstart = false;
+                    if(lines[i].trim().indexOf("(")==-1)
+                    {
+                        functions.append(lines[i]);
+                    }
+
+                    String str = functions.toString();
+                    System.out.println(str);
+                    int startIndex = str.indexOf("(");
+                    int endIndex = str.indexOf(")");
+                    String pars = str.substring(startIndex+1,endIndex);
+                    String result = "";
+                    String [] arr = pars.split(",");
+                    for(int j=0;j<arr.length;j++)
+                    {
+                        String tmp[] = arr[j].split(" ");
+                        List lll = new ArrayList();
+                        for(int k=0;k<tmp.length;k++)
+                        {
+                            if(!StringUtils.isBlank(tmp[k]))
+                            {
+                                lll.add(tmp[k]);
+                            }
+                        }
+                        result+="\""+lll.get(1)+"\",";
+                    }
+                    if(!StringUtils.isBlank(result))
+                    {
+                        result = result.substring(0,result.length()-1);
+                    }
+                    parMap.put("result",result);
+                    funs.add(parMap);
+                    parMap = new HashMap();
+                    functions = new StringBuffer();
+                }
+            }
+            if(lines[i].trim().endsWith("}") && !lines[i].trim().startsWith("/*") &&
+                 !lines[i].trim().startsWith("*"))
+            {
+                start = false;
+            }
+        }
+        List<String> kkk = new ArrayList();
+        for(int i=0;i<lines.length;i++)
+        {
+            kkk.add(lines[i]);
+        }
+        for(int i=0;i<funs.size();i++)
+        {
+            Map m = (Map)funs.get(i);
+            int sourceInt = (Integer)m.get("index");
+            kkk.add(i+sourceInt,"@ParameterNames(value = {"+(String)m.get("result")
+            +"})"
+            );
+
+
+        }
+
+        return kkk.toArray(new String[]{});
+
+    }
+
 
     public Map getFunction(String[]lines)
     {

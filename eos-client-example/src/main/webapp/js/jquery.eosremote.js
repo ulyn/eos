@@ -9,7 +9,7 @@
 jQuery.eosRemote = function (opts) {
     var defaults = {
         "url": "/remote",
-        "id": "",
+        "serviceId": "",
         "method": "",
         "mock": "",
         "data": null,

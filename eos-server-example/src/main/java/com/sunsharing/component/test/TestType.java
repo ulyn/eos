@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * EOS测试类型
  */
-@EosService(version="1.0",appId="Firrari")
+@EosService(version="1.2")
 public interface TestType {
     /**
      * 测试Int类型

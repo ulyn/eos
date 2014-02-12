@@ -8,11 +8,20 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by criss on 14-1-27.
  */
 public class ClientConnectCallBack implements ZookeeperCallBack {
+
+    CountDownLatch connectedSignal = null;
+
+    public ClientConnectCallBack(CountDownLatch connectedSignal)
+    {
+        this.connectedSignal = connectedSignal;
+    }
+
     Logger logger = Logger.getLogger(ClientConnectCallBack.class);
     @Override
     public void afterConnect(WatchedEvent event) {
@@ -28,6 +37,11 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
             logger.info("````````````````````````````");
             ServiceLocation.getInstance().printCache();
             logger.info("````````````````````````````");
+
+            if(connectedSignal!=null)
+            {
+                connectedSignal.countDown();
+            }
 
         }catch (Exception e)
         {

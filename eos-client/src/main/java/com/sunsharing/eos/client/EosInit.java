@@ -54,5 +54,23 @@ public class EosInit {
             inited = true;
         }
     }
+    /**
+     * 同步初始化eos系统
+     *
+     * @param packagePath
+     */
+    public synchronized static void synStart(String packagePath)
+    {
+        ConfigContext.instancesBean(SysProp.class);
+        ServiceContext serviceContext = new ServiceContext(packagePath);
+        ServiceLocation.getInstance().synConnect();
+    }
+
+    public static void main(String[]a)
+    {
+        EosInit.synStart("com.sunsharing");
+        System.out.println("成功了~~~~~~");
+    }
+
 }
 

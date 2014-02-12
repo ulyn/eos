@@ -175,7 +175,16 @@ public class InterfaceServcie {
 
 
         }
-        kkk.add(1,"import com.sunsharing.eos.common.annotation.ParameterNames;");
+        int index = 0;
+        for(int i=0;i<kkk.size();i++)
+        {
+            if(((String)kkk.get(i)).trim().startsWith("package"))
+            {
+                index=i;
+            }
+        }
+
+        kkk.add(++index,"import com.sunsharing.eos.common.annotation.ParameterNames;");
 
         return kkk.toArray(new String[]{});
 

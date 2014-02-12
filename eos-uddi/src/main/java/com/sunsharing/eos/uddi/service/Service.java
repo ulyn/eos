@@ -15,6 +15,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
@@ -166,12 +167,14 @@ public class Service {
         StringBuffer sb = new StringBuffer();
 
         FileInputStream input = null;
+        ByteArrayOutputStream arrOut = new ByteArrayOutputStream();
         try {
             input = new FileInputStream(new File(destName));
             byte[] arr = new byte[1024];
             int len = 0;
+
             while ((len = input.read(arr)) != -1) {
-                sb.append(new String(arr, 0, len));
+                arrOut.write(arr, 0, len);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -180,7 +183,7 @@ public class Service {
                 input.close();
             }
         }
-        String result = sb.toString();
+        String result = new String(arrOut.toByteArray(), "UTF-8");
 
 
         return result;

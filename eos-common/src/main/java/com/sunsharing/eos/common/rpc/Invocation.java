@@ -55,4 +55,5 @@ public interface Invocation {
      */
     Object[] getArguments();
 
+    String getRetType();
 }

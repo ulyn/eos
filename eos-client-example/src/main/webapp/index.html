@@ -11,7 +11,7 @@
     $(document).ready(function () {
         $.eosRemote({
             url: "/remote",
-            id: "testService",
+            serviceId: "testService",
             method: "sayHello",
             data: {"name": "hi"},
             success: function (data) {

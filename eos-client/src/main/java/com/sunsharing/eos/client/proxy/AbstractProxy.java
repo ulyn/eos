@@ -48,18 +48,22 @@ public abstract class AbstractProxy implements ClientProxy {
 
     public Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
         logger.info("调用eos服务入参：" + invocation);
+
+        String mock = invocation.getRealMock(config, SysProp.use_mock);
+        boolean isMock = !StringUtils.isBlank(mock);
         //zookeeper取得服务的ip
         JSONObject jo;
-        if (StringUtils.isBlank(config.getMock())) {
+        if (isMock) {
             jo = ServiceLocation.getInstance().getServiceLocation(config.getAppId(), config.getId(), config.getVersion());
         } else {
             jo = ServiceLocation.getInstance().getOnlineEOS();
         }
         if (jo == null) {
-            if (StringUtils.isBlank(config.getMock())) {
+            if (isMock) {
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "对于模拟调用，没有找到可用的eos！");
+            } else {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有找到请求的可用的eos节点！");
             }
-            throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "对于模拟调用，没有找到可用的eos！");
         }
 
         String ip = jo.getString("ip");
@@ -73,16 +77,8 @@ public abstract class AbstractProxy implements ClientProxy {
         pro.setServiceId(config.getId());
         pro.setServiceVersion(config.getVersion());
         pro.setSerialization(config.getSerialization());
-        if (SysProp.use_mock) {
-            if (config.getMethodMockMap() != null && config.getMethodMockMap().get(invocation.getMethodName()) != null) {
-                pro.setMock(config.getMethodMockMap().get(invocation.getMethodName()));
-            } else {
-                pro.setMock(config.getMock());
-            }
-            //如果方法是void的并且要走mock,那么直接设置mock为void
-            if (Constants.RETURN_TYPE_VOID.equals(invocation.getRetType()) && !StringUtils.isBlank(pro.getMock())) {
-                pro.setMock(Constants.MOCK_VOID);
-            }
+        if (isMock) {
+            pro.setMock(mock);
             logger.info(pro.getServiceId() + "." + invocation.getMethodName() + " use mock:" + pro.getMock());
         }
         pro.setInvocation(invocation);
@@ -103,7 +99,7 @@ public abstract class AbstractProxy implements ClientProxy {
             }
         } else {
             Object value = rpcResult.getValue();
-            if (!StringUtils.isBlank(pro.getMock())) {
+            if (isMock) {
                 String typeName = invocation.getRetType();
                 if (Constants.RETURN_TYPE_VOID.equals(typeName) || value == null) {
                     return null;

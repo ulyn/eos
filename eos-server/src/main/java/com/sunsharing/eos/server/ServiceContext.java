@@ -39,7 +39,7 @@ import java.util.*;
  * <br>
  */
 public class ServiceContext extends AbstractServiceContext {
-    Logger logger = Logger.getLogger(ServiceContext.class);
+    static Logger logger = Logger.getLogger(ServiceContext.class);
 
     ApplicationContext ctx;
 
@@ -66,20 +66,23 @@ public class ServiceContext extends AbstractServiceContext {
     @Override
     protected Object createBean(final Class interfaces, ServiceConfig config) {
         //服务端,找实现类
+        Object bean = null;
         if (!config.getImpl().equals("")) {
             //有配置实现类，直接使用
             if (this.ctx != null) {
                 Object o = this.ctx.getBean(config.getImpl());
                 if (o != null) {
-                    this.services.put(interfaces.getName(), o);
+                    logger.info(interfaces.getName() + "取得服务配置的impl=" + config.getImpl() + "的spring实现");
+                    bean = o;
                 }
             }
             if (!this.services.containsKey(interfaces.getName())) {
                 //还没有接口实现类，说明spring没有，那么实例化它
                 try {
-                    this.services.put(interfaces.getName(), Class.forName(config.getImpl()).newInstance());
+                    bean = Class.forName(config.getImpl()).newInstance();
+                    logger.info(interfaces.getName() + "取得服务配置的impl=" + config.getImpl() + "的newInstance实现");
                 } catch (Exception e) {
-                    logger.error("初始化" + interfaces.getName() + "实现类" + config.getImpl() + "异常!", e);
+                    logger.error("初始化" + interfaces.getName() + "配置的impl实现类" + config.getImpl() + "异常!", e);
                     System.exit(0);
                 }
             }
@@ -91,12 +94,13 @@ public class ServiceContext extends AbstractServiceContext {
                 if (springBeanMap.size() > 0) {
                     //是spring的实现
                     for (String key : springBeanMap.keySet()) {
-                        this.services.put(interfaces.getName(), springBeanMap.get(key));
+                        bean = springBeanMap.get(key);
+                        logger.info(interfaces.getName() + "取得服务类型的spring实现" + bean.getClass());
                         break;
                     }
                 }
             }
-            if (!this.services.containsKey(interfaces.getName())) {
+            if (bean == null) {
                 //没有spring的实现，那么扫描取实现类
                 //查找实现类
                 ClassFilter filter = new ClassFilter() {
@@ -109,22 +113,25 @@ public class ServiceContext extends AbstractServiceContext {
                 if (implClasses.size() > 0) {
                     Class clazz = implClasses.get(0);
                     try {
-                        this.services.put(interfaces.getName(), clazz.newInstance());
+                        bean = clazz.newInstance();
+                        logger.info(interfaces.getName() + "取得服务类型的newInstance实现" + clazz.getName());
                     } catch (Exception e) {
                         logger.error("实例化EosService实现类" + clazz.getName() + "失败，系统退出", e);
                         System.exit(0);
                     }
                 } else {
-                    logger.error("找不到EosService接口实现类，系统退出");
-                    System.exit(0);
+                    logger.warn("找不到EosService接口" + interfaces.getName() + "实现类");
+                    bean = null;
                 }
             }
         }
-        //创建bean结束，服务端注册
-        RpcServer server = ServerFactory.getServer(config.getTransporter());
-        server.register(this.services.get(interfaces.getName()), config);
-
-        return this.services.get(interfaces.getName());
+        if (bean != null) {
+            //创建bean结束，服务端注册
+            RpcServer server = ServerFactory.getServer(config.getTransporter());
+            server.register(bean, config);
+            this.services.put(interfaces.getName(), bean);
+        }
+        return bean;
     }
 
     public static void main(String[] args) {

@@ -139,6 +139,14 @@ public class ServiceConfig {
         this.serviceMethodList = serviceMethodList;
     }
 
+    public String getMethodMock(String methodName) {
+        if (getMethodMockMap() != null && getMethodMockMap().get(methodName) != null) {
+            return getMethodMockMap().get(methodName);
+        } else {
+            return getMock();
+        }
+    }
+
     public ServiceMethod getMethod(String methodName) {
         if (serviceMethodList != null) {
             for (ServiceMethod serviceMethod : serviceMethodList) {

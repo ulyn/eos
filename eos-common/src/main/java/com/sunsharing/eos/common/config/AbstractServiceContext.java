@@ -105,9 +105,11 @@ public abstract class AbstractServiceContext {
             }
 
             Object bean = createBean(c, config);
-            logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
-            serviceConfigMap.put(config.getId(), config);
-            services.put(config.getId(), bean);
+            if (bean != null) {
+                logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
+                serviceConfigMap.put(config.getId(), config);
+                services.put(config.getId(), bean);
+            }
         }
     }
 

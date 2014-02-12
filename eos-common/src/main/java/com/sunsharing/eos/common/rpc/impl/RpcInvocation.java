@@ -16,7 +16,10 @@
  */
 package com.sunsharing.eos.common.rpc.impl;
 
+import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.rpc.Invocation;
+import com.sunsharing.eos.common.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -39,6 +42,7 @@ public class RpcInvocation implements Invocation, Serializable {
     private Class<?>[] parameterTypes;
     private Object[] arguments;
     private String retType;
+    private String mock;
 
 
     public String getId() {
@@ -84,6 +88,14 @@ public class RpcInvocation implements Invocation, Serializable {
         this.retType = retType;
     }
 
+    public String getMock() {
+        return mock;
+    }
+
+    public void setMock(String mock) {
+        this.mock = mock;
+    }
+
     @Override
     public String toString() {
         return "RpcInvocation [methodName=" + methodName + ", parameterTypes="
@@ -91,5 +103,24 @@ public class RpcInvocation implements Invocation, Serializable {
                 + "]";
     }
 
+    /**
+     * 取得最终的mock值
+     *
+     * @param config
+     * @param useMock
+     * @return
+     */
+    public String getRealMock(ServiceConfig config, boolean useMock) {
+        String realMock = this.mock;
+        if (useMock) {
+            if (Constants.RETURN_TYPE_VOID.equals(this.retType) && !StringUtils.isBlank(realMock)) {
+                //如果方法是void的并且要走mock,那么直接设置mock为void
+                realMock = Constants.MOCK_VOID;
+            } else {
+                realMock = config.getMethodMock(methodName);
+            }
+        }
+        return realMock;
+    }
 }
 

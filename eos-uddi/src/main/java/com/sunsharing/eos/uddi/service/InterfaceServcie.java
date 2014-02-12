@@ -174,6 +174,7 @@ public class InterfaceServcie {
 
 
         }
+        kkk.add(1,"import com.sunsharing.eos.common.annotation.ParameterNames;");
 
         return kkk.toArray(new String[]{});
 
@@ -281,7 +282,7 @@ public class InterfaceServcie {
                 }
                 tmp = new HashMap();
                 int index = l.indexOf("}");
-                String status = l.substring(1,index);
+                String status = l.substring(2,index);
                 tmp.put("status",status);
                 tmp.put("desc",l.substring(index+1));
                 tmp.put("content","");

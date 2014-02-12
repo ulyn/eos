@@ -1,4 +1,5 @@
 package com.sunsharing.component.test;
+import com.sunsharing.eos.common.annotation.ParameterNames;
 
 import com.sunsharing.eos.common.annotation.EosService;
 
@@ -8,8 +9,8 @@ import java.util.Map;
 /**
  * EOS测试类型
  */
-@EosService(version="1.0",appId="Firrari")
-public interface TestType {
+@EosService(version="1.2",appId="criss",id="testType")
+public interface  TestType {
     /**
      * 测试Int类型
      * @param i 随便
@@ -19,6 +20,7 @@ public interface TestType {
      * ${error} 如果i==-1返回-1
      * -1
      */
+    @ParameterNames(value = {"i"})
     int testInt(int i);
 
     /**
@@ -30,6 +32,7 @@ public interface TestType {
      * ${error} 如果d=-1异常返回
      * -1.0
      */
+    @ParameterNames(value = {"d"})
     double testDouble(double d);
 
     /**
@@ -41,6 +44,7 @@ public interface TestType {
      * ${error} 如果f=-1异常返回
      * -1.0
      */
+    @ParameterNames(value = {"f"})
     float testFloat(float f);
 
     /**
@@ -49,10 +53,11 @@ public interface TestType {
      * @return
      * ${success} 如果s="1"成功返回
      * 1
-     * ${error} 如果s="-1"异常返��
+     * ${error} 如果s="-1"异常返
      * -1
      *
      */
+    @ParameterNames(value = {"s","sw"})
     String testString(String s,String sw);
 
     /**
@@ -64,9 +69,10 @@ public interface TestType {
      * ${error} 入参不包含test参数
      * {"error":"error1","error1":"error2"}
      */
+    @ParameterNames(value = {"m","l2"})
     Map testMap(
             Map m,
-                String l2
+            String l2
     );
 
     /**
@@ -77,5 +83,6 @@ public interface TestType {
      * ${success} 所有都返回
      * [{"test":"test1","test2":"test3","test3":"test4"}]
      */
+    @ParameterNames(value = {"list"})
     List testListMap(List list);
 }

@@ -11,11 +11,13 @@
     $(document).ready(function () {
         $.eosRemote({
             url: "/remote",
-            serviceId: "testService",
-            method: "sayHello",
-            data: {"name": "hi"},
+            serviceId: "testType",
+            mock:"success",
+            method: "testString",
+            data: {"s": "hi","sw":"hexin"},
             success: function (data) {
-                console.info("返回结果：" + data);
+                alert("返回结果:"+data);
+                //console.info("返回结果：" + data);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert(errorThrown);

@@ -137,7 +137,7 @@ public class ServiceController {
                             w.write("\n".getBytes("UTF-8"));
                         }
                         TUser u = (TUser)request.getSession().getAttribute("user");
-                        this.service.saveService(servicename,appId,module,lines,u.getUserId());
+                        this.service.saveService(servicename,appId,module,str2.toArray(new String[]{}),u.getUserId());
                     }catch (Exception e)
                     {
                         logger.error("",e);

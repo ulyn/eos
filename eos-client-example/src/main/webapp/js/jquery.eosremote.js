@@ -25,7 +25,7 @@ jQuery.eosRemote = function (opts) {
         }
     }
     var option = jQuery.extend({}, defaults, opts);
-    var vars = "eos_service_id=" + option.id + "&eos_method_name=" + option.method + "&eos_mock=" + option.mock;
+    var vars = "eos_service_id=" + option.serviceId + "&eos_method_name=" + option.method + "&eos_mock=" + option.mock;
     if (option.url.indexOf("?") != -1) {
         option.url = option.url + "&" + vars;
     } else {

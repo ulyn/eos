@@ -31,6 +31,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
             //serviceRegister.registerEos("criss");
 
             List<ServiceConfig> serviceConfigs = ServiceContext.getServiceConfigList();
+
             for (ServiceConfig config : serviceConfigs) {
                 //你可以在这里注册服务下面是示例
                 JSONObject obj = new JSONObject();

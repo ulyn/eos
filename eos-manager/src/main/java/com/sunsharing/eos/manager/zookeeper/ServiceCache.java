@@ -109,10 +109,16 @@ public class ServiceCache {
      */
     public JSONArray getTestCode(String appId,String serviceId,String version,String method)throws Exception
     {
+        logger.info("appId:"+appId);
+        logger.info("serviceId:"+serviceId);
+        logger.info("version:"+version);
+        logger.info("method:"+method);
+
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+version))
         {
             String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+version),"UTF-8");
+            logger.info("obj:"+obj);
             return (JSONArray)(JSONObject.parseObject(obj).get(method));
         }
         return null;

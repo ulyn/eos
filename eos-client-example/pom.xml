@@ -242,7 +242,7 @@
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <connectors>
                         <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>8098</port>
+                            <port>8099</port>
                         </connector>
                     </connectors>
                     <contextPath>/</contextPath>

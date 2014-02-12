@@ -49,20 +49,27 @@ public abstract class AbstractProxy implements ClientProxy {
     public Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
         logger.info("调用eos服务入参：" + invocation);
 
+        if (StringUtils.isBlank(config.getAppId())) {
+            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
+        }
         String mock = invocation.getRealMock(config, SysProp.use_mock);
         boolean isMock = !StringUtils.isBlank(mock);
         //zookeeper取得服务的ip
         JSONObject jo;
-        if (isMock) {
+        if (!isMock) {
             jo = ServiceLocation.getInstance().getServiceLocation(config.getAppId(), config.getId(), config.getVersion());
         } else {
             jo = ServiceLocation.getInstance().getOnlineEOS();
         }
         if (jo == null) {
             if (isMock) {
-                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "对于模拟调用，没有找到可用的eos！");
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "对于模拟调用，没有找到可用的eos,请确保服务" + config.getAppId() + "-"
+                        + config.getId() + "-"
+                        + config.getVersion() + "是否有效或者eos节点已经启动！");
             } else {
-                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有找到请求的可用的eos节点！");
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有找到请求的可用的eos节点,请确保服务" + config.getAppId() + "-"
+                        + config.getId() + "-"
+                        + config.getVersion() + "是否有效或者eos节点已经启动！");
             }
         }
 
@@ -70,9 +77,6 @@ public abstract class AbstractProxy implements ClientProxy {
         int port = jo.getInteger("port");
 
         RequestPro pro = new RequestPro();
-        if (StringUtils.isBlank(config.getAppId())) {
-            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
-        }
         pro.setAppId(config.getAppId());
         pro.setServiceId(config.getId());
         pro.setServiceVersion(config.getVersion());

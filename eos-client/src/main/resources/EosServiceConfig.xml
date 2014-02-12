@@ -1,5 +1,5 @@
 <beans>
-    <bean id="testService" mock="success" aop="com.sunsharing">
+    <bean id="testService1111" mock="success" aop="com.sunsharing">
         <methods>
             <sayHello mock="error"/>
             <getList mock="error"/>

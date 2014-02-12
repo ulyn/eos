@@ -116,7 +116,7 @@ public class RpcInvocation implements Invocation, Serializable {
             if (Constants.RETURN_TYPE_VOID.equals(this.retType) && !StringUtils.isBlank(realMock)) {
                 //如果方法是void的并且要走mock,那么直接设置mock为void
                 realMock = Constants.MOCK_VOID;
-            } else {
+            } else if (StringUtils.isBlank(realMock)) {
                 realMock = config.getMethodMock(methodName);
             }
         }

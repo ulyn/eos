@@ -1,4 +1,5 @@
 /**
+ import com.sunsharing.eos.common.annotation.ParameterNames;
  * @(#)TestService
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
@@ -14,9 +15,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.server.test;
+package com.sunsharing.component.test;
 
 import com.sunsharing.eos.common.annotation.EosService;
+import com.sunsharing.eos.common.annotation.ParameterNames;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.3")
+@EosService(version = "1.3", appId = "ihome", id = "testService")
 public interface TestService {
     /**
      * 输出
@@ -43,6 +45,7 @@ public interface TestService {
      *         ${error}当入参为其他时为错误输出
      *         错误了2
      */
+    @ParameterNames(value = {"name"})
     String sayHello(String name);
 
     /**
@@ -55,11 +58,13 @@ public interface TestService {
      *         ${error}当入参为其他时为错误输出
      *         [{"error":"错误了2"}]
      */
+    @ParameterNames(value = {"num"})
     List getList(int num);
 
     /**
      * 测试没有返回值的情况
      */
+    @ParameterNames(value = {})
     void testVoid();
 
     /**
@@ -70,6 +75,7 @@ public interface TestService {
      *         ${李四}当名字为李四的时候
      *         {"name":"李四","age":20,"sex":"男"}
      */
+    @ParameterNames(value = {})
     Map getMap();
 
     /**
@@ -81,6 +87,7 @@ public interface TestService {
      *         ${error}当业务执行失败时候
      *         {"name":"error","test1":20,"test2":"b"}
      */
+    @ParameterNames(value = {"paramMap"})
     Map testMapParam(Map paramMap);
 
     /**
@@ -92,5 +99,6 @@ public interface TestService {
      *         ${error}当业务执行失败时候
      *         [{"name":"error1","test1":20,"test2":"b"},{"name":"error2","test1":20,"test2":"b"}]
      */
+    @ParameterNames(value = {"paramList"})
     List testListParam(List paramList);
 }

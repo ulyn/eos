@@ -31,11 +31,20 @@ jQuery.eosRemote = function (opts) {
     } else {
         option.url = option.url + "?" + vars;
     }
+    //处理data,将value为object的转换为json串
+    var params = option.data;
+    if (params != null && typeof params == "object") {
+        for (var key in params) {
+            if (params[key] != null && typeof params[key] == "object") {
+                params[key] = JSON.stringify(params[key]);
+            }
+        }
+    }
     jQuery.ajax({
         type: "post",
         url: option.url,
         dataType: "json",
-        data: option.data,
+        data: params,
         async: option.async,
         beforeSend: option.beforeSend,
         success: function (data, status) {

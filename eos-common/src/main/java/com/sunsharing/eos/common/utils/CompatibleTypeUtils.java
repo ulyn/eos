@@ -50,7 +50,7 @@ public class CompatibleTypeUtils {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Object compatibleTypeConvert(String value, Class<?> type) {
-        if (value == null || type == null) {
+        if (value == null || type == null || String.class.equals(type)) {
             return value;
         }
         if (char.class.equals(type) || Character.class.equals(type)) {
@@ -85,7 +85,7 @@ public class CompatibleTypeUtils {
             } catch (ParseException e) {
                 throw new IllegalStateException("Failed to parse date " + value + " by format " + DATE_FORMAT + ", cause: " + e.getMessage(), e);
             }
-        } else if (type == Class.class) {
+        } else if (type instanceof Class) {
             try {
                 return JSONObject.parseObject(value, type);
             } catch (Exception e) {

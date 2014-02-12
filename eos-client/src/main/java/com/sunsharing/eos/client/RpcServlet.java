@@ -92,6 +92,9 @@ public class RpcServlet extends HttpServlet {
             invocation.setId(serviceId);
             invocation.setRetType(serviceMethod.getRetType().getName());
             invocation.setParameterTypes(serviceMethod.getParameterTypes());
+            //是否模拟的参数
+            String mock = req.getParameter("eos_mock");
+            invocation.setMock(mock);
 
             //方法入参
             if (serviceMethod.getParameterTypes() != null) {
@@ -114,11 +117,6 @@ public class RpcServlet extends HttpServlet {
                 }
             }
 
-            //是否模拟的参数
-            String mock = req.getParameter("eos_mock");
-            if (!StringUtils.isBlank(mock)) {
-                serviceConfig.setMock(mock);
-            }
 
             AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
             Object o = proxy.getRpcResult(invocation, serviceConfig);

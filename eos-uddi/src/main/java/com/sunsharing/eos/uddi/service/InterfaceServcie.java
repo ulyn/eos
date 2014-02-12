@@ -141,6 +141,7 @@ public class InterfaceServcie {
                                 lll.add(tmp[k]);
                             }
                         }
+                        if(lll.size()==2)
                         result+="\""+lll.get(1)+"\",";
                     }
                     if(!StringUtils.isBlank(result))

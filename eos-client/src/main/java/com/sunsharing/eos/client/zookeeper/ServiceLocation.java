@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 返回Service的注册的EOS地址
@@ -33,6 +34,8 @@ public class ServiceLocation {
         return serviceLocation;
     }
 
+
+
     /**
      * 用线程初始化
      */
@@ -40,8 +43,28 @@ public class ServiceLocation {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
-        utils.setCallBack(new ClientConnectCallBack());
+        utils.setCallBack(new ClientConnectCallBack(null));
         utils.connect();
+    }
+
+    /**
+     * 同步初始化方法
+     */
+    public void synConnect(){
+        CountDownLatch connectedSignal = new CountDownLatch(1);
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        utils.setZooKeeperIP(SysProp.zookeeperIp);
+        utils.setZooKeeperPort(SysProp.zookeeperPort);
+        utils.setCallBack(new ClientConnectCallBack(connectedSignal));
+        utils.connect();
+        try
+        {
+            connectedSignal.await();
+        }catch (Exception e)
+        {
+            logger.error("初始化错了",e);
+        }
+        logger.info("成功初始化...");
     }
 
     /**

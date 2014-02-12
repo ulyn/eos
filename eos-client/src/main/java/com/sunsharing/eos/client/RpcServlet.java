@@ -128,7 +128,13 @@ public class RpcServlet extends HttpServlet {
             rtnMap.put("status", false);
             rtnMap.put("result", throwable.getMessage());
         }
-        printOutContent(resp, CompatibleTypeUtils.objectToString(rtnMap));
+
+        String jsonp = req.getParameter("eos_jsonp_callback");
+        String content = CompatibleTypeUtils.objectToString(rtnMap);
+        if (!StringUtils.isBlank(jsonp)) {
+            content = jsonp + "(" + content + ")";
+        }
+        printOutContent(resp, content);
     }
 
     @Override

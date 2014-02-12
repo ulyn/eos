@@ -39,7 +39,7 @@ import java.util.*;
  * <br>
  */
 public class ServiceContext extends AbstractServiceContext {
-    Logger logger = Logger.getLogger(ServiceContext.class);
+    static Logger logger = Logger.getLogger(ServiceContext.class);
 
     ApplicationContext ctx;
 

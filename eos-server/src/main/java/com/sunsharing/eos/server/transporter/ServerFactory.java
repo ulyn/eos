@@ -18,6 +18,7 @@ package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.server.sys.SysProp;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,13 +35,16 @@ import java.util.Map;
  * <br>
  */
 public class ServerFactory {
+    static Logger logger = Logger.getLogger(ServerFactory.class);
     static Map<String, RpcServer> serverMap = new HashMap<String, RpcServer>();
 
     public static RpcServer getServer(String transporter) {
         RpcServer server = serverMap.get(transporter);
         if (server == null) {
+            logger.info("server为空,重新New");
             if ("netty".equals(transporter)) {
                 server = new NettyRpcServer(SysProp.nettyServerPort);
+                serverMap.put(transporter,server);
             } else throw new RuntimeException("没有该transporter的实现Server:" + transporter);
         }
         return server;

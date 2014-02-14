@@ -86,7 +86,9 @@ public class ServiceLocation {
      *
      * @throws Exception
      */
-    public synchronized void updateEos(List<String> onlineEos) throws Exception {
+    public synchronized void updateEos() throws Exception {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        List<String> onlineEos = utils.getChildren(PathConstant.EOS_STATE);
         for (String eosId : onlineEos) {
             System.out.println("online:" + eosId);
             if (!eosMap.containsKey(eosId)) {
@@ -106,11 +108,11 @@ public class ServiceLocation {
      * 更新服务变化
      *
      * @param eosId
-     * @param onlineServices
      * @throws Exception
      */
-    public synchronized void updateEosServices
-    (String eosId, List<String> onlineServices) throws Exception {
+    public synchronized void updateEosServices(String eosId) throws Exception {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        List<String> onlineServices = utils.getChildren(PathConstant.SERVICE_STATE+"/"+eosId);
         List<String> realOnline = new ArrayList<String>();
         //处理online
         for (String servicePath : onlineServices) {
@@ -197,8 +199,7 @@ public class ServiceLocation {
      * @param version
      * @return {“ip”:"","port":""} 如果是null，表示不存在这个
      */
-    public synchronized JSONObject getServiceLocation
-    (String appId, String serviceId, String version) {
+    public synchronized JSONObject getServiceLocation(String appId, String serviceId, String version) {
         return getServiceLocation(appId, serviceId, version, false);
     }
 

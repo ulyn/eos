@@ -60,8 +60,8 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
                 logger.info("有EOS上线,或者下线了，重新加载");
                 try
                 {
-                    List<String> onlineEos = utils.getChildren(PathConstant.EOS_STATE);
-                    ServiceLocation.getInstance().updateEos(onlineEos);
+
+                    ServiceLocation.getInstance().updateEos();
                 }catch (Exception e)
                 {
                     logger.error("初始化EOS出错",e);
@@ -75,8 +75,8 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
                     String [] paths = event.getPath().split("\\/");
                     if(paths.length==3)
                     {
-                        List<String> onlineService = utils.getChildren(PathConstant.SERVICE_STATE+"/"+paths[2]);
-                        ServiceLocation.getInstance().updateEosServices(paths[2],onlineService);
+
+                            ServiceLocation.getInstance().updateEosServices(paths[2]);
                     }
                 }catch (Exception e)
                 {

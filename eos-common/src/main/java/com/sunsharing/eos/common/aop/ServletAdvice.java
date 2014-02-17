@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface ServletAdvice {
 
     /**
-     * 方法调用前执行，当返回object不为null时候，直接截断方法执行返回
+     * 方法调用前执行
      *
      * @param request
      * @param method
@@ -44,6 +44,15 @@ public interface ServletAdvice {
      */
     AdviceResult before(HttpServletRequest request, ServiceMethod method, Object[] args);
 
+    /**
+     * 方法调用后执行
+     *
+     * @param request
+     * @param method
+     * @param args
+     * @param returnVal
+     * @return
+     */
     AdviceResult after(HttpServletRequest request, ServiceMethod method, Object[] args, Object returnVal);
 
 }

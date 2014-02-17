@@ -2,6 +2,7 @@ package com.sunsharing.eos.uddi.web.controller.main;
 
 import com.sunsharing.eos.uddi.model.TApp;
 import com.sunsharing.eos.uddi.service.AppService;
+import com.sunsharing.eos.uddi.service.MySqlExport;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,9 @@ import java.util.List;
 public class AppController {
     @Autowired
     AppService appService;
+
+    @Autowired
+    MySqlExport mysql;
 
     @RequestMapping(value="/applist.do",method= RequestMethod.POST)
     public void applist(Model model,HttpServletRequest request,HttpServletResponse response)
@@ -54,6 +58,12 @@ public class AppController {
         TApp app = appService.loadApp(appId);
         ResponseHelper.printOut(response, true, "", app);
 
+    }
+    @RequestMapping(value="/export.do",method= RequestMethod.POST)
+    public void export(HttpServletRequest request,HttpServletResponse response) throws Exception
+    {
+        mysql.export();
+        ResponseHelper.printOut(response, true, "", "");
     }
 
 

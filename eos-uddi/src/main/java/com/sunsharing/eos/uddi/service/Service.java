@@ -3,6 +3,7 @@ package com.sunsharing.eos.uddi.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.DateUtils;
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -110,6 +111,7 @@ public class Service {
 
         Map m = s.getFunction(lines);
         Set<String> keys = m.keySet();
+        List<String> allVoidFunction = s.getAllVoidFuntions(lines);
         for (String fun : keys) {
             TMethod me = new TMethod();
             me.setVersion(v);
@@ -118,7 +120,21 @@ public class Service {
             Collection tmp = ll.values();
             me.setMockResult(JSONArray.toJSONString(tmp));
             v.getMethods().add(me);
+            if(allVoidFunction.contains(fun))
+            {
+                allVoidFunction.remove(fun);
+            }
         }
+
+        for(String fun:allVoidFunction)
+        {
+            TMethod me = new TMethod();
+            me.setVersion(v);
+            me.setMethodName(fun);
+            me.setMockResult("[{\"status\":\""+ Constants.MOCK_VOID+"\",\"content\":\"\"}]");
+            v.getMethods().add(me);
+        }
+
         if (service.getServiceId() == 0) {
             serviceDao.saveOrUpdate(service);
         }

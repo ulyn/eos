@@ -89,8 +89,21 @@ indexApp.controller('showApp', function($scope, $routeParams,$http) {
 
     $scope.edit = function(id)
     {
-        alert(id);
         location.href = "#updateAdd/"+id;
+    }
+
+    $scope.export = function()
+    {
+        $http({
+            url: '/export.do',
+            method: "POST",
+            data: "",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data, status, headers, config) {
+                alert("abc");
+        }).error(function (data, status, headers, config) {
+
+        });
     }
 
 });

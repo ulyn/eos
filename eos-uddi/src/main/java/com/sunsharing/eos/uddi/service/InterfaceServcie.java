@@ -33,6 +33,20 @@ public class InterfaceServcie {
         throw new RuntimeException("取不到Version");
     }
 
+    public boolean isVoid(String methodName,String[] lines)
+    {
+        for(int i=0;i<lines.length;i++)
+        {
+            if(lines[i].indexOf(" "+methodName)!=-1
+                    && lines[i].indexOf(" void ")!=-1
+                    )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getInterfaceName(String[] lines)
     {
         for(int i=0;i<lines.length;i++)
@@ -271,6 +285,43 @@ public class InterfaceServcie {
 
         }
         return resultMap;
+    }
+
+    public List getAllVoidFuntions(String[] lines)
+    {
+        List allFunction = new ArrayList();
+        boolean start = false;
+        for(int i=0;i<lines.length;i++)
+        {
+            if(start && !lines[i].trim().startsWith("public interface"))
+            {
+                if(!lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*") &&
+                        !lines[i].trim().startsWith("{") && !lines[i].trim().startsWith("}"))
+                {
+                    if(lines[i].indexOf(" void ")==-1)
+                    {
+                        continue;
+                    }
+                    String line = lines[i].trim();
+                    int index = line.indexOf("(");
+                    int start2 = 0;
+                    for(int j=index;j>=0;j--)
+                    {
+                        if(line.charAt(j)==' ')
+                        {
+                            allFunction.add(line.substring(start2,index).trim());
+                            break;
+                        }
+                    }
+                }
+            }
+            if(lines[i].trim().startsWith("public interface"))
+            {
+                start = true;
+            }
+
+        }
+        return allFunction;
     }
 
     public void parseResult(String function,List result,Map functions)

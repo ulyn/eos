@@ -47,13 +47,21 @@ import org.apache.log4j.Logger;
 public abstract class AbstractProxy implements ClientProxy {
     Logger logger = Logger.getLogger(AbstractProxy.class);
 
-    public Object getRpcResult(RpcInvocation invocation, ServiceConfig config, Class retType) throws Throwable {
+    /**
+     * 执行远程调用
+     *
+     * @param invocation
+     * @param config
+     * @param serviceMethod
+     * @return
+     * @throws Throwable
+     */
+    public Object getRpcResult(RpcInvocation invocation, ServiceConfig config, ServiceMethod serviceMethod) throws Throwable {
         logger.info("调用eos服务入参：" + invocation);
-
         if (StringUtils.isBlank(config.getAppId())) {
             throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
         }
-
+        Class retType = serviceMethod.getRetType();
         String mock = invocation.getRealMock(config, SysProp.use_mock, retType);
         boolean isMock = !StringUtils.isBlank(mock);
         //zookeeper取得服务的ip
@@ -92,6 +100,21 @@ public abstract class AbstractProxy implements ClientProxy {
 
         RemoteHelper helper = new RemoteHelper();
         ResponsePro responsePro = helper.call(pro, ip, port, config.getTransporter(), config.getTimeout());
+
+        return getResult(pro, isMock, retType, responsePro);
+    }
+
+    /**
+     * 转换ResponsePro获取返回结果
+     *
+     * @param pro
+     * @param isMock
+     * @param retType
+     * @param responsePro
+     * @return
+     * @throws Throwable
+     */
+    private Object getResult(RequestPro pro, boolean isMock, Class retType, ResponsePro responsePro) throws Throwable {
         Result rpcResult = responsePro.toResult();
         if (responsePro.getStatus() == Constants.STATUS_ERROR) {
             if (rpcResult.hasException()) {

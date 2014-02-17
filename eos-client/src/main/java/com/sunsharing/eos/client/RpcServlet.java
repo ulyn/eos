@@ -20,6 +20,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.sunsharing.eos.client.proxy.AbstractProxy;
 import com.sunsharing.eos.client.proxy.ProxyFactory;
+import com.sunsharing.eos.client.sys.SysParamVar;
+import com.sunsharing.eos.common.aop.AdviceResult;
+import com.sunsharing.eos.common.aop.ServletAdvice;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcException;
@@ -50,6 +53,7 @@ import java.util.*;
  */
 public class RpcServlet extends HttpServlet {
     Logger logger = Logger.getLogger(RpcServlet.class);
+    SysParamVar sysParamVar = null;
 
     public RpcServlet() {
         super();
@@ -59,6 +63,18 @@ public class RpcServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         logger.info("eos framework init RpcServlet....");
+        String sysParamVarClass = config.getInitParameter("sysParamVar");
+        if (StringUtils.isBlank(sysParamVarClass)) {
+            logger.warn("RpcServlet 没有配置SysParamVar的实现类，系统不支持变量入参");
+        } else {
+            try {
+                sysParamVar = (SysParamVar) Class.forName(sysParamVarClass).newInstance();
+            } catch (Exception e) {
+                logger.error("RpcServlet配置SysParamVar的实现类" + sysParamVarClass + "实例化失败！", e);
+                System.exit(0);
+            }
+        }
+
         String scanPackage = config.getInitParameter("scanPackage");
         if (StringUtils.isBlank(scanPackage)) {
             scanPackage = "com.sunsharing";
@@ -109,6 +125,11 @@ public class RpcServlet extends HttpServlet {
                     String parameterValue = req.getParameter(parameterName);
                     if (parameterValue == null) {
                         logger.warn("指定的服务接口：" + serviceId + "的方法：" + methodName + "参数" + parameterName + "值为null");
+                    } else {
+                        if (parameterValue.startsWith("${") && parameterValue.endsWith("}")) {
+                            //判断是否是变量，是变量则取得变量的值
+                            parameterValue = sysParamVar.getParamVariable(req, parameterValue.substring(2, parameterValue.length() - 1));
+                        }
                     }
                     argsList.add(CompatibleTypeUtils.compatibleTypeConvert(parameterValue, parameterType));
                 }
@@ -117,9 +138,24 @@ public class RpcServlet extends HttpServlet {
                 }
             }
 
+            Object o = null;
+            ServletAdvice advice = serviceMethod.getAdvice();
+            AdviceResult adviceResult = null;
+            //执行调用前
+            if (advice != null) {
+                adviceResult = advice.before(req, serviceMethod, invocation.getArguments());
+                o = adviceResult.getReturnVal();
+            }
+            //执行没截断，开始执行调用
+            if (adviceResult == null || !adviceResult.isRightNowRet()) {
+                AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
+                o = proxy.getRpcResult(invocation, serviceConfig, serviceMethod);
 
-            AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
-            Object o = proxy.getRpcResult(invocation, serviceConfig, serviceMethod.getRetType());
+                if (advice != null) {
+                    adviceResult = advice.after(req, serviceMethod, invocation.getArguments(), o);
+                    o = adviceResult.getReturnVal();
+                }
+            }
 
             rtnMap.put("status", true);
             rtnMap.put("result", o);

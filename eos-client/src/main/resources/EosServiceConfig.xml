@@ -1,7 +1,7 @@
 <beans>
-    <bean id="testService1111" mock="success" aop="com.sunsharing">
+    <bean id="testService1111" mock="success">
         <methods>
-            <sayHello mock="error"/>
+            <sayHello mock="error" servletAdvice="com.sunsharing.test.TestAdvice"/>
             <getList mock="error"/>
         </methods>
     </bean>

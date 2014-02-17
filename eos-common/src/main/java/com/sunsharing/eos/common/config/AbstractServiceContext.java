@@ -16,8 +16,10 @@
  */
 package com.sunsharing.eos.common.config;
 
+import com.sunsharing.eos.common.annotation.Advice;
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
+import com.sunsharing.eos.common.aop.ServletAdvice;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
@@ -99,6 +101,19 @@ public abstract class AbstractServiceContext {
                 ServiceConfig xmlConfig = xmlServiceConfigMap.get(id);
                 config.setMock(xmlConfig.getMock());
                 config.setMethodMockMap(xmlConfig.getMethodMockMap());
+
+                //当xml有配置servletAdvice时，改写ServiceMethod的切面类。
+                Map<String, ServletAdvice> servletAdviceMap = xmlConfig.getMethodServletAdviceMap();
+                if (xmlConfig.getMethodServletAdviceMap() != null) {
+                    List<ServiceMethod> methods = config.getServiceMethodList();
+                    for (ServiceMethod method : methods) {
+                        ServletAdvice advice = servletAdviceMap.get(method.getMethodName());
+                        if (advice != null) {
+                            method.setAdvice(advice);
+                        }
+                    }
+                }
+
                 if (!"".equals(xmlConfig.getImpl())) {
                     config.setImpl(xmlConfig.getImpl());
                 }
@@ -138,8 +153,9 @@ public abstract class AbstractServiceContext {
                 Element root = doc.getRootElement();
                 List<Element> elements = root.elements();
                 for (Element el : elements) {
+                    String id = el.attributeValue("id");
                     ServiceConfig config = new ServiceConfig();
-                    config.setId(el.attributeValue("id"));
+                    config.setId(id);
                     config.setMock(el.attributeValue("mock"));
                     config.setImpl(el.attributeValue("impl"));
 
@@ -148,13 +164,28 @@ public abstract class AbstractServiceContext {
                         //set methodMock
                         List<Element> methodEls = methodsEl.elements();
                         Map<String, String> methodMockMap = new HashMap<String, String>();
+                        Map<String, ServletAdvice> methodServletAdviceMap = new HashMap<String, ServletAdvice>();
                         for (Element methodEl : methodEls) {
                             methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
+
+                            String servletAdvice = methodEl.attributeValue("servletAdvice");
+                            if (servletAdvice != null) {
+                                try {
+                                    ServletAdvice advice = (ServletAdvice) Class.forName(servletAdvice).newInstance();
+                                    methodServletAdviceMap.put(methodEl.getName(), advice);
+                                    logger.info("取得" + id + "-" + methodEl.getName() + "配置的servletAdvice=" + servletAdvice + "的newInstance实现");
+                                } catch (Exception e) {
+                                    logger.error("初始化配置的servletAdvice=" + servletAdvice + "的newInstance异常!", e);
+                                    System.exit(0);
+                                }
+                            }
+
                         }
                         config.setMethodMockMap(methodMockMap);
+                        config.setMethodServletAdviceMap(methodServletAdviceMap);
                     }
 
-                    configMap.put(el.attributeValue("id"), config);
+                    configMap.put(id, config);
                 }
             } catch (Exception e) {
                 logger.error("读取eos服务的xml配置异常，请检查xml配置是否正确", e);
@@ -197,6 +228,7 @@ public abstract class AbstractServiceContext {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
         for (Method method : methods) {
+            //取参数名的注解
             ParameterNames ann = method.getAnnotation(ParameterNames.class);
             String[] parameterNames = null;
             if (ann != null) {
@@ -207,9 +239,18 @@ public abstract class AbstractServiceContext {
                     throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
                 }
             }
-            ServiceMethod serviceMethod = new ServiceMethod(
-                    ServiceMethod.AccessType.PUBLIC, method.getReturnType(), method.getName(),
-                    method.getParameterTypes(), parameterNames);
+            //取切面类注解
+            Advice adviceAnn = method.getAnnotation(Advice.class);
+            ServletAdvice advice = null;
+            if (adviceAnn != null) {
+                try {
+                    advice = (ServletAdvice) adviceAnn.servletAdvice().newInstance();
+                } catch (Exception e) {
+                    logger.error("服务配置的Advice可能有误，servletAdvice=" + adviceAnn.servletAdvice() + "的newInstance异常!", e);
+                    System.exit(0);
+                }
+            }
+            ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames, advice);
             list.add(serviceMethod);
         }
         return list;

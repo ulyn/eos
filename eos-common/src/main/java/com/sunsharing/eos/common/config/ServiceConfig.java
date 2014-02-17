@@ -17,6 +17,7 @@
 package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.aop.ServletAdvice;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class ServiceConfig {
 
     private Map<String, String> methodMockMap;
     private List<ServiceMethod> serviceMethodList;
+    private Map<String, ServletAdvice> methodServletAdviceMap;
 
     public String getId() {
         return id;
@@ -137,6 +139,14 @@ public class ServiceConfig {
 
     public void setServiceMethodList(List<ServiceMethod> serviceMethodList) {
         this.serviceMethodList = serviceMethodList;
+    }
+
+    public Map<String, ServletAdvice> getMethodServletAdviceMap() {
+        return methodServletAdviceMap;
+    }
+
+    public void setMethodServletAdviceMap(Map<String, ServletAdvice> methodServletAdviceMap) {
+        this.methodServletAdviceMap = methodServletAdviceMap;
     }
 
     public String getMethodMock(String methodName) {

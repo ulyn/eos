@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * EOS测试类型
  */
-@EosService(version="1.2")
+@EosService(version="1.3")
 public interface TestType {
     /**
      * 测试Int类型
@@ -78,4 +78,10 @@ public interface TestType {
      * [{"test":"test1","test2":"test3","test3":"test4"}]
      */
     List testListMap(List list);
+
+    /**
+     * 测试void
+     * @param name 没有入参
+     */
+    void testVoid(String name);
 }

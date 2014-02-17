@@ -254,6 +254,13 @@ public class ServiceController {
         ResponseHelper.printOut(response,true,"","");
     }
 
+    @RequestMapping(value={"/commitAllCommit.do"},method = RequestMethod.GET)
+    public void commitAllCommit(HttpServletResponse response,HttpServletRequest request)throws Exception
+    {
+        service.commitAllCommit();
+        ResponseHelper.printOut(response,true,"","");
+    }
+
     @RequestMapping(value={"/changeTest.do"},method = RequestMethod.GET)
     public void changeTest(String versionId,
                        HttpServletResponse response,HttpServletRequest request)

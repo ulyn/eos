@@ -205,6 +205,16 @@ public class Service {
         return result;
     }
 
+    public void commitAllCommit()throws Exception
+    {
+        String sql = "from TServiceVersion where status='1'";
+        List<TServiceVersion> versions = versionDao.find(sql);
+        for(TServiceVersion v:versions)
+        {
+            commit(v.getVersionId()+"");
+        }
+    }
+
     public void commit(String versionId) throws Exception {
         TServiceVersion version = versionDao.get(new Integer(versionId));
         version.setStatus("1");

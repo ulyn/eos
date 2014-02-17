@@ -94,16 +94,39 @@ indexApp.controller('showApp', function($scope, $routeParams,$http) {
 
     $scope.export = function()
     {
+//        $http({
+//            url: '/export.do',
+//            method: "POST",
+//            data: "",
+//            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+//        }).success(function (data, status, headers, config) {
+//                alert("abc");
+//        }).error(function (data, status, headers, config) {
+//
+//        });
+        location.href = "/export.do";
+    }
+
+    $scope.commitAllCommit = function(){
+        alert("");
         $http({
-            url: '/export.do',
-            method: "POST",
+            url: '/commitAllCommit.do',
+            method: "GET",
             data: "",
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
-                alert("abc");
-        }).error(function (data, status, headers, config) {
+                if(data.status)
+                {
+                    alert("审批成功");
 
-        });
+                }else
+                {
+                    alert(data.msg);
+                }
+
+            }).error(function (data, status, headers, config) {
+
+            });
     }
 
 });

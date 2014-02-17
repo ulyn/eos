@@ -33,7 +33,7 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@Configuration(value = "eos.properties")
+@Configuration(value = "eos-uddi.properties")
 public class SysProp {
 
     @ParamField(name = "zookeeper_ip", required = false)

@@ -20,6 +20,7 @@ import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -45,13 +46,13 @@ public class JdkProxy extends AbstractProxy {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 RpcInvocation invo = new RpcInvocation();
-                invo.setId(serviceConfig.getId());
+//                invo.setId(serviceConfig.getId());
                 invo.setMethodName(method.getName());
                 invo.setParameterTypes(method.getParameterTypes());
                 invo.setArguments(args);
-                invo.setRetType(method.getReturnType().getName());
+//                invo.setRetType(CompatibleTypeUtils.getSimpleName(method.getReturnType()));
 
-                return getRpcResult(invo, serviceConfig);
+                return getRpcResult(invo, serviceConfig, method.getReturnType());
             }
         };
         T t = (T) Proxy.newProxyInstance(JdkProxy.class.getClassLoader(), new Class[]{clazz}, handler);

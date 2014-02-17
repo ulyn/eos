@@ -21,6 +21,7 @@ import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.ClientProxy;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcException;
@@ -46,13 +47,14 @@ import org.apache.log4j.Logger;
 public abstract class AbstractProxy implements ClientProxy {
     Logger logger = Logger.getLogger(AbstractProxy.class);
 
-    public Object getRpcResult(RpcInvocation invocation, ServiceConfig config) throws Throwable {
+    public Object getRpcResult(RpcInvocation invocation, ServiceConfig config, Class retType) throws Throwable {
         logger.info("调用eos服务入参：" + invocation);
 
         if (StringUtils.isBlank(config.getAppId())) {
             throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
         }
-        String mock = invocation.getRealMock(config, SysProp.use_mock);
+
+        String mock = invocation.getRealMock(config, SysProp.use_mock, retType);
         boolean isMock = !StringUtils.isBlank(mock);
         //zookeeper取得服务的ip
         JSONObject jo;
@@ -104,15 +106,13 @@ public abstract class AbstractProxy implements ClientProxy {
         } else {
             Object value = rpcResult.getValue();
             if (isMock) {
-                String typeName = invocation.getRetType();
-                if (Constants.RETURN_TYPE_VOID.equals(typeName) || value == null) {
+                if (void.class == retType || value == null) {
                     return null;
                 }
-                Class type = Class.forName(typeName);
                 //返回的类型一样，则不需要进行转换，返回类型是string或者不是模拟返回
                 //返回的类型不一样，则需要进行转换
-                if (value.getClass() != type) {
-                    value = CompatibleTypeUtils.compatibleTypeConvert((String) value, type);
+                if (value.getClass() != retType) {
+                    value = CompatibleTypeUtils.compatibleTypeConvert((String) value, retType);
                 }
             }
             return value;

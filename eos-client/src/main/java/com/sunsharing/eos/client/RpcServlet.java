@@ -89,8 +89,8 @@ public class RpcServlet extends HttpServlet {
 
             RpcInvocation invocation = new RpcInvocation();
             invocation.setMethodName(methodName);
-            invocation.setId(serviceId);
-            invocation.setRetType(serviceMethod.getRetType().getName());
+//            invocation.setId(serviceId);
+//            invocation.setRetType(serviceMethod.getRetType().getName());
             invocation.setParameterTypes(serviceMethod.getParameterTypes());
             //是否模拟的参数
             String mock = req.getParameter("eos_mock");
@@ -119,7 +119,7 @@ public class RpcServlet extends HttpServlet {
 
 
             AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
-            Object o = proxy.getRpcResult(invocation, serviceConfig);
+            Object o = proxy.getRpcResult(invocation, serviceConfig, serviceMethod.getRetType());
 
             rtnMap.put("status", true);
             rtnMap.put("result", o);

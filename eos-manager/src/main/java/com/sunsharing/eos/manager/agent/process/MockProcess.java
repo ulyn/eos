@@ -51,20 +51,16 @@ public class MockProcess implements Process {
                 && !StringUtils.isBlank(req.getMock())) {
             //开发模式，支持模拟
             String methodName = null;
-            String retType = null;
             try {
                 Invocation invocation = req.toInvocation();
                 methodName = invocation.getMethodName();
-                retType = invocation.getRetType();
+//                retType = invocation.getRetType();
             } catch (Exception e) {
                 String error = "反序列化服务Invocation失败！";
                 logger.error(error, e);
                 res.setExceptionResult(new RpcException(RpcException.SERIALIZATION_EXCEPTION, error));
             }
-            if (Constants.RETURN_TYPE_VOID.equals(retType)) {
-                //返回类型是void,直接返回正常结果
-                res.setResult(new RpcResult());
-            } else if (methodName != null) {
+            if (methodName != null) {
                 try {
                     JSONArray array = ServiceCache.getInstance().getTestCode(req.getAppId(), req.getServiceId(), req.getServiceVersion(), methodName);
                     boolean findMock = false;

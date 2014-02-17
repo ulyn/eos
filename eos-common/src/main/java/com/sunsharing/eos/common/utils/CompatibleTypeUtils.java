@@ -108,5 +108,16 @@ public class CompatibleTypeUtils {
             return JSONObject.toJSONString(o);
         }
     }
+
+    /**
+     * 将类型数组转换为eos支持的simpleName类型字符串的数组
+     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
+     *
+     * @param classes
+     * @return
+     */
+    public static String[] getTypesStringArray(Class<?>[] classes) {
+        return null;
+    }
 }
 

@@ -29,31 +29,34 @@ package com.sunsharing.eos.common.rpc;
  */
 public interface Invocation {
 
-    String getId();
+    //迁移到协议头，此处不再浪费数据空间
+//    String getId();
 
     /**
-     * get method name.
+     * 获取方法名
      *
-     * @return method name.
-     * @serial
+     * @return
      */
     String getMethodName();
 
     /**
-     * get parameter types.
+     * 获取方法入参类型数组，使用simpleName
      *
-     * @return parameter types.
-     * @serial
+     * @return
      */
-    Class<?>[] getParameterTypes();
+    String[] getParameterTypes();
 
     /**
-     * get arguments.
+     * 获取参数值
      *
-     * @return arguments.
-     * @serial
+     * @return
      */
     Object[] getArguments();
 
-    String getRetType();
+    /**
+     * 获取模拟的指定类型
+     *
+     * @return
+     */
+    String getMock();
 }

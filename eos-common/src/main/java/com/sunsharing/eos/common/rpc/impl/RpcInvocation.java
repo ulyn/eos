@@ -37,21 +37,10 @@ import java.util.Arrays;
  */
 public class RpcInvocation implements Invocation, Serializable {
 
-    private String id;
     private String methodName;
-    private Class<?>[] parameterTypes;
+    private String[] parameterTypes;
     private Object[] arguments;
-    private String retType;
     private String mock;
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     @Override
     public String getMethodName() {
@@ -63,12 +52,18 @@ public class RpcInvocation implements Invocation, Serializable {
     }
 
     @Override
-    public Class<?>[] getParameterTypes() {
+    public String[] getParameterTypes() {
         return parameterTypes;
     }
 
-    public void setParameterTypes(Class<?>[] parameterTypes) {
-        this.parameterTypes = parameterTypes;
+    /**
+     * 设置入参类型
+     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
+     *
+     * @param parameterTypes
+     */
+    public void setParameterTypes(Class[] parameterTypes) {
+
     }
 
     @Override
@@ -78,14 +73,6 @@ public class RpcInvocation implements Invocation, Serializable {
 
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
-    }
-
-    public String getRetType() {
-        return retType;
-    }
-
-    public void setRetType(String retType) {
-        this.retType = retType;
     }
 
     public String getMock() {
@@ -110,10 +97,10 @@ public class RpcInvocation implements Invocation, Serializable {
      * @param useMock
      * @return
      */
-    public String getRealMock(ServiceConfig config, boolean useMock) {
+    public String getRealMock(ServiceConfig config, boolean useMock, Class retType) {
         String realMock = this.mock;
         if (useMock) {
-            if (Constants.RETURN_TYPE_VOID.equals(this.retType) && !StringUtils.isBlank(realMock)) {
+            if (void.class == retType && !StringUtils.isBlank(realMock)) {
                 //如果方法是void的并且要走mock,那么直接设置mock为void
                 realMock = Constants.MOCK_VOID;
             } else if (StringUtils.isBlank(realMock)) {

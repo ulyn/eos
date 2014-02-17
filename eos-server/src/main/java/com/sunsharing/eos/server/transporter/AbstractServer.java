@@ -17,6 +17,7 @@
 package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcException;
@@ -70,27 +71,32 @@ public abstract class AbstractServer implements RpcServer {
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
-    public Result call(Invocation invocation) {
-        Object obj = this.serviceEngine.get(invocation.getId());
-//        ServiceConfig config = this.serviceConfigEngine.get(invocation.getId());
+    public Result call(String serviceId, Invocation invocation) {
+        Object obj = this.serviceEngine.get(serviceId);
+        ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
         RpcResult result = new RpcResult();
         if (obj != null) {
-            //这边暂时直接使用jdk代理执行
             try {
-                Method m = obj.getClass().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                ServiceMethod method = serviceConfig.getMethod(invocation.getMethodName());
+                if (method == null) {
+                    throw new NoSuchMethodException(invocation.getMethodName() + "的ServiceMethod==null");
+                }
+                //这边暂时直接使用jdk代理执行
+                //此处的parameterTypes不用invocation的，规定不允许方法重载
+                Method m = obj.getClass().getMethod(invocation.getMethodName(), method.getParameterTypes());
                 Object o = m.invoke(obj, invocation.getArguments());
                 result.setValue(o);
             } catch (NoSuchMethodException e) {
-                String errorMsg = "server has no NoSuchMethodException：" + invocation.getId() + " - " + invocation.getMethodName();
+                String errorMsg = "server has no NoSuchMethodException：" + serviceConfig.getId() + " - " + invocation.getMethodName();
                 logger.error(errorMsg, e);
                 result.setException(new IllegalArgumentException(errorMsg, e));
             } catch (Exception th) {
-                String errorMsg = "执行反射方法异常" + invocation.getId() + " - " + invocation.getMethodName();
+                String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + invocation.getMethodName();
                 logger.error(errorMsg, th);
                 result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, errorMsg));
             }
         } else {
-            String errorMsg = "has no these class：" + invocation.getId() + " - " + invocation.getMethodName();
+            String errorMsg = "has no these class：" + serviceConfig.getId() + " - " + invocation.getMethodName();
             logger.error(errorMsg);
             result.setException(new IllegalArgumentException(errorMsg));
         }

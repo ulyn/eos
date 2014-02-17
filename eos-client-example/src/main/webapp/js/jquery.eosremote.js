@@ -5,26 +5,27 @@
  * Time: 上午1:02
  * To change this template use File | Settings | File Templates.
  */
-
-jQuery.eosRemote = function (opts) {
-    var defaults = {
-        "url": "/remote",
-        "serviceId": "",
-        "method": "",
-        "mock": "",
-        "data": null,
-        "async": true,
-        "beforeSend": function (XHR) {
-        },
-        "success": function (data, textStatus) {
-        },
-        "error": function (XMLHttpRequest, textStatus, errorThrown) {
-            if (console) {
-                console.info(XMLHttpRequest);
-            }
+jQuery.eosRemoteSetup = {
+    "dataType": "json", //jsonp,json,默认是json,当涉及跨域使用jsonp
+    "url": "/remote",
+    "serviceId": "",
+    "method": "",
+    "mock": "",
+    "data": null,
+    "async": true,
+    "jsonp": "eos_jsonp_callback", //当dataType是jsonp时候此参数生效，不要更改它
+    "beforeSend": function (XHR) {
+    },
+    "success": function (data, textStatus) {
+    },
+    "error": function (XMLHttpRequest, textStatus, errorThrown) {
+        if (console) {
+            console.info(XMLHttpRequest);
         }
     }
-    var option = jQuery.extend({}, defaults, opts);
+};
+jQuery.eosRemote = function (opts) {
+    var option = jQuery.extend({}, jQuery.eosRemoteSetup, opts);
     var vars = "eos_service_id=" + option.serviceId + "&eos_method_name=" + option.method + "&eos_mock=" + option.mock;
     if (option.url.indexOf("?") != -1) {
         option.url = option.url + "&" + vars;
@@ -43,9 +44,10 @@ jQuery.eosRemote = function (opts) {
     jQuery.ajax({
         type: "post",
         url: option.url,
-        dataType: "json",
+        dataType: option.dataType,
         data: params,
         async: option.async,
+        jsonp: option.jsonp,
         beforeSend: option.beforeSend,
         success: function (data, status) {
             if (data.status) {

@@ -7,13 +7,13 @@
 <body>
 <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="/js/json2.js"></script>
-<script type="text/javascript" src="/js/jquery.eosremote.jsonp.js"></script>
+<script type="text/javascript" src="/js/jquery.eosremote.js"></script>
 <script>
     $(document).ready(function () {
         $.eosRemote({
-            url: "/remote",
+            url: "http://192.168.0.60:8098/remote",
             serviceId: "testService",
-//            mock:"张三",
+            mock: "success",
             method: "testMapParam",
             data: {"paramMap": {"t": "2", "p": "4", "arr": ["aaa", "bbb"]}},
             success: function (data) {

@@ -31,7 +31,7 @@ public class MsgHandler extends SimpleChannelHandler {
         logger.debug("收到请求：" + basePro);
 //        basePro.handler(ctx.getChannel());
 
-        Result result = rpcServer.call(basePro.toInvocation());
+        Result result = rpcServer.call(basePro.getServiceId(), basePro.toInvocation());
 
         ResponsePro responsePro = new ResponsePro();
         responsePro.setSerialization(basePro.getSerialization());

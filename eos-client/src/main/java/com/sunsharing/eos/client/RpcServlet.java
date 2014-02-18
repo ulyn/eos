@@ -69,6 +69,8 @@ public class RpcServlet extends HttpServlet {
         } else {
             try {
                 sysParamVar = (SysParamVar) Class.forName(sysParamVarClass).newInstance();
+                sysParamVar.init();
+                logger.info("RpcServlet 成功加载配置SysParamVar的实现类，系统支持变量入参");
             } catch (Exception e) {
                 logger.error("RpcServlet配置SysParamVar的实现类" + sysParamVarClass + "实例化失败！", e);
                 System.exit(0);
@@ -144,7 +146,6 @@ public class RpcServlet extends HttpServlet {
             //执行调用前
             if (advice != null) {
                 adviceResult = advice.before(req, serviceMethod, invocation.getArguments());
-                o = adviceResult.getReturnVal();
             }
             //执行没截断，开始执行调用
             if (adviceResult == null || !adviceResult.isRightNowRet()) {
@@ -153,8 +154,12 @@ public class RpcServlet extends HttpServlet {
 
                 if (advice != null) {
                     adviceResult = advice.after(req, serviceMethod, invocation.getArguments(), o);
-                    o = adviceResult.getReturnVal();
+                    if (adviceResult != null) {
+                        o = adviceResult.getReturnVal();
+                    }
                 }
+            } else {
+                o = adviceResult.getReturnVal();
             }
 
             rtnMap.put("status", true);

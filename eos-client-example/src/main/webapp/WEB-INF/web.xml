@@ -85,6 +85,10 @@
             <param-name>scanPackage</param-name>
             <param-value>com.sunsharing</param-value>
         </init-param>
+        <init-param>
+            <param-name>sysParamVar</param-name>
+            <param-value>com.sunsharing.component.sys.ParamVarImpl</param-value>
+        </init-param>
         <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>

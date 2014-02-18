@@ -1,8 +1,8 @@
 <beans>
-    <bean id="testService1111" mock="success">
-        <methods>
-            <sayHello mock="error" servletAdvice="com.sunsharing.test.TestAdvice"/>
-            <getList mock="error"/>
-        </methods>
-    </bean>
+    <!--<bean id="testService1111" mock="success">-->
+    <!--<methods>-->
+    <!--<sayHello mock="error" servletAdvice="com.sunsharing.test.TestAdvice"/>-->
+    <!--<getList mock="error"/>-->
+    <!--</methods>-->
+    <!--</bean>-->
 </beans>

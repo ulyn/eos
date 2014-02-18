@@ -1,5 +1,10 @@
 package com.sunsharing.component.sys;
 
+import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.component.test.TestFirst;
+import com.sunsharing.eos.client.ServiceContext;
+import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -111,5 +116,18 @@ public class SysParam {
 		SysParam.init();
 		logger.info("" + SysParam.getConfigMapValue("cfgl.init"));
 	}*/
+
+    public static void main(String[]a)
+    {
+        ConfigContext.instancesBean(SysProp.class);
+        ServiceContext serviceContext = new ServiceContext("com.sunsharing");
+        ServiceLocation.getInstance().synConnect();
+        for(int i=0;i<1000;i++)
+        {
+            TestFirst testFirst = ServiceContext.getBean(TestFirst.class);
+            String out = testFirst.sayHello("hexin");
+            System.out.println(out);
+        }
+    }
 	
 }

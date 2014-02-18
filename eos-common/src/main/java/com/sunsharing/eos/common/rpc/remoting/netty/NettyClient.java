@@ -70,7 +70,7 @@ public class NettyClient implements RpcClient {
         clientBootstrap.setOption("tcpNoDelay", true);
         clientBootstrap.setOption("keepAlive", true);
         clientBootstrap.setOption("connectTimeoutMillis", CONNECT_TIMEOUT);
-        //clientBootstrap.setOption("reuseAddress", true); //注意child前缀
+        clientBootstrap.setOption("reuseAddress", true); //注意child前缀
         ChannelFuture future = clientBootstrap.connect(new InetSocketAddress(ip, port));
         final CountDownLatch channelLatch = new CountDownLatch(1);
         final String ipFinal = ip;

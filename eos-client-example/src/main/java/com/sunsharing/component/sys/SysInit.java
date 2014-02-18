@@ -1,6 +1,11 @@
 package com.sunsharing.component.sys;
 
+import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.component.test.TestFirst;
 import com.sunsharing.eos.client.EosInit;
+import com.sunsharing.eos.client.ServiceContext;
+import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -54,4 +59,7 @@ public class SysInit extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
+
+
 }

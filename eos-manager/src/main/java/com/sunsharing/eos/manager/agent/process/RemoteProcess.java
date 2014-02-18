@@ -90,7 +90,7 @@ public class RemoteProcess implements Process {
             res.setResultBytes(responsePro.getResultBytes());
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            logger.error(e);
+            logger.error("",e);
             res.setExceptionResult(e);
         }
     }

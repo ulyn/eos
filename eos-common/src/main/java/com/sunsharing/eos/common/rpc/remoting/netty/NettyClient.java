@@ -23,11 +23,9 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -44,7 +42,7 @@ import java.util.concurrent.*;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class NettyClient implements RpcClient {
+public abstract class NettyClient implements RpcClient {
     Logger logger = Logger.getLogger(NettyClient.class);
 
     public static final int CONNECT_TIMEOUT = 5000;
@@ -59,8 +57,8 @@ public class NettyClient implements RpcClient {
             Executors.newCachedThreadPool());
     private ClientBootstrap clientBootstrap;
 
-    @Override
-    public ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable {
+    public Channel connect(String ip,int port) throws Exception
+    {
         clientBootstrap = new ClientBootstrap(clientSocketChannelFactory);
         ChannelPipeline pipeline = clientBootstrap.getPipeline();
         pipeline.addLast("decoder", new ExDecode());
@@ -71,7 +69,7 @@ public class NettyClient implements RpcClient {
         clientBootstrap.setOption("keepAlive", true);
         clientBootstrap.setOption("connectTimeoutMillis", CONNECT_TIMEOUT);
         clientBootstrap.setOption("reuseAddress", true); //注意child前缀
-        ChannelFuture future = clientBootstrap.connect(new InetSocketAddress(ip, port));
+        ChannelFuture future = clientBootstrap.connect(new InetSocketAddress(ip, new Integer(port)));
         final CountDownLatch channelLatch = new CountDownLatch(1);
         final String ipFinal = ip;
         future.addListener(new ChannelFutureListener() {
@@ -81,21 +79,32 @@ public class NettyClient implements RpcClient {
 //                    channel = cf.getChannel();
                     channelLatch.countDown();
                 } else {
-                    throw new RpcException(RpcException.CONNECT_EXCEPTION, "client failed to connect to server "
-                            + ipFinal + ", error message is:" + cf.getCause() == null ? "unknown" : cf.getCause().getMessage(), cf.getCause());
+//                    throw new RpcException(RpcException.CONNECT_EXCEPTION, "client failed to connect to server "
+//                            + ipFinal + ", error message is:" + cf.getCause() == null ? "unknown" : cf.getCause().getMessage(), cf.getCause());
                 }
             }
         });
+        channelLatch.await(5,TimeUnit.SECONDS);
+        if(future.isSuccess())
+        {
+            return future.getChannel();
+        }else
+        {
+            throw new RpcException(RpcException.CONNECT_EXCEPTION, "client failed to connect to server "
+                    + ipFinal + ", port:"+port+"error message is:");
+        }
 
-        channelLatch.await();
-        logger.debug("client is connected to netty server " + ip + ":" + port);
+    }
+
+    protected ResponsePro getResult(RequestPro pro, MyChannel channel,int timeout) throws Throwable
+    {
         if (StringUtils.isBlank(pro.getMsgId())) {
             pro.setMsgId(StringUtils.genUUID());
         }
         result.put(pro.getMsgId(), new ArrayBlockingQueue<ResponsePro>(1));
         try {
 
-            future.getChannel().write(pro);
+            channel.write(pro);
 
             //等待返回
             ArrayBlockingQueue<ResponsePro> blockingQueue = result.get(pro.getMsgId());
@@ -111,9 +120,9 @@ public class NettyClient implements RpcClient {
             throw e;
         } finally {
             result.remove(pro.getMsgId());
-            if (future != null) {
-                future.getChannel().close();
-            }
+//            if (channel != null) {
+//                channel.close();
+//            }
 //                clientBootstrap.releaseExternalResources();
         }
     }

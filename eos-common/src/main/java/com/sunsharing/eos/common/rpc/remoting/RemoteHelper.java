@@ -22,7 +22,9 @@ import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.netty.LongNettyClient;
 import com.sunsharing.eos.common.rpc.remoting.netty.NettyClient;
+import com.sunsharing.eos.common.rpc.remoting.netty.ShortNettyClient;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,10 +41,13 @@ import org.apache.log4j.Logger;
 public class RemoteHelper {
     static Logger logger = Logger.getLogger(RemoteHelper.class);
 
+
     public ResponsePro call(RequestPro requestPro, String ip, int port, String transporter, int timeout) throws Throwable {
         RpcClient client = null;
-        if ("netty".equalsIgnoreCase(transporter)) {
-            client = new NettyClient();
+        if (Constants.SHORT_NETTY.equalsIgnoreCase(transporter)) {
+            client = new ShortNettyClient();
+        } else if (Constants.LONG_NETTY.equalsIgnoreCase(transporter)) {
+            client = new LongNettyClient();
         }
         return client.doRpc(requestPro, ip, port, timeout);
     }

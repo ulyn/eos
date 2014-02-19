@@ -3,9 +3,16 @@ package com.sunsharing.eos.common;
 
 public class Constants {
 
+    /**长连接*/
+    public static final String LONG_NETTY = "longNetty";
+    /**短连接*/
+    public static final String SHORT_NETTY = "netty";
+
     public static final String DEFAULT_SERIALIZATION = "hessian";
     public static final String DEFAULT_PROXY = "jdk";
-    public static final String DEFAULT_TRANSPORTER = "netty";
+    public static final String DEFAULT_TRANSPORTER = LONG_NETTY;
+
+
 
     //eos的部署模式
     public static final String EOS_MODE_PRO = "pro";

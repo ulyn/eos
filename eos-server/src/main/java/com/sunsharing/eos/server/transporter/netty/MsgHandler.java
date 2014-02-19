@@ -4,6 +4,7 @@ import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
+import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import org.apache.log4j.Logger;
@@ -27,24 +28,33 @@ public class MsgHandler extends SimpleChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        RequestPro basePro = (RequestPro) e.getMessage();
-        logger.debug("收到请求：" + basePro);
-//        basePro.handler(ctx.getChannel());
+        BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        if(basePro instanceof HeartPro)
+        {
+            logger.debug("收到心跳请求...");
+            HeartPro heart = new HeartPro();
+            ctx.getChannel().write(heart);
+        }else if(basePro instanceof RequestPro)
+        {
+            logger.debug("收到请求：" + basePro);
+            RequestPro req = (RequestPro)basePro;
+            Result result = rpcServer.call(req.getServiceId(), req.toInvocation());
 
-        Result result = rpcServer.call(basePro.getServiceId(), basePro.toInvocation());
+            ResponsePro responsePro = new ResponsePro();
+            responsePro.setSerialization(basePro.getSerialization());
+            responsePro.setMsgId(basePro.getMsgId());
+            responsePro.setResult(result);
+            ctx.getChannel().write(responsePro);
+        }
 
-        ResponsePro responsePro = new ResponsePro();
-        responsePro.setSerialization(basePro.getSerialization());
-        responsePro.setMsgId(basePro.getMsgId());
-        responsePro.setResult(result);
-        ctx.getChannel().write(responsePro);
+
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.error("处理异常", e.getCause());
         e.getCause().printStackTrace();
-        e.getChannel().close();
+        //e.getChannel().close();
     }
 
     @Override

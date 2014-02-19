@@ -44,6 +44,7 @@ import java.io.InputStream;
 public abstract class BaseProtocol {
     protected static byte REQUEST_MSG = 'A';
     protected static byte REQUEST_MSG_RESULT = 'B';
+    protected static byte HEART_BEAT = 'H';
 
     //协议类型,请求还是响应(1)
     protected byte action;

@@ -41,6 +41,9 @@ public class ProFactory {
             return new RequestPro().createFromChannel(buffer);
         } else if (action == BaseProtocol.REQUEST_MSG_RESULT) {
             return new ResponsePro().createFromChannel(buffer);
+        } else if (action == BaseProtocol.HEART_BEAT)
+        {
+            return new HeartPro().createFromChannel(buffer);
         }
         return null;
     }

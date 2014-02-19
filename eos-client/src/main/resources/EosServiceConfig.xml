@@ -5,4 +5,9 @@
     <!--<getList mock="error"/>-->
     <!--</methods>-->
     <!--</bean>-->
+    <bean id="testService">
+        <methods>
+            <sayHello mock="success"/>
+        </methods>
+    </bean>
 </beans>

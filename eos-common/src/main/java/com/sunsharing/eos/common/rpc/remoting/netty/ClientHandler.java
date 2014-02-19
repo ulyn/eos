@@ -16,7 +16,12 @@
  */
 package com.sunsharing.eos.common.rpc.remoting.netty;
 
+import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
+import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.ClientCache;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.LongChannel;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.MyChannel;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -41,20 +46,46 @@ public class ClientHandler extends SimpleChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        ResponsePro basePro = (ResponsePro) e.getMessage();
-        logger.debug("收到请求结果：" + basePro);
-        ArrayBlockingQueue<ResponsePro> queue = NettyClient.result.get(basePro.getMsgId());
-        if (queue != null) {
-            queue.add(basePro);
+        BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        if(basePro instanceof HeartPro)
+        {
+            logger.debug("收到心跳");
+            MyChannel ch = ClientCache.getChannel(e.getChannel());
+            if(ch==null)
+            {
+                logger.warn("连接失去了没法更新心跳");
+            }else
+            {
+                ((LongChannel)ch).refreshHeartBeat();
+            }
+        }else if(basePro instanceof ResponsePro)
+        {
+            logger.debug("收到结果");
+            ResponsePro res = (ResponsePro)basePro;
+            ArrayBlockingQueue<ResponsePro> queue = NettyClient.result.get(basePro.getMsgId());
+            if (queue != null) {
+                queue.add(res);
+            }
+            //ctx.getChannel().close();
+            MyChannel ch = ClientCache.getChannel(e.getChannel());
+            if(ch==null)
+            {
+                logger.info("疑似短连接，关闭");
+                ctx.getChannel().close();
+            }
         }
-        ctx.getChannel().close();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.error("处理异常", e.getCause());
         e.getCause().printStackTrace();
-        e.getChannel().close();
+        MyChannel ch = ClientCache.getChannel(e.getChannel());
+        if(ch==null)
+        {
+            logger.info("疑似短连接，关闭");
+            ctx.getChannel().close();
+        }
     }
 }
 

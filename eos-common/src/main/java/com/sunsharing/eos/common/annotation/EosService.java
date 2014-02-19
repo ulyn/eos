@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.common.annotation;
 
+import com.sunsharing.eos.common.Constants;
+
 import java.lang.annotation.*;
 
 /**
@@ -38,11 +40,11 @@ public @interface EosService {
 
     String version();
 
-    String proxy() default "jdk";
+    String proxy() default Constants.DEFAULT_PROXY;
 
-    String serialization() default "hessian";
+    String serialization() default Constants.DEFAULT_SERIALIZATION;
 
-    String transporter() default "netty";
+    String transporter() default Constants.DEFAULT_TRANSPORTER;
 
     String appId() default "";
 

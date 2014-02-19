@@ -73,10 +73,16 @@ public abstract class AbstractProxy implements ClientProxy {
         }
         if (jo == null) {
             if (isMock) {
+                logger.error("对于模拟调用，没有找到可用的eos,请确保服务" + config.getAppId() + "-"
+                        + config.getId() + "-"
+                        + config.getVersion() + "是否有效或者eos节点已经启动！");
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "对于模拟调用，没有找到可用的eos,请确保服务" + config.getAppId() + "-"
                         + config.getId() + "-"
                         + config.getVersion() + "是否有效或者eos节点已经启动！");
             } else {
+                logger.error("没有找到请求的可用的eos节点,请确保服务" + config.getAppId() + "-"
+                        + config.getId() + "-"
+                        + config.getVersion() + "是否有效或者eos节点已经启动！");
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有找到请求的可用的eos节点,请确保服务" + config.getAppId() + "-"
                         + config.getId() + "-"
                         + config.getVersion() + "是否有效或者eos节点已经启动！");

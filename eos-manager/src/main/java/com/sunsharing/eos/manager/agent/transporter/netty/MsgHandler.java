@@ -2,6 +2,8 @@ package com.sunsharing.eos.manager.agent.transporter.netty;
 
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcServer;
+import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
+import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.manager.agent.process.MainControl;
@@ -21,24 +23,34 @@ public class MsgHandler extends SimpleChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        RequestPro basePro = (RequestPro) e.getMessage();
-        logger.info("收到请求：" + basePro);
+        BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        if(basePro instanceof HeartPro)
+        {
+            logger.debug("收到心跳请求...");
+            HeartPro heart = new HeartPro();
+            ctx.getChannel().write(heart);
+        }else if(basePro instanceof RequestPro)
+        {
+            logger.debug("收到请求：" + basePro);
+            RequestPro req = (RequestPro)basePro;
+            ResponsePro responsePro = new ResponsePro();
+            responsePro.setSerialization(basePro.getSerialization());
+            responsePro.setMsgId(basePro.getMsgId());
 
-        ResponsePro responsePro = new ResponsePro();
-        responsePro.setSerialization(basePro.getSerialization());
-        responsePro.setMsgId(basePro.getMsgId());
+            MainControl mainControl = new MainControl();
+            mainControl.process(req, responsePro);
+            ctx.getChannel().write(responsePro);
+        }
 
-        MainControl mainControl = new MainControl();
-        mainControl.process(basePro, responsePro);
 
-        ctx.getChannel().write(responsePro);
+
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.error("处理异常", e.getCause());
         e.getCause().printStackTrace();
-        e.getChannel().close();
+        //e.getChannel().close();
     }
 
     @Override

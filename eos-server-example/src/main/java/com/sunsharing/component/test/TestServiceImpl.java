@@ -39,4 +39,9 @@ public class TestServiceImpl implements TestType {
     public List testListMap(List list) {
         return null;
     }
+
+    public void testVoid(String name)
+    {
+
+    }
 }

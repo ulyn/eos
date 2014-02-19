@@ -20,6 +20,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.aop.Advice;
+import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.ClientProxy;
@@ -48,6 +50,53 @@ public abstract class AbstractProxy implements ClientProxy {
     Logger logger = Logger.getLogger(AbstractProxy.class);
 
     /**
+     * 执行方法
+     *
+     * @param invocation
+     * @param config
+     * @return
+     * @throws Throwable
+     */
+    public Object doInvoke(RpcInvocation invocation, ServiceConfig config) throws Throwable {
+        ServiceMethod serviceMethod = config.getMethod(invocation.getMethodName());
+        return doInvoke(invocation, config, serviceMethod);
+    }
+
+    /**
+     * 执行方法
+     *
+     * @param invocation
+     * @param config
+     * @param serviceMethod
+     * @return
+     * @throws Throwable
+     */
+    public Object doInvoke(RpcInvocation invocation, ServiceConfig config, ServiceMethod serviceMethod) throws Throwable {
+        logger.info("调用eos服务入参：" + invocation);
+        Object o = null;
+        Advice advice = serviceMethod.getAdvice();
+        AdviceResult adviceResult = null;
+        //执行调用前
+        if (advice != null) {
+            adviceResult = advice.before(serviceMethod, invocation.getArguments());
+        }
+        //执行没截断，开始执行调用
+        if (adviceResult == null || !adviceResult.isRightNowRet()) {
+            o = getRpcResult(invocation, config, serviceMethod);
+
+            if (advice != null) {
+                adviceResult = advice.after(serviceMethod, invocation.getArguments(), o);
+                if (adviceResult != null) {
+                    o = adviceResult.getReturnVal();
+                }
+            }
+        } else {
+            o = adviceResult.getReturnVal();
+        }
+        return o;
+    }
+
+    /**
      * 执行远程调用
      *
      * @param invocation
@@ -56,8 +105,8 @@ public abstract class AbstractProxy implements ClientProxy {
      * @return
      * @throws Throwable
      */
-    public Object getRpcResult(RpcInvocation invocation, ServiceConfig config, ServiceMethod serviceMethod) throws Throwable {
-        logger.info("调用eos服务入参：" + invocation);
+    private Object getRpcResult(RpcInvocation invocation, ServiceConfig config, ServiceMethod serviceMethod) throws Throwable {
+
         if (StringUtils.isBlank(config.getAppId())) {
             throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
         }

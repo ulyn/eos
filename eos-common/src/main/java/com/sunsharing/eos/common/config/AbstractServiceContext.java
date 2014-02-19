@@ -16,10 +16,9 @@
  */
 package com.sunsharing.eos.common.config;
 
-import com.sunsharing.eos.common.annotation.Advice;
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
-import com.sunsharing.eos.common.aop.ServletAdvice;
+import com.sunsharing.eos.common.aop.Advice;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
@@ -103,11 +102,11 @@ public abstract class AbstractServiceContext {
                 config.setMethodMockMap(xmlConfig.getMethodMockMap());
 
                 //当xml有配置servletAdvice时，改写ServiceMethod的切面类。
-                Map<String, ServletAdvice> servletAdviceMap = xmlConfig.getMethodServletAdviceMap();
+                Map<String, Advice> servletAdviceMap = xmlConfig.getMethodServletAdviceMap();
                 if (xmlConfig.getMethodServletAdviceMap() != null) {
                     List<ServiceMethod> methods = config.getServiceMethodList();
                     for (ServiceMethod method : methods) {
-                        ServletAdvice advice = servletAdviceMap.get(method.getMethodName());
+                        Advice advice = servletAdviceMap.get(method.getMethodName());
                         if (advice != null) {
                             method.setAdvice(advice);
                         }
@@ -164,14 +163,14 @@ public abstract class AbstractServiceContext {
                         //set methodMock
                         List<Element> methodEls = methodsEl.elements();
                         Map<String, String> methodMockMap = new HashMap<String, String>();
-                        Map<String, ServletAdvice> methodServletAdviceMap = new HashMap<String, ServletAdvice>();
+                        Map<String, Advice> methodServletAdviceMap = new HashMap<String, Advice>();
                         for (Element methodEl : methodEls) {
                             methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
 
                             String servletAdvice = methodEl.attributeValue("servletAdvice");
                             if (servletAdvice != null) {
                                 try {
-                                    ServletAdvice advice = (ServletAdvice) Class.forName(servletAdvice).newInstance();
+                                    Advice advice = (Advice) Class.forName(servletAdvice).newInstance();
                                     methodServletAdviceMap.put(methodEl.getName(), advice);
                                     logger.info("取得" + id + "-" + methodEl.getName() + "配置的servletAdvice=" + servletAdvice + "的newInstance实现");
                                 } catch (Exception e) {
@@ -240,11 +239,11 @@ public abstract class AbstractServiceContext {
                 }
             }
             //取切面类注解
-            Advice adviceAnn = method.getAnnotation(Advice.class);
-            ServletAdvice advice = null;
+            com.sunsharing.eos.common.annotation.Advice adviceAnn = method.getAnnotation(com.sunsharing.eos.common.annotation.Advice.class);
+            Advice advice = null;
             if (adviceAnn != null) {
                 try {
-                    advice = (ServletAdvice) adviceAnn.servletAdvice().newInstance();
+                    advice = (Advice) adviceAnn.servletAdvice().newInstance();
                 } catch (Exception e) {
                     logger.error("服务配置的Advice可能有误，servletAdvice=" + adviceAnn.servletAdvice() + "的newInstance异常!", e);
                     System.exit(0);

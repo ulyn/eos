@@ -16,7 +16,7 @@
  */
 package com.sunsharing.eos.common.config;
 
-import com.sunsharing.eos.common.aop.ServletAdvice;
+import com.sunsharing.eos.common.aop.Advice;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -53,7 +53,7 @@ public class ServiceMethod {
     private String[] parameterNames;
     private Class retType;
     private AccessType accessType;
-    private ServletAdvice advice;
+    private Advice advice;
 
     public ServiceMethod() {
     }
@@ -62,7 +62,7 @@ public class ServiceMethod {
         new ServiceMethod(method, null, null);
     }
 
-    public ServiceMethod(Method method, String[] parameterNames, ServletAdvice advice) {
+    public ServiceMethod(Method method, String[] parameterNames, Advice advice) {
         this.methodName = method.getName();
         this.accessType = AccessType.valueOf(method.getModifiers());
         this.retType = method.getReturnType();
@@ -121,11 +121,11 @@ public class ServiceMethod {
      *
      * @return
      */
-    public ServletAdvice getAdvice() {
+    public Advice getAdvice() {
         return advice;
     }
 
-    public void setAdvice(ServletAdvice advice) {
+    public void setAdvice(Advice advice) {
         this.advice = advice;
     }
 }

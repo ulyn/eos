@@ -167,12 +167,12 @@ public abstract class AbstractServiceContext {
                         for (Element methodEl : methodEls) {
                             methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
 
-                            String servletAdvice = methodEl.attributeValue("servletAdvice");
+                            String servletAdvice = methodEl.attributeValue("advice");
                             if (servletAdvice != null) {
                                 try {
                                     Advice advice = (Advice) Class.forName(servletAdvice).newInstance();
                                     methodServletAdviceMap.put(methodEl.getName(), advice);
-                                    logger.info("取得" + id + "-" + methodEl.getName() + "配置的servletAdvice=" + servletAdvice + "的newInstance实现");
+                                    logger.info("取得" + id + "-" + methodEl.getName() + "配置的advice=" + servletAdvice + "的newInstance实现");
                                 } catch (Exception e) {
                                     logger.error("初始化配置的servletAdvice=" + servletAdvice + "的newInstance异常!", e);
                                     System.exit(0);

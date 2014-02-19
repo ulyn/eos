@@ -33,7 +33,7 @@ public class MainClient {
 //        client.test();
         ExecutorService excutorService = Executors.newFixedThreadPool(10);
         Date d = new Date();
-        for(int i=0;i<1000;i++)
+        for(int i=0;i<1;i++)
         {
 //            excutorService.execute(new Runnable() {
 //                @Override
@@ -60,7 +60,7 @@ public class MainClient {
 //                }
 //            });
             TestService testService = ServiceContext.getBean(TestService.class);
-            testService.sayHello("hexin");
+            System.out.println(testService.sayHello("hexin"));
 
         }
 
@@ -83,6 +83,10 @@ public class MainClient {
             System.out.print("Enter a Command(--help):");
             try {
                 String line = stdin.readLine();
+                if(line==null)
+                {
+                    System.exit(0);
+                }
                 if (line.equals("help")) {
                     System.out.println("sta -> 显示状态");
                 } else if (line.equals("send")) {

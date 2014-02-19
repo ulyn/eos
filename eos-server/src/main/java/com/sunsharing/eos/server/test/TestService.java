@@ -32,7 +32,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.3")
+@EosService(version = "1.4")
 public interface TestService {
     /**
      * 输出

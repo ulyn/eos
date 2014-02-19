@@ -93,7 +93,37 @@ public class ServiceCache {
     {
         //是否授权
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        return utils.isExists(PathConstant.ACL+"/"+appId+serviceId+version);
+        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId))
+        {
+            if(!utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version))
+            {
+                return false;
+            }else
+            {
+                List<String> childer = utils.getChildren(PathConstant.ACL+"/"+appId+serviceId);
+                String max = "";
+                for(String str:childer)
+                {
+                    if(str.compareTo(max)>0)
+                    {
+                        max = str;
+                    }
+                }
+                if(max.equals(version))
+                {
+                    return true;
+                }else
+                {
+                    throw new RuntimeException("服务方更新提醒:"+serviceId+"最新版本为:"+max+",你的版本为:"+version+",请更新");
+                }
+            }
+
+        }else
+        {
+            return false;
+        }
+
+        //return utils.isExists(PathConstant.ACL+"/"+appId+serviceId+version);
     }
 
     /**
@@ -115,9 +145,9 @@ public class ServiceCache {
         logger.info("method:"+method);
 
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+version))
+        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version))
         {
-            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+version),"UTF-8");
+            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+"/"+version),"UTF-8");
             logger.info("obj:"+obj);
             return (JSONArray)(JSONObject.parseObject(obj).get(method));
         }

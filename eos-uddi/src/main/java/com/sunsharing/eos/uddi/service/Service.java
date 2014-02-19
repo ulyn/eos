@@ -140,8 +140,8 @@ public class Service {
         }
         versionDao.saveOrUpdate(v);
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if (utils.isExists(PathConstant.ACL + "/" + (app.getAppCode() + infaceName + version))) {
-            utils.deleteNode(PathConstant.ACL + "/" + (app.getAppCode() + infaceName + version));
+        if (utils.isExists(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+version))) {
+            utils.deleteNode(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+ version));
         }
 
     }
@@ -236,8 +236,9 @@ public class Service {
         }
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId + ver), obj.toJSONString(), CreateMode.PERSISTENT);
-
+        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
+                CreateMode.PERSISTENT);
     }
 
     public void updateTestCode(String methodId) throws Exception {
@@ -263,7 +264,9 @@ public class Service {
 
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId + ver), obj.toJSONString(), CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
+                CreateMode.PERSISTENT);
 
     }
 

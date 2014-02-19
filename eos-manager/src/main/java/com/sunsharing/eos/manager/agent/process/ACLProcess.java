@@ -58,6 +58,10 @@ public class ACLProcess implements Process {
             } catch (Exception e) {
                 String error = "权限验证异常!";
                 logger.error(error, e);
+                if(e.getMessage().startsWith("服务方更新提醒"))
+                {
+                    error = e.getMessage();
+                }
                 res.setExceptionResult(new RpcException(RpcException.FORBIDDEN_EXCEPTION, error));
             }
         }

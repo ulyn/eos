@@ -52,8 +52,7 @@ public class JdkProxy extends AbstractProxy {
                 invo.setParameterTypes(method.getParameterTypes());
                 invo.setArguments(args);
 //                invo.setRetType(CompatibleTypeUtils.getSimpleName(method.getReturnType()));
-                ServiceMethod serviceMethod = new ServiceMethod(method);
-                return getRpcResult(invo, serviceConfig, serviceMethod);
+                return doInvoke(invo, serviceConfig);
             }
         };
         T t = (T) Proxy.newProxyInstance(JdkProxy.class.getClassLoader(), new Class[]{clazz}, handler);

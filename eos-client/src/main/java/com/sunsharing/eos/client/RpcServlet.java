@@ -16,13 +16,9 @@
  */
 package com.sunsharing.eos.client;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.sunsharing.eos.client.proxy.AbstractProxy;
 import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.client.sys.SysParamVar;
-import com.sunsharing.eos.common.aop.AdviceResult;
-import com.sunsharing.eos.common.aop.ServletAdvice;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcException;
@@ -91,6 +87,9 @@ public class RpcServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //设置上下文
+        RpcServletContext.setRequest(req);
+
         Map rtnMap = new HashMap();
         try {
             String serviceId = req.getParameter("eos_service_id");
@@ -140,27 +139,8 @@ public class RpcServlet extends HttpServlet {
                 }
             }
 
-            Object o = null;
-            ServletAdvice advice = serviceMethod.getAdvice();
-            AdviceResult adviceResult = null;
-            //执行调用前
-            if (advice != null) {
-                adviceResult = advice.before(req, serviceMethod, invocation.getArguments());
-            }
-            //执行没截断，开始执行调用
-            if (adviceResult == null || !adviceResult.isRightNowRet()) {
-                AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
-                o = proxy.getRpcResult(invocation, serviceConfig, serviceMethod);
-
-                if (advice != null) {
-                    adviceResult = advice.after(req, serviceMethod, invocation.getArguments(), o);
-                    if (adviceResult != null) {
-                        o = adviceResult.getReturnVal();
-                    }
-                }
-            } else {
-                o = adviceResult.getReturnVal();
-            }
+            AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
+            Object o = proxy.doInvoke(invocation, serviceConfig, serviceMethod);
 
             rtnMap.put("status", true);
             rtnMap.put("result", o);

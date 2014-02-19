@@ -55,25 +55,25 @@ public class MsgHandler extends SimpleChannelHandler {
 
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-//        logger.info("channelConnected");
+        logger.info("channelConnected");
     }
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-//        logger.info("channelClosed");
+        logger.info("channelClosed");
         //删除通道
         //XLServer.allChannels.remove(e.getChannel());
     }
 
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-//        logger.info("channelDisconnected");
+        logger.info("channelDisconnected");
         super.channelDisconnected(ctx, e);
     }
 
     @Override
     public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-//        logger.info("channelOpen");
+        logger.info("channelOpen");
         //增加通道
         //XLServer.allChannels.add(e.getChannel());
     }

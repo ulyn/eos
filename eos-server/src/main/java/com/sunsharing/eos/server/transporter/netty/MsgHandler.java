@@ -7,6 +7,8 @@ import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
@@ -32,6 +34,14 @@ public class MsgHandler extends SimpleChannelHandler {
         if(basePro instanceof HeartPro)
         {
             logger.debug("收到心跳请求...");
+            ServerChannel sc = ServerCache.getChannel(ctx.getChannel());
+            if(sc!=null)
+            {
+                sc.refreshHeartBeat();
+            }else
+            {
+                logger.warn("无法从缓存中找到Channel:"+ctx.getChannel().getRemoteAddress());
+            }
             HeartPro heart = new HeartPro();
             ctx.getChannel().write(heart);
         }else if(basePro instanceof RequestPro)
@@ -60,6 +70,7 @@ public class MsgHandler extends SimpleChannelHandler {
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         logger.info("channelConnected");
+
     }
 
     @Override
@@ -67,6 +78,7 @@ public class MsgHandler extends SimpleChannelHandler {
         logger.info("channelClosed");
         //删除通道
         //XLServer.allChannels.remove(e.getChannel());
+        ServerCache.removeChannel(ctx.getChannel());
     }
 
     @Override
@@ -80,5 +92,6 @@ public class MsgHandler extends SimpleChannelHandler {
         logger.info("channelOpen");
         //增加通道
         //XLServer.allChannels.add(e.getChannel());
+        ServerCache.addChannel(ctx.getChannel());
     }
 }

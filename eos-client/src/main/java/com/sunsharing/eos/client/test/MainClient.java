@@ -60,7 +60,7 @@ public class MainClient {
 //                }
 //            });
             TestService testService = ServiceContext.getBean(TestService.class);
-            testService.sayHello("hexin");
+            System.out.println(testService.sayHello("hexin"));
 
         }
 

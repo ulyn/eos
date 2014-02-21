@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-client-example</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>war</packaging>
     <properties>
         <!-- 设置变量:用于统一管理Library的版本 -->
@@ -216,7 +216,7 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
         </dependency>
 
     </dependencies>

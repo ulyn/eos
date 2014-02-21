@@ -1,6 +1,7 @@
 package com.sunsharing.eos.uddi.web.controller.main;
 
 import com.sunsharing.component.utils.base.DateUtils;
+import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.db.AntZip;
 import com.sunsharing.eos.uddi.model.TApp;
 import com.sunsharing.eos.uddi.service.AppService;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -78,6 +81,33 @@ public class AppController {
         response.setHeader("Content-Disposition", "attachment;"
                 + " filename="+new String((d.substring(0,8)+".zip").getBytes("UTF-8"), "ISO8859-1"));
         zip.doZip(zipPath,response.getOutputStream());
+    }
+    @RequestMapping(value = "/downloadjar.do")
+    public void downloadJar(String appId,HttpServletRequest request,HttpServletResponse response) throws Exception
+    {
+        String tmpId = StringUtils.genUUID();
+        appService.changeJava(appId,tmpId);
+
+        TApp app = appService.loadApp(appId);
+        String filePath = SysInit.path+ File.separator
+                +"jartmp"+File.separator+tmpId+File.separator+tmpId+".jar";
+
+        String d =  DateUtils.getDBString(new Date()).substring(0,8);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;"
+                + " filename="+new String((app.getAppCode()+"_"+d+".jar").getBytes("UTF-8"), "ISO8859-1"));
+        FileInputStream in = new FileInputStream(filePath);
+        byte[] array = new byte[1024];
+        int len = 0;
+        while((len = in.read(array))!=-1)
+        {
+            response.getOutputStream().write(array,0,len);
+        }
+        in.close();
+
+
+        //ResponseHelper.printOut(response, true, "", "");
     }
 
 

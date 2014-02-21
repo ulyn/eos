@@ -60,7 +60,7 @@ indexApp.config(['$routeProvider',
     }]);
 
 
-indexApp.controller('showApp', function($scope, $routeParams,$http) {
+indexApp.controller('showApp', function($scope,$routeParams,$http) {
 
     $http.post('/applist.do', {}).success(function(data){
         //var d = data.data;
@@ -291,6 +291,7 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
             alert(data.msg);
         }
     });
+
     $http.post('/servicelist.do?appId='+appId+"&module="+moduleId, {}).success(function(data){
         //var d = data.data;
         console.info(data);
@@ -341,6 +342,20 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
     $scope.addService = function()
     {
         location.href="#serviceAdd/"+appId;
+    }
+
+    $scope.pakage = function()
+    {
+//        $http.post('/downloadjar.do?appId='+appId, {}).success(function(data){
+//            if(data.status)
+//            {
+//                alert("成功");
+//            }else
+//            {
+//                alert(data.msg);
+//            }
+//        });
+        location.href = '/downloadjar.do?appId='+appId;
     }
 
 });

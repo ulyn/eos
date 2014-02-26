@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="eosApp">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<script type="text/javascript" src="/js/angular.min.js"></script>
+<script type="text/javascript" src="/js/angular-resource.min.js"></script>
+<!--<script type="text/javascript" src="/js/angular-route.min.js"></script>-->
+<script type="text/javascript" src="/js/json2.js"></script>
+<script type="text/javascript" src="/js/angular.eosremote.js"></script>
+<script>
+    angular.module('eosApp',
+            [
+                'eos.services'
+            ]);
+    function TodoCtrl(eosRemote, $scope) {
+        eosRemote({
+            serviceId: "reservation",
+            mock: "success",
+            method: "getReservationHistory",
+            data: {"name": "hexin"},
+            success: function (data) {
+//                    alert("返回结果:" + data);
+                $scope.eosRemoteData = data;
+            },
+            error: function (data) {
+                $scope.eosRemoteData = data;
+            }
+        });
+    }
+    ;
+</script>
+<body>
+<div ng-controller="TodoCtrl">
+    <span>返回结果:{{eosRemoteData}}</span>
+</div>
+</body>
+</html>

@@ -16,8 +16,9 @@
  */
 package com.sunsharing.component.test;
 
+import com.sunsharing.eos.client.RpcServletContext;
+import com.sunsharing.eos.common.aop.Advice;
 import com.sunsharing.eos.common.aop.AdviceResult;
-import com.sunsharing.eos.common.aop.ServletAdvice;
 import com.sunsharing.eos.common.config.ServiceMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,15 +35,16 @@ import java.util.Arrays;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class TestAdvice implements ServletAdvice {
+public class TestAdvice implements Advice {
     @Override
-    public AdviceResult before(HttpServletRequest request, ServiceMethod method, Object[] args) {
+    public AdviceResult before(ServiceMethod method, Object[] args) {
         System.out.println(method.getMethodName() + "被执行前，入参为" + Arrays.toString(args));
+        System.out.println("RpcServletContext.getRequest=" + RpcServletContext.getRequest());
         return new AdviceResult(false, null);
     }
 
     @Override
-    public AdviceResult after(HttpServletRequest request, ServiceMethod method, Object[] args, Object returnVal) {
+    public AdviceResult after(ServiceMethod method, Object[] args, Object returnVal) {
         System.out.println(method.getMethodName() + "被执行后，returnVal=" + returnVal);
         return new AdviceResult(true, returnVal);
     }

@@ -7,10 +7,7 @@ import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -22,7 +19,7 @@ public class ServiceLocation {
 
     Logger logger = Logger.getLogger(ServiceLocation.class);
 
-    static Map<String, JSONObject> eosMap = new ConcurrentHashMap<String, JSONObject>();
+    private static Map<String, JSONObject> eosMap = new ConcurrentHashMap<String, JSONObject>();
 
     private ServiceLocation() {
 
@@ -96,7 +93,7 @@ public class ServiceLocation {
                 addEos(eosId);
             }
         }
-        for (String eosId : eosMap.keySet()) {
+        for (String eosId : new ArrayList<String>(eosMap.keySet())) {
             if (!onlineEos.contains(eosId)) {
                 logger.info("EOS:" + eosId + "下线");
                 removeEos(eosId);
@@ -129,7 +126,7 @@ public class ServiceLocation {
                 service.put(online, "AA");
             }
         }
-        for (String ser : service.keySet()) {
+        for (String ser : new ArrayList<String>(service.keySet()) ) {
             if (!realOnline.contains(ser)) {
                 logger.info("Service:" + ser + "下线");
                 service.remove(ser);

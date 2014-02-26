@@ -11,7 +11,7 @@
         <!-- 设置变量:用于统一管理Library的版本 -->
         <javax.version>6.0</javax.version>
         <javax.servlet.version>1.2</javax.servlet.version>
-        <junit.version>3.8.2</junit.version>
+        <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <org.aspectj.version>1.6.2</org.aspectj.version>
         <net.sf.ehcache.version>2.3.2</net.sf.ehcache.version>
@@ -24,12 +24,14 @@
 
 
     <dependencies>
+
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>${javax.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

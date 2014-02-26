@@ -45,6 +45,8 @@ public class EosInit {
         if (!inited) {
             ConfigContext.instancesBean(SysProp.class);
             ServiceContext serviceContext = new ServiceContext(packagePath);
+            serviceContext.init();
+
             new Thread() {
                 public void run() {
                     ServiceLocation.getInstance().connect();
@@ -54,20 +56,19 @@ public class EosInit {
             inited = true;
         }
     }
+
     /**
      * 同步初始化eos系统
      *
      * @param packagePath
      */
-    public synchronized static void synStart(String packagePath)
-    {
+    public synchronized static void synStart(String packagePath) {
         ConfigContext.instancesBean(SysProp.class);
         ServiceContext serviceContext = new ServiceContext(packagePath);
         ServiceLocation.getInstance().synConnect();
     }
 
-    public static void main(String[]a)
-    {
+    public static void main(String[] a) {
         EosInit.synStart("com.sunsharing");
         System.out.println("成功了~~~~~~");
     }

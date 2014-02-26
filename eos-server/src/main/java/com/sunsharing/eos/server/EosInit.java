@@ -54,6 +54,7 @@ public class EosInit {
         if (!inited) {
             ConfigContext.instancesBean(SysProp.class);
             ServiceContext serviceContext = new ServiceContext(ctx, packagePath);
+            serviceContext.init();
             new Thread() {
                 public void run() {
                     ServiceRegister serviceRegister = ServiceRegister.getInstance();

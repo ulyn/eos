@@ -62,6 +62,12 @@ public abstract class AbstractServiceContext {
 //        this.ctx = ctx;
         this.packagePath = packagePath;
 
+    }
+
+    /**
+     * 初始化
+     */
+    public void init() {
         String xmlConfigFileName = "EosServiceConfig.xml";
         //key为接口name
         Map<String, ServiceConfig> xmlServiceConfigMap = loadXmlServiceConfig(xmlConfigFileName);

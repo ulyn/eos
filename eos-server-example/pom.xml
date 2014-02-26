@@ -5,7 +5,7 @@
 
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-server-example</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>war</packaging>
     <properties>
         <!-- 设置变量:用于统一管理Library的版本 -->
@@ -218,7 +218,7 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-server</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.3</version>
         </dependency>
     </dependencies>
     <distributionManagement>

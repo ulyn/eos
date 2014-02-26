@@ -87,10 +87,12 @@ public class RemoteProcess implements Process {
 
             RemoteHelper remoteHelper = new RemoteHelper();
             ResponsePro responsePro = remoteHelper.call(req, ip, port, transporter, timeout);
+
+            res.setStatus(responsePro.getStatus());
             res.setResultBytes(responsePro.getResultBytes());
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            logger.error("",e);
+            logger.error("", e);
             res.setExceptionResult(e);
         }
     }

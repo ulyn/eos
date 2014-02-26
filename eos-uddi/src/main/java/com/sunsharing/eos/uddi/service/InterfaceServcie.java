@@ -350,6 +350,10 @@ public class InterfaceServcie {
                 tmp.put("content","");
             }else
             {
+                if(tmp==null)
+                {
+                    continue;
+                }
                 String ll = (String)tmp.get("content");
                 ll+=l;
                 tmp.put("content",ll);

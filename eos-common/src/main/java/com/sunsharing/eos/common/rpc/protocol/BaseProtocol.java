@@ -29,6 +29,10 @@ import org.jboss.netty.channel.Channel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre></pre>
@@ -138,5 +142,26 @@ public abstract class BaseProtocol {
 
     public abstract BaseProtocol createFromChannel(ChannelBuffer buffer);
 
+    public static void main(String[] a) throws Exception {
+        Map o = new HashMap();
+        o.put("a", new BigDecimal("11.111"));
+        o.put("b", new Date());
+
+        Serialization serial = SerializationFactory.createSerialization("hessian");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutput objectOutput = serial.serialize(outputStream);
+        objectOutput.writeObject(o);
+        objectOutput.flushBuffer();
+
+
+        byte[] bytes = outputStream.toByteArray();
+
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        ObjectInput objectInput = serial.deserialize(inputStream);
+        Map m = objectInput.readObject(Map.class);
+
+        System.out.println(m.get("a"));
+        System.out.println(m.get("b"));
+    }
 }
 

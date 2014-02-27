@@ -11,7 +11,7 @@ public class Hessian2ObjectOutput implements ObjectOutput {
 
     public Hessian2ObjectOutput(OutputStream os) {
         mH2o = new Hessian2Output(os);
-//		mH2o.setSerializerFactory(new Hessian2SerializerFactory());
+        mH2o.setSerializerFactory(Hessian2SerializerFactory.SERIALIZER_FACTORY);
     }
 
     public void writeBool(boolean v) throws IOException {

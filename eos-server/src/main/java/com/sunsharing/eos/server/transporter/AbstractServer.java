@@ -93,7 +93,7 @@ public abstract class AbstractServer implements RpcServer {
             } catch (Exception th) {
                 String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + invocation.getMethodName();
                 logger.error(errorMsg, th);
-                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, errorMsg));
+                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, errorMsg, th));
             }
         } else {
             String errorMsg = "has no these class：" + serviceConfig.getId() + " - " + invocation.getMethodName();

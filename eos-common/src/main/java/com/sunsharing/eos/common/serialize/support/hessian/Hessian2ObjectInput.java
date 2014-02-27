@@ -14,7 +14,7 @@ public class Hessian2ObjectInput implements ObjectInput {
 
     public Hessian2ObjectInput(InputStream is) {
         mH2i = new Hessian2Input(is);
-//		mH2i.setSerializerFactory(new SerializerFactory());
+        mH2i.setSerializerFactory(Hessian2SerializerFactory.SERIALIZER_FACTORY);
     }
 
     public boolean readBool() throws IOException {

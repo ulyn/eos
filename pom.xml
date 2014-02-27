@@ -19,7 +19,7 @@
     <properties>
         <!-- 设置变量:用于统一管理Library的版本 -->
         <fastjson_version>1.1.27</fastjson_version>
-        <hessian_version>4.0.7</hessian_version>
+        <hessian_version>4.0.33</hessian_version>
         <junit_version>3.8.2</junit_version>
         <log4j_version>1.2.16</log4j_version>
         <zookeeper_version>3.4.5</zookeeper_version>

@@ -30,9 +30,9 @@ angular.module('eos.services', ['ngResource']).
                 }
                 var vars = "eos_service_id=" + option.serviceId + "&eos_method_name=" + option.method + "&eos_mock=" + option.mock;
                 if (option.url.indexOf("?") != -1) {
-                    option.url = option.url + "&" + vars + "&eos_jsonp_callback=JSON_CALLBACK";
+                    option.url = option.url + "&" + vars;
                 } else {
-                    option.url = option.url + "?" + vars + "&eos_jsonp_callback=JSON_CALLBACK";
+                    option.url = option.url + "?" + vars;
                 }
                 //处理data,将value为object的转换为json串
                 var params = option.data;

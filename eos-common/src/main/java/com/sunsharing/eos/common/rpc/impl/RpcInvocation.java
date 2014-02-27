@@ -106,6 +106,8 @@ public class RpcInvocation implements Invocation, Serializable {
             } else if (StringUtils.isBlank(realMock)) {
                 realMock = config.getMethodMock(methodName);
             }
+        } else {
+            realMock = "";
         }
         return realMock;
     }

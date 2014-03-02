@@ -34,6 +34,12 @@ public class AppService {
         serviceDao = new SimpleHibernateDao<TService,Integer>(sessionFactory,TService.class);
     }
 
+    public List getAppName(String apps)
+    {
+        String sql = "from TApp where appId in("+apps+")";
+       return appDao.find(sql);
+    }
+
     public List<TApp> listApp()
     {
         String app = "from TApp order by creatTime desc";

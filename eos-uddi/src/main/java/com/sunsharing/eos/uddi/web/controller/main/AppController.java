@@ -71,8 +71,10 @@ public class AppController {
     @RequestMapping(value="/export.do",method= RequestMethod.GET)
     public void export(HttpServletRequest request,HttpServletResponse response) throws Exception
     {
-        mysql.export();
-        String zipPath = SysInit.path+ File.separator+"zip";
+        String uuid = StringUtils.genUUID();
+        String apps = request.getParameter("apps");
+        mysql.export(apps,uuid);
+        String zipPath = SysInit.path+ File.separator+"zip"+File.separator+uuid;
         AntZip zip = new AntZip();
 
         String d = DateUtils.getDBString(new Date());

@@ -8,23 +8,26 @@ import java.sql.*;
 public class MysqlUtils {
     public static final String enter = "\r\n";
 
-    public String exportSqlString(Connection con,String[] tableNames) throws SQLException {
+    public String exportSqlString(Connection con,String[] tableNames,String[] wheres) throws SQLException {
         StringBuffer tablesql = new StringBuffer();
         for (int i = 0; i < tableNames.length; i++) {
-            tablesql.append(exportSqlString(con,tableNames[i]) + enter + enter);
+            tablesql.append(exportSqlString(con,tableNames[i],wheres[i]) + enter + enter);
         }
         return tablesql.toString();
     }
 
-    public String exportSqlString(Connection con,String tableName) throws SQLException {
+    public String exportSqlString(Connection con,String tableName,String where) throws SQLException {
         String tablesql = "";
         String datasql = "";
         Statement stat = null;
         try {
             //con = JdbcManager.getConnection();//得到数据库连接
             stat = con.createStatement();//创建Statement对象
-            ResultSet rs = stat.executeQuery("select * from " + tableName);//执行查询语句
-            tablesql = getCreateTableSql(rs, tableName);//得到创建表的sql语句
+            String sql = "select * from " + tableName+" where "+where;
+            System.out.println(sql);
+            ResultSet rs = stat.executeQuery(sql);//执行查询语句
+            tablesql = "delete from "+tableName+" where "+where;
+                    //getCreateTableSql(rs, tableName);//得到创建表的sql语句
             datasql = getTableDataSql(rs, tableName);//得到插入数据的sql语句
         } catch (SQLException e) {
             throw e;

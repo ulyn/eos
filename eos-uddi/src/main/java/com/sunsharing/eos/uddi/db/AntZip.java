@@ -72,7 +72,7 @@ public class AntZip{
             int index = dir.toString().indexOf("zip/");
             if(index!=-1)
             {
-                tmp = tmp.substring(index+4);
+                tmp = tmp.substring(index+37);
             }
             this.zipOut.putNextEntry(new ZipEntry(tmp + "/"));
             this.zipOut.closeEntry();
@@ -90,7 +90,7 @@ public class AntZip{
                     int index = fileName.toString().toString().indexOf("zip/");
                     if(index!=-1)
                     {
-                        tmp = tmp.substring(index+4);
+                        tmp = tmp.substring(index+37);
                     }
                     this.zipOut.putNextEntry(new ZipEntry(tmp));
 

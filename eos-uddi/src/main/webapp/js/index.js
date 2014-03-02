@@ -104,7 +104,25 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
 //        }).error(function (data, status, headers, config) {
 //
 //        });
-        location.href = "/export.do";
+        var app = document.getElementsByName("selectApp");
+        var selectApp = "";
+        for(var i=0;i<app.length;i++)
+        {
+            if(app[i].checked)
+            {
+                selectApp+=app[i].value+",";
+            }
+        }
+        if(selectApp=="")
+        {
+            alert("请选择APP");
+            return;
+        }else
+        {
+            selectApp = selectApp.substr(0,selectApp.length-1);
+        }
+        //alert(selectApp);
+        location.href = "/export.do?apps="+selectApp;
     }
 
     $scope.commitAllCommit = function(){

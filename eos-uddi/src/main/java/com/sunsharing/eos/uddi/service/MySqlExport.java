@@ -1,6 +1,8 @@
 package com.sunsharing.eos.uddi.service;
 
 import com.sunsharing.eos.uddi.db.MysqlUtils;
+import com.sunsharing.eos.uddi.model.TApp;
+import com.sunsharing.eos.uddi.sys.ServiceLocator;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.sql.Connection;
+import java.util.List;
 
 /**
  * Created by criss on 14-2-17.
@@ -23,14 +26,17 @@ public class MySqlExport {
     @Autowired
     JdbcTemplate jdbc;
 
-    public void export() throws Exception
+    public void export(String apps,String uuid) throws Exception
     {
         Connection conn = jdbc.getDataSource().getConnection();
         MysqlUtils utils = new MysqlUtils();
         String sql = utils.exportSqlString(conn,new String[]{
             "T_MODULE","T_APP","T_METHOD","T_SERVICE_VERSION",
             "T_SERVICE"
-        });
+        },new String[]{ "APP_ID in("+apps+")","APP_ID in ("+apps+")"
+        ,"VERSION_ID in (select VERSION_ID from T_SERVICE,T_SERVICE_VERSION where " +
+                "T_SERVICE.SERVICE_ID=T_SERVICE_VERSION.VERSION_ID and APP_ID in("+apps+"))",
+                "SERVICE_ID in(select SERVICE_ID from T_SERVICE where APP_ID in("+apps+"))","APP_ID in("+apps+")"});
         String sql2 = "select max(APP_ID)+1 from T_APP";
         int i = jdbc.queryForInt(sql2);
         sql+= " ALTER TABLE T_APP AUTO_INCREMENT = "+i+";"+MysqlUtils.enter+MysqlUtils.enter;
@@ -52,25 +58,36 @@ public class MySqlExport {
         sql+= " ALTER TABLE T_SERVICE AUTO_INCREMENT = "+i+";"+MysqlUtils.enter+MysqlUtils.enter;
 
         System.out.println("sql:"+sql);
-        initPath();
-        FileOutputStream f  = new FileOutputStream(new File(SysInit.path+ File.separator+"zip"+
+        AppService service = (AppService)ServiceLocator.getBean("appService");
+        List<TApp> tapps = service.getAppName(apps);
+        initPath(tapps,uuid);
+        new File(SysInit.path+ File.separator+"zip"+
+                File.separator+uuid).mkdirs();
+        FileOutputStream f  = new FileOutputStream(new File(SysInit.path+ File.separator+"zip"+File.separator
+                +uuid+
                 File.separator+"data.sql"
         ));
         f.write(sql.getBytes());
         f.close();
     }
 
-    private void initPath()
+    private void initPath(List<TApp> apps,String uuid)
     {
         String zip = SysInit.path+ File.separator+"zip";
         File zipPath = new File(zip);
         if(zipPath.exists())
         {
+            System.out.println("zipPath:"+zipPath);
             deleteDir(zipPath);
         }
-        new File(SysInit.path+ File.separator+"zip"+File.separator+"interface").mkdirs();
-        copyFolder(SysInit.path + File.separator + "interface",
-                SysInit.path + File.separator + "zip" + File.separator + "interface");
+        for(int i=0;i<apps.size();i++)
+        {
+            TApp app = apps.get(i);
+            new File(SysInit.path+ File.separator+"zip"+File.separator+uuid+File.separator+"interface"+File.separator+
+                    app.getAppCode()).mkdirs();
+            copyFolder(SysInit.path + File.separator + "interface"+File.separator+app.getAppCode(),
+                SysInit.path +  "zip"+File.separator+ uuid + File.separator + "interface"+File.separator+app.getAppCode());
+        }
     }
 
 
@@ -81,11 +98,17 @@ public class MySqlExport {
      * @return boolean
      */
     public void copyFolder(String oldPath, String newPath) {
+        System.out.println(oldPath);
+        System.out.println(newPath);
 
         try {
             (new File(newPath)).mkdirs(); //如果文件夹不存在 则建立新文件夹
             File a=new File(oldPath);
             String[] file=a.list();
+            if(file==null)
+            {
+                file = new String[]{};
+            }
             File temp=null;
             for (int i = 0; i < file.length; i++) {
                 if(oldPath.endsWith(File.separator)){

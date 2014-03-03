@@ -86,7 +86,7 @@ public class MySqlExport {
             new File(SysInit.path+ File.separator+"zip"+File.separator+uuid+File.separator+"interface"+File.separator+
                     app.getAppCode()).mkdirs();
             copyFolder(SysInit.path + File.separator + "interface"+File.separator+app.getAppCode(),
-                SysInit.path +  "zip"+File.separator+ uuid + File.separator + "interface"+File.separator+app.getAppCode());
+                SysInit.path +File.separator +  "zip"+File.separator+ uuid + File.separator + "interface"+File.separator+app.getAppCode());
         }
     }
 

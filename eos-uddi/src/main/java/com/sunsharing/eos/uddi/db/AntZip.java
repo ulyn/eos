@@ -69,7 +69,7 @@ public class AntZip{
         if(files.length == 0){//如果目录为空,则单独创建之.
             //ZipEntry的isDirectory()方法中,目录以"/"结尾.
             String tmp = dir.toString();
-            int index = dir.toString().indexOf("zip/");
+            int index = dir.toString().replaceAll("\\\\","/").indexOf("zip/");
             if(index!=-1)
             {
                 tmp = tmp.substring(index+37);
@@ -87,7 +87,7 @@ public class AntZip{
                 else{
                     fileIn = new FileInputStream(fileName);
                     String tmp = fileName.toString().toString();
-                    int index = fileName.toString().toString().indexOf("zip/");
+                    int index = fileName.toString().toString().replaceAll("\\\\","/").indexOf("zip/");
                     if(index!=-1)
                     {
                         tmp = tmp.substring(index+37);

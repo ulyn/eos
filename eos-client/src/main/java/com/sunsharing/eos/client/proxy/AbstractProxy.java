@@ -189,7 +189,8 @@ public abstract class AbstractProxy implements ClientProxy {
                 }
                 //返回的类型一样，则不需要进行转换，返回类型是string或者不是模拟返回
                 //返回的类型不一样，则需要进行转换
-                if (value.getClass() != retType) {
+//                if (value.getClass() != retType) {
+                if (value instanceof String && !retType.isInstance(value)) {
                     value = CompatibleTypeUtils.compatibleTypeConvert((String) value, retType);
                 }
             }

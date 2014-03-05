@@ -51,6 +51,10 @@ indexApp.config(['$routeProvider',
                 templateUrl: 'templates/monitor/service.html',
                 //template:'criss',
                 controller: 'monitorservice'
+            }).when('/import',{
+                templateUrl: 'templates/index/import.html',
+                //template:'criss',
+                controller: 'import'
             }).when('/',{
                 templateUrl: 'templates/service/blank.html'
                 //template:'criss',
@@ -92,18 +96,13 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
         location.href = "#updateAdd/"+id;
     }
 
+    $scope.import = function()
+    {
+        location.href = "#import";
+    }
+
     $scope.export = function()
     {
-//        $http({
-//            url: '/export.do',
-//            method: "POST",
-//            data: "",
-//            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-//        }).success(function (data, status, headers, config) {
-//                alert("abc");
-//        }).error(function (data, status, headers, config) {
-//
-//        });
         var app = document.getElementsByName("selectApp");
         var selectApp = "";
         for(var i=0;i<app.length;i++)
@@ -121,12 +120,10 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
         {
             selectApp = selectApp.substr(0,selectApp.length-1);
         }
-        //alert(selectApp);
         location.href = "/export.do?apps="+selectApp;
     }
 
     $scope.commitAllCommit = function(){
-        alert("");
         $http({
             url: '/commitAllCommit.do',
             method: "GET",
@@ -148,6 +145,14 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
     }
 
 });
+
+indexApp.controller('import', function($scope,$routeParams,$http) {
+
+
+
+});
+
+
 indexApp.controller('appAdd', function($scope, $routeParams,$http) {
 
 
@@ -311,7 +316,6 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
     });
 
     $http.post('/servicelist.do?appId='+appId+"&module="+moduleId, {}).success(function(data){
-        //var d = data.data;
         console.info(data);
         if(data.status)
         {
@@ -330,10 +334,6 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
                 {
                     list[i].color = "red";
                 }
-
-                //list[i].userName = list[i].user.userName;
-                //alert(list[i].user.userId);
-
                 //处理审批状态
                 var versions = list[i].versions;
                 for(var j=0;j<versions.length;j++)

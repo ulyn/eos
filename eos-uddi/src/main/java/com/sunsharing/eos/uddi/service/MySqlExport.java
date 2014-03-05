@@ -29,14 +29,23 @@ public class MySqlExport {
     public void export(String apps,String uuid) throws Exception
     {
         Connection conn = jdbc.getDataSource().getConnection();
+        String [] where = new String[]{ "APP_ID in("+apps+")","APP_ID in ("+apps+")","APP_ID in("+apps+")"
+                ,"SERVICE_ID in(select SERVICE_ID from T_SERVICE where APP_ID in("+apps+"))"
+                ,"VERSION_ID in (select VERSION_ID from T_SERVICE,T_SERVICE_VERSION where " +
+                "T_SERVICE.SERVICE_ID=T_SERVICE_VERSION.SERVICE_ID and APP_ID in("+apps+"))"
+        };
+        String sql = "";
+
+        sql += "delete from T_METHOD where "+where[4]+"\n";
+        sql += "delete from T_SERVICE_VERSION where "+where[3]+"\n";
+        sql += "delete from T_SERVICE where "+where[2]+"\n";
+        sql += "delete from T_MODULE where "+where[1]+"\n";
+        sql += "delete from T_APP where "+where[0]+"\n";
         MysqlUtils utils = new MysqlUtils();
-        String sql = utils.exportSqlString(conn,new String[]{
-            "T_MODULE","T_APP","T_METHOD","T_SERVICE_VERSION",
-            "T_SERVICE"
-        },new String[]{ "APP_ID in("+apps+")","APP_ID in ("+apps+")"
-        ,"VERSION_ID in (select VERSION_ID from T_SERVICE,T_SERVICE_VERSION where " +
-                "T_SERVICE.SERVICE_ID=T_SERVICE_VERSION.VERSION_ID and APP_ID in("+apps+"))",
-                "SERVICE_ID in(select SERVICE_ID from T_SERVICE where APP_ID in("+apps+"))","APP_ID in("+apps+")"});
+        sql += utils.exportSqlString(conn,new String[]{
+            "T_APP","T_MODULE","T_SERVICE","T_SERVICE_VERSION",
+            "T_METHOD"
+        },where);
         String sql2 = "select max(APP_ID)+1 from T_APP";
         int i = jdbc.queryForInt(sql2);
         sql+= " ALTER TABLE T_APP AUTO_INCREMENT = "+i+";"+MysqlUtils.enter+MysqlUtils.enter;

@@ -5,8 +5,11 @@ import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.sys.SysInit;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipFile;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +17,9 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+
 
 /**
  * Created by criss on 14-1-31.
@@ -22,6 +27,9 @@ import java.util.List;
 @Service
 @Transactional
 public class AppService {
+
+    @Autowired
+    JdbcTemplate jdbc;
 
     private SimpleHibernateDao<TApp,Integer> appDao;//用户管理
     private SimpleHibernateDao<TModule,String> moduleDao;//用户管理
@@ -300,6 +308,71 @@ public class AppService {
             }
         }
     }
+
+
+    public void loadZip(String unZipfileName) throws Exception
+    {
+        ZipFile zipFile = new ZipFile(unZipfileName);
+        ZipEntry entry = zipFile.getEntry("data.sql");
+
+        Enumeration e = zipFile.getEntries();
+        while (e.hasMoreElements()) {
+            ZipEntry ze2 = (ZipEntry) e.nextElement();
+            if(ze2.isDirectory())
+            {
+                continue;
+            }
+            String entryName = ze2.getName();
+            System.out.println(entryName);
+            if(entryName.endsWith("data.sql"))
+            {
+                BufferedReader reader = null;
+                FileOutputStream w = null;
+                //reader = new BufferedReader(new FileReader(source));
+                InputStream inputStream = zipFile.getInputStream(entry);
+                reader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                String sql = null;
+                while((sql = reader.readLine())!=null)
+                {
+                    if(sql.endsWith(";"))
+                    {
+                        sql = sql.substring(0,sql.length()-1);
+                    }
+                    //System.out.println(sql);
+                    if(StringUtils.isBlank(sql.trim()))
+                    {
+                        continue;
+                    }
+                    jdbc.execute(sql);
+                }
+                reader.close();
+            }else
+            {
+                System.out.println(entryName);
+                String path = SysInit.path+File.separator+entryName;
+                path = path.replaceAll("\\\\","/");
+                File f = new File(path);
+                if(f.exists())
+                {
+                    f.delete();
+                }
+
+                InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(entryName));
+                FileOutputStream out = new FileOutputStream(f);
+                byte[] arr = new byte[1024];
+                int len = 0;
+                while((len = inputStream.read(arr))!=-1)
+                {
+                    out.write(arr,0,len);
+                }
+                out.close();
+                inputStream.close();
+            }
+        }
+
+        zipFile.close();
+    }
+
 
     public static void main(String[]a)
     {

@@ -23,10 +23,18 @@ public class MysqlUtils {
         try {
             //con = JdbcManager.getConnection();//得到数据库连接
             stat = con.createStatement();//创建Statement对象
-            String sql = "select * from " + tableName+" where "+where;
+            String sql = null;
+            if("T_MODULE".equals(tableName))
+            {
+                sql = "select MODULE_ID,MODULE_NAME,APP_ID from "+tableName+" where "+where;
+            }else
+            {
+                sql = "select * from " + tableName+" where "+where;
+            }
+
             System.out.println(sql);
             ResultSet rs = stat.executeQuery(sql);//执行查询语句
-            tablesql = "delete from "+tableName+" where "+where;
+            //tablesql = "delete from "+tableName+" where "+where;
                     //getCreateTableSql(rs, tableName);//得到创建表的sql语句
             datasql = getTableDataSql(rs, tableName);//得到插入数据的sql语句
         } catch (SQLException e) {
@@ -85,30 +93,46 @@ public class MysqlUtils {
 
     public String getTableDataSql(ResultSet rs, String tableName)
             throws SQLException {
+        System.out.println(tableName);
         String[] columns = getColumns(rs);
         StringBuffer columnBuffer = new StringBuffer();
-        columnBuffer.append("INSERT INTO `" + tableName + "` ("
-                + getColumnsString(columns) + ") VALUES");
+
         while (rs.next()) {
+            columnBuffer.append("INSERT INTO `" + tableName + "` ("
+                    + getColumnsString(columns) + ") VALUES");
             columnBuffer.append("(");
             for (int i = 0; i < columns.length; i++) {
                 Object obj = rs.getObject(columns[i]);
                 String typeName = "";
                 if (obj == null) {
-                    obj = "";
+                    obj = "NULL";
                 }
                 if (obj.getClass() != null) {
                     typeName = obj.getClass().getName();
                 }//在这儿我只做了一些简单的判断
+
                 if ("java.lang.String".equals(typeName)
                         || "java.sql.Date".equals(typeName)) {
-                    columnBuffer.append("'" + obj + "',");
+                    if("NULL".equals(obj))
+                    {
+                        columnBuffer.append("NULL,");
+                    }else
+                    {
+                        columnBuffer.append("'" + obj + "',");
+                    }
                 } else {
-                    columnBuffer.append(obj + ",");
+                    if("NULL".equals(obj))
+                    {
+                        columnBuffer.append("NULL,");
+                    }else
+                    {
+                        columnBuffer.append("" + obj + ",");
+                    }
                 }
+                System.out.println(typeName+":"+obj);
             }
             columnBuffer.deleteCharAt(columnBuffer.length() - 1);
-            columnBuffer.append("),");
+            columnBuffer.append(")\n");
         }
         if (columnBuffer.toString().endsWith("VALUES"))
             return "";

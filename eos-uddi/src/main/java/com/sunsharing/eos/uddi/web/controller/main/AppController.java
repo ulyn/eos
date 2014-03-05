@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -84,6 +86,32 @@ public class AppController {
                 + " filename="+new String((d.substring(0,8)+".zip").getBytes("UTF-8"), "ISO8859-1"));
         zip.doZip(zipPath,response.getOutputStream());
     }
+
+
+
+    @RequestMapping(value="/import.do",method= RequestMethod.POST)
+    public void importPkg(HttpServletRequest request,HttpServletResponse response) throws Exception
+    {
+        try
+        {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        // 获得文件
+        MultipartFile imgFile  =  multipartRequest.getFile("pkg");
+        String uuid = com.sunsharing.component.utils.base.StringUtils.generateUUID();
+        File f = new File(uuid+".zip");
+        imgFile.transferTo(f);
+        appService.loadZip(uuid+".zip");
+        String script = "<script>parent.alert(\"保存成功\");</script>";
+            ResponseHelper.printOut(response,script);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            String script = "<script>parent.alert(\"保存失败\");</script>";
+            ResponseHelper.printOut(response,script);
+        }
+
+    }
+
     @RequestMapping(value = "/downloadjar.do")
     public void downloadJar(String appId,HttpServletRequest request,HttpServletResponse response) throws Exception
     {

@@ -48,8 +48,13 @@ public class ServiceController {
 
 
         List<TService> services = service.query(appId,module);
+
         String str = JSONArray.toJSONString(services);
         JSONArray arr = JSONArray.parseArray(str);
+        for(int i=0;i<arr.size();i++)
+        {
+            ((JSONObject)(arr.get(i))).put("user",services.get(i).getUser().getUserName());
+        }
 
         ResponseHelper.printOut(response, true, "", arr);
 

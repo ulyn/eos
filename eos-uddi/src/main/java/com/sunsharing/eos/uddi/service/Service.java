@@ -54,9 +54,20 @@ public class Service {
         if (!StringUtils.isBlank(module)) {
             sql += " and module=?";
             TModule m = moduleDao.get(new Integer(module));
-            return serviceDao.find(sql, new Integer(appId), m.getModuleName());
+            List<TService> list = serviceDao.find(sql, new Integer(appId), m.getModuleName());
+            for(TService service:list)
+            {
+                service.getUser().getUserName();
+            }
+            return list;
         } else {
-            return serviceDao.find(sql, new Integer(appId));
+            List<TService> list = serviceDao.find(sql, new Integer(appId));
+            for(TService service:list)
+            {
+               System.out.println("..:" + service.getUser().getUserName());
+            }
+              
+            return list;
         }
     }
 

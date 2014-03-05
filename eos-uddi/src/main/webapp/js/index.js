@@ -331,6 +331,9 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
                     list[i].color = "red";
                 }
 
+                //list[i].userName = list[i].user.userName;
+                //alert(list[i].user.userId);
+
                 //处理审批状态
                 var versions = list[i].versions;
                 for(var j=0;j<versions.length;j++)

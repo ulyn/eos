@@ -144,7 +144,15 @@ public class AppService {
                             pkg = pkg+File.separator;
                         }
                         nioTransferCopy(new File(sourceApp),new File(tmp+File.separator+sl+".java"));
-                        String javac = "d:\\jdk1.6\\bin\\javac -encoding utf-8   -classpath %LIB_JARS% "+dirPath+File.separator+pkg+sl+".java\n";
+                        File f = new File("d:\\jdk1.6\\bin\\");
+                        String javac = "";
+                        if(f.isDirectory())
+                        {
+                            javac = "d:\\jdk1.6\\bin\\javac -encoding utf-8   -classpath %LIB_JARS% "+dirPath+File.separator+pkg+sl+".java\n";
+                        }else
+                        {
+                            javac = "javac -encoding utf-8   -classpath %LIB_JARS% "+dirPath+File.separator+pkg+sl+".java\n";
+                        }
                         out.write(javac.getBytes());
                     }
                 }

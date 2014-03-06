@@ -9,8 +9,8 @@ import java.util.Map;
 /**
  * EOS测试类型
  */
-@EosService(version="1.2",appId="criss",id="testType")
-public interface  TestType {
+@EosService(version="1.3",appId="criss",id="testType")
+public interface TestType {
     /**
      * 测试Int类型
      * @param i 随便
@@ -85,4 +85,11 @@ public interface  TestType {
      */
     @ParameterNames(value = {"list"})
     List testListMap(List list);
+
+    /**
+     * 测试void
+     * @param name 没有入参
+     */
+    @ParameterNames(value = {"name"})
+    void testVoid(String name);
 }

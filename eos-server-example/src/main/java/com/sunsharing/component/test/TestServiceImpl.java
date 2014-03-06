@@ -2,6 +2,7 @@ package com.sunsharing.component.test;
 
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,9 @@ public class TestServiceImpl implements TestType {
 
     @Override
     public Map testMap(Map m, String l2) {
-        return null;
+        Map n = new HashMap();
+        n.put("real","resasddl");
+        return n;
     }
 
     @Override

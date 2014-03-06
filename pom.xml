@@ -7,7 +7,7 @@
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.6</version>
+    <version>${project.version}</version>
     <modules>
         <module>eos-common</module>
         <module>eos-manager</module>
@@ -17,6 +17,7 @@
     </modules>
 
     <properties>
+        <project.version>1.1.7</project.version>
         <!-- 设置变量:用于统一管理Library的版本 -->
         <fastjson_version>1.1.27</fastjson_version>
         <hessian_version>4.0.33</hessian_version>

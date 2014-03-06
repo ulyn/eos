@@ -17,6 +17,9 @@ import com.sunsharing.component.web.common.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 public class MainController extends BaseController {
 	/**
@@ -40,5 +43,6 @@ public class MainController extends BaseController {
             }
         return "login";
     }
+
 
 }

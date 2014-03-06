@@ -11,12 +11,12 @@
 <script>
     $(document).ready(function () {
         $.eosRemote({
-            url: "http://192.168.0.60:8098/remote",
-            serviceId: "testService",
+            serviceId: "testType",
             mock: "success",
-            method: "testMapParam",
-            data: {"paramMap": {"t": "2", "p": "4", "arr": ["aaa", "bbb"]}},
+            method: "testMap",
+            data: {"l2":"abc"},
             success: function (data) {
+                console.info(data);
                 alert("返回结果:" + data);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

@@ -7,7 +7,7 @@
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>${project.version}</version>
+    <version>1.1.7</version>
     <modules>
         <module>eos-common</module>
         <module>eos-manager</module>
@@ -17,7 +17,6 @@
     </modules>
 
     <properties>
-        <project.version>1.1.7</project.version>
         <!-- 设置变量:用于统一管理Library的版本 -->
         <fastjson_version>1.1.27</fastjson_version>
         <hessian_version>4.0.33</hessian_version>
@@ -124,6 +123,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

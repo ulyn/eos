@@ -57,8 +57,7 @@ public abstract class NettyClient implements RpcClient {
             Executors.newCachedThreadPool());
     private ClientBootstrap clientBootstrap;
 
-    public Channel connect(String ip,int port) throws Exception
-    {
+    public Channel connect(String ip, int port) throws Exception {
         clientBootstrap = new ClientBootstrap(clientSocketChannelFactory);
         ChannelPipeline pipeline = clientBootstrap.getPipeline();
         pipeline.addLast("decoder", new ExDecode());
@@ -84,20 +83,17 @@ public abstract class NettyClient implements RpcClient {
                 }
             }
         });
-        channelLatch.await(5,TimeUnit.SECONDS);
-        if(future.isSuccess())
-        {
+        channelLatch.await(5, TimeUnit.SECONDS);
+        if (future.isSuccess()) {
             return future.getChannel();
-        }else
-        {
+        } else {
             throw new RpcException(RpcException.CONNECT_EXCEPTION, "client failed to connect to server "
-                    + ipFinal + ", port:"+port+"error message is:");
+                    + ipFinal + ", port:" + port + "error message is:");
         }
 
     }
 
-    protected ResponsePro getResult(RequestPro pro, MyChannel channel,int timeout) throws Throwable
-    {
+    protected ResponsePro getResult(RequestPro pro, MyChannel channel, int timeout) throws Throwable {
         if (StringUtils.isBlank(pro.getMsgId())) {
             pro.setMsgId(StringUtils.genUUID());
         }
@@ -112,7 +108,7 @@ public abstract class NettyClient implements RpcClient {
             logger.debug("返回结果:" + result);
             if (result == null) {
                 logger.error("等待结果超时!");
-                throw new RpcException(RpcException.TIMEOUT_EXCEPTION);
+                throw new RpcException(RpcException.TIMEOUT_EXCEPTION, "等待结果超时!");
             }
             return result;
         } catch (Exception e) {

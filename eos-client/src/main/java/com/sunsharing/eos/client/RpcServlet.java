@@ -147,7 +147,7 @@ public class RpcServlet extends HttpServlet {
         } catch (Throwable throwable) {
             logger.error("remote操作异常！", throwable);
             rtnMap.put("status", false);
-            rtnMap.put("result", throwable.getMessage());
+            rtnMap.put("result", StringUtils.isBlank(throwable.getMessage()) ? "内部处理异常，未抛出异常说明！" : throwable.getMessage());
         }
 
         String jsonp = req.getParameter("eos_jsonp_callback");

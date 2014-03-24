@@ -21,6 +21,12 @@ angular.module('eos.services', ['ngResource']).
                 }
             };
             return function (opts) {
+                //增加全局控制是否使用mock的参数
+                var use_mock = true;
+                if (!use_mock) {
+                    opts.mock = "";
+                }
+
                 var option = {};
                 for (var key in eosRemoteSetup) {
                     option[key] = eosRemoteSetup[key];
@@ -80,7 +86,7 @@ angular.module('eos.services', ['ngResource']).
                                 option.error(XMLHttpRequest, "解析返回数据异常！", e);
                             }
                         } else {
-                            option.error(XMLHttpRequest, textStatus, errorThrown, a, d, s, g);
+                            option.error(data.result, textStatus, headers, config);
                         }
                     });
             };

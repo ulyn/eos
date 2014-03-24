@@ -25,6 +25,13 @@ jQuery.eosRemoteSetup = {
     }
 };
 jQuery.eosRemote = function (opts) {
+
+    //增加全局控制是否使用mock的参数
+    var use_mock = true;
+    if (!use_mock) {
+        opts.mock = "";
+    }
+
     var option = jQuery.extend({}, jQuery.eosRemoteSetup, opts);
     var vars = "eos_service_id=" + option.serviceId + "&eos_method_name=" + option.method + "&eos_mock=" + option.mock;
     if (option.url.indexOf("?") != -1) {

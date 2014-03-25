@@ -52,7 +52,7 @@
     <script src="Javascript/angular-1.2.10/angular-route.min.js"></script>
 
 </head>
-<body ng-app="sampleApp" ng-controller="mainController">
+<body ng-app="sampleApp"  ng-controller="mainController">
 	<!-- Change Pattern -->
 	<div class="changePattern">
 		<span id="pattern1"></span>
@@ -89,7 +89,7 @@
 				<div class="line_grid">
 					<div class="g_2 g_2M"><span class="label">Pass</span></div>
 					<div class="g_10 g_10M">
-						<input class="simple_field tooltip" id="pwd" name="pwd" title="Your Password" type="password" placeholder="Password" value="">
+						<input class="simple_field tooltip" id="pwd" name="pwd" ng-keydown="fixInput($event)" title="Your Password" type="password" placeholder="Password" value="">
 					</div>
 					<div class="clear"></div>
 				</div>

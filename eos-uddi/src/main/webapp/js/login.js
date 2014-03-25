@@ -27,6 +27,13 @@ sampleApp.run(function($rootScope) {
             }
         });
     }
+    $rootScope.fixInput = function(e)
+    {
+        if(e.which == 13)
+        {
+            $rootScope.login();
+        }
+    }
 });
 
 sampleApp.controller('mainController', function($scope, $routeParams) {

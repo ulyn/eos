@@ -49,7 +49,7 @@ public class ClientHandler extends SimpleChannelHandler {
         BaseProtocol basePro = (BaseProtocol) e.getMessage();
         if(basePro instanceof HeartPro)
         {
-            logger.debug("收到心跳");
+            logger.info("收到心跳");
             MyChannel ch = ClientCache.getChannel(e.getChannel());
             if(ch==null)
             {
@@ -79,7 +79,6 @@ public class ClientHandler extends SimpleChannelHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.error("处理异常", e.getCause());
-        e.getCause().printStackTrace();
         MyChannel ch = ClientCache.getChannel(e.getChannel());
         if(ch==null)
         {

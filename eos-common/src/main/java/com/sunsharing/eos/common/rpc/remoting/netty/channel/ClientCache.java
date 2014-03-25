@@ -35,6 +35,12 @@ public class ClientCache {
         return channel;
     }
 
+    public static synchronized void remove(LongChannel longChannel)
+    {
+        channels.remove(longChannel);
+        logger.info("删除后连接数:"+channels.size());
+    }
+
     public static LongChannel getChannel(Channel channel)
     {
         for(LongChannel ch:channels)

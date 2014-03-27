@@ -49,7 +49,7 @@ public class ClientHandler extends SimpleChannelHandler {
         BaseProtocol basePro = (BaseProtocol) e.getMessage();
         if(basePro instanceof HeartPro)
         {
-            logger.info("收到心跳");
+            logger.debug("收到心跳");
             MyChannel ch = ClientCache.getChannel(e.getChannel());
             if(ch==null)
             {

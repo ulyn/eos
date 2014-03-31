@@ -167,13 +167,16 @@ public class Service {
                     "["+service.getServiceCode()+"]，最新的版本号为"+version+"," +
                     "请小组长即时处理";
             final String title = app.getAppName()+"["+app.getAppCode()+"]服务版本更新通知";
-            Runnable run = new Runnable(){
-                public void run()
-                {
-                    sendEmail(email,title,content);
-                }
-            };
-            new Thread(run).start();
+            if(!StringUtils.isBlank(email))
+            {
+                Runnable run = new Runnable(){
+                    public void run()
+                    {
+                        sendEmail(email,title,content);
+                    }
+                };
+                new Thread(run).start();
+            }
 
         }
 
@@ -297,13 +300,16 @@ public class Service {
                     "["+version.getService().getServiceCode()+"]的版本号为"+ver+"已经审批通过," +
                     "请相关人员即时处理";
             final String title = apps.get(0).getAppName()+"["+apps.get(0).getAppCode()+"]服务审批通知";
-            Runnable run = new Runnable(){
-                public void run()
-                {
-                    sendEmail(email,title,content);
-                }
-            };
-            new Thread(run).start();
+            if(!StringUtils.isBlank(email))
+            {
+                Runnable run = new Runnable(){
+                    public void run()
+                    {
+                        sendEmail(email,title,content);
+                    }
+                };
+                new Thread(run).start();
+            }
 
         }
 

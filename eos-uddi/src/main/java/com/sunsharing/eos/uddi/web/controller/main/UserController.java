@@ -203,9 +203,9 @@ public class UserController {
     }
 
     @RequestMapping(value="/saveUser.do",method= RequestMethod.POST)
-    public void saveUser(String username,String pwd,HttpServletRequest request,HttpServletResponse response)
+    public void saveUser(String username,String pwd,String email,HttpServletRequest request,HttpServletResponse response)
     {
-        service.addUser(username,pwd);
+        service.addUser(username,pwd,email);
         ResponseHelper.printOut(response,true,"","");
     }
 

@@ -1,5 +1,6 @@
 package com.sunsharing.eos.server.transporter.netty;
 
+import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
@@ -12,6 +13,9 @@ import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ulyn
@@ -21,6 +25,7 @@ import org.jboss.netty.channel.*;
  */
 public class MsgHandler extends SimpleChannelHandler {
     private static final Logger logger = Logger.getLogger(MsgHandler.class);
+    static ExecutorService service =  Executors.newCachedThreadPool();
 
     RpcServer rpcServer;
 
@@ -30,7 +35,8 @@ public class MsgHandler extends SimpleChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        final BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        final ChannelHandlerContext content = ctx;
         if(basePro instanceof HeartPro)
         {
             logger.debug("收到心跳请求...");
@@ -47,14 +53,33 @@ public class MsgHandler extends SimpleChannelHandler {
         }else if(basePro instanceof RequestPro)
         {
             logger.debug("收到请求：" + basePro);
-            RequestPro req = (RequestPro)basePro;
-            Result result = rpcServer.call(req.getServiceId(), req.toInvocation());
+            service.execute(new Runnable() {
+                @Override
+                public void run() {
+                    RequestPro req = (RequestPro)basePro;
+                    try
+                    {
+                        Invocation inv = req.toInvocation();
+                        Result result = rpcServer.call(req.getServiceId(), inv);
 
-            ResponsePro responsePro = new ResponsePro();
-            responsePro.setSerialization(basePro.getSerialization());
-            responsePro.setMsgId(basePro.getMsgId());
-            responsePro.setResult(result);
-            ctx.getChannel().write(responsePro);
+                        ResponsePro responsePro = new ResponsePro();
+                        responsePro.setSerialization(basePro.getSerialization());
+                        responsePro.setMsgId(basePro.getMsgId());
+                        responsePro.setResult(result);
+                        content.getChannel().write(responsePro);
+                    }catch (Exception e)
+                    {
+
+                        ResponsePro responsePro = new ResponsePro();
+                        responsePro.setSerialization(basePro.getSerialization());
+                        responsePro.setMsgId(basePro.getMsgId());
+                        responsePro.setExceptionResult(e);
+                        content.getChannel().write(responsePro);
+                    }
+
+                }
+            });
+
         }
 
 

@@ -27,7 +27,7 @@ jQuery.eosRemoteSetup = {
 jQuery.eosRemote = function (opts) {
 
     //增加全局控制是否使用mock的参数
-    var use_mock = true;
+    var use_mock = false;
     if (!use_mock) {
         opts.mock = "";
     }

@@ -13,6 +13,13 @@ import java.util.Map;
 public class TestServiceImpl implements TestType {
     @Override
     public int testInt(int i) {
+        try
+        {
+            Thread.sleep(50000);
+        }catch (Exception e)
+        {
+
+        }
         return 0;
     }
 

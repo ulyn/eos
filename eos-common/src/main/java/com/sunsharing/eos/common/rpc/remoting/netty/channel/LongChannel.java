@@ -25,6 +25,9 @@ public class LongChannel implements MyChannel {
         this.port = port;
     }
 
+    private int reconnectTimes = 0;
+    private int maxIdle = 50;
+
     Channel channel;
     /**server端的IP*/
     String ip;
@@ -78,8 +81,15 @@ public class LongChannel implements MyChannel {
     }
     public void start()
     {
+        final LongChannel othis = this;
         beeperHandle = heartscheduler.scheduleAtFixedRate(new Runnable() {
             public void run() {
+                if(reconnectTimes>maxIdle)
+                {
+                    stop();
+                    ClientCache.remove(othis);
+                    return;
+                }
                 if((new Date().getTime()-heartBeat)>30000)
                 {
                     logger.error("超过三十秒没有响应了");
@@ -94,11 +104,13 @@ public class LongChannel implements MyChannel {
                         if(con==true)
                         {
                             HeartPro heart = new HeartPro();
+                            logger.debug("添加心跳");
                             addMag(heart);
                         }
                     }else
                     {
                         HeartPro heart = new HeartPro();
+                        logger.debug("添加心跳");
                         addMag(heart);
                     }
                 }
@@ -114,11 +126,14 @@ public class LongChannel implements MyChannel {
                     Object pro = null;
                     try
                     {
+                        logger.debug("开始取出报文");
                         pro = (Object)queue.take();
+                        logger.debug("结束取出报文");
                         if(pro instanceof BaseProtocol)
                         {
                             if(channel!=null && channel.isWritable())
                             {
+                                logger.debug("发送报文");
                                 channel.write(pro);
                             }else
                             {
@@ -186,6 +201,7 @@ public class LongChannel implements MyChannel {
         {
             channel = nettyClient.connect(ip,new Integer(port));
             refreshHeartBeat();
+            reconnectTimes = 0;
             return true;
         }catch (Exception e)
         {
@@ -196,7 +212,8 @@ public class LongChannel implements MyChannel {
 
     private boolean reconnect()
     {
-        logger.info("开始重新连接,ip:"+ip+",port:"+port);
+        logger.info("开始重新连接,ip:"+ip+",port:"+port+",重连次数:"+reconnectTimes);
+        reconnectTimes++;
         closeChannel();
         return connect();
     }

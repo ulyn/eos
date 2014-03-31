@@ -12,6 +12,9 @@ import com.sunsharing.eos.manager.agent.process.ProcessChain;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ulyn
@@ -21,10 +24,12 @@ import org.jboss.netty.channel.*;
  */
 public class MsgHandler extends SimpleChannelHandler {
     private static final Logger logger = Logger.getLogger(MsgHandler.class);
+    static ExecutorService service =  Executors.newCachedThreadPool();
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        final BaseProtocol basePro = (BaseProtocol) e.getMessage();
+        final ChannelHandlerContext content = ctx;
         if(basePro instanceof HeartPro)
         {
             logger.debug("收到心跳请求...");
@@ -41,14 +46,20 @@ public class MsgHandler extends SimpleChannelHandler {
         }else if(basePro instanceof RequestPro)
         {
             logger.debug("收到请求：" + basePro);
-            RequestPro req = (RequestPro)basePro;
-            ResponsePro responsePro = new ResponsePro();
-            responsePro.setSerialization(basePro.getSerialization());
-            responsePro.setMsgId(basePro.getMsgId());
+            service.execute(new Runnable() {
+                @Override
+                public void run() {
+                    RequestPro req = (RequestPro)basePro;
+                    ResponsePro responsePro = new ResponsePro();
+                    responsePro.setSerialization(basePro.getSerialization());
+                    responsePro.setMsgId(basePro.getMsgId());
 
-            MainControl mainControl = new MainControl();
-            mainControl.process(req, responsePro);
-            ctx.getChannel().write(responsePro);
+                    MainControl mainControl = new MainControl();
+                    mainControl.process(req, responsePro);
+                    content.getChannel().write(responsePro);
+                }
+            });
+
         }
 
 

@@ -10,6 +10,7 @@ import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.sys.SysInit;
+import com.sunsharing.msgcenter.productClient.MsgSendClient;
 import org.apache.zookeeper.CreateMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -32,6 +33,7 @@ public class Service {
     private SimpleHibernateDao<TApp, Integer> appDao;//用户管理
     private SimpleHibernateDao<TServiceVersion, Integer> versionDao;//用户管理
     private SimpleHibernateDao<TUser, Integer> userDao;//用户管理
+    private SimpleHibernateDao<TUserApp, Integer> userAppDao;//用户管理
     private SimpleHibernateDao<TMethod, Integer> methodDao;//用户管理
     private SimpleHibernateDao<TModule, Integer> moduleDao;//用户管理
 
@@ -42,6 +44,7 @@ public class Service {
         appDao = new SimpleHibernateDao<TApp, Integer>(sessionFactory, TApp.class);
         versionDao = new SimpleHibernateDao<TServiceVersion, Integer>(sessionFactory, TServiceVersion.class);
         userDao = new SimpleHibernateDao<TUser, Integer>(sessionFactory, TUser.class);
+        userAppDao = new SimpleHibernateDao<TUserApp, Integer>(sessionFactory, TUserApp.class);
         methodDao = new SimpleHibernateDao<TMethod, Integer>(sessionFactory, TMethod.class);
         moduleDao = new SimpleHibernateDao<TModule, Integer>(sessionFactory, TModule.class);
     }
@@ -74,7 +77,6 @@ public class Service {
     public void saveService(String servicename, String appId, String module, String[] lines, int userId) throws Exception {
         TApp app = appDao.get(new Integer(appId));
 
-
         InterfaceServcie s = new InterfaceServcie();
         String version = s.getVersion(lines);
         String infaceName = s.getInterfaceName(lines);
@@ -98,7 +100,7 @@ public class Service {
             service = l3.get(0);
         }
 
-
+        TUser user = userDao.get(new Integer(userId));
         if (service == null)
             service = new TService();
         service.setAppCode(app.getAppCode());
@@ -106,7 +108,7 @@ public class Service {
         service.setModule(module);
         service.setServiceCode(infaceName);
         service.setServiceName(servicename);
-        service.setUser(userDao.get(new Integer(userId)));
+        service.setUser(user);
         service.setCreateTime(DateUtils.getDBString(new Date()));
         service.setTest("0");
 
@@ -155,6 +157,41 @@ public class Service {
             utils.deleteNode(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+ version));
         }
 
+        //发送邮件通知
+        sql = "from TUserApp where app.appId=?";
+        List<TUserApp> list = userAppDao.find(sql,new Integer(appId));
+        for(TUserApp userApp : list)
+        {
+            final String email = userApp.getUser().getEamil();
+            final String content = user.getUserName()+"于"+DateUtils.getDisplay(new Date())+"更新了"+service.getServiceName()+
+                    "["+service.getServiceCode()+"]，最新的版本号为"+version+"," +
+                    "请小组长即时处理";
+            final String title = app.getAppName()+"["+app.getAppCode()+"]服务版本更新通知";
+            if(!StringUtils.isBlank(email))
+            {
+                Runnable run = new Runnable(){
+                    public void run()
+                    {
+                        sendEmail(email,title,content);
+                    }
+                };
+                new Thread(run).start();
+            }
+
+        }
+
+    }
+
+    private void sendEmail(String email,String title,String content)
+    {
+        JSONObject jo = new JSONObject();
+        jo.put("topic","FT_SUN");
+        jo.put("expires","10");
+        jo.put("email",email);
+        jo.put("title",title);
+        jo.put("content",content);
+        MsgSendClient send = new MsgSendClient();
+        send.sendMsg(jo.toJSONString());
     }
 
     public List<Object> seachmethod(String appId, String serviceId, String version) {
@@ -250,6 +287,32 @@ public class Service {
         utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
         utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
                 CreateMode.PERSISTENT);
+
+        //发送邮件通知
+        String sql = "from TUserApp where app.appId=?";
+        List<TUserApp> list = userAppDao.find(sql,new Integer(version.getService().getAppId()));
+        sql = "from TApp where appId=?";
+        List<TApp> apps = appDao.find(sql,version.getService().getAppId());
+        for(TUserApp userApp : list)
+        {
+            final String email = userApp.getUser().getEamil();
+            final String content = version.getService().getServiceName()+
+                    "["+version.getService().getServiceCode()+"]的版本号为"+ver+"已经审批通过," +
+                    "请相关人员即时处理";
+            final String title = apps.get(0).getAppName()+"["+apps.get(0).getAppCode()+"]服务审批通知";
+            if(!StringUtils.isBlank(email))
+            {
+                Runnable run = new Runnable(){
+                    public void run()
+                    {
+                        sendEmail(email,title,content);
+                    }
+                };
+                new Thread(run).start();
+            }
+
+        }
+
     }
 
     public void updateTestCode(String methodId) throws Exception {

@@ -65,6 +65,7 @@ public class EosInit {
     public synchronized static void synStart(String packagePath) {
         ConfigContext.instancesBean(SysProp.class);
         ServiceContext serviceContext = new ServiceContext(packagePath);
+        serviceContext.init();
         ServiceLocation.getInstance().synConnect();
     }
 

@@ -86,10 +86,17 @@ public class UserService {
         userDao.update(user);
     }
 
-    public void addUser(String username,String pwd)
+    public void addUser(String username,String pwd,String email)
     {
+        String sql = "from TUser where userName=?";
+        List list = userDao.find(sql,username);
+        if(list.size()>0)
+        {
+            throw new RuntimeException("用户名重复");
+        }
         TUser user = new TUser();
         user.setUserName(username);
+        user.setEamil(email);
         user.setPwd(pwd);
         user.setCreatTime(DateUtils.getDBString(new Date()));
         userDao.save(user);

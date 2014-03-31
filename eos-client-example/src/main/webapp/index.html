@@ -12,9 +12,9 @@
     $(document).ready(function () {
         $.eosRemote({
             serviceId: "testType",
-            mock: "success",
-            method: "testMap",
-            data: {"l2":"abc"},
+            mock: "error",
+            method: "testInt",
+            data: {"i":3},
             success: function (data) {
                 console.info(data);
                 alert("返回结果:" + data);
@@ -23,6 +23,21 @@
                 alert(errorThrown);
             }
         });
+
+        $.eosRemote({
+            serviceId: "testType",
+            mock: "error",
+            method: "testDouble",
+            data: {"d":3},
+            success: function (data) {
+                console.info(data);
+                alert("返回结果:" + data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+
     });
 </script>
 </body>

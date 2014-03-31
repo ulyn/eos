@@ -21,7 +21,8 @@ public class Main {
 
         ConfigContext.instancesBean(SysProp.class);
 
-        String webapp = "E:\\workplace\\sunsharing\\component\\eos\\eos\\eos-uddi\\src\\main\\webapp";
+        String webapp = "/Users/criss/Desktop/projectDev/eosgit/eos-uddi/src/main/webapp";
+
 
         if (port == 0) {
             port = 8099;

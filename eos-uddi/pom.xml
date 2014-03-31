@@ -279,6 +279,11 @@
             <version>2.4</version>
         </dependency>
         <dependency>
+            <groupId>com.sunsharing</groupId>
+            <artifactId>messagecenter</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
         </dependency>

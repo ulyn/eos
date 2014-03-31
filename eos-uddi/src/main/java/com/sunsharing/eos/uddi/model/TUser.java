@@ -16,6 +16,7 @@ public class TUser {
     private String pwd;
     private String role;
     private String creatTime;
+    private String eamil;
 
     private TApp defaultApp;
 
@@ -27,6 +28,16 @@ public class TUser {
 
     public void setCreatTime(String creatTime) {
         this.creatTime = creatTime;
+    }
+
+    @Basic
+    @Column(name = "EMAIL")
+    public String getEamil() {
+        return eamil;
+    }
+
+    public void setEamil(String eamil) {
+        this.eamil = eamil;
     }
 
     @ManyToOne

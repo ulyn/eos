@@ -151,7 +151,7 @@ public abstract class AbstractProxy implements ClientProxy {
             logger.info(pro.getServiceId() + "." + invocation.getMethodName() + " use mock:" + pro.getMock());
         }
         pro.setInvocation(invocation);
-        pro.setDebugServerIp(SysProp.debugServerIp);
+        pro.setDebugServerIp(SysProp.getDebugServerIp(pro.getAppId()));
 
         RemoteHelper helper = new RemoteHelper();
         ResponsePro responsePro = helper.call(pro, ip, port, config.getTransporter(), config.getTimeout());

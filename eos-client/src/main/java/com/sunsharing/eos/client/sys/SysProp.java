@@ -20,6 +20,11 @@ import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
 import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
+import com.sunsharing.eos.common.utils.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre></pre>
@@ -36,6 +41,8 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
 @Configuration(value = "eos-client.properties")
 public class SysProp {
 
+    static Logger logger = Logger.getLogger(SysProp.class);
+
     @ParamField(name = "zookeeper_ip", required = false)
     public static String zookeeperIp = "localhost";
 
@@ -44,10 +51,50 @@ public class SysProp {
     public static int zookeeperPort = 2181;
 
     @ParamField(name = "debugging_server_ip", required = false)
-    @IpValidate(allowEmpty = true)
+//    @IpValidate(allowEmpty = true)
     public static String debugServerIp = "";
 
     @ParamField(name = "use_mock", required = false)
     public static boolean use_mock = false;
+
+
+    static Map<String, String> debugServerIpMap = null;
+
+    /**
+     * 获取联调ip
+     *
+     * @return
+     */
+    public static String getDebugServerIp(String appId) {
+        if (StringUtils.isBlank(appId)) {
+            return "";
+        } else {
+            if (debugServerIpMap == null) {
+                //初始化debugServerIpMap
+                logger.info("初始化debugServerIpMap.....");
+                logger.info("debugServerIp = " + debugServerIp);
+                debugServerIpMap = new HashMap<String, String>();
+                String[] ipStrArr = debugServerIp.split(";");
+                for (String ipStr : ipStrArr) {
+                    if (ipStr.indexOf(":") != -1) {
+                        String[] temp = ipStr.split(":");
+                        logger.info("应用：" + temp[0] + "，使用联调ip：" + temp[1]);
+                        debugServerIpMap.put(temp[0], temp[1]);
+                    } else {
+                        debugServerIpMap.put("defaultDebugServerIp", ipStr);
+                    }
+                }
+                logger.info("初始化debugServerIpMap结束.....");
+            }
+
+            if (debugServerIpMap.containsKey(appId)) {
+                return debugServerIpMap.get(appId);
+            } else if (debugServerIpMap.containsKey("defaultDebugServerIp")) {
+                return debugServerIpMap.get("defaultDebugServerIp");
+            } else {
+                return "";
+            }
+        }
+    }
 }
 

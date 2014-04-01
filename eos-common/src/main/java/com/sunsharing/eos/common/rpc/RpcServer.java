@@ -34,7 +34,7 @@ public interface RpcServer {
 
     void register(Object impl, ServiceConfig config);
 
-    Result call(String serviceId, Invocation invocation);
+    Result call(String serviceId, Invocation invocation, RpcContext rpcContext);
 
     boolean isRunning();
 

@@ -22,6 +22,7 @@ import com.sunsharing.eos.common.aop.Advice;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
+import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -70,7 +71,8 @@ public abstract class AbstractServiceContext {
     public void init() {
         String xmlConfigFileName = "EosServiceConfig.xml";
         //key为接口name
-        Map<String, ServiceConfig> xmlServiceConfigMap = loadXmlServiceConfig(xmlConfigFileName);
+        Map xmlConfigMap = loadXmlServiceConfig(xmlConfigFileName);
+        Map<String, ServiceConfig> xmlServiceConfigMap = (Map<String, ServiceConfig>) xmlConfigMap.get("configMap");
 
         ClassFilter filter = new ClassFilter() {
             @Override
@@ -104,10 +106,26 @@ public abstract class AbstractServiceContext {
             if (xmlServiceConfigMap.containsKey(id)) {
                 //有xml配置的使用xml配置
                 ServiceConfig xmlConfig = xmlServiceConfigMap.get(id);
-                config.setMock(xmlConfig.getMock());
-                config.setMethodMockMap(xmlConfig.getMethodMockMap());
+                if (!StringUtils.isBlank(xmlConfig.getMock())) {
+                    config.setMock(xmlConfig.getMock());
+                } else if (!StringUtils.isBlank((String) xmlConfigMap.get("rootMock"))) {
+                    config.setMock(xmlConfig.getMock());
+                }
+                Map xmlConfigMethodMockMap = xmlConfig.getMethodMockMap();
+                if (xmlConfigMethodMockMap != null) {
+                    Map configMethodMockMap = config.getMethodMockMap();
+                    if (configMethodMockMap == null) {
+                        configMethodMockMap = new HashMap();
+                    }
+                    for (Object mockKey : xmlConfigMethodMockMap.keySet()) {
+                        configMethodMockMap.put(mockKey, xmlConfigMethodMockMap.get(mockKey));
+                    }
+                }
+                if (!StringUtils.isBlank(xmlConfig.getAdviceClassName())) {
+                    config.setAdviceClassName(xmlConfig.getAdviceClassName());
+                }
 
-                //当xml有配置servletAdvice时，改写ServiceMethod的切面类。
+                //当xml有配置advice时，改写ServiceMethod的切面类。
                 Map<String, Advice> servletAdviceMap = xmlConfig.getMethodServletAdviceMap();
                 if (xmlConfig.getMethodServletAdviceMap() != null) {
                     List<ServiceMethod> methods = config.getServiceMethodList();
@@ -115,6 +133,22 @@ public abstract class AbstractServiceContext {
                         Advice advice = servletAdviceMap.get(method.getMethodName());
                         if (advice != null) {
                             method.setAdvice(advice);
+                        } else {
+                            String adviceClassName = xmlConfig.getAdviceClassName();
+                            if (StringUtils.isBlank(adviceClassName)) {
+                                adviceClassName = (String) xmlConfigMap.get("rootAdvice");
+                            }
+
+                            if (!StringUtils.isBlank(adviceClassName)) {
+                                //如果xml服务全局有配，那么则取service的advice
+                                try {
+                                    Object adviceObj = Class.forName(xmlConfig.getAdviceClassName()).newInstance();
+                                    method.setAdvice((Advice) adviceObj);
+                                } catch (Exception e) {
+                                    logger.error("初始化配置的advice=" + xmlConfig.getAdviceClassName() + "的newInstance异常!", e);
+                                    System.exit(0);
+                                }
+                            }
                         }
                     }
                 }
@@ -139,7 +173,9 @@ public abstract class AbstractServiceContext {
      * @param fileName
      * @return
      */
-    private Map<String, ServiceConfig> loadXmlServiceConfig(String fileName) {
+    private Map loadXmlServiceConfig(String fileName) {
+        Map map = new HashMap();
+
         Map<String, ServiceConfig> configMap = new HashMap<String, ServiceConfig>();
         InputStream is = ClassHelper.getClassLoader(ServiceConfig.class).getResourceAsStream(fileName);
         if (is == null) {
@@ -156,6 +192,8 @@ public abstract class AbstractServiceContext {
                 String result = new String(bytes, "UTF-8");
                 Document doc = DocumentHelper.parseText(result);
                 Element root = doc.getRootElement();
+                map.put("rootAdvice", root.attributeValue("advice"));
+                map.put("rootMock", root.attributeValue("mock"));
                 List<Element> elements = root.elements();
                 for (Element el : elements) {
                     String id = el.attributeValue("id");
@@ -163,7 +201,8 @@ public abstract class AbstractServiceContext {
                     config.setId(id);
                     config.setMock(el.attributeValue("mock"));
                     config.setImpl(el.attributeValue("impl"));
-
+                    String defaultAdvice = el.attributeValue("advice");
+                    config.setAdviceClassName(defaultAdvice);
                     Element methodsEl = el.element("methods");
                     if (methodsEl != null) {
                         //set methodMock
@@ -197,7 +236,10 @@ public abstract class AbstractServiceContext {
                 throw new RuntimeException(e);
             }
         }
-        return configMap;
+
+        map.put("configMap", configMap);
+
+        return map;
     }
 
     /**
@@ -232,6 +274,16 @@ public abstract class AbstractServiceContext {
     private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
+        Annotation defaultAdviceAnn = interfaces.getAnnotation(com.sunsharing.eos.common.annotation.Advice.class);
+        Advice defaultAdvice = null;
+        if (defaultAdviceAnn != null) {
+            try {
+                defaultAdvice = (Advice) ((com.sunsharing.eos.common.annotation.Advice) defaultAdviceAnn).value().newInstance();
+            } catch (Exception e) {
+                logger.error("服务配置的Advice可能有误，value=" + ((com.sunsharing.eos.common.annotation.Advice) defaultAdviceAnn).value() + "的newInstance异常!", e);
+                System.exit(0);
+            }
+        }
         for (Method method : methods) {
             //取参数名的注解
             ParameterNames ann = method.getAnnotation(ParameterNames.class);
@@ -249,11 +301,13 @@ public abstract class AbstractServiceContext {
             Advice advice = null;
             if (adviceAnn != null) {
                 try {
-                    advice = (Advice) adviceAnn.servletAdvice().newInstance();
+                    advice = (Advice) adviceAnn.value().newInstance();
                 } catch (Exception e) {
-                    logger.error("服务配置的Advice可能有误，servletAdvice=" + adviceAnn.servletAdvice() + "的newInstance异常!", e);
+                    logger.error("服务配置的Advice可能有误，value=" + adviceAnn.value() + "的newInstance异常!", e);
                     System.exit(0);
                 }
+            } else if (defaultAdvice != null) {
+                advice = defaultAdvice;
             }
             ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames, advice);
             list.add(serviceMethod);

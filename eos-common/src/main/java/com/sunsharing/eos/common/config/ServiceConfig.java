@@ -44,6 +44,7 @@ public class ServiceConfig {
     private String mock = "";
 
     private String impl = "";
+    private String adviceClassName = "";
 
     private Map<String, String> methodMockMap;
     private List<ServiceMethod> serviceMethodList;
@@ -123,6 +124,14 @@ public class ServiceConfig {
 
     public void setImpl(String impl) {
         this.impl = impl;
+    }
+
+    public String getAdviceClassName() {
+        return adviceClassName;
+    }
+
+    public void setAdviceClassName(String adviceClassName) {
+        this.adviceClassName = adviceClassName;
     }
 
     public Map<String, String> getMethodMockMap() {

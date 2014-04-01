@@ -21,6 +21,8 @@ import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.client.sys.SysParamVar;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
+import com.sunsharing.eos.common.rpc.RpcContext;
+import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
@@ -89,6 +91,10 @@ public class RpcServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //设置上下文
         RpcServletContext.setRequest(req);
+        RpcContext rpcContext = new RpcContext();
+        rpcContext.setUserAgent("eos-front");
+        rpcContext.setRemoteAddr(req.getRemoteAddr());
+        RpcContextContainer.setRpcContext(rpcContext);
 
         Map rtnMap = new HashMap();
         try {

@@ -1,7 +1,7 @@
 <beans>
     <!--<bean id="testService">-->
         <!--<methods>-->
-            <!--<testMapParam servletAdvice="com.sunsharing.component.test.TestAdvice"/>-->
-        <!--</methods>-->
+    <!--<testMapParam advice="com.sunsharing.component.test.TestAdvice"/>-->
+    <!--</methods>-->
     <!--</bean>-->
 </beans>

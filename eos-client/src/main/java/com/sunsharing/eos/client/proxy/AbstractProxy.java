@@ -24,9 +24,7 @@ import com.sunsharing.eos.common.aop.Advice;
 import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
-import com.sunsharing.eos.common.rpc.ClientProxy;
-import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
@@ -152,6 +150,14 @@ public abstract class AbstractProxy implements ClientProxy {
         }
         pro.setInvocation(invocation);
         pro.setDebugServerIp(SysProp.getDebugServerIp(pro.getAppId()));
+
+        //增加rpcContext
+        RpcContext rpcContext = RpcContextContainer.getRpcContext();
+        if (rpcContext == null) {
+            rpcContext = new RpcContext();
+            rpcContext.setUserAgent("java");
+        }
+        pro.setRpcContext(rpcContext);
 
         RemoteHelper helper = new RemoteHelper();
         ResponsePro responsePro = helper.call(pro, ip, port, config.getTransporter(), config.getTimeout());

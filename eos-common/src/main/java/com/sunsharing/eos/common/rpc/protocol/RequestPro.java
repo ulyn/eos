@@ -17,6 +17,7 @@
 package com.sunsharing.eos.common.rpc.protocol;
 
 import com.sunsharing.eos.common.rpc.Invocation;
+import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -45,6 +46,10 @@ public class RequestPro extends BaseProtocol {
     protected String mock = "";
     //联调ip(20)
     protected String debugServerIp;
+    //请求的上下文消息长度(4)
+    protected int rpcContextLength;
+    //请求的上下文消息(rpcContextLength)
+    protected byte[] rpcContextBytes;
     //请求参数对象序列化的字节(bodyLength)
     protected byte[] invocationBytes;
 
@@ -96,6 +101,14 @@ public class RequestPro extends BaseProtocol {
         this.invocationBytes = invocationBytes;
     }
 
+    public byte[] getRpcContextBytes() {
+        return rpcContextBytes;
+    }
+
+    public void setRpcContextBytes(byte[] rpcContextBytes) {
+        this.rpcContextBytes = rpcContextBytes;
+    }
+
     /**
      * 设置前请先设置序列化方式，否则使用默认值
      *
@@ -113,6 +126,25 @@ public class RequestPro extends BaseProtocol {
      */
     public Invocation toInvocation() throws Exception {
         return serializationBytesToObject(invocationBytes, Invocation.class);
+    }
+
+    /**
+     * 设置前请先设置序列化方式，否则使用默认值
+     *
+     * @param rpcContext
+     */
+    public void setRpcContext(RpcContext rpcContext) throws Exception {
+        setRpcContextBytes(getSerializationBytes(rpcContext));
+    }
+
+    /**
+     * 将rpcContext字节序列化为对象
+     *
+     * @return
+     * @throws Exception
+     */
+    public RpcContext toRpcContext() throws Exception {
+        return serializationBytesToObject(rpcContextBytes, RpcContext.class);
     }
 
     @Override
@@ -138,13 +170,18 @@ public class RequestPro extends BaseProtocol {
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());
         buffer.writeBytes(subHeader);
+        //写入rpcContext
+        buffer.writeBytes(StringUtils.intToBytes(rpcContextLength));
+        buffer.writeBytes(rpcContextBytes);
+
         buffer.writeBytes(invocationBytes);
         return buffer;
     }
 
     @Override
     public BaseProtocol createFromChannel(ChannelBuffer buffer) {
-        if (buffer.readableBytes() < 52 + 102) {
+        if (buffer.readableBytes() < 52 + 106) {
+            //多保证四个字节是rpcContextLength，所以102改为106
             return null;
         }
         buffer.markReaderIndex();
@@ -157,11 +194,16 @@ public class RequestPro extends BaseProtocol {
         pro.serviceVersion = readString(10, buffer);
         pro.mock = readString(20, buffer);
         pro.debugServerIp = readString(20, buffer);
+        pro.rpcContextLength = buffer.readInt();
 
-        if (buffer.readableBytes() < pro.bodyLength) {
+        if (buffer.readableBytes() < pro.bodyLength + pro.rpcContextLength) {
             buffer.resetReaderIndex();
             return null;
         }
+        byte[] rpcContextBytes = new byte[pro.rpcContextLength];
+        buffer.readBytes(rpcContextBytes);
+        pro.setRpcContextBytes(rpcContextBytes);
+
         byte[] bodyBytes = new byte[pro.bodyLength];
         buffer.readBytes(bodyBytes);
         pro.setInvocationBytes(bodyBytes);

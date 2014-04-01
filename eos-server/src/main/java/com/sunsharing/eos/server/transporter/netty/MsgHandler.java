@@ -2,6 +2,7 @@ package com.sunsharing.eos.server.transporter.netty;
 
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
+import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
@@ -25,7 +26,7 @@ import java.util.concurrent.Executors;
  */
 public class MsgHandler extends SimpleChannelHandler {
     private static final Logger logger = Logger.getLogger(MsgHandler.class);
-    static ExecutorService service =  Executors.newCachedThreadPool();
+    static ExecutorService service = Executors.newCachedThreadPool();
 
     RpcServer rpcServer;
 
@@ -37,38 +38,33 @@ public class MsgHandler extends SimpleChannelHandler {
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         final BaseProtocol basePro = (BaseProtocol) e.getMessage();
         final ChannelHandlerContext content = ctx;
-        if(basePro instanceof HeartPro)
-        {
+        if (basePro instanceof HeartPro) {
             logger.debug("收到心跳请求...");
             ServerChannel sc = ServerCache.getChannel(ctx.getChannel());
-            if(sc!=null)
-            {
+            if (sc != null) {
                 sc.refreshHeartBeat();
-            }else
-            {
-                logger.warn("无法从缓存中找到Channel:"+ctx.getChannel().getRemoteAddress());
+            } else {
+                logger.warn("无法从缓存中找到Channel:" + ctx.getChannel().getRemoteAddress());
             }
             HeartPro heart = new HeartPro();
             ctx.getChannel().write(heart);
-        }else if(basePro instanceof RequestPro)
-        {
+        } else if (basePro instanceof RequestPro) {
             logger.debug("收到请求：" + basePro);
             service.execute(new Runnable() {
                 @Override
                 public void run() {
-                    RequestPro req = (RequestPro)basePro;
-                    try
-                    {
+                    RequestPro req = (RequestPro) basePro;
+                    try {
                         Invocation inv = req.toInvocation();
-                        Result result = rpcServer.call(req.getServiceId(), inv);
+                        RpcContext rpcContext = req.toRpcContext();
+                        Result result = rpcServer.call(req.getServiceId(), inv, rpcContext);
 
                         ResponsePro responsePro = new ResponsePro();
                         responsePro.setSerialization(basePro.getSerialization());
                         responsePro.setMsgId(basePro.getMsgId());
                         responsePro.setResult(result);
                         content.getChannel().write(responsePro);
-                    }catch (Exception e)
-                    {
+                    } catch (Exception e) {
 
                         ResponsePro responsePro = new ResponsePro();
                         responsePro.setSerialization(basePro.getSerialization());

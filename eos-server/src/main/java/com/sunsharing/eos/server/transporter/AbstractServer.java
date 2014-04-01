@@ -16,12 +16,11 @@
  */
 package com.sunsharing.eos.server.transporter;
 
+import com.sunsharing.eos.common.aop.Advice;
+import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
-import com.sunsharing.eos.common.rpc.Invocation;
-import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.RpcServer;
+import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import org.apache.log4j.Logger;
 
@@ -71,7 +70,7 @@ public abstract class AbstractServer implements RpcServer {
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
-    public Result call(String serviceId, Invocation invocation) {
+    public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {
         Object obj = this.serviceEngine.get(serviceId);
         ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
         RpcResult result = new RpcResult();
@@ -81,10 +80,31 @@ public abstract class AbstractServer implements RpcServer {
                 if (method == null) {
                     throw new NoSuchMethodException(invocation.getMethodName() + "的ServiceMethod==null");
                 }
-                //这边暂时直接使用jdk代理执行
-                //此处的parameterTypes不用invocation的，规定不允许方法重载
-                Method m = obj.getClass().getMethod(invocation.getMethodName(), method.getParameterTypes());
-                Object o = m.invoke(obj, invocation.getArguments());
+                //设置rpc上下文
+                RpcContextContainer.setRpcContext(rpcContext);
+                Advice advice = method.getAdvice();
+                Object o = null;
+                AdviceResult adviceResult = null;
+                //执行调用前
+                if (advice != null) {
+                    adviceResult = advice.before(method, invocation.getArguments());
+                }
+                //执行没截断，开始执行调用
+                if (adviceResult == null || !adviceResult.isRightNowRet()) {
+                    //这边暂时直接使用jdk代理执行
+                    //此处的parameterTypes不用invocation的，规定不允许方法重载
+                    Method m = obj.getClass().getMethod(invocation.getMethodName(), method.getParameterTypes());
+                    o = m.invoke(obj, invocation.getArguments());
+
+                    if (advice != null) {
+                        adviceResult = advice.after(method, invocation.getArguments(), o);
+                        if (adviceResult != null) {
+                            o = adviceResult.getReturnVal();
+                        }
+                    }
+                } else {
+                    o = adviceResult.getReturnVal();
+                }
                 result.setValue(o);
             } catch (NoSuchMethodException e) {
                 String errorMsg = "server has no NoSuchMethodException：" + serviceConfig.getId() + " - " + invocation.getMethodName();
@@ -93,7 +113,7 @@ public abstract class AbstractServer implements RpcServer {
             } catch (Exception th) {
                 String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + invocation.getMethodName();
                 logger.error(errorMsg, th);
-                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, errorMsg, th));
+                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + th.getMessage(), th));
             }
         } else {
             String errorMsg = "has no these class：" + serviceConfig.getId() + " - " + invocation.getMethodName();

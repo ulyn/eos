@@ -158,10 +158,16 @@ public abstract class BaseProtocol {
 
         InputStream inputStream = new ByteArrayInputStream(bytes);
         ObjectInput objectInput = serial.deserialize(inputStream);
-        Map m = objectInput.readObject(Map.class);
+        Object m = objectInput.readObject(Map.class);
+        Object ss = new HashMap();
+//        System.out.println(m.get("a"));
+//        System.out.println(m.get("b"));
+        System.out.println(m.getClass());
+        System.out.println(ss instanceof String);
+        System.out.println(Map.class.isInstance(m));
+        System.out.println(String.class.isInstance("sss"));
 
-        System.out.println(m.get("a"));
-        System.out.println(m.get("b"));
+
     }
 }
 

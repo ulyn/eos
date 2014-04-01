@@ -171,7 +171,7 @@ public class RequestPro extends BaseProtocol {
         buffer.writeBytes(getHeaderBytes());
         buffer.writeBytes(subHeader);
         //写入rpcContext
-        buffer.writeBytes(StringUtils.intToBytes(rpcContextLength));
+        buffer.writeBytes(StringUtils.intToBytes(rpcContextBytes.length));
         buffer.writeBytes(rpcContextBytes);
 
         buffer.writeBytes(invocationBytes);

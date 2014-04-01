@@ -153,6 +153,7 @@ public abstract class AbstractProxy implements ClientProxy {
 
         //增加rpcContext
         RpcContext rpcContext = RpcContextContainer.getRpcContext();
+
         if (rpcContext == null) {
             rpcContext = new RpcContext();
             rpcContext.setUserAgent("java");

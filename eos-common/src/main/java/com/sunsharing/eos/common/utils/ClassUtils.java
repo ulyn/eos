@@ -69,7 +69,7 @@ public class ClassUtils {
                 String protocol = url.getProtocol();
                 // 如果是以文件的形式保存在服务器上
                 if ("file".equals(protocol)) {
-                    System.err.println("file类型的扫描");
+//                    System.err.println("file类型的扫描");
                     // 获取包的物理路径
                     String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
                     // 以文件的方式扫描整个包下的文件 并添加到集合中
@@ -78,7 +78,7 @@ public class ClassUtils {
                 } else if ("jar".equals(protocol)) {
                     // 如果是jar包文件
                     // 定义一个JarFile
-                    System.err.println("jar类型的扫描");
+//                    System.err.println("jar类型的扫描");
                     JarFile jar;
                     try {
                         // 获取jar

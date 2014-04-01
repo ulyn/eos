@@ -1,5 +1,6 @@
 package com.sunsharing.component.test;
 
+import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import java.util.Map;
 public class TestServiceImpl implements TestType {
     @Override
     public int testInt(int i) {
+
+        System.out.println(RpcContextContainer.getRpcContext());
         try
         {
             Thread.sleep(50000);

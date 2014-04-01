@@ -21,7 +21,6 @@ import com.sunsharing.eos.common.aop.Advice;
 import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 /**
@@ -35,10 +34,10 @@ import java.util.Arrays;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class TestAdvice implements Advice {
+public class TestAdvice2 implements Advice {
     @Override
     public AdviceResult before(ServiceMethod method, Object[] args) {
-        System.out.println("TestAdvice");
+        System.out.println("TestAdvice2");
         System.out.println(method.getMethodName() + "被执行前，入参为" + Arrays.toString(args));
         System.out.println("RpcServletContext.getRequest=" + RpcServletContext.getRequest());
         return new AdviceResult(false, null);

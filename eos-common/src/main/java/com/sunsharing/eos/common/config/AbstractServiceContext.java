@@ -109,13 +109,14 @@ public abstract class AbstractServiceContext {
                 if (!StringUtils.isBlank(xmlConfig.getMock())) {
                     config.setMock(xmlConfig.getMock());
                 } else if (!StringUtils.isBlank((String) xmlConfigMap.get("rootMock"))) {
-                    config.setMock(xmlConfig.getMock());
+                    config.setMock((String) xmlConfigMap.get("rootMock"));
                 }
                 Map xmlConfigMethodMockMap = xmlConfig.getMethodMockMap();
                 if (xmlConfigMethodMockMap != null) {
                     Map configMethodMockMap = config.getMethodMockMap();
                     if (configMethodMockMap == null) {
                         configMethodMockMap = new HashMap();
+                        config.setMethodMockMap(configMethodMockMap);
                     }
                     for (Object mockKey : xmlConfigMethodMockMap.keySet()) {
                         configMethodMockMap.put(mockKey, xmlConfigMethodMockMap.get(mockKey));
@@ -142,8 +143,9 @@ public abstract class AbstractServiceContext {
                             if (!StringUtils.isBlank(adviceClassName)) {
                                 //如果xml服务全局有配，那么则取service的advice
                                 try {
-                                    Object adviceObj = Class.forName(xmlConfig.getAdviceClassName()).newInstance();
+                                    Object adviceObj = Class.forName(adviceClassName).newInstance();
                                     method.setAdvice((Advice) adviceObj);
+                                    logger.info("取得" + id + "-" + method.getMethodName() + "配置的advice=" + adviceClassName + "的newInstance实现");
                                 } catch (Exception e) {
                                     logger.error("初始化配置的advice=" + xmlConfig.getAdviceClassName() + "的newInstance异常!", e);
                                     System.exit(0);

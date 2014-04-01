@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.common.rpc;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class RpcContext {
+public class RpcContext implements Serializable {
     //请求者地址
     private String remoteAddr = "";
     //userAgent,表明是java调用的还是前端js调用

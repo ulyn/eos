@@ -91,10 +91,14 @@ public class RpcServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //设置上下文
         RpcServletContext.setRequest(req);
-        RpcContext rpcContext = new RpcContext();
-        rpcContext.setUserAgent("eos-front");
-        rpcContext.setRemoteAddr(req.getRemoteAddr());
-        RpcContextContainer.setRpcContext(rpcContext);
+
+        RpcContext rpcContext = RpcContextContainer.getRpcContext();
+        if (rpcContext == null) {
+            rpcContext = new RpcContext();
+            rpcContext.setUserAgent("eos-front");
+            rpcContext.setRemoteAddr(req.getRemoteAddr());
+            RpcContextContainer.setRpcContext(rpcContext);
+        }
 
         Map rtnMap = new HashMap();
         try {

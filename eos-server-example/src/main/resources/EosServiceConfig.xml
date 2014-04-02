@@ -1,0 +1,35 @@
+<eos>
+    <beans mock="success">
+        <bean id="beanId" impl="com.sunsharing.eos.server.test.TestService" mock="error">
+            <testInt mock="success"/>
+        </bean>
+        <bean id="beanId2">
+            <testInt mock="error"/>
+        </bean>
+    </beans>
+    <!--advice针对到类级别，方法级别在advice实现自行判断-->
+    <advices>
+        <advice>
+            <class>com.sunsharing.eos.server.TestAdvice</class>
+            <packagesToScan>
+                <list>
+                    <value>com.sunsharing.eos.server</value>
+                    <value>com.sunsharing.eos.server</value>
+                </list>
+                <excludeBean>
+                    <list>
+                        <value>testService</value>
+                        <value>peopleService</value>
+                    </list>
+                </excludeBean>
+            </packagesToScan>
+            <beansToScan>
+                <list>
+                    <value>testService</value>
+                    <value>peopleService</value>
+                </list>
+            </beansToScan>
+        </advice>
+    </advices>
+
+</eos>

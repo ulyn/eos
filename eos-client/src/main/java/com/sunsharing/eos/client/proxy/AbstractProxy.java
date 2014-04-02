@@ -71,6 +71,14 @@ public abstract class AbstractProxy implements ClientProxy {
      */
     public Object doInvoke(RpcInvocation invocation, ServiceConfig config, ServiceMethod serviceMethod) throws Throwable {
         logger.info("调用eos服务" + config.getId() + "入参：" + invocation);
+        //增加rpcContext
+        RpcContext rpcContext = RpcContextContainer.getRpcContext();
+
+        if (rpcContext == null) {
+            rpcContext = new RpcContext();
+            rpcContext.setUserAgent("java");
+            RpcContextContainer.setRpcContext(rpcContext);
+        }
         Object o = null;
         Advice advice = config.getAdvice();
         AdviceResult adviceResult = null;
@@ -153,11 +161,6 @@ public abstract class AbstractProxy implements ClientProxy {
 
         //增加rpcContext
         RpcContext rpcContext = RpcContextContainer.getRpcContext();
-
-        if (rpcContext == null) {
-            rpcContext = new RpcContext();
-            rpcContext.setUserAgent("java");
-        }
         pro.setRpcContext(rpcContext);
 
         RemoteHelper helper = new RemoteHelper();

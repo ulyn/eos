@@ -1,5 +1,6 @@
 package com.sunsharing.component.test;
 
+import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,16 @@ public class TestServiceImpl implements TestType {
 
     @Override
     public String testString(String s, String sw) {
+        RpcContext rpcContext = RpcContextContainer.getRpcContext();
+        //rpcContext.getAttribute("")
+        if(!s.equals(rpcContext.getAttribute("a")))
+        {
+            System.out.println("rpcContext:"+rpcContext.getAttributeMap());
+            throw new RuntimeException("参数错了");
+        }else
+        {
+            //System.out.println("a:"+rpcContext.getAttribute("a"));
+        }
         return "我是正真的服务方";
     }
 

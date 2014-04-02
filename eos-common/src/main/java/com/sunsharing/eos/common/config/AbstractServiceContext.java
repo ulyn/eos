@@ -164,6 +164,10 @@ public abstract class AbstractServiceContext {
         InputStream is = ClassHelper.getClassLoader(ServiceConfig.class).getResourceAsStream(fileName);
         if (is == null) {
             logger.info("没有找到eos服务的xml配置...");
+            Map beansMap = new HashMap();
+            beansMap.put("configMap", configMap);
+            rtnMap.put("beansMap", beansMap);
+            rtnMap.put("advices", new ArrayList());
         } else {
             try {
                 ByteArrayOutputStream byteStream = new ByteArrayOutputStream();

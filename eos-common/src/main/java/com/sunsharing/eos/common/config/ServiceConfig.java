@@ -44,11 +44,10 @@ public class ServiceConfig {
     private String mock = "";
 
     private String impl = "";
-    private String adviceClassName = "";
+    private Advice advice;
 
     private Map<String, String> methodMockMap;
     private List<ServiceMethod> serviceMethodList;
-    private Map<String, Advice> methodServletAdviceMap;
 
     public String getId() {
         return id;
@@ -126,12 +125,12 @@ public class ServiceConfig {
         this.impl = impl;
     }
 
-    public String getAdviceClassName() {
-        return adviceClassName;
+    public Advice getAdvice() {
+        return advice;
     }
 
-    public void setAdviceClassName(String adviceClassName) {
-        this.adviceClassName = adviceClassName;
+    public void setAdvice(Advice advice) {
+        this.advice = advice;
     }
 
     public Map<String, String> getMethodMockMap() {
@@ -148,14 +147,6 @@ public class ServiceConfig {
 
     public void setServiceMethodList(List<ServiceMethod> serviceMethodList) {
         this.serviceMethodList = serviceMethodList;
-    }
-
-    public Map<String, Advice> getMethodServletAdviceMap() {
-        return methodServletAdviceMap;
-    }
-
-    public void setMethodServletAdviceMap(Map<String, Advice> methodServletAdviceMap) {
-        this.methodServletAdviceMap = methodServletAdviceMap;
     }
 
     public String getMethodMock(String methodName) {

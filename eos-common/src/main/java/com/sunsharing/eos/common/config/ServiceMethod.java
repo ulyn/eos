@@ -53,22 +53,20 @@ public class ServiceMethod {
     private String[] parameterNames;
     private Class retType;
     private AccessType accessType;
-    private Advice advice;
 
     public ServiceMethod() {
     }
 
     public ServiceMethod(Method method) {
-        new ServiceMethod(method, null, null);
+        new ServiceMethod(method, null);
     }
 
-    public ServiceMethod(Method method, String[] parameterNames, Advice advice) {
+    public ServiceMethod(Method method, String[] parameterNames) {
         this.methodName = method.getName();
         this.accessType = AccessType.valueOf(method.getModifiers());
         this.retType = method.getReturnType();
         this.parameterTypes = method.getParameterTypes();
         this.parameterNames = parameterNames;
-        this.advice = advice;
     }
 
     public String getMethodName() {
@@ -116,17 +114,5 @@ public class ServiceMethod {
         this.parameterNames = parameterNames;
     }
 
-    /**
-     * 获取方法的切面接口，为了前端js调用服务接口前后进行一些参数缓存等处理
-     *
-     * @return
-     */
-    public Advice getAdvice() {
-        return advice;
-    }
-
-    public void setAdvice(Advice advice) {
-        this.advice = advice;
-    }
 }
 

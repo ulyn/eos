@@ -1,8 +1,35 @@
-<beans advice="com.sunsharing.component.test.TestAdvice2">
-    <bean id="testType" mock="success">
-        <methods>
-            <testListMap advice="com.sunsharing.component.test.TestAdvice"/>
-            <testInt mock="error"/>
-        </methods>
-    </bean>
-</beans>
+<eos>
+    <beans mock="success">
+        <!--<bean id="beanId" impl="com.sunsharing.eos.server.test.TestService"  mock="error">-->
+        <!--<testInt mock="success"/>-->
+        <!--</bean>-->
+        <bean id="testType">
+        <testInt mock="error"/>
+        </bean>
+    </beans>
+    <!--advice针对到类级别，方法级别在advice实现自行判断-->
+    <advices>
+        <advice>
+            <class>com.sunsharing.component.test.TestAdvice</class>
+            <packagesToScan>
+                <list>
+                    <value>com.sunsharing.component.test</value>
+                    <value>com.sunsharing.component.dao</value>
+                </list>
+                <excludeBean>
+                    <list>
+                        <value>testType</value>
+                        <value>testFirst</value>
+                    </list>
+                </excludeBean>
+            </packagesToScan>
+            <beansToScan>
+                <list>
+                    <value>testType</value>
+                    <value>peopleService</value>
+                </list>
+            </beansToScan>
+        </advice>
+    </advices>
+
+</eos>

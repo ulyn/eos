@@ -82,7 +82,7 @@ public abstract class AbstractServer implements RpcServer {
                 }
                 //设置rpc上下文
                 RpcContextContainer.setRpcContext(rpcContext);
-                Advice advice = method.getAdvice();
+                Advice advice = serviceConfig.getAdvice();
                 Object o = null;
                 AdviceResult adviceResult = null;
                 //执行调用前

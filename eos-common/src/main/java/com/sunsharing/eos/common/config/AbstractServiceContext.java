@@ -71,8 +71,10 @@ public abstract class AbstractServiceContext {
     public void init() {
         String xmlConfigFileName = "EosServiceConfig.xml";
         //key为接口name
-        Map xmlConfigMap = loadXmlServiceConfig(xmlConfigFileName);
-        Map<String, ServiceConfig> xmlServiceConfigMap = (Map<String, ServiceConfig>) xmlConfigMap.get("configMap");
+        Map xmlMap = loadXmlServiceConfig(xmlConfigFileName);
+        Map beansMap = (Map) xmlMap.get("beansMap");
+        Map<String, ServiceConfig> xmlServiceConfigMap = (Map<String, ServiceConfig>) beansMap.get("configMap");
+        List advices = (List) xmlMap.get("advices");
 
         ClassFilter filter = new ClassFilter() {
             @Override
@@ -108,8 +110,8 @@ public abstract class AbstractServiceContext {
                 ServiceConfig xmlConfig = xmlServiceConfigMap.get(id);
                 if (!StringUtils.isBlank(xmlConfig.getMock())) {
                     config.setMock(xmlConfig.getMock());
-                } else if (!StringUtils.isBlank((String) xmlConfigMap.get("rootMock"))) {
-                    config.setMock((String) xmlConfigMap.get("rootMock"));
+                } else if (!StringUtils.isBlank((String) beansMap.get("rootMock"))) {
+                    config.setMock((String) beansMap.get("rootMock"));
                 }
                 Map xmlConfigMethodMockMap = xmlConfig.getMethodMockMap();
                 if (xmlConfigMethodMockMap != null) {
@@ -122,41 +124,21 @@ public abstract class AbstractServiceContext {
                         configMethodMockMap.put(mockKey, xmlConfigMethodMockMap.get(mockKey));
                     }
                 }
-                if (!StringUtils.isBlank(xmlConfig.getAdviceClassName())) {
-                    config.setAdviceClassName(xmlConfig.getAdviceClassName());
-                }
-
-                //当xml有配置advice时，改写ServiceMethod的切面类。
-                Map<String, Advice> servletAdviceMap = xmlConfig.getMethodServletAdviceMap();
-                if (xmlConfig.getMethodServletAdviceMap() != null) {
-                    List<ServiceMethod> methods = config.getServiceMethodList();
-                    for (ServiceMethod method : methods) {
-                        Advice advice = servletAdviceMap.get(method.getMethodName());
-                        if (advice != null) {
-                            method.setAdvice(advice);
-                        } else {
-                            String adviceClassName = xmlConfig.getAdviceClassName();
-                            if (StringUtils.isBlank(adviceClassName)) {
-                                adviceClassName = (String) xmlConfigMap.get("rootAdvice");
-                            }
-
-                            if (!StringUtils.isBlank(adviceClassName)) {
-                                //如果xml服务全局有配，那么则取service的advice
-                                try {
-                                    Object adviceObj = Class.forName(adviceClassName).newInstance();
-                                    method.setAdvice((Advice) adviceObj);
-                                    logger.info("取得" + id + "-" + method.getMethodName() + "配置的advice=" + adviceClassName + "的newInstance实现");
-                                } catch (Exception e) {
-                                    logger.error("初始化配置的advice=" + xmlConfig.getAdviceClassName() + "的newInstance异常!", e);
-                                    System.exit(0);
-                                }
-                            }
-                        }
-                    }
-                }
 
                 if (!"".equals(xmlConfig.getImpl())) {
                     config.setImpl(xmlConfig.getImpl());
+                }
+            }
+
+            String adviceClassName = getAdviceClassName(advices, c, id);
+            if (!StringUtils.isBlank(adviceClassName)) {
+                try {
+                    Advice advice = (Advice) Class.forName(adviceClassName).newInstance();
+                    config.setAdvice(advice);
+                    logger.info("取得" + id + "配置的advice=" + adviceClassName + "的newInstance实现");
+                } catch (Exception e) {
+                    logger.error("初始化配置的advice=" + adviceClassName + "的newInstance异常!", e);
+                    System.exit(0);
                 }
             }
 
@@ -176,7 +158,7 @@ public abstract class AbstractServiceContext {
      * @return
      */
     private Map loadXmlServiceConfig(String fileName) {
-        Map map = new HashMap();
+        Map rtnMap = new HashMap();
 
         Map<String, ServiceConfig> configMap = new HashMap<String, ServiceConfig>();
         InputStream is = ClassHelper.getClassLoader(ServiceConfig.class).getResourceAsStream(fileName);
@@ -194,54 +176,124 @@ public abstract class AbstractServiceContext {
                 String result = new String(bytes, "UTF-8");
                 Document doc = DocumentHelper.parseText(result);
                 Element root = doc.getRootElement();
-                map.put("rootAdvice", root.attributeValue("advice"));
-                map.put("rootMock", root.attributeValue("mock"));
-                List<Element> elements = root.elements();
-                for (Element el : elements) {
-                    String id = el.attributeValue("id");
-                    ServiceConfig config = new ServiceConfig();
-                    config.setId(id);
-                    config.setMock(el.attributeValue("mock"));
-                    config.setImpl(el.attributeValue("impl"));
-                    String defaultAdvice = el.attributeValue("advice");
-                    config.setAdviceClassName(defaultAdvice);
-                    Element methodsEl = el.element("methods");
-                    if (methodsEl != null) {
-                        //set methodMock
-                        List<Element> methodEls = methodsEl.elements();
-                        Map<String, String> methodMockMap = new HashMap<String, String>();
-                        Map<String, Advice> methodServletAdviceMap = new HashMap<String, Advice>();
-                        for (Element methodEl : methodEls) {
-                            methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
 
-                            String servletAdvice = methodEl.attributeValue("advice");
-                            if (servletAdvice != null) {
-                                try {
-                                    Advice advice = (Advice) Class.forName(servletAdvice).newInstance();
-                                    methodServletAdviceMap.put(methodEl.getName(), advice);
-                                    logger.info("取得" + id + "-" + methodEl.getName() + "配置的advice=" + servletAdvice + "的newInstance实现");
-                                } catch (Exception e) {
-                                    logger.error("初始化配置的servletAdvice=" + servletAdvice + "的newInstance异常!", e);
-                                    System.exit(0);
-                                }
+                Element beansEl = root.element("beans");
+                Element advicesEl = root.element("advices");
+
+                //获取beans配置
+                Map beansMap = new HashMap();
+                if (beansEl != null) {
+                    beansMap.put("rootMock", beansEl.attributeValue("mock"));
+                    List<Element> elements = beansEl.elements("bean");
+                    for (Element el : elements) {
+                        String id = el.attributeValue("id");
+                        ServiceConfig config = new ServiceConfig();
+                        config.setId(id);
+                        config.setMock(el.attributeValue("mock"));
+                        config.setImpl(el.attributeValue("impl"));
+                        List<Element> methodEls = el.elements();
+                        if (methodEls.size() > 0) {
+                            //set methodMock
+                            Map<String, String> methodMockMap = new HashMap<String, String>();
+                            Map<String, Advice> methodServletAdviceMap = new HashMap<String, Advice>();
+                            for (Element methodEl : methodEls) {
+                                methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
                             }
-
+                            config.setMethodMockMap(methodMockMap);
                         }
-                        config.setMethodMockMap(methodMockMap);
-                        config.setMethodServletAdviceMap(methodServletAdviceMap);
+
+                        configMap.put(id, config);
                     }
 
-                    configMap.put(id, config);
                 }
+                beansMap.put("configMap", configMap);
+                rtnMap.put("beansMap", beansMap);
+                //获取advices配置
+                List advices = new ArrayList();
+                if (advicesEl != null) {
+                    List<Element> elements = advicesEl.elements("advice");
+                    for (Element el : elements) {
+                        String adviceClassName = el.elementTextTrim("class");
+                        Element packageEl = el.element("packagesToScan");
+                        Element excludeBeanEl = packageEl.element("excludeBean");
+                        Element beanEl = el.element("beansToScan");
+                        List<String> packages = getListByListElement(packageEl);
+                        List<String> excludeBeans = getListByListElement(excludeBeanEl);
+                        List<String> beans = getListByListElement(beanEl);
+
+                        Map temp = new HashMap();
+                        temp.put("advice", adviceClassName);
+                        temp.put("packages", packages);
+                        temp.put("excludeBeans", excludeBeans);
+                        temp.put("beans", beans);
+                        advices.add(temp);
+                    }
+                }
+                rtnMap.put("advices", advices);
             } catch (Exception e) {
                 logger.error("读取eos服务的xml配置异常，请检查xml配置是否正确", e);
                 throw new RuntimeException(e);
             }
         }
+        return rtnMap;
+    }
 
-        map.put("configMap", configMap);
+    /**
+     * 取得el下的list节点的值
+     *
+     * @return
+     */
+    private List<String> getListByListElement(Element el) {
+        List<String> list = new ArrayList<String>();
+        if (el != null) {
+            Element listEl = el.element("list");
+            if (listEl != null) {
+                List<Element> values = listEl.elements("value");
+                for (Element element : values) {
+                    list.add(element.getTextTrim());
+                }
+            }
+        }
+        return list;
+    }
 
-        return map;
+    /**
+     * 从配置的advice中取得class的advice
+     *
+     * @param advices
+     * @param c
+     * @return
+     */
+    private String getAdviceClassName(List advices, Class c, String beanId) {
+        for (Object o : advices) {
+            Map map = (Map) o;
+
+            //包含在bean的配置
+            List<String> beans = (List<String>) map.get("beans");
+            for (String bean : beans) {
+                if (beanId.equals(bean)) {
+                    return (String) map.get("advice");
+                }
+            }
+            //包含在包n的配置
+            List<String> packages = (List<String>) map.get("packages");
+            List<String> excludeBeans = (List<String>) map.get("excludeBeans");
+            boolean isExclude = false;
+            for (String bean : excludeBeans) {
+                if (beanId.equals(bean)) {
+                    isExclude = true;
+                }
+            }
+            if (isExclude) {
+                continue;
+            }
+            for (String pac : packages) {
+                if (c.getName().startsWith(pac)) {
+                    return (String) map.get("advice");
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -276,16 +328,6 @@ public abstract class AbstractServiceContext {
     private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
-        Annotation defaultAdviceAnn = interfaces.getAnnotation(com.sunsharing.eos.common.annotation.Advice.class);
-        Advice defaultAdvice = null;
-        if (defaultAdviceAnn != null) {
-            try {
-                defaultAdvice = (Advice) ((com.sunsharing.eos.common.annotation.Advice) defaultAdviceAnn).value().newInstance();
-            } catch (Exception e) {
-                logger.error("服务配置的Advice可能有误，value=" + ((com.sunsharing.eos.common.annotation.Advice) defaultAdviceAnn).value() + "的newInstance异常!", e);
-                System.exit(0);
-            }
-        }
         for (Method method : methods) {
             //取参数名的注解
             ParameterNames ann = method.getAnnotation(ParameterNames.class);
@@ -298,20 +340,8 @@ public abstract class AbstractServiceContext {
                     throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
                 }
             }
-            //取切面类注解
-            com.sunsharing.eos.common.annotation.Advice adviceAnn = method.getAnnotation(com.sunsharing.eos.common.annotation.Advice.class);
-            Advice advice = null;
-            if (adviceAnn != null) {
-                try {
-                    advice = (Advice) adviceAnn.value().newInstance();
-                } catch (Exception e) {
-                    logger.error("服务配置的Advice可能有误，value=" + adviceAnn.value() + "的newInstance异常!", e);
-                    System.exit(0);
-                }
-            } else if (defaultAdvice != null) {
-                advice = defaultAdvice;
-            }
-            ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames, advice);
+
+            ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
             list.add(serviceMethod);
         }
         return list;

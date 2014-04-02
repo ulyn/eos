@@ -70,9 +70,9 @@ public abstract class AbstractProxy implements ClientProxy {
      * @throws Throwable
      */
     public Object doInvoke(RpcInvocation invocation, ServiceConfig config, ServiceMethod serviceMethod) throws Throwable {
-        logger.info("调用eos服务入参：" + invocation);
+        logger.info("调用eos服务" + config.getId() + "入参：" + invocation);
         Object o = null;
-        Advice advice = serviceMethod.getAdvice();
+        Advice advice = config.getAdvice();
         AdviceResult adviceResult = null;
         //执行调用前
         if (advice != null) {

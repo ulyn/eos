@@ -15,23 +15,17 @@ public class TestMain {
     {
         EosInit.synStart("com.sunsharing");
         ExecutorService service =  Executors.newFixedThreadPool(100);
-        for(int i=0;i<1;i++)
-        service.execute(new Runnable() {
-            @Override
-            public void run() {
-                TestType test = ServiceContext.getBean(TestType.class);
-                double d = test.testDouble(1);
-                if(d!=0)
-                {
-                    System.out.println("错了");
+        for(int i=0;i<100000;i++)
+        {
+            final int k = i;
+            service.execute(new Runnable() {
+                @Override
+                public void run() {
+                    TestType test = ServiceContext.getBean(TestType.class);
+                    test.testString(k+"","2");
                 }
-                String s = test.testString("1","2");
-                if(!s.equals("我是正真的服务方"))
-                {
-                    System.out.println("错了");
-                }
-            }
-        });
+            });
+        }
 
     }
 

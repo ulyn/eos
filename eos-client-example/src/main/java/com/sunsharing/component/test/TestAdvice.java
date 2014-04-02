@@ -20,6 +20,8 @@ import com.sunsharing.eos.client.RpcServletContext;
 import com.sunsharing.eos.common.aop.Advice;
 import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceMethod;
+import com.sunsharing.eos.common.rpc.RpcContext;
+import com.sunsharing.eos.common.rpc.RpcContextContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -41,6 +43,11 @@ public class TestAdvice implements Advice {
         System.out.println("TestAdvice");
         System.out.println(method.getMethodName() + "被执行前，入参为" + Arrays.toString(args));
         System.out.println("RpcServletContext.getRequest=" + RpcServletContext.getRequest());
+        RpcContext rpcContext = RpcContextContainer.getRpcContext();
+        if(method.getMethodName().equals("testString"))
+        {
+            rpcContext.setAttribute("a",args[0]);
+        }
         return new AdviceResult(false, null);
     }
 

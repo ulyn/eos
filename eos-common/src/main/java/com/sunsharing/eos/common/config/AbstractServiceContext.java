@@ -219,7 +219,7 @@ public abstract class AbstractServiceContext {
                     for (Element el : elements) {
                         String adviceClassName = el.elementTextTrim("class");
                         Element packageEl = el.element("packagesToScan");
-                        Element excludeBeanEl = packageEl.element("excludeBean");
+                        Element excludeBeanEl = packageEl == null ? null : packageEl.element("excludeBean");
                         Element beanEl = el.element("beansToScan");
                         List<String> packages = getListByListElement(packageEl);
                         List<String> excludeBeans = getListByListElement(excludeBeanEl);

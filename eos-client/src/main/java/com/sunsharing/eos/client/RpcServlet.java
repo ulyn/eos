@@ -91,6 +91,7 @@ public class RpcServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //设置上下文
         RpcServletContext.setRequest(req);
+        RpcServletContext.setResponse(resp);
 
         RpcContext rpcContext = RpcContextContainer.getRpcContext();
         if (rpcContext == null) {

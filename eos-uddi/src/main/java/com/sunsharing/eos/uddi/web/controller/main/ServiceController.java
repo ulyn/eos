@@ -263,6 +263,19 @@ public class ServiceController {
         ResponseHelper.printOut(response,true,"","");
     }
 
+    @RequestMapping(value={"/delete.do"},method = RequestMethod.POST)
+    public void delete(String serviceId,
+                       HttpServletResponse response,HttpServletRequest request) throws Exception
+    {
+        TUser u = (TUser)request.getSession().getAttribute("user");
+        if(!u.getRole().equals("3"))
+        {
+            throw new RuntimeException("对不起你没有删除权限");
+        }
+        service.deleteService(serviceId);
+        ResponseHelper.printOut(response,true,"","");
+    }
+
     @RequestMapping(value={"/commitAllCommit.do"},method = RequestMethod.GET)
     public void commitAllCommit(HttpServletResponse response,HttpServletRequest request)throws Exception
     {

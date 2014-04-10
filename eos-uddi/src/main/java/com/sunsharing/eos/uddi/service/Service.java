@@ -182,6 +182,23 @@ public class Service {
 
     }
 
+    public void deleteService(String serviceId)
+    {
+        TService service = serviceDao.get(new Integer(serviceId));
+//        List<TServiceVersion> versions = service.getVersions();
+//        for(TServiceVersion version:versions)
+//        {
+//            List<TMethod> methods = version.getMethods();
+//            methods.clear();
+//            for(TMethod method:methods)
+//            {
+//                methodDao.delete(method);
+//            }
+//            versionDao.delete(version);
+//        }
+        serviceDao.delete(service);
+    }
+
     private void sendEmail(String email,String title,String content)
     {
         JSONObject jo = new JSONObject();

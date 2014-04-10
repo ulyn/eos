@@ -23,6 +23,10 @@ indexApp.config(['$routeProvider',
                 templateUrl: 'templates/service/serviceAdd.html',
                 //template:'criss',
                 controller: 'serviceAdd'
+            }).when('/delete/:appId/:serviceId',{
+                templateUrl: 'templates/service/deleteService.html',
+                //template:'criss',
+                controller: 'serviceDelete'
             }).when('/method/:appId/:serviceId/:version',{
                 templateUrl: 'templates/service/test.html',
                 //template:'criss',
@@ -409,6 +413,40 @@ indexApp.controller('serviceAdd', function($scope, $routeParams,$http) {
         $("#appId").val(appId);
         document.getElementById("serviceform").submit();
     }
+    $scope.returnlist = function()
+    {
+        location.href = "#servicelist/"+appId+"/0";
+    }
+
+});
+
+indexApp.controller('serviceDelete', function($scope, $routeParams,$http) {
+
+    var appId = $routeParams.appId;
+    var serviceId = $routeParams.serviceId;
+
+    $scope.delete = function()
+    {
+        $http({
+            url: '/delete.do',
+            method: "POST",
+            data: "serviceId="+serviceId,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data, status, headers, config) {
+            if(data.status)
+            {
+                alert("删除成功");
+                location.href = "#servicelist/"+appId+"/0";
+                //window.setTimeout("$(\".simple_form\").uniform();",200);
+            }else
+            {
+                alert(data.msg);
+            }
+        });
+    }
+
+
+
     $scope.returnlist = function()
     {
         location.href = "#servicelist/"+appId+"/0";

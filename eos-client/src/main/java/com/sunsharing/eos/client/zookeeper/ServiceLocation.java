@@ -40,7 +40,7 @@ public class ServiceLocation {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
-        utils.setCallBack(new ClientConnectCallBack(null));
+        utils.getCallBacks().add(new ClientConnectCallBack(null));
         utils.connect();
     }
 
@@ -52,7 +52,7 @@ public class ServiceLocation {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
-        utils.setCallBack(new ClientConnectCallBack(connectedSignal));
+        utils.getCallBacks().add(new ClientConnectCallBack(connectedSignal));
         utils.connect();
         try
         {

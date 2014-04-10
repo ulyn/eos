@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -20,7 +21,7 @@ public class ZookeeperUtils {
 
     protected ZooKeeper zookeeper;
 
-    protected ZookeeperCallBack callBack;
+    protected List<ZookeeperCallBack> callBacks=new ArrayList<ZookeeperCallBack>();
 
     protected String zooKeeperIP;
     protected int zooKeeperPort;
@@ -41,12 +42,12 @@ public class ZookeeperUtils {
         this.zooKeeperIP = zooKeeperIP;
     }
 
-    public ZookeeperCallBack getCallBack() {
-        return callBack;
+    public List<ZookeeperCallBack> getCallBacks() {
+        return callBacks;
     }
 
-    public void setCallBack(ZookeeperCallBack callBack) {
-        this.callBack = callBack;
+    public void setCallBacks(List<ZookeeperCallBack> callBacks) {
+        this.callBacks = callBacks;
     }
 
     private ZookeeperUtils()
@@ -225,11 +226,15 @@ public class ZookeeperUtils {
                 //释放所有等待线程前发生事件的数量。在调用一次countDown()方法后，
                 // 此计数器会归零，await操作返回。
                 connectedSignal.countDown();
-                logger.info("连接结束connectedSignal.countDown...");
+                logger.info("连接结束connectedSignal.countDown...:callBacks:"+callBacks.size());
                 //连接成功
-                if(callBack!=null)
+                if(callBacks!=null)
                 {
-                    callBack.afterConnect(event);
+                    for(ZookeeperCallBack callBack:callBacks)
+                    {
+                        callBack.afterConnect(event);
+                    }
+
                 }
             } else if(event.getState() == Event.KeeperState.Expired) {//注意KeeperState的Expired枚举值
                 connected =false;
@@ -239,9 +244,14 @@ public class ZookeeperUtils {
                     event.getType()== Event.EventType.NodeDeleted ||
                     event.getType() == Event.EventType.NodeDataChanged
                     ){
-                if(callBack!=null)
+                logger.info("节点有变化...:callBacks:"+callBacks.size());
+                if(callBacks!=null)
                 {
-                    callBack.watchNodeChange(event);
+                    for(ZookeeperCallBack callBack:callBacks)
+                    {
+                        callBack.watchNodeChange(event);
+                    }
+
                 }
             }
         }

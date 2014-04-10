@@ -52,7 +52,7 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
     @Override
     public void watchNodeChange(WatchedEvent event) {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-
+        logger.info("watch:"+event.getType()+":"+event.getPath());
         if(event.getType()==Watcher.Event.EventType.NodeChildrenChanged)
         {
             if(event.getPath().startsWith(PathConstant.EOS_STATE))

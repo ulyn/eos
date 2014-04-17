@@ -129,6 +129,10 @@ public class ServiceController {
                         String version = service.getVersion(lines);
                         System.out.println(version);
                         String name = service.getInterfaceName(lines);
+                        if(name.trim().length()>20)
+                        {
+                            throw new RuntimeException("接口名不允许超过20个字符");
+                        }
                         String destName = SysInit.path+File.separator+"interface"+File.separator+appcode+File.separator+name+"_"+version+".java";
                         if(new File(destName).exists())
                         {
@@ -256,6 +260,19 @@ public class ServiceController {
         service.commit(versionId);
 
 
+        ResponseHelper.printOut(response,true,"","");
+    }
+
+    @RequestMapping(value={"/delete.do"},method = RequestMethod.POST)
+    public void delete(String serviceId,
+                       HttpServletResponse response,HttpServletRequest request) throws Exception
+    {
+        TUser u = (TUser)request.getSession().getAttribute("user");
+        if(!u.getRole().equals("3"))
+        {
+            throw new RuntimeException("对不起你没有删除权限");
+        }
+        service.deleteService(serviceId);
         ResponseHelper.printOut(response,true,"","");
     }
 

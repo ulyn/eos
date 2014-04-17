@@ -57,7 +57,7 @@ angular.module('eos.services', ['ngResource']).
                 }
                 $http({
                     method: option.method,
-                    url: option.url,
+                    url: option.url + "&r=" + Math.random(),
                     params: params,
                     beforeSend: option.beforeSend
                 }).success(function (data, textStatus, headers, config) {

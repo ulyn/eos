@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: jetty:jasper-runtime:4.2.20RC0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/jetty/jasper-runtime/4.2.20RC0/jasper-runtime-4.2.20RC0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/jetty/jasper-runtime/4.2.20RC0/jasper-runtime-4.2.20RC0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/jetty/jasper-runtime/4.2.20RC0/jasper-runtime-4.2.20RC0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

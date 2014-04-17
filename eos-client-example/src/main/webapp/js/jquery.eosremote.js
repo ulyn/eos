@@ -50,7 +50,7 @@ jQuery.eosRemote = function (opts) {
     }
     jQuery.ajax({
         type: "post",
-        url: option.url,
+        url: option.url + "&r=" + Math.random(),
         dataType: option.dataType,
         data: params,
         async: option.async,

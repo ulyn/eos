@@ -116,7 +116,7 @@ public abstract class AbstractServer implements RpcServer {
                 result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + th.getMessage(), th));
             }
         } else {
-            String errorMsg = "has no these class：" + serviceConfig.getId() + " - " + invocation.getMethodName();
+            String errorMsg = "has no these class serviceId：" + serviceId + " - " + invocation.getMethodName();
             logger.error(errorMsg);
             result.setException(new IllegalArgumentException(errorMsg));
         }

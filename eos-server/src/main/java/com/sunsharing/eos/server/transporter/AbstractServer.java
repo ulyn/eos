@@ -71,6 +71,7 @@ public abstract class AbstractServer implements RpcServer {
     }
 
     public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {
+        logger.error(serviceId+"::"+invocation+"::"+rpcContext);
         Object obj = this.serviceEngine.get(serviceId);
         ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
         RpcResult result = new RpcResult();
@@ -107,7 +108,7 @@ public abstract class AbstractServer implements RpcServer {
                 }
                 result.setValue(o);
             } catch (NoSuchMethodException e) {
-                String errorMsg = "server has no NoSuchMethodException：" + serviceConfig.getId() + " - " + invocation.getMethodName();
+                String errorMsg = "has no these class serviceId：" + serviceId + " - " + invocation.getMethodName();
                 logger.error(errorMsg, e);
                 result.setException(new IllegalArgumentException(errorMsg, e));
             } catch (Exception th) {

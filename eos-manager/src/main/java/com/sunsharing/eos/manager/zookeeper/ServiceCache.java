@@ -39,11 +39,11 @@ public class ServiceCache {
         try
         {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            List<String> list = utils.getChildren(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId);
+            List<String> list = utils.getChildren(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId,true);
             serviceMap.clear();
             for(String path:list)
             {
-                String p = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path),"UTF-8");
+                String p = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path,false),"UTF-8");
                 logger.info("更新service:"+p);
                 JSONObject jsonObject = JSONObject.parseObject(p);
                 String appId = jsonObject.getString(PathConstant.APPID_KEY);
@@ -66,6 +66,8 @@ public class ServiceCache {
         {
             logger.error("获取"+SysProp.eosId+"节点信息失败",e);
         }
+
+        logger.info("更新完成");
 
     }
 
@@ -93,14 +95,14 @@ public class ServiceCache {
     {
         //是否授权
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId))
+        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId,false))
         {
-            if(!utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version))
+            if(!utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false))
             {
                 return false;
             }else
             {
-                List<String> childer = utils.getChildren(PathConstant.ACL+"/"+appId+serviceId);
+                List<String> childer = utils.getChildren(PathConstant.ACL+"/"+appId+serviceId,false);
                 String max = "";
                 for(String str:childer)
                 {
@@ -145,9 +147,9 @@ public class ServiceCache {
         logger.info("method:"+method);
 
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version))
+        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false))
         {
-            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+"/"+version),"UTF-8");
+            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false),"UTF-8");
             logger.info("obj:"+obj);
             return (JSONArray)(JSONObject.parseObject(obj).get(method));
         }

@@ -80,14 +80,13 @@ public class EosMonitor {
             utils.createNode(PathConstant.EOS_MONITOR+"/EOS","", CreateMode.PERSISTENT);
             utils.createNode(PathConstant.EOS_MONITOR+"/SERVICE","", CreateMode.PERSISTENT);
             String eosId = SysProp.eosId;
-            if(!utils.isExists(PathConstant.EOS_MONITOR+"/EOS/"+eosId))
-            utils.createNode(PathConstant.EOS_MONITOR+"/EOS/"+eosId,"",CreateMode.PERSISTENT);
-            if(!utils.isExists(PathConstant.EOS_MONITOR+"/EOS/"+eosId))
+            if(!utils.isExists(PathConstant.EOS_MONITOR+"/EOS/"+eosId,false))
             {
-                utils.createNode(PathConstant.EOS_MONITOR+"/EOS/"+eosId,"0",
-                        CreateMode.PERSISTENT);
+                utils.createNode(PathConstant.EOS_MONITOR+"/EOS/"+eosId,"",CreateMode.PERSISTENT);
+                utils.setData(PathConstant.EOS_MONITOR+"/EOS/"+eosId,"0".getBytes());
             }
-            String old = new String(utils.getData(PathConstant.EOS_MONITOR+"/EOS/"+eosId),"UTF-8");
+
+            String old = new String(utils.getData(PathConstant.EOS_MONITOR+"/EOS/"+eosId,false),"UTF-8");
             if(StringUtils.isBlank(old))
             {
                 old = "0";
@@ -99,15 +98,15 @@ public class EosMonitor {
 
             for(String servicePath:serviceNum_clone.keySet())
             {
-                if(!utils.isExists(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath))
+                if(!utils.isExists(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath,false))
                 utils.createNode(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath,
                         "", CreateMode.PERSISTENT);
-                if(!utils.isExists(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath))
+                if(!utils.isExists(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath,false))
                 {
                     utils.createNode(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath,"0",
                             CreateMode.PERSISTENT);
                 }
-                old = new String(utils.getData(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath),"UTF-8");
+                old = new String(utils.getData(PathConstant.EOS_MONITOR+"/SERVICE/"+servicePath,false),"UTF-8");
                 if(StringUtils.isBlank(old))
                 {
                     old = "0";

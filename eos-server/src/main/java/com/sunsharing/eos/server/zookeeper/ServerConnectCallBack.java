@@ -11,6 +11,9 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -43,7 +46,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                 obj.put("timeout", config.getTimeout());
                 obj.put("port", SysProp.nettyServerPort);
                 obj.put("ip", SysProp.localIp);
-
+                obj.put("real_ip",getRealIp());
                 serviceRegister.registerService(SysProp.eosId, obj.toJSONString());
             }
 
@@ -83,5 +86,40 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 //            }
 //        }
 
+    }
+
+
+    private String getRealIp()
+    {
+        String ip = "";
+        Enumeration<NetworkInterface> netInterfaces = null;
+        try {
+            netInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (netInterfaces.hasMoreElements()) {
+                NetworkInterface ni = netInterfaces.nextElement();
+                Enumeration<InetAddress> ips = ni.getInetAddresses();
+                while (ips.hasMoreElements()) {
+//                    System.out.println("IP:"
+//                            + ips.nextElement().getHostAddress());
+                    String tmp = ips.nextElement().getHostAddress();
+                    if(!tmp.equals("127.0.0.1") && getOccur(tmp,".")==3)
+                    {
+                        ip+=tmp+",";
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ip;
+    }
+    private  int getOccur(String src,String find){
+        int o = 0;
+        int index=-1;
+        while((index=src.indexOf(find,index))>-1){
+            ++index;
+            ++o;
+        }
+        return o;
     }
 }

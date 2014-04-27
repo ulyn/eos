@@ -24,13 +24,14 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
 
             //创建EOS节点
             utils.createNode(PathConstant.SERVICE_STATE + "/" + SysProp.eosId, "", CreateMode.PERSISTENT);
+            //utils.watchNode(PathConstant.SERVICE_STATE + "/" + SysProp.eosId);
             //添加监听
-            utils.watchNode(PathConstant.SERVICE_STATE + "/" + SysProp.eosId);
+            utils.watchChildren(PathConstant.SERVICE_STATE + "/" + SysProp.eosId);
 
             //EOS状态
             utils.createNode(PathConstant.EOS_STATE, "", CreateMode.PERSISTENT);
-            while (utils.isExists(PathConstant.EOS_STATE + "/" + SysProp.eosId)) {
-                logger.info("存在节点:" + utils.isExists(PathConstant.EOS_STATE + "/" + SysProp.eosId) + "等待关闭");
+            while (utils.isExists(PathConstant.EOS_STATE + "/" + SysProp.eosId,false)) {
+                logger.info("存在节点:" + utils.isExists(PathConstant.EOS_STATE + "/" + SysProp.eosId,false) + "等待关闭");
                 Thread.sleep(1000);
             }
             utils.createNode(PathConstant.EOS_STATE + "/" + SysProp.eosId, SysProp.localIp + ":" + SysProp.eosPort,

@@ -2,6 +2,7 @@ package com.sunsharing.component.test;
 
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
+import com.sunsharing.eos.server.EosInit;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -67,5 +68,10 @@ public class TestServiceImpl implements TestType {
     public void testVoid(String name)
     {
 
+    }
+
+    public static void main(String[]a)
+    {
+        EosInit.start("com.sunsharing");
     }
 }

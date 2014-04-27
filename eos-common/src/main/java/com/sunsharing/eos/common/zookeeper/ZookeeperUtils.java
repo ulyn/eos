@@ -94,10 +94,24 @@ public class ZookeeperUtils {
             }
         }
     }
+    public void createNodeNowatch(String path,String data,CreateMode mode)throws Exception
+    {
+        Stat stat = zookeeper.exists(path,false);
+        if(stat==null)
+        {
+            logger.info("创建"+path+"节点");
+            zookeeper.create(path, data.getBytes("UTF-8"), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    mode);
+        }else
+        {
+            zookeeper.setData(path,data.getBytes("UTF-8"),-1);
+        }
+    }
+
 
     public void createNode(String path,String data,CreateMode mode)throws Exception
     {
-        Stat stat = zookeeper.exists(path,true);
+        Stat stat = zookeeper.exists(path,false);
         if(stat==null)
         {
             logger.info("创建"+path+"节点");
@@ -111,15 +125,15 @@ public class ZookeeperUtils {
 
     public void deleteNode(String path)throws Exception
     {
-        if(zookeeper.exists(path,true)==null)
+        if(zookeeper.exists(path,false)==null)
         {
             return;
         }else
         {
-            List<String> childern = zookeeper.getChildren(path,true);
+            List<String> childern = zookeeper.getChildren(path,false);
             for(String key:childern)
             {
-                if(zookeeper.getChildren(path+"/"+key,true).size()==0)
+                if(zookeeper.getChildren(path+"/"+key,false).size()==0)
                 {
                     zookeeper.delete(path+"/"+key,-1);
                 }else
@@ -134,12 +148,12 @@ public class ZookeeperUtils {
     public void printNode(String path)throws Exception
     {
 
-        if(zookeeper.exists(path,true)==null)
+        if(zookeeper.exists(path,false)==null)
         {
             return;
         }
         logger.info(path);
-        List<String> childern = zookeeper.getChildren(path,true);
+        List<String> childern = zookeeper.getChildren(path,false);
         for(String key:childern)
         {
             String pre = "";
@@ -150,7 +164,7 @@ public class ZookeeperUtils {
             {
                 pre = path;
             }
-            if(zookeeper.getChildren(pre+"/"+key,true).size()==0)
+            if(zookeeper.getChildren(pre+"/"+key,false).size()==0)
             {
                 logger.info(pre + "/" + key);
             }else
@@ -163,25 +177,39 @@ public class ZookeeperUtils {
     public void watchNode(String path)throws Exception
     {
         Stat s = zookeeper.exists(path,true);
+//        if(s!=null)
+//        {
+//            zookeeper.getChildren(path,true);
+//        }
+    }
+    public void watchChildren(String path) throws Exception
+    {
+        Stat s = zookeeper.exists(path,false);
         if(s!=null)
         {
             zookeeper.getChildren(path,true);
         }
     }
 
-    public boolean isExists(String path)throws Exception
+    public boolean isExists(String path,boolean watch)throws Exception
     {
-        return zookeeper.exists(path,true)!=null;
+        return zookeeper.exists(path,watch)!=null;
     }
 
-    public List<String> getChildren(String path) throws Exception
+
+    public List<String> getChildren(String path,boolean watch) throws Exception
     {
-        return zookeeper.getChildren(path,true);
+        return zookeeper.getChildren(path,watch);
     }
 
-    public byte[] getData(String path) throws Exception
+    public List<String> getChildrenNotWatch(String path,boolean watch) throws Exception
     {
-        return zookeeper.getData(path,true,null);
+        return zookeeper.getChildren(path,watch);
+    }
+
+    public byte[] getData(String path,boolean watch) throws Exception
+    {
+        return zookeeper.getData(path,watch,null);
     }
 
     public void setData(String path,byte[]arr)throws Exception

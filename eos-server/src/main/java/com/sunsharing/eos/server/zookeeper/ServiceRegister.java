@@ -8,6 +8,8 @@ import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 
+import java.util.List;
+
 /**
  * Created by criss on 14-1-28.
  */
@@ -71,21 +73,40 @@ public class ServiceRegister {
         String servicePath = obj.getString(PathConstant.APPID_KEY)+
                 obj.getString(PathConstant.SERVICE_ID_KEY)+
                 obj.getString(PathConstant.VERSION_KEY)+"_";
+        JSONObject destJson = JSONObject.parseObject(json);
         boolean result = false;
         for(int i=0;i<ids.length;i++)
         {
             String eosId = ids[i];
             try
             {
-                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId,"",CreateMode.PERSISTENT);
+                utils.createNodeNowatch(PathConstant.SERVICE_STATE + "/" + eosId, "", CreateMode.PERSISTENT);
 //                JSONArray array = new JSONArray();
 //                if(utils.isExists(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath))
 //                {
 //                    String str = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath),"UTF-8");
 //                    array = JSONArray.parseArray(str);
 //                }
-//                array.add(JSONObject.parseObject(json));
-                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json, CreateMode.EPHEMERAL_SEQUENTIAL);
+//                array.add(JSONObject.parseObject(js
+                List<String> list = utils.getChildrenNotWatch(PathConstant.SERVICE_STATE + "/" + eosId,false);
+                for(String p:list)
+                {
+                    if(p.startsWith(servicePath))
+                    {
+                        //相同服务
+                        byte[] bytes = utils.getData(PathConstant.SERVICE_STATE+"/"+eosId+"/"+p,false);
+                        JSONObject tmpObj = JSONObject.parseObject(new String(bytes,"UTF-8"));
+                        if(tmpObj.getString("ip").equals(destJson.getString("ip")) &&
+                                tmpObj.getString("port").equals(destJson.getString("port")))
+                        {
+                            logger.warn("存在相同的服务注册:"+p+"删除之");
+                            utils.deleteNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+p);
+                        }
+                    }
+                }
+
+                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json,
+                        CreateMode.EPHEMERAL_SEQUENTIAL);
                 result = true;
             }catch (Exception e)
             {

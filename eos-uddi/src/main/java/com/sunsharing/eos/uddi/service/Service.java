@@ -153,7 +153,7 @@ public class Service {
         }
         versionDao.saveOrUpdate(v);
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if (utils.isExists(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+version))) {
+        if (utils.isExists(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+version),false)) {
             utils.deleteNode(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+ version));
         }
 

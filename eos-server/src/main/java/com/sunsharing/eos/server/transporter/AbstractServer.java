@@ -24,6 +24,9 @@ import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,7 +117,9 @@ public abstract class AbstractServer implements RpcServer {
             } catch (Exception th) {
                 String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + invocation.getMethodName();
                 logger.error(errorMsg, th);
-                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + th.getMessage(), th));
+                ByteArrayOutputStream input = new ByteArrayOutputStream();
+                th.printStackTrace(new PrintStream(input));
+                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + input.toString()));
             }
         } else {
             String errorMsg = "has no these class serviceId：" + serviceId + " - " + invocation.getMethodName();

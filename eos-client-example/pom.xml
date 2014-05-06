@@ -290,6 +290,26 @@
                     </webResources>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.sunsharing.legend.client.utils.EosValidate</mainClass>
+                    <arguments>
+                        <!-- 要校验的eosremote的js文件 -->
+                        <argument>${project.basedir}\src\main\webapp\js\angular.eosremote.js</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

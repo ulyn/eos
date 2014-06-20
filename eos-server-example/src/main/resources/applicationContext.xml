@@ -72,14 +72,16 @@
 			</props>
 		</property>
 		<!-- 表与实体类的映射 -->
-		<property name="packagesToScan">
-			<list>
-			</list>
-		</property>
-		<property name="mappingDirectoryLocations">
-			<list>
-			</list>
-		</property>
+        <property name="packagesToScan">
+            <list>
+                <value>com.sunsharing.component.model</value>
+            </list>
+        </property>
+        <property name="mappingDirectoryLocations">
+            <list>
+                <value>classpath:/com/sunsharing/component/model</value>
+            </list>
+        </property>
 	</bean>
 
 

@@ -3,6 +3,7 @@
 <%@ page import="com.sunsharing.component.test.TestType" %>
 <%@ page import="java.util.concurrent.ExecutorService" %>
 <%@ page import="java.util.concurrent.Executors" %>
+<%@ page import="com.sunsharing.component.test.Test2" %>
 <%--
   Created by IntelliJ IDEA.
   User: criss
@@ -17,19 +18,26 @@
 </head>
 <body>
     <%
-        ExecutorService service = Executors.newCachedThreadPool();
-        for(int i=0;i<100;i++)
+//        ExecutorService service = Executors.newCachedThreadPool();
+//        for(int i=0;i<100;i++)
+//        {
+//            final int k = i;
+//            service.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    TestType test = ServiceContext.getBean(TestType.class);
+//                    test.testString(k+"","2");
+//                }
+//            });
+//        }
+        try
         {
-            final int k = i;
-            service.execute(new Runnable() {
-                @Override
-                public void run() {
-                    TestType test = ServiceContext.getBean(TestType.class);
-                    test.testString(k+"","2");
-                }
-            });
+        Test2 test = ServiceContext.getBean(Test2.class);
+        test.sayHello("abcd");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
-
     %>
 </body>
 </html>

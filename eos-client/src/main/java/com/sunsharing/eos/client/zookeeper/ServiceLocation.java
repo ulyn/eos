@@ -3,6 +3,7 @@ package com.sunsharing.eos.client.zookeeper;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import org.apache.log4j.Logger;
@@ -108,6 +109,13 @@ public class ServiceLocation {
      * @throws Exception
      */
     public synchronized void updateEosServices(String eosId) throws Exception {
+        if(!StringUtils.isBlank(SysProp.eosFilter))
+        {
+            if(!eosId.startsWith(SysProp.eosFilter))
+            {
+                return;
+            }
+        }
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         List<String> onlineServices = utils.getChildren(PathConstant.SERVICE_STATE+"/"+eosId,true);
         List<String> realOnline = new ArrayList<String>();
@@ -142,6 +150,13 @@ public class ServiceLocation {
      * @throws Exception
      */
     public synchronized void addEos(String eosId) throws Exception {
+        if(!StringUtils.isBlank(SysProp.eosFilter))
+        {
+            if(!eosId.startsWith(SysProp.eosFilter))
+            {
+                return;
+            }
+        }
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         //判断EOS是否在线
         boolean isonline = utils.isExists(PathConstant.EOS_STATE + "/" + eosId,true);
@@ -174,6 +189,13 @@ public class ServiceLocation {
      * @throws Exception
      */
     public synchronized void removeEos(String eosId) throws Exception {
+        if(!StringUtils.isBlank(SysProp.eosFilter))
+        {
+            if(!eosId.startsWith(SysProp.eosFilter))
+            {
+                return;
+            }
+        }
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         //判断EOS是否在线
         boolean isonline = utils.isExists(PathConstant.EOS_STATE + "/" + eosId,true);

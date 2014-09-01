@@ -57,6 +57,9 @@ public class SysProp {
     @ParamField(name = "use_mock", required = false)
     public static boolean use_mock = false;
 
+    @ParamField(name = "eos_filter", required = false)
+    public static String eosFilter = "";
+
 
     static Map<String, String> debugServerIpMap = null;
 

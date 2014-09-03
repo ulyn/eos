@@ -17,7 +17,6 @@
 package com.sunsharing.eos.common.rpc.protocol;
 
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.serialize.ObjectInput;
 import com.sunsharing.eos.common.serialize.ObjectOutput;
 import com.sunsharing.eos.common.serialize.Serialization;

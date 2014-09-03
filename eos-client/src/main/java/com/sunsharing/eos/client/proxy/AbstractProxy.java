@@ -25,7 +25,7 @@ import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.rpc.RpcInvocation;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
@@ -180,7 +180,7 @@ public abstract class AbstractProxy implements ClientProxy {
      * @throws Throwable
      */
     private Object getResult(RequestPro pro, boolean isMock, Class retType, ResponsePro responsePro) throws Throwable {
-        Result rpcResult = responsePro.toResult();
+        RpcResult rpcResult = responsePro.toResult();
         if (responsePro.getStatus() == Constants.STATUS_ERROR) {
             if (rpcResult.hasException()) {
                 throw rpcResult.getException();

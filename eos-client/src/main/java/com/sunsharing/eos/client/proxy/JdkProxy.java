@@ -17,11 +17,8 @@
 package com.sunsharing.eos.client.proxy;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
-import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
+import com.sunsharing.eos.common.rpc.RpcInvocation;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

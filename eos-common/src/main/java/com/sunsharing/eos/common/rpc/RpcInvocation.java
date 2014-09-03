@@ -14,11 +14,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc.impl;
+package com.sunsharing.eos.common.rpc;
 
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.utils.StringUtils;
 
 import java.io.Serializable;
@@ -35,14 +34,13 @@ import java.util.Arrays;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class RpcInvocation implements Invocation, Serializable {
+public class RpcInvocation implements Serializable {
 
     private String methodName;
     private String[] parameterTypes;
     private Object[] arguments;
     private String mock;
 
-    @Override
     public String getMethodName() {
         return methodName;
     }
@@ -51,7 +49,6 @@ public class RpcInvocation implements Invocation, Serializable {
         this.methodName = methodName;
     }
 
-    @Override
     public String[] getParameterTypes() {
         return parameterTypes;
     }
@@ -66,7 +63,6 @@ public class RpcInvocation implements Invocation, Serializable {
 
     }
 
-    @Override
     public Object[] getArguments() {
         return arguments;
     }

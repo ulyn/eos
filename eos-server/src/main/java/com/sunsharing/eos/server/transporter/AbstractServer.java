@@ -21,10 +21,9 @@ import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.rpc.RpcResult;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -73,8 +72,8 @@ public abstract class AbstractServer implements RpcServer {
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
-    public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {
-        logger.error(serviceId+"::"+invocation+"::"+rpcContext);
+    public RpcResult call(String serviceId, RpcInvocation invocation, RpcContext rpcContext) {
+        logger.info(serviceId + "::" + invocation + "::" + rpcContext);
         Object obj = this.serviceEngine.get(serviceId);
         ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
         RpcResult result = new RpcResult();

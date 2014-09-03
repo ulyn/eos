@@ -35,7 +35,7 @@ public class RpcContext implements Serializable {
     //请求者地址
     private String remoteAddr = "";
     //userAgent,表明是java调用的还是前端js调用
-    private String userAgent = "de";
+    private String userAgent = "java_eos_client";
     //额外参数map
     private Map attributeMap = new HashMap();
 

@@ -14,10 +14,8 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc.impl;
+package com.sunsharing.eos.common.rpc;
 
-
-import com.sunsharing.eos.common.rpc.Result;
 
 import java.io.Serializable;
 
@@ -32,7 +30,7 @@ import java.io.Serializable;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class RpcResult implements Result, Serializable {
+public class RpcResult implements Serializable {
     private static final long serialVersionUID = -6925924956850004727L;
 
     private Object result;
@@ -49,7 +47,6 @@ public class RpcResult implements Result, Serializable {
         this.exception = exception;
     }
 
-    @Override
     public Object getValue() {
         return result;
     }
@@ -58,7 +55,6 @@ public class RpcResult implements Result, Serializable {
         this.result = value;
     }
 
-    @Override
     public Throwable getException() {
         return exception;
     }
@@ -67,12 +63,10 @@ public class RpcResult implements Result, Serializable {
         this.exception = e;
     }
 
-    @Override
     public boolean hasException() {
         return exception != null;
     }
 
-    @Override
     public Object recreate() throws Throwable {
         if (exception != null) {
             throw exception;

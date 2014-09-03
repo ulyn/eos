@@ -16,7 +16,7 @@
  */
 
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.rpc.RpcInvocation;
 import com.sunsharing.eos.common.serialize.ObjectInput;
 import com.sunsharing.eos.common.serialize.ObjectOutput;
 import com.sunsharing.eos.common.serialize.Serialization;
@@ -24,9 +24,7 @@ import com.sunsharing.eos.common.serialize.SerializationFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * <pre></pre>

@@ -1,14 +1,11 @@
 package com.sunsharing.eos.manager.agent.transporter.netty;
 
-import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
 import com.sunsharing.eos.manager.agent.process.MainControl;
-import com.sunsharing.eos.manager.agent.process.ProcessChain;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
@@ -32,7 +29,7 @@ public class MsgHandler extends SimpleChannelHandler {
         final ChannelHandlerContext content = ctx;
         if(basePro instanceof HeartPro)
         {
-            logger.debug("收到心跳请求...");
+            logger.info("收到心跳请求...");
             com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel sc = ServerCache.getChannel(ctx.getChannel());
             if(sc!=null)
             {
@@ -45,7 +42,7 @@ public class MsgHandler extends SimpleChannelHandler {
             ctx.getChannel().write(heart);
         }else if(basePro instanceof RequestPro)
         {
-            logger.debug("收到请求：" + basePro);
+            logger.info("收到请求：" + basePro);
             service.execute(new Runnable() {
                 @Override
                 public void run() {

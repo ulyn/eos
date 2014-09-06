@@ -66,5 +66,14 @@ public class RpcContext implements Serializable {
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
+
+    @Override
+    public String toString() {
+        return "RpcContext{" +
+                "remoteAddr='" + remoteAddr + '\'' +
+                ", userAgent='" + userAgent + '\'' +
+                ", attributeMap=" + attributeMap +
+                '}';
+    }
 }
 

@@ -17,7 +17,8 @@
 package com.sunsharing.eos.common.rpc.protocol;
 
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.RpcResult;
+import com.sunsharing.eos.common.rpc.Result;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -59,7 +60,7 @@ public class ResponsePro extends BaseProtocol {
         this.resultBytes = resultBytes;
     }
 
-    public void setResult(RpcResult result) {
+    public void setResult(Result result) {
         if (result.hasException()) {
             setStatus(Constants.STATUS_ERROR);
         }
@@ -75,11 +76,11 @@ public class ResponsePro extends BaseProtocol {
         setResult(new RpcResult(throwable));
     }
 
-    public RpcResult toResult() throws Exception {
+    public Result toResult() throws Exception {
         if (resultBytes == null || resultBytes.length == 0) {
             return null;
         }
-        RpcResult result = serializationBytesToObject(resultBytes, RpcResult.class);
+        Result result = serializationBytesToObject(resultBytes, RpcResult.class);
         return result;
     }
 

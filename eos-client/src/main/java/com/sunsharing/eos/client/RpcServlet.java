@@ -24,7 +24,7 @@ import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.RpcInvocation;
+import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;

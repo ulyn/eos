@@ -19,11 +19,12 @@ package com.sunsharing.eos.manager.agent.process;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.RpcInvocation;
-import com.sunsharing.eos.common.rpc.RpcResult;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.manager.sys.SysProp;
 import com.sunsharing.eos.manager.zookeeper.ServiceCache;
@@ -51,7 +52,7 @@ public class MockProcess implements Process {
             //开发模式，支持模拟
             String methodName = null;
             try {
-                RpcInvocation invocation = req.toInvocation();
+                Invocation invocation = req.toInvocation();
                 methodName = invocation.getMethodName();
 //                retType = invocation.getRetType();
             } catch (Exception e) {

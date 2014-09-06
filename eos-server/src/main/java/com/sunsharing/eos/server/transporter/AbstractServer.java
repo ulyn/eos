@@ -21,11 +21,13 @@ import com.sunsharing.eos.common.aop.AdviceResult;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.RpcResult;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +74,8 @@ public abstract class AbstractServer implements RpcServer {
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
-    public RpcResult call(String serviceId, RpcInvocation invocation, RpcContext rpcContext) {
-        logger.info(serviceId + "::" + invocation + "::" + rpcContext);
+    public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {
+        logger.error(serviceId + "::" + invocation + "::" + rpcContext);
         Object obj = this.serviceEngine.get(serviceId);
         ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
         RpcResult result = new RpcResult();
@@ -113,6 +115,9 @@ public abstract class AbstractServer implements RpcServer {
                 String errorMsg = "has no these class serviceId：" + serviceId + " - " + invocation.getMethodName();
                 logger.error(errorMsg, e);
                 result.setException(new IllegalArgumentException(errorMsg, e));
+            } catch (InvocationTargetException e) {
+                logger.error("处理服务InvocationTargetException异常", e);
+                result.setException(e.getTargetException());
             } catch (Exception th) {
                 String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + invocation.getMethodName();
                 logger.error(errorMsg, th);

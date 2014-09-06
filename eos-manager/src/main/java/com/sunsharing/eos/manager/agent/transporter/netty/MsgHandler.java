@@ -29,7 +29,7 @@ public class MsgHandler extends SimpleChannelHandler {
         final ChannelHandlerContext content = ctx;
         if(basePro instanceof HeartPro)
         {
-            logger.info("收到心跳请求...");
+            logger.debug("收到心跳请求...");
             com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel sc = ServerCache.getChannel(ctx.getChannel());
             if(sc!=null)
             {

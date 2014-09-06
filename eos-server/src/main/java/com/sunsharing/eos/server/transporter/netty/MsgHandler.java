@@ -1,9 +1,10 @@
 package com.sunsharing.eos.server.transporter.netty;
 
+import com.sunsharing.eos.common.rpc.Invocation;
+import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcContext;
-import com.sunsharing.eos.common.rpc.RpcInvocation;
-import com.sunsharing.eos.common.rpc.RpcResult;
 import com.sunsharing.eos.common.rpc.RpcServer;
+import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
@@ -54,9 +55,9 @@ public class MsgHandler extends SimpleChannelHandler {
                 public void run() {
                     RequestPro req = (RequestPro) basePro;
                     try {
-                        RpcInvocation inv = req.toInvocation();
+                        Invocation inv = req.toInvocation();
                         RpcContext rpcContext = req.toRpcContext();
-                        RpcResult result = rpcServer.call(req.getServiceId(), inv, rpcContext);
+                        Result result = rpcServer.call(req.getServiceId(), inv, rpcContext);
 
                         ResponsePro responsePro = new ResponsePro();
                         responsePro.setSerialization(basePro.getSerialization());

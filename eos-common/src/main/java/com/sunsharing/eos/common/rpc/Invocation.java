@@ -1,11 +1,11 @@
 /**
- * @(#)RpcServer
+ * @(#)Invocation
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-22 下午3:07
+ *<br> 14-1-22 下午9:34
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -15,8 +15,6 @@
  *————————————————————————————————
  */
 package com.sunsharing.eos.common.rpc;
-
-import com.sunsharing.eos.common.config.ServiceConfig;
 
 /**
  * <pre></pre>
@@ -29,17 +27,36 @@ import com.sunsharing.eos.common.config.ServiceConfig;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface RpcServer {
-    int getPort();
+public interface Invocation {
 
-    void register(Object impl, ServiceConfig config);
+    //迁移到协议头，此处不再浪费数据空间
+//    String getId();
 
-    Result call(String serviceId, Invocation invocation, RpcContext rpcContext);
+    /**
+     * 获取方法名
+     *
+     * @return
+     */
+    String getMethodName();
 
-    boolean isRunning();
+    /**
+     * 获取方法入参类型数组，使用simpleName
+     *
+     * @return
+     */
+    String[] getParameterTypes();
 
-    void stop();
+    /**
+     * 获取参数值
+     *
+     * @return
+     */
+    Object[] getArguments();
 
-    void start();
+    /**
+     * 获取模拟的指定类型
+     *
+     * @return
+     */
+    String getMock();
 }
-

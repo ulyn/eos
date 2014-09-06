@@ -1,5 +1,5 @@
 /**
- * @(#)RpcServer
+ * @(#)Result
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
@@ -16,8 +16,6 @@
  */
 package com.sunsharing.eos.common.rpc;
 
-import com.sunsharing.eos.common.config.ServiceConfig;
-
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -29,17 +27,44 @@ import com.sunsharing.eos.common.config.ServiceConfig;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface RpcServer {
-    int getPort();
+public interface Result {
 
-    void register(Object impl, ServiceConfig config);
+    /**
+     * Get invoke result.
+     *
+     * @return result. if no result return null.
+     */
+    Object getValue();
 
-    Result call(String serviceId, Invocation invocation, RpcContext rpcContext);
+    /**
+     * Get exception.
+     *
+     * @return exception. if no exception return null.
+     */
+    Throwable getException();
 
-    boolean isRunning();
+    /**
+     * Has exception.
+     *
+     * @return has exception.
+     */
+    boolean hasException();
 
-    void stop();
+    /**
+     * Recreate.
+     * <p/>
+     * <code>
+     * if (hasException()) {
+     * throw getException();
+     * } else {
+     * return getValue();
+     * }
+     * </code>
+     *
+     * @return result.
+     * @throws if has exception throw it.
+     */
+    Object recreate() throws Throwable;
 
-    void start();
+
 }
-

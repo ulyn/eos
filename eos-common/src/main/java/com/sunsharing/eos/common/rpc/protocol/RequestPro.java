@@ -16,8 +16,9 @@
  */
 package com.sunsharing.eos.common.rpc.protocol;
 
+import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.RpcContext;
-import com.sunsharing.eos.common.rpc.RpcInvocation;
+import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -114,7 +115,7 @@ public class RequestPro extends BaseProtocol {
      *
      * @param invocation
      */
-    public void setInvocation(RpcInvocation invocation) throws Exception {
+    public void setInvocation(Invocation invocation) throws Exception {
         setInvocationBytes(getSerializationBytes(invocation));
     }
 
@@ -124,7 +125,7 @@ public class RequestPro extends BaseProtocol {
      * @return
      * @throws Exception
      */
-    public RpcInvocation toInvocation() throws Exception {
+    public Invocation toInvocation() throws Exception {
         return serializationBytesToObject(invocationBytes, RpcInvocation.class);
     }
 

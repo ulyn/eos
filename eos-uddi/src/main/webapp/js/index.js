@@ -382,7 +382,33 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
 //        });
         location.href = '/downloadjar.do?appId='+appId;
     }
-
+    $scope.publish = function () {
+        $http({
+            url: '/getNpmVersion.do?appId=' + appId,
+            method: "get"
+        }).success(function (data, status, headers, config) {
+                if (data.status) {
+                    var version = data.data.v;
+                    var name = data.data.name;
+                    var tip = "当前cnpm版本(" + name + " " + (version == "" ? "未发布" : version) + "),确定发布新版本吗？";
+                    if (confirm(tip)) {
+                        $http({
+                            url: '/publishCNPM.do?appId=' + appId + "&v=" + version,
+                            method: "get"
+                        }).success(function (data) {
+                                if (data.status) {
+                                    //success
+                                    alert("发布服务成功：" + data.data.v);
+                                } else {
+                                    alert("发布服务失败：" + data.msg);
+                                }
+                            });
+                    }
+                } else {
+                    alert("查询版本异常:" + data.msg);
+                }
+            });
+    }
 });
 
 indexApp.controller('serviceAdd', function($scope, $routeParams,$http) {

@@ -23,6 +23,7 @@ public class TService {
     private List<TServiceVersion> versions = new ArrayList<TServiceVersion>();
 
     @OneToMany(mappedBy="service",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
+    @OrderBy(value = "version desc ")
     public List<TServiceVersion> getVersions() {
         return versions;
     }

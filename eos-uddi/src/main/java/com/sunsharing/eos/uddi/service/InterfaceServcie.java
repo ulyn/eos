@@ -100,7 +100,7 @@ public class InterfaceServcie {
         }
     }
     //添加入参的注解
-    public String[] addParams(String[] lines) throws Exception
+    public String[] addParams(String[] lines,Map params) throws Exception
     {
         boolean start = false;
         boolean functionstart = false;
@@ -140,6 +140,17 @@ public class InterfaceServcie {
                     String str = functions.toString();
                     System.out.println(str);
                     int startIndex = str.indexOf("(");
+                    int m = 0;
+                    for(m=startIndex;m>0;m--)
+                    {
+                        if(str.charAt(m)==' ')
+                        {
+                            break;
+                        }
+                    }
+                    String functionName = str.substring(m,startIndex);
+
+
                     int endIndex = str.indexOf(")");
                     String pars = str.substring(startIndex+1,endIndex);
                     String result = "";
@@ -163,7 +174,9 @@ public class InterfaceServcie {
                         result = result.substring(0,result.length()-1);
                     }
                     parMap.put("result",result);
+                    params.put(functionName,result);
                     funs.add(parMap);
+                    //params.add(params);
                     parMap = new HashMap();
                     functions = new StringBuffer();
                 }

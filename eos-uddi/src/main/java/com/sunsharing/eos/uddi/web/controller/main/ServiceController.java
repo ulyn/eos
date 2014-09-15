@@ -119,7 +119,8 @@ public class ServiceController {
                         String[] lines = str2.toArray(new String[]{});
                         InterfaceServcie service = new InterfaceServcie();
                         service.addAppCode(appcode, lines);
-                        lines = service.addParams(lines);
+                        Map functionMap = new HashMap();
+                        lines = service.addParams(lines,functionMap);
                         for (int i = 0; i < lines.length; i++) {
                             //System.out.println(lines[i]);
                         }
@@ -140,7 +141,7 @@ public class ServiceController {
                             w.write("\n".getBytes("UTF-8"));
                         }
                         TUser u = (TUser) request.getSession().getAttribute("user");
-                        this.service.saveService(servicename, appId, module, str2.toArray(new String[]{}), u.getUserId());
+                        this.service.saveService(servicename, appId, module, str2.toArray(new String[]{}), u.getUserId(),functionMap);
                     } catch (Exception e) {
                         logger.error("", e);
                         //ResponseHelper.printOut(response, false, "上传JAVA文件出错", "");

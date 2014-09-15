@@ -74,7 +74,7 @@ public class Service {
         }
     }
 
-    public void saveService(String servicename, String appId, String module, String[] lines, int userId) throws Exception {
+    public void saveService(String servicename, String appId, String module, String[] lines, int userId,Map functionMap) throws Exception {
         TApp app = appDao.get(new Integer(appId));
 
         InterfaceServcie s = new InterfaceServcie();
@@ -129,6 +129,7 @@ public class Service {
             TMethod me = new TMethod();
             me.setVersion(v);
             me.setMethodName(fun);
+            me.setParams((String)functionMap.get(fun));
             Map ll = (Map) m.get(fun);
             Collection tmp = ll.values();
             me.setMockResult(JSONArray.toJSONString(tmp));

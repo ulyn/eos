@@ -12,6 +12,7 @@ public class TMethod {
     private TServiceVersion version;
     private String methodName;
     private String mockResult;
+    private String params;
 
     @Id
     @Column(name = "METHOD_ID")
@@ -34,6 +35,15 @@ public class TMethod {
         this.version = version;
     }
 
+    @Basic
+    @Column(name = "PARAMS")
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
+    }
 
     @Basic
     @Column(name = "METHOD_NAME")

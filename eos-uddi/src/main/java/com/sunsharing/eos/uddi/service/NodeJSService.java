@@ -249,8 +249,7 @@ public class NodeJSService {
             if (methodName.startsWith("void ")) {
                 methodName = methodName.replace("void ", "");
             }
-            //todo 参数以逗号隔开的字符串
-            String paramsStr = "";
+            String paramsStr = method.getParams();
             sb.append("    " + service.getServiceCode() + ".prototype." + methodName + " = " +
                     "function(" + (StringUtils.isBlank(paramsStr) ? "" : paramsStr + ",") + "successFunc,errorFunc){\n" +
                     "        var req = this._createReqPro(\"" + methodName + "\"" + (StringUtils.isBlank(paramsStr) ? "" : "," + paramsStr) + ");\n" +

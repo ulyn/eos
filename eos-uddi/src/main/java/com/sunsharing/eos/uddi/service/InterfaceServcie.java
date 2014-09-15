@@ -174,7 +174,7 @@ public class InterfaceServcie {
                         result = result.substring(0,result.length()-1);
                     }
                     parMap.put("result",result);
-                    params.put(functionName,result);
+                    params.put(functionName.trim(), StringUtils.isBlank(result) ? "" : result.replaceAll("\"", ""));
                     funs.add(parMap);
                     //params.add(params);
                     parMap = new HashMap();

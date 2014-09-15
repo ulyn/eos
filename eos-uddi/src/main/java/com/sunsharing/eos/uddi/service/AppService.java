@@ -5,6 +5,8 @@ import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.sys.SysInit;
+import com.sunsharing.eos.uddi.sys.WindowsExec;
+import org.apache.log4j.Logger;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
 import org.hibernate.SessionFactory;
@@ -27,7 +29,7 @@ import java.util.List;
 @Service
 @Transactional
 public class AppService {
-
+    Logger logger = Logger.getLogger(AppService.class);
     @Autowired
     JdbcTemplate jdbc;
 
@@ -119,18 +121,19 @@ public class AppService {
             for(TService ser:services)
             {
                 List<TServiceVersion> versions = ser.getVersions();
-                String max = "";
-                TServiceVersion maxVersion = null;
-                for(TServiceVersion v:versions)
-                {
-                    if(v.getStatus().equals("1"))
-                    {
-                        if(v.getVersion().compareTo(max)>0)
-                        {
-                            maxVersion = v;
-                        }
-                    }
-                }
+//                String max = "";
+                TServiceVersion maxVersion = versions.get(0);
+//                for(TServiceVersion v:versions)
+//                {
+//                    if(v.getStatus().equals("1"))
+//                    {
+//                        if(v.getVersion().compareTo(max)>0)
+//                        {
+//                            maxVersion = v;
+//
+//                        }
+//                    }
+//                }
                 if(maxVersion!=null)
                 {
                     String sourceApp = SysInit.path+ File.separator+"interface"+
@@ -185,11 +188,11 @@ public class AppService {
         //执行编译打包
         run(dirPath + File.separator + "compile.bat " + SysInit.path.substring(0,SysInit.path.length()-6)+"lib");
         run(SysInit.path+ File.separator+"myjar.bat "+dirId+" "+dirPath+File.separator+dirId+".jar");
-        new File(dirPath + File.separator + "compile.bat ").delete();
+//        new File(dirPath + File.separator + "compile.bat ").delete();
     }
     private void runNoExist(String cmd)
     {
-        System.out.println(cmd);
+        logger.info("执行cmd命令：" + cmd);
         Runtime run = Runtime.getRuntime();//返回与当前 Java 应用程序相关的运行时对象
         try {
             Process p = run.exec(cmd);// 启动另一个进程来执行命令
@@ -201,26 +204,29 @@ public class AppService {
 
     private void run(String cmd)
     {
-        System.out.println(cmd);
-        Runtime run = Runtime.getRuntime();//返回与当前 Java 应用程序相关的运行时对象
-        try {
-            Process p = run.exec(cmd);// 启动另一个进程来执行命令
-            BufferedInputStream in = new BufferedInputStream(p.getInputStream());
-            BufferedReader inBr = new BufferedReader(new InputStreamReader(in));
-            String lineStr;
-            while ((lineStr = inBr.readLine()) != null)
-                //获得命令执行后在控制台的输出信息
-                System.out.println(lineStr);// 打印输出信息
-            //检查命令是否执行失败。
-            if (p.waitFor() != 0) {
-                if (p.exitValue() == 1)//p.exitValue()==0表示正常结束，1：非正常结束
-                    System.err.println("命令执行失败!");
-            }
-            inBr.close();
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        logger.info("执行cmd命令：" + cmd);
+        WindowsExec exec = new WindowsExec();
+        String msg = exec.run(cmd);
+        logger.info("执行cmd命令返回结果：" + msg);
+//        Runtime run = Runtime.getRuntime();//返回与当前 Java 应用程序相关的运行时对象
+//        try {
+//            Process p = run.exec(cmd);// 启动另一个进程来执行命令
+//            BufferedInputStream in = new BufferedInputStream(p.getInputStream());
+//            BufferedReader inBr = new BufferedReader(new InputStreamReader(in));
+//            String lineStr;
+//            while ((lineStr = inBr.readLine()) != null)
+//                //获得命令执行后在控制台的输出信息
+//                System.out.println(lineStr);// 打印输出信息
+//            //检查命令是否执行失败。
+//            if (p.waitFor() != 0) {
+//                if (p.exitValue() == 1)//p.exitValue()==0表示正常结束，1：非正常结束
+//                    System.err.println("命令执行失败!");
+//            }
+//            inBr.close();
+//            in.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private  String getPakage(File source)

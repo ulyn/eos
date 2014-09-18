@@ -11,8 +11,8 @@ public class FastJsonObjectInput implements ObjectInput {
 
     private final BufferedReader reader;
 
-    public FastJsonObjectInput(InputStream in) {
-        this(new InputStreamReader(in));
+    public FastJsonObjectInput(InputStream in) throws UnsupportedEncodingException {
+        this(new InputStreamReader(in, "utf-8"));
     }
 
     public FastJsonObjectInput(Reader reader) {

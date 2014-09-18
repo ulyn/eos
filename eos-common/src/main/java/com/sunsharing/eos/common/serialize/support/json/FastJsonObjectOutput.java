@@ -11,8 +11,8 @@ public class FastJsonObjectOutput implements com.sunsharing.eos.common.serialize
 
     private final PrintWriter writer;
 
-    public FastJsonObjectOutput(OutputStream out) {
-        this(new OutputStreamWriter(out));
+    public FastJsonObjectOutput(OutputStream out) throws UnsupportedEncodingException {
+        this(new OutputStreamWriter(out, "utf-8"));
     }
 
     public FastJsonObjectOutput(Writer writer) {

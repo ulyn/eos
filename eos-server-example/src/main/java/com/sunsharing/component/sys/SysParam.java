@@ -1,5 +1,8 @@
 package com.sunsharing.component.sys;
 
+import com.sunsharing.eos.client.zookeeper.ClientConnectCallBack;
+import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
+import com.sunsharing.eos.server.zookeeper.ServerConnectCallBack;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -151,12 +154,7 @@ public class SysParam {
         }
     }
 	
-	/*
-	public static void main(String[] args) {
-		SysParam sysParam = new SysParam();
-		SysParam.setSysPath("D:\\Eclipse3.3\\workspace\\dragonspace\\SOAkage_CFGL\\web\\");
-		SysParam.init();
-		logger.info("" + SysParam.getConfigMapValue("cfgl.init"));
-	}*/
+
+
 	
 }

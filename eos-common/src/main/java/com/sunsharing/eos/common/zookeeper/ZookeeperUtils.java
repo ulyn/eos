@@ -47,7 +47,7 @@ public class ZookeeperUtils {
 //        return callBacks;
 //    }
 
-    public void addCallBack(ZookeeperCallBack callBack )
+    public synchronized void addCallBack(ZookeeperCallBack callBack )
     {
         boolean contains = false;
         for(Iterator iter = callBacks.iterator();iter.hasNext();)
@@ -62,6 +62,7 @@ public class ZookeeperUtils {
         {
             callBacks.add(callBack);
         }
+        logger.info("callBacksize:"+callBacks.size());
     }
 
 //    public void setCallBacks(List<ZookeeperCallBack> callBacks) {

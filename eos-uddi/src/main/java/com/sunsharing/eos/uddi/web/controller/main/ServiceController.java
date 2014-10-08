@@ -196,8 +196,12 @@ public class ServiceController {
         for (String key : m.keySet()) {
             String content = m.get(key)[0];
 
-            String status = key.split("_")[0];
-            String methodId = key.split("_")[1];
+//            String status = key.split("_")[0];
+//            String methodId = key.split("_")[1];
+            int i = key.lastIndexOf("_");
+            String status = key.substring(0, i);
+            String methodId = key.substring(i + 1);
+
             m2 = methodId;
             service.saveMethod(methodId, status, content);
         }

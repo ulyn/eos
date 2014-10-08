@@ -143,6 +143,7 @@ public class NodeJSService {
         createReadme(app, v, path, services, changeServices);
         createJs(services, path);
         createVersionCheckFile(path, services);
+        createMockConfigFile(path, services);
         return path;
     }
 
@@ -264,11 +265,26 @@ public class NodeJSService {
         StringBuilder sb = new StringBuilder();
         sb.append("module.exports = function(eos){\n" +
                 "    eos = eos || require(\"node-eos\");\n" +
+                "    var self = this;\n" +
+                "    var fs = require('fs');\n" +
+                "    var mockFileName = \"./config_mock.js\";\n" +
+                "    fs.exists(mockFileName, function (exists) {\n" +
+                "        if(exists){\n" +
+                "            self.mock = require(mockFileName);\n" +
+                "            fs.watchFile(mockFileName, function (curr, prev) {\n" +
+                "                console.log('change %s ,mtime is: ' + curr.mtime,mockFileName);\n" +
+                "                delete require.cache[require.resolve(mockFileName)];\n" +
+                "                self.mock = require(mockFileName);\n" +
+                "            });\n" +
+                "        }else{\n" +
+                "            throw new Error(\"mock config file is no found ,please check the path of \"+mockFileName+\" is exists\");\n" +
+                "        }\n" +
+                "    });" +
                 "    return {\n" +
                 "        eos:eos,\n");
         for (int i = 0, l = services.size(); i < l; ) {
             TService service = services.get(i);
-            sb.append("        " + service.getServiceCode() + ":require(\"./" + service.getServiceCode() + "\")(eos)");
+            sb.append("        " + service.getServiceCode() + ":require(\"./" + service.getServiceCode() + "\")(eos,self.mock)");
             i++;
             if (i < l) {
                 sb.append(",");
@@ -287,7 +303,7 @@ public class NodeJSService {
         sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
         sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
 
-        sb.append("module.exports = function(eos){\n" +
+        sb.append("module.exports = function(eos,mockConfig){\n" +
                 "    function " + service.getServiceCode() + "(){\n" +
                 "        eos.Service.call(this);\n" +
                 "        this.appId = \"" + serviceVersion.getAppCode() + "\";\n" +
@@ -319,15 +335,95 @@ public class NodeJSService {
                 methodName = methodName.replace("void ", "");
             }
             String paramsStr = method.getParams();
-            sb.append("    " + service.getServiceCode() + ".prototype." + methodName + " = " +
+            sb.append("    " + service.getServiceCode().trim() + ".prototype." + methodName.trim() + " = " +
                     "function(" + (StringUtils.isBlank(paramsStr) ? "" : paramsStr + ",") + "successFunc,errorFunc){\n" +
                     "        var req = this._createReqPro(\"" + methodName + "\"" + (StringUtils.isBlank(paramsStr) ? "" : "," + paramsStr) + ");\n" +
-                    "        eos.call(req,successFunc,errorFunc);\n" +
-                    "    }\n\n");
+                    "        eos.call(req,successFunc,errorFunc,mockConfig);\n" +
+                    "    }\n");
+            //增加paramKey的定义
+            sb.append("    " + service.getServiceCode().trim() + ".prototype." + methodName.trim() + ".paramKey = " + "[");
+            if (!StringUtils.isBlank(paramsStr)) {
+                String[] params = paramsStr.split(",");
+                for (String p : params) {
+                    sb.append("\"").append(p.trim()).append("\"").append(",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            sb.append("];\n\n");
         }
         sb.append("    return " + service.getServiceCode() + ";\n" +
                 "}");
         FileUtil.createFile(file, sb.toString(), "utf-8");
+    }
+
+    private void createMockConfigFile(String path, List<TService> services) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append("module.exports = {\n" +
+                "    mock:{\n");
+        for (TService service : services) {
+            TServiceVersion serviceVersion = service.getVersions().get(0);
+            sb.append("        " + service.getServiceCode()).append(":{\n");
+            for (TMethod method : serviceVersion.getMethods()) {
+                String methodName = method.getMethodName();
+                if (methodName.startsWith("void ")) {
+                    methodName = methodName.replace("void ", "");
+                }
+                sb.append("            " + methodName).append(":\"\", //");
+                JSONArray methodMockResult = JSON.parseArray(method.getMockResult());
+                if (methodMockResult.size() > 0) {
+                    for (int i = 0, l = methodMockResult.size(); i < l; i++) {
+                        JSONObject jo = methodMockResult.getJSONObject(i);
+                        sb.append(jo.getString("status"));
+                        sb.append(",");
+                    }
+                    sb.deleteCharAt(sb.lastIndexOf(","));
+                }
+                sb.append("\n");
+            }
+            int deleteIdx = sb.lastIndexOf(", //");
+            sb.deleteCharAt(deleteIdx);
+            sb.append("        },\n");
+        }
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        sb.append("    },\n" +
+                "    offlineData:{\n");
+        for (TService service : services) {
+            TServiceVersion serviceVersion = service.getVersions().get(0);
+            sb.append("        " + service.getServiceCode()).append(":{\n");
+            for (TMethod method : serviceVersion.getMethods()) {
+                String methodName = method.getMethodName();
+                if (methodName.startsWith("void ")) {
+                    methodName = methodName.replace("void ", "");
+                }
+                sb.append("            " + methodName).append(":{\n");
+                JSONArray methodMockResult = JSON.parseArray(method.getMockResult());
+                if (methodMockResult.size() > 0) {
+                    for (int i = 0, l = methodMockResult.size(); i < l; i++) {
+                        JSONObject jo = methodMockResult.getJSONObject(i);
+                        sb.append("                //" + jo.getString("desc"));
+                        sb.append("\n");
+                        sb.append("                " + jo.getString("status"));
+                        sb.append(":");
+                        String content = jo.getString("content") == null ? "null" : jo.getString("content").trim();
+                        if (!(content.startsWith("[") || content.startsWith("{"))) {
+//                            content = JSON.toJSONString(content);
+                        }
+                        sb.append(content);
+                        sb.append(",");
+                        sb.append("\n");
+                    }
+                    sb.deleteCharAt(sb.lastIndexOf(","));
+                }
+                sb.append("            },\n");
+            }
+            int deleteIdx = sb.lastIndexOf(",");
+            sb.deleteCharAt(deleteIdx);
+            sb.append("        },\n");
+        }
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        sb.append("    }\n" +
+                "}");
+        FileUtil.createFile(path + File.separator + "config_mock.js", sb.toString(), "utf-8");
     }
 }
 

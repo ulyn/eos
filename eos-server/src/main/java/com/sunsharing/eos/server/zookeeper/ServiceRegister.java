@@ -37,7 +37,7 @@ public class ServiceRegister {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);
-        utils.getCallBacks().add(new ServerConnectCallBack());
+        utils.addCallBack(new ServerConnectCallBack());
         //如果zookeeper没有启动，会同步重试，请用线程初始化
         utils.connect();
     }

@@ -2,6 +2,7 @@ package com.sunsharing.eos.server.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -36,18 +37,21 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
             List<ServiceConfig> serviceConfigs = ServiceContext.getServiceConfigList();
 
             for (ServiceConfig config : serviceConfigs) {
-                //你可以在这里注册服务下面是示例
-                JSONObject obj = new JSONObject();
-                obj.put("appId", SysProp.appId);
-                obj.put("serviceId", config.getId());
-                obj.put("version", config.getVersion());
-                obj.put("serialization", config.getSerialization());
-                obj.put("transporter", config.getTransporter());
-                obj.put("timeout", config.getTimeout());
-                obj.put("port", SysProp.nettyServerPort);
-                obj.put("ip", SysProp.localIp);
-                obj.put("real_ip",getRealIp());
-                serviceRegister.registerService(SysProp.eosId, obj.toJSONString());
+                if(StringUtils.isBlank(config.getAppId()))
+                {
+                    //你可以在这里注册服务下面是示例
+                    JSONObject obj = new JSONObject();
+                    obj.put("appId", SysProp.appId);
+                    obj.put("serviceId", config.getId());
+                    obj.put("version", config.getVersion());
+                    obj.put("serialization", config.getSerialization());
+                    obj.put("transporter", config.getTransporter());
+                    obj.put("timeout", config.getTimeout());
+                    obj.put("port", SysProp.nettyServerPort);
+                    obj.put("ip", SysProp.localIp);
+                    obj.put("real_ip",getRealIp());
+                    serviceRegister.registerService(SysProp.eosId, obj.toJSONString());
+                }
             }
 
 

@@ -5,6 +5,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -21,7 +22,7 @@ public class ZookeeperUtils {
 
     protected ZooKeeper zookeeper;
 
-    protected List<ZookeeperCallBack> callBacks=new ArrayList<ZookeeperCallBack>();
+    protected List<ZookeeperCallBack> callBacks= new ArrayList<ZookeeperCallBack>();
 
     protected String zooKeeperIP;
     protected int zooKeeperPort;
@@ -42,13 +43,31 @@ public class ZookeeperUtils {
         this.zooKeeperIP = zooKeeperIP;
     }
 
-    public List<ZookeeperCallBack> getCallBacks() {
-        return callBacks;
+//    public List<ZookeeperCallBack> getCallBacks() {
+//        return callBacks;
+//    }
+
+    public synchronized void addCallBack(ZookeeperCallBack callBack )
+    {
+        boolean contains = false;
+        for(Iterator iter = callBacks.iterator();iter.hasNext();)
+        {
+            ZookeeperCallBack call = (ZookeeperCallBack)iter.next();
+            if(call.getClass().getName().equals(callBack.getClass().getName()))
+            {
+                contains = true;
+            }
+        }
+        if(!contains)
+        {
+            callBacks.add(callBack);
+        }
+        logger.info("callBacksize:"+callBacks.size());
     }
 
-    public void setCallBacks(List<ZookeeperCallBack> callBacks) {
-        this.callBacks = callBacks;
-    }
+//    public void setCallBacks(List<ZookeeperCallBack> callBacks) {
+//        this.callBacks = callBacks;
+//    }
 
     private ZookeeperUtils()
     {
@@ -258,11 +277,13 @@ public class ZookeeperUtils {
                 //连接成功
                 if(callBacks!=null)
                 {
-                    for(ZookeeperCallBack callBack:callBacks)
+                    synchronized (callBacks)
                     {
-                        callBack.afterConnect(event);
+                        for(ZookeeperCallBack callBack:callBacks)
+                        {
+                            callBack.afterConnect(event);
+                        }
                     }
-
                 }
             } else if(event.getState() == Event.KeeperState.Expired) {//注意KeeperState的Expired枚举值
                 connected =false;

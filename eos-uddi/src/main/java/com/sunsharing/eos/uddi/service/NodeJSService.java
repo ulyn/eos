@@ -266,20 +266,23 @@ public class NodeJSService {
         sb.append("module.exports = function(eos){\n" +
                 "    eos = eos || require(\"node-eos\");\n" +
                 "    var self = this;\n" +
-                "    var fs = require('fs');\n" +
-                "    var mockFileName = \"./config_mock.js\";\n" +
-                "    fs.exists(mockFileName, function (exists) {\n" +
+                "    if(eos.config.use_mock){\n" +
+                "        var fs = require('fs');\n" +
+                "        var path = require('path');\n" +
+                "        var mockFileName = path.resolve(__dirname, './config_mock.js');\n" +
+                "        var exists = fs.existsSync(mockFileName);\n" +
                 "        if(exists){\n" +
                 "            self.mock = require(mockFileName);\n" +
                 "            fs.watchFile(mockFileName, function (curr, prev) {\n" +
                 "                console.log('change %s ,mtime is: ' + curr.mtime,mockFileName);\n" +
                 "                delete require.cache[require.resolve(mockFileName)];\n" +
                 "                self.mock = require(mockFileName);\n" +
+                "                console.info(\"reload mock config finish:\"+mockFileName);\n" +
                 "            });\n" +
                 "        }else{\n" +
-                "            throw new Error(\"mock config file is no found ,please check the path of \"+mockFileName+\" is exists\");\n" +
+                "            console.warn(\"mock config file is no found ,please check the path of \"+mockFileName+\" is exists\");\n" +
                 "        }\n" +
-                "    });" +
+                "    };\n" +
                 "    return {\n" +
                 "        eos:eos,\n");
         for (int i = 0, l = services.size(); i < l; ) {

@@ -266,28 +266,29 @@ public class NodeJSService {
         sb.append("module.exports = function(eos){\n" +
                 "    eos = eos || require(\"node-eos\");\n" +
                 "    var self = this;\n" +
+                "    self.cache = {};\n" +
                 "    if(eos.config.use_mock){\n" +
                 "        var fs = require('fs');\n" +
                 "        var path = require('path');\n" +
                 "        var mockFileName = path.resolve(__dirname, './config_mock.js');\n" +
                 "        var exists = fs.existsSync(mockFileName);\n" +
                 "        if(exists){\n" +
-                "            self.mock = require(mockFileName);\n" +
+                "            self.cache.mockConfig = require(mockFileName);\n" +
                 "            fs.watchFile(mockFileName, function (curr, prev) {\n" +
                 "                console.log('change %s ,mtime is: ' + curr.mtime,mockFileName);\n" +
                 "                delete require.cache[require.resolve(mockFileName)];\n" +
-                "                self.mock = require(mockFileName);\n" +
+                "                self.cache.mockConfig = require(mockFileName);\n" +
                 "                console.info(\"reload mock config finish:\"+mockFileName);\n" +
                 "            });\n" +
                 "        }else{\n" +
                 "            console.warn(\"mock config file is no found ,please check the path of \"+mockFileName+\" is exists\");\n" +
                 "        }\n" +
-                "    };\n" +
+                "    }\n" +
                 "    return {\n" +
                 "        eos:eos,\n");
         for (int i = 0, l = services.size(); i < l; ) {
             TService service = services.get(i);
-            sb.append("        " + service.getServiceCode() + ":require(\"./" + service.getServiceCode() + "\")(eos,self.mock)");
+            sb.append("        " + service.getServiceCode() + ":require(\"./" + service.getServiceCode() + "\")(eos,self.cache)");
             i++;
             if (i < l) {
                 sb.append(",");
@@ -306,7 +307,7 @@ public class NodeJSService {
         sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
         sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
 
-        sb.append("module.exports = function(eos,mockConfig){\n" +
+        sb.append("module.exports = function(eos,cache){\n" +
                 "    function " + service.getServiceCode() + "(){\n" +
                 "        eos.Service.call(this);\n" +
                 "        this.appId = \"" + serviceVersion.getAppCode() + "\";\n" +
@@ -339,9 +340,9 @@ public class NodeJSService {
             }
             String paramsStr = method.getParams();
             sb.append("    " + service.getServiceCode().trim() + ".prototype." + methodName.trim() + " = " +
-                    "function(" + (StringUtils.isBlank(paramsStr) ? "" : paramsStr + ",") + "successFunc,errorFunc){\n" +
-                    "        var req = this._createReqPro(\"" + methodName + "\"" + (StringUtils.isBlank(paramsStr) ? "" : "," + paramsStr) + ");\n" +
-                    "        eos.call(req,successFunc,errorFunc,mockConfig);\n" +
+                    "function(" + (StringUtils.isBlank(paramsStr) ? "" : paramsStr + ",") + "successFunc,errorFunc,mock){\n" +
+                    "        var req = this._createReqPro(\"" + methodName + "\",mock" + (StringUtils.isBlank(paramsStr) ? "" : "," + paramsStr) + ");\n" +
+                    "        eos.callRemote(req,successFunc,errorFunc,cache.mockConfig);\n" +
                     "    }\n");
             //增加paramKey的定义
             sb.append("    " + service.getServiceCode().trim() + ".prototype." + methodName.trim() + ".paramKey = " + "[");

@@ -685,6 +685,11 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
                 for(var j=0;j<selectApp.length;j++)
                 {
                     selectAppStr += (selectApp[j].app.appName)+",";
+                    for (var x = 0, l = data.data.apps.length; x < l; x++) {
+                        if (data.data.apps[x].appId == selectApp[j].app.appId) {
+                            data.data.apps[x].checked = true;
+                        }
+                    }
                 }
                 $scope.selectApp = selectAppStr;
                 $scope.apps = data.data.apps;

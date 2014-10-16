@@ -124,13 +124,13 @@ public class NodeJSService {
             }
             //生成前端js版本
             String ssfePath = createSsfeDir(app, v, services, changeServices);
-            result = new WindowsExec().run("cnpm publish " + ssfePath);
+            result = result + "\n" + new WindowsExec().run("cnpm publish " + ssfePath);
             if (result.indexOf("ERR") != -1) {
                 throw new RuntimeException("发布服务失败：" + result);
             }
 
             Map map = new HashMap();
-            map.put("name", "ss-eos-" + app.getAppCode());
+            map.put("name", "ss-eos-" + app.getAppCode() + "," + "ssfe-eos-" + app.getAppCode());
             map.put("v", result);
             logger.info("cnpm发布服务成功：" + map);
             return map;

@@ -122,6 +122,13 @@ public class NodeJSService {
             if (result.indexOf("ERR") != -1) {
                 throw new RuntimeException("发布服务失败：" + result);
             }
+            //生成前端js版本
+            String ssfePath = createSsfeDir(app, v, services, changeServices);
+            result = new WindowsExec().run("cnpm publish " + ssfePath);
+            if (result.indexOf("ERR") != -1) {
+                throw new RuntimeException("发布服务失败：" + result);
+            }
+
             Map map = new HashMap();
             map.put("name", "ss-eos-" + app.getAppCode());
             map.put("v", result);
@@ -428,6 +435,136 @@ public class NodeJSService {
         sb.append("    }\n" +
                 "}");
         FileUtil.createFile(path + File.separator + "config_mock.js", sb.toString(), "utf-8");
+    }
+
+    private String createSsfeDir(TApp app, String v, List<TService> services, List changeServices) throws Exception {
+        String path = SysInit.path + File.separator + "node_service_modules"
+                + File.separator + app.getAppCode() + "-ssfe" + File.separator + v;
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        createSsfePackageJsonFile(app, v, path);
+        createSsfeServiceJs(services, path);
+        return path;
+    }
+
+    private void createSsfePackageJsonFile(TApp app, String v, String path) throws Exception {
+        String content = "{\n" +
+                "  \"author\": \"sunsharing\",\n" +
+                "  \"name\": \"ssfe-eos-" + app.getAppCode() + "\",\n" +
+                "  \"description\": \"eos service, app:" + app.getAppName() + " \",\n" +
+                "  \"keywords\": [\n" +
+                "    \"ssfe\",\n" +
+                "    \"eos\",\n" +
+                "    \"ss-eos\",\n" +
+                "    \"eosremote\",\n" +
+                "    \"javascript\",\n" +
+                "    \"library\",\n" +
+                "    \"" + app.getAppCode() + "\",\n" +
+                "    \"" + app.getAppName() + "\"\n" +
+                "  ],\n" +
+                "  \"version\": \"" + v + "\",\n" +
+                "  \"repository\": {\n" +
+                "    \"type\": \"git\",\n" +
+                "    \"url\": \"https://github.com/ulyn/node-eos.git\"\n" +
+                "  },\n" +
+                "  \"main\": \"index\",\n" +
+                "  \"dependencies\": {\n" +
+                "  },\n" +
+                "  \"bugs\": {\n" +
+                "    \"url\": \"https://github.com/ulyn/node-eos/issues\"\n" +
+                "  },\n" +
+                "  \"homepage\": \"http://192.168.0.236:7002/package/ssfe-eos-" + app.getAppCode() + "\",\n" +
+                "  \"directories\": {\n" +
+                "    \"test\": \"test\"\n" +
+                "  },\n" +
+                "  \"devDependencies\": {},\n" +
+                "  \"scripts\": {\n" +
+                "    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n" +
+                "  },\n" +
+                "  \"license\": \"ISC\"\n" +
+                "}\n";
+        FileUtil.createFile(path + File.separator + "package.json", content, "utf-8");
+    }
+
+    private void createSsfeServiceJs(List<TService> services, String path) throws Exception {
+        for (TService service : services) {
+            createSsfeServiceJs(service, path);
+        }
+    }
+
+    private void createSsfeServiceJs(TService service, String path) throws Exception {
+        String file = path + File.separator + service.getServiceCode() + ".js";
+        TServiceVersion serviceVersion = service.getVersions().get(0);
+        StringBuilder sb = new StringBuilder("/** \n");
+        sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
+        sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
+        sb.append("\nif (typeof EosRemote === 'undefined') { throw new Error('EosRemote service 依赖 EosRemote'); }\n");
+        sb.append("\n ;(function (EosRemote) {\n" +
+                "    var appId = \"" + serviceVersion.getAppCode() + "\",\n" +
+                "        serviceId = \"" + service.getServiceCode() + "\",\n" +
+                "        serviceVersion = \"" + serviceVersion.getVersion() + "\";\n" +
+                "\n" +
+                "    function " + service.getServiceCode() + "(){\n" +
+                "        this.appId = appId;\n" +
+                "        this.serviceId = serviceId;\n" +
+                "        this.serviceVersion = serviceVersion;\n" +
+                "\n" +
+                "        this.eosRemote = new EosRemote({ \"appId\": this.appId, \"serviceId\": this.serviceId });\n" +
+                "    }\n" +
+                "\n" +
+                "    EosRemote.serviceInit(appId, serviceId, " + service.getServiceCode() + ");\n\n");
+        for (TMethod method : serviceVersion.getMethods()) {
+            if (!StringUtils.isBlank(method.getMockResult())) {
+                //注释部分
+                JSONArray methodMockResult = JSON.parseArray(method.getMockResult());
+                if (methodMockResult.size() > 0) {
+                    sb.append("   /**\n");
+                    sb.append("    * @return\n");
+                    for (int i = 0, l = methodMockResult.size(); i < l; i++) {
+                        JSONObject jo = methodMockResult.getJSONObject(i);
+                        sb.append("    *  ${");
+                        sb.append(jo.getString("status"));
+                        sb.append("}  " + jo.getString("desc") + "\n");
+                        sb.append("    *     ");
+                        sb.append(jo.getString("content"));
+                        sb.append("\n");
+                    }
+                    sb.append("    */\n");
+                }
+            }
+            String methodName = method.getMethodName();
+            if (methodName.startsWith("void ")) {
+                methodName = methodName.replace("void ", "");
+            }
+            String paramsStr = method.getParams();
+            sb.append("    " + service.getServiceCode().trim() + ".prototype." + methodName.trim() + " = " +
+                    "function(" + (StringUtils.isBlank(paramsStr) ? "" : paramsStr + ",") + "successFunc,errorFunc,mock){\n" +
+                    "        return this.eosRemote.eosRemote({\n" +
+                    "            method: \"" + methodName.trim() + "\",\n");
+            if (!StringUtils.isBlank(paramsStr)) {
+                sb.append("            data: {");
+                String[] params = paramsStr.split(",");
+                for (String p : params) {
+                    sb.append("\"").append(p.trim()).append("\":").append(p.trim()).append(",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                sb.append("},\n");
+            }
+            sb.append("            success: successFunc,\n" +
+                    "            error: errorFunc,\n" +
+                    "            mock: mock\n" +
+                    "        });\n" +
+                    "    }\n");
+        }
+        sb.append("    //判断是否有模块化包装，如果有则根据模块化返回\n" +
+                "    if ( typeof module === \"object\" && typeof module.exports === \"object\" ) {\n" +
+                "        module.exports = " + service.getServiceCode() + ";\n" +
+                "    }\n" +
+                "\n" +
+                "})(EosRemote);");
+        FileUtil.createFile(file, sb.toString(), "utf-8");
     }
 }
 

@@ -315,8 +315,8 @@ public class NodeJSService {
         sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
 
         sb.append("module.exports = function(eos,cache){\n" +
-                "    function " + service.getServiceCode() + "(){\n" +
-                "        eos.Service.call(this);\n" +
+                "    function " + service.getServiceCode() + "(rpcContext){\n" +
+                "        eos.Service.call(this,rpcContext);\n" +
                 "        this.appId = \"" + serviceVersion.getAppCode() + "\";\n" +
                 "        this.serviceId = \"" + service.getServiceCode() + "\";\n" +
                 "        this.serviceVersion = \"" + serviceVersion.getVersion() + "\";\n" +

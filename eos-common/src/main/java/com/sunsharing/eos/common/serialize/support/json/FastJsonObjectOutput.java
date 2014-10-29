@@ -63,10 +63,11 @@ public class FastJsonObjectOutput implements com.sunsharing.eos.common.serialize
         SerializeWriter out = new SerializeWriter();
         JSONSerializer serializer = new JSONSerializer(out);
         serializer.config(SerializerFeature.WriteEnumUsingToString, true);
+        serializer.config(SerializerFeature.WriteMapNullValue, true);
         serializer.write(obj);
         out.writeTo(writer);
         writer.println();
-        writer.flush();
+//        writer.flush();
     }
 
     public void flushBuffer() throws IOException {

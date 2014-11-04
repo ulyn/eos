@@ -75,7 +75,9 @@ public abstract class AbstractServer implements RpcServer {
     }
 
     public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {
-        logger.info(serviceId + "::" + invocation + "::" + rpcContext);
+        if (logger.isDebugEnabled()) {
+            logger.debug(serviceId + "::" + invocation + "::" + rpcContext);
+        }
         Object obj = this.serviceEngine.get(serviceId);
         ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
         RpcResult result = new RpcResult();

@@ -86,7 +86,11 @@ public class InterfaceServcie {
                 {
                     String key = (String)iter.next();
                     String v = (String)t.get(key);
-                    result+=key+"=\""+v+"\",";
+                    if ("timeout".equals(key)) {
+                        result += key + "=" + v + ",";
+                    } else {
+                        result += key + "=\"" + v + "\",";
+                    }
                 }
                 if(result.length()>0)
                 {

@@ -54,6 +54,17 @@ public class RequestPro extends BaseProtocol {
     //请求参数对象序列化的字节(bodyLength)
     protected byte[] invocationBytes;
 
+    private RpcContext rpcContext;
+    private Invocation invocation;
+
+    public RpcContext getRpcContext() {
+        return rpcContext;
+    }
+
+    public Invocation getInvocation() {
+        return invocation;
+    }
+
     public String getServiceId() {
         return serviceId;
     }
@@ -116,6 +127,7 @@ public class RequestPro extends BaseProtocol {
      * @param invocation
      */
     public void setInvocation(Invocation invocation) throws Exception {
+        this.invocation = invocation;
         setInvocationBytes(getSerializationBytes(invocation));
     }
 
@@ -135,6 +147,7 @@ public class RequestPro extends BaseProtocol {
      * @param rpcContext
      */
     public void setRpcContext(RpcContext rpcContext) throws Exception {
+        this.rpcContext = rpcContext;
         setRpcContextBytes(getSerializationBytes(rpcContext));
     }
 

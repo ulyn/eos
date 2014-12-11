@@ -1,5 +1,7 @@
 package com.sunsharing.eos.server.transporter.netty;
 
+import com.sunsharing.eos.common.filter.FilterChain;
+import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcContext;
@@ -11,6 +13,7 @@ import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel;
+import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
@@ -54,22 +57,15 @@ public class MsgHandler extends SimpleChannelHandler {
                 @Override
                 public void run() {
                     RequestPro req = (RequestPro) basePro;
+                    ResponsePro responsePro = null;
                     try {
-                        Invocation inv = req.toInvocation();
-                        RpcContext rpcContext = req.toRpcContext();
-                        Result result = rpcServer.call(req.getServiceId(), inv, rpcContext);
-
-                        ResponsePro responsePro = new ResponsePro();
-                        responsePro.setSerialization(basePro.getSerialization());
-                        responsePro.setMsgId(basePro.getMsgId());
-                        responsePro.setResult(result);
-                        content.getChannel().write(responsePro);
+                        responsePro = rpcServer.callService(req);
                     } catch (Exception e) {
-
-                        ResponsePro responsePro = new ResponsePro();
-                        responsePro.setSerialization(basePro.getSerialization());
+                        responsePro = new ResponsePro();
                         responsePro.setMsgId(basePro.getMsgId());
+                        responsePro.setSerialization(basePro.getSerialization());
                         responsePro.setExceptionResult(e);
+                    } finally {
                         content.getChannel().write(responsePro);
                     }
 

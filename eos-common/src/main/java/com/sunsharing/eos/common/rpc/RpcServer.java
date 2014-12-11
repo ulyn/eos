@@ -17,6 +17,8 @@
 package com.sunsharing.eos.common.rpc;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
 /**
  * <pre></pre>
@@ -34,12 +36,14 @@ public interface RpcServer {
 
     void register(Object impl, ServiceConfig config);
 
-    Result call(String serviceId, Invocation invocation, RpcContext rpcContext);
+//    Result call(String serviceId, Invocation invocation, RpcContext rpcContext);
 
     boolean isRunning();
 
     void stop();
 
     void start();
+
+    ResponsePro callService(RequestPro requestPro);
 }
 

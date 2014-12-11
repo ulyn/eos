@@ -18,7 +18,7 @@ package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
-import com.sunsharing.eos.common.aop.Advice;
+import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
@@ -56,8 +56,28 @@ public abstract class AbstractServiceContext {
     protected String packagePath;
 
     //存储服务对象,key为服务id
-    protected static Map<String, Object> services = new HashMap<String, Object>();
-    protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();
+    protected static Map<String, Object> servicesMapByKeyClassName = new HashMap<String, Object>();//key值为接口类名
+    protected static Map<String, Object> servicesMapByKeyAppServiceId = new HashMap<String, Object>();//key值为getServiceConfigKey(appId,serviceId)
+    //为适应废弃的getBean
+    protected static Map<String, Object> servicesMapByKeyServiceId = new HashMap<String, Object>(); //key值为ServiceId
+
+    protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();//key值为getServiceConfigKey(appId,serviceId)
+
+
+    /**
+     * 取得服务配置map的key
+     *
+     * @param appId
+     * @param serviceId
+     * @return
+     */
+    public static String getServiceConfigKey(String appId, String serviceId) {
+        if (StringUtils.isBlank(appId)) {
+            return serviceId;
+        } else {
+            return appId + "-" + serviceId;
+        }
+    }
 
     public AbstractServiceContext(String packagePath) {
 //        this.ctx = ctx;
@@ -74,7 +94,11 @@ public abstract class AbstractServiceContext {
         Map xmlMap = loadXmlServiceConfig(xmlConfigFileName);
         Map beansMap = (Map) xmlMap.get("beansMap");
         Map<String, ServiceConfig> xmlServiceConfigMap = (Map<String, ServiceConfig>) beansMap.get("configMap");
-        List advices = (List) xmlMap.get("advices");
+        List<Map<String, String>> filters = (List<Map<String, String>>) xmlMap.get("filters");
+        //注册过滤器
+        for (Map<String, String> filter : filters) {
+            FilterManager.registerFilter(filter.get("path"), filter.get("class"));
+        }
 
         ClassFilter filter = new ClassFilter() {
             @Override
@@ -129,24 +153,17 @@ public abstract class AbstractServiceContext {
                     config.setImpl(xmlConfig.getImpl());
                 }
             }
-
-            String adviceClassName = getAdviceClassName(advices, c, id);
-            if (!StringUtils.isBlank(adviceClassName)) {
-                try {
-                    Advice advice = (Advice) Class.forName(adviceClassName).newInstance();
-                    config.setAdvice(advice);
-                    logger.info("取得" + id + "配置的advice=" + adviceClassName + "的newInstance实现");
-                } catch (Exception e) {
-                    logger.error("初始化配置的advice=" + adviceClassName + "的newInstance异常!", e);
-                    System.exit(0);
-                }
-            }
-
             Object bean = createBean(c, config);
             if (bean != null) {
                 logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
-                serviceConfigMap.put(config.getId(), config);
-                services.put(config.getId(), bean);
+                String key = getServiceConfigKey(config.getAppId(), config.getId());
+                //注意 对于server端appid为空
+                servicesMapByKeyClassName.put(c.getName(), bean);
+                servicesMapByKeyAppServiceId.put(key, bean);
+                servicesMapByKeyServiceId.put(config.getId(), bean);
+
+                serviceConfigMap.put(key, config);
+
             }
         }
     }
@@ -167,7 +184,7 @@ public abstract class AbstractServiceContext {
             Map beansMap = new HashMap();
             beansMap.put("configMap", configMap);
             rtnMap.put("beansMap", beansMap);
-            rtnMap.put("advices", new ArrayList());
+            rtnMap.put("filters", new ArrayList<Map<String, String>>());
         } else {
             try {
                 ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -182,7 +199,7 @@ public abstract class AbstractServiceContext {
                 Element root = doc.getRootElement();
 
                 Element beansEl = root.element("beans");
-                Element advicesEl = root.element("advices");
+                Element filtersEl = root.element("filters");
 
                 //获取beans配置
                 Map beansMap = new HashMap();
@@ -199,7 +216,6 @@ public abstract class AbstractServiceContext {
                         if (methodEls.size() > 0) {
                             //set methodMock
                             Map<String, String> methodMockMap = new HashMap<String, String>();
-                            Map<String, Advice> methodServletAdviceMap = new HashMap<String, Advice>();
                             for (Element methodEl : methodEls) {
                                 methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
                             }
@@ -212,28 +228,20 @@ public abstract class AbstractServiceContext {
                 }
                 beansMap.put("configMap", configMap);
                 rtnMap.put("beansMap", beansMap);
-                //获取advices配置
-                List advices = new ArrayList();
-                if (advicesEl != null) {
-                    List<Element> elements = advicesEl.elements("advice");
+                //获取filters配置
+                List<Map<String, String>> filters = new ArrayList<Map<String, String>>();
+                if (filtersEl != null) {
+                    List<Element> elements = filtersEl.elements("filter");
                     for (Element el : elements) {
-                        String adviceClassName = el.elementTextTrim("class");
-                        Element packageEl = el.element("packagesToScan");
-                        Element excludeBeanEl = packageEl == null ? null : packageEl.element("excludeBean");
-                        Element beanEl = el.element("beansToScan");
-                        List<String> packages = getListByListElement(packageEl);
-                        List<String> excludeBeans = getListByListElement(excludeBeanEl);
-                        List<String> beans = getListByListElement(beanEl);
-
-                        Map temp = new HashMap();
-                        temp.put("advice", adviceClassName);
-                        temp.put("packages", packages);
-                        temp.put("excludeBeans", excludeBeans);
-                        temp.put("beans", beans);
-                        advices.add(temp);
+                        String path = el.elementTextTrim("path");
+                        String clazzName = el.elementTextTrim("class");
+                        Map<String, String> filterMap = new HashMap<String, String>();
+                        filterMap.put("path", path);
+                        filterMap.put("class", clazzName);
+                        filters.add(filterMap);
                     }
                 }
-                rtnMap.put("advices", advices);
+                rtnMap.put("filters", filters);
             } catch (Exception e) {
                 logger.error("读取eos服务的xml配置异常，请检查xml配置是否正确", e);
                 throw new RuntimeException(e);
@@ -307,8 +315,9 @@ public abstract class AbstractServiceContext {
      * @param <T>
      * @return
      */
+    @Deprecated
     public static <T> T getBean(String id) {
-        Object o = services.get(id);
+        Object o = servicesMapByKeyServiceId.get(id);
         if (o == null) {
             return null;
         }
@@ -355,8 +364,8 @@ public abstract class AbstractServiceContext {
         return serviceConfigMap;
     }
 
-    public static ServiceConfig getServiceConfig(String beanId) {
-        return serviceConfigMap.get(beanId);
+    public static ServiceConfig getServiceConfig(String appId, String serviceId) {
+        return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
     }
 
     public static List<ServiceConfig> getServiceConfigList() {

@@ -52,6 +52,7 @@ import java.util.*;
 public class RpcServlet extends HttpServlet {
     Logger logger = Logger.getLogger(RpcServlet.class);
     SysParamVar sysParamVar = null;
+    String appId = null;
 
     public RpcServlet() {
         super();
@@ -62,6 +63,11 @@ public class RpcServlet extends HttpServlet {
         super.init(config);
         logger.info("eos framework init RpcServlet....");
         String sysParamVarClass = config.getInitParameter("sysParamVar");
+        appId = config.getInitParameter("appId");
+        if (StringUtils.isBlank(appId)) {
+            logger.error("RpcServlet 没有配置必须参数appId");
+            System.exit(0);
+        }
         if (StringUtils.isBlank(sysParamVarClass)) {
             logger.warn("RpcServlet 没有配置SysParamVar的实现类，系统不支持变量入参");
         } else {
@@ -104,7 +110,7 @@ public class RpcServlet extends HttpServlet {
         Map rtnMap = new HashMap();
         try {
             String serviceId = req.getParameter("eos_service_id");
-            ServiceConfig serviceConfig = ServiceContext.getServiceConfig(serviceId);
+            ServiceConfig serviceConfig = ServiceContext.getServiceConfig(appId, serviceId);
             if (serviceConfig == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
             }
@@ -151,7 +157,7 @@ public class RpcServlet extends HttpServlet {
             }
 
             AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
-            Object o = proxy.doInvoke(invocation, serviceConfig, serviceMethod);
+            Object o = proxy.doInvoke(invocation, serviceConfig);
 
             rtnMap.put("status", true);
             rtnMap.put("result", o);

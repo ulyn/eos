@@ -17,7 +17,6 @@
 package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.aop.Advice;
 
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,6 @@ public class ServiceConfig {
     private String mock = "";
 
     private String impl = "";
-    private Advice advice;
 
     private Map<String, String> methodMockMap;
     private List<ServiceMethod> serviceMethodList;
@@ -123,14 +121,6 @@ public class ServiceConfig {
 
     public void setImpl(String impl) {
         this.impl = impl;
-    }
-
-    public Advice getAdvice() {
-        return advice;
-    }
-
-    public void setAdvice(Advice advice) {
-        this.advice = advice;
     }
 
     public Map<String, String> getMethodMockMap() {

@@ -76,7 +76,7 @@ public class ServiceContext extends AbstractServiceContext {
                     bean = o;
                 }
             }
-            if (!this.services.containsKey(interfaces.getName())) {
+            if (!this.servicesMapByKeyClassName.containsKey(interfaces.getName())) {
                 //还没有接口实现类，说明spring没有，那么实例化它
                 try {
                     bean = Class.forName(config.getImpl()).newInstance();
@@ -129,7 +129,7 @@ public class ServiceContext extends AbstractServiceContext {
             //创建bean结束，服务端注册
             RpcServer server = ServerFactory.getServer(config.getTransporter());
             server.register(bean, config);
-            this.services.put(interfaces.getName(), bean);
+//            this.services.put(interfaces.getName(), bean);
         }
         return bean;
     }

@@ -4,32 +4,14 @@
         <!--<testInt mock="success"/>-->
         <!--</bean>-->
         <bean id="testType">
-        <testInt mock="error"/>
+            <testInt mock="error"/>
         </bean>
     </beans>
-    <!--advice针对到类级别，方法级别在advice实现自行判断-->
-    <advices>
-        <advice>
-            <class>com.sunsharing.component.test.TestAdvice</class>
-            <packagesToScan>
-                <list>
-                    <value>com.sunsharing.component.test</value>
-                    <value>com.sunsharing.component.dao</value>
-                </list>
-                <excludeBean>
-                    <list>
-                        <value>testType</value>
-                        <value>testFirst</value>
-                    </list>
-                </excludeBean>
-            </packagesToScan>
-            <beansToScan>
-                <list>
-                    <value>testType</value>
-                    <value>peopleService</value>
-                </list>
-            </beansToScan>
-        </advice>
-    </advices>
-
+    <filters>
+        <filter>
+            <!--过滤路径应用id+服务名，正则表达式，/{appid}/{service}-->
+            <path></path>
+            <class>com.sunsharing.test.EosFilter</class>
+        </filter>
+    </filters>
 </eos>

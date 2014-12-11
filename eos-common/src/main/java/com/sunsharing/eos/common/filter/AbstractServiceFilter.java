@@ -1,11 +1,11 @@
 /**
- * @(#)Advice
+ * @(#)AbstractServiceFilter
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-2-17 下午9:53
+ *<br> 14-12-11 下午3:21
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,40 +14,28 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.aop;
+package com.sunsharing.eos.common.filter;
 
-import com.sunsharing.eos.common.config.ServiceMethod;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
  * <br> <b>功能描述:</b>
- * <br>  服务方法切面接口
+ * <br>
  * <br> 注意事项:
  * <br>
  * <br>
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface Advice {
+public abstract class AbstractServiceFilter {
 
     /**
-     * 方法调用前执行
-     *
-     * @param method
-     * @param args
-     * @return
+     * 执行过滤
      */
-    AdviceResult before(ServiceMethod method, Object[] args);
-
-    /**
-     * 方法调用后执行
-     *
-     * @param method
-     * @param args
-     * @param returnVal
-     * @return
-     */
-    AdviceResult after(ServiceMethod method, Object[] args, Object returnVal);
+    protected abstract void doFilter(RequestPro requestPro, ResponsePro responsePro, FilterChain filterChain) throws Exception;
 
 }
+

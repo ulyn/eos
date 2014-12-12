@@ -19,6 +19,8 @@ package com.sunsharing.eos.server.transporter;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.FilterManager;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
@@ -68,23 +70,28 @@ public abstract class AbstractServer implements RpcServer {
         if (!isRunning()) {
             this.start();
         }
-        serviceInvokeFilter = new ServiceInvokeFilter(this.serviceEngine, this.serviceConfigEngine);
+        if (serviceInvokeFilter == null) {
+            serviceInvokeFilter = new ServiceInvokeFilter(this.serviceEngine, this.serviceConfigEngine);
+        }
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
-    public ResponsePro callService(RequestPro requestPro) {
+    public ServiceResponse callService(ServiceRequest req) {
+        RequestPro requestPro = req.getRequestPro();
+
         ResponsePro responsePro = new ResponsePro();
         responsePro.setSerialization(requestPro.getSerialization());
+        ServiceResponse response = new ServiceResponse(responsePro);
         try {
             FilterChain filterChain = FilterManager.createFilterChain(SysProp.appId, requestPro.getServiceId());
             filterChain.addFilter(serviceInvokeFilter);
-            filterChain.doFilter(requestPro, responsePro);
+            filterChain.doFilter(req, response);
         } catch (Exception e) {
-            responsePro.setExceptionResult(e);
+            response.writeError(e);
         } finally {
-            responsePro.setMsgId(requestPro.getMsgId());
+            response.getResponsePro().setMsgId(requestPro.getMsgId());
         }
-        return responsePro;
+        return response;
     }
 
     public boolean isRunning() {

@@ -39,7 +39,7 @@ public class ServiceConfig {
     private String serialization = Constants.DEFAULT_SERIALIZATION;
     private String transporter = Constants.DEFAULT_TRANSPORTER;
     private String appId = "";
-    private int timeout = 30000;
+    private int timeout = Constants.DEFAULT_TIMEOUT;
     private String mock = "";
 
     private String impl = "";

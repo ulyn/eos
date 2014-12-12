@@ -32,10 +32,20 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  */
 public abstract class AbstractServiceFilter {
 
+    private String pathRegex;
+
+    public String getPathRegex() {
+        return pathRegex;
+    }
+
+    public void setPathRegex(String pathRegex) {
+        this.pathRegex = pathRegex;
+    }
+
     /**
      * 执行过滤
      */
-    protected abstract void doFilter(RequestPro requestPro, ResponsePro responsePro, FilterChain filterChain) throws Exception;
+    protected abstract void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws Exception;
 
 }
 

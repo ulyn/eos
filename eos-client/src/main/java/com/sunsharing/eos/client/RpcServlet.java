@@ -52,7 +52,6 @@ import java.util.*;
 public class RpcServlet extends HttpServlet {
     Logger logger = Logger.getLogger(RpcServlet.class);
     SysParamVar sysParamVar = null;
-    String appId = null;
 
     public RpcServlet() {
         super();
@@ -63,11 +62,6 @@ public class RpcServlet extends HttpServlet {
         super.init(config);
         logger.info("eos framework init RpcServlet....");
         String sysParamVarClass = config.getInitParameter("sysParamVar");
-        appId = config.getInitParameter("appId");
-        if (StringUtils.isBlank(appId)) {
-            logger.error("RpcServlet 没有配置必须参数appId");
-            System.exit(0);
-        }
         if (StringUtils.isBlank(sysParamVarClass)) {
             logger.warn("RpcServlet 没有配置SysParamVar的实现类，系统不支持变量入参");
         } else {
@@ -110,9 +104,35 @@ public class RpcServlet extends HttpServlet {
         Map rtnMap = new HashMap();
         try {
             String serviceId = req.getParameter("eos_service_id");
-            ServiceConfig serviceConfig = ServiceContext.getServiceConfig(appId, serviceId);
+            String appId = req.getParameter("eos_appid");
+            ServiceConfig serviceConfig = null;
+            if (StringUtils.isBlank(appId)) {
+                List<ServiceConfig> serviceConfigList = ServiceContext.getServiceConfig(serviceId);
+                if (serviceConfigList == null) {
+                    throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
+                }
+                switch (serviceConfigList.size()) {
+//                    case 0:
+//                        throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
+                    case 1:
+                        serviceConfig = serviceConfigList.get(0);
+                        break;
+                    default:
+                        String methodName = req.getParameter("eos_method_name");
+                        for (ServiceConfig config : serviceConfigList) {
+                            ServiceMethod serviceMethod = config.getMethod(methodName);
+                            if (serviceMethod != null) {
+                                serviceConfig = config;
+
+                            }
+                        }
+                        break;
+                }
+            } else {
+                serviceConfig = ServiceContext.getServiceConfig(appId, serviceId);
+            }
             if (serviceConfig == null) {
-                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + appId + "-" + serviceId);
             }
 
             String methodName = req.getParameter("eos_method_name");

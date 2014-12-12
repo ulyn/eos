@@ -1,4 +1,4 @@
-package com.sunsharing.component.dao;
+package com.sunsharing.component.eos.clientproxy.dao;
 
 import java.io.Serializable;
 import java.util.List;

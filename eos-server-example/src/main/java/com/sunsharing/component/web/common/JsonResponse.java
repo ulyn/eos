@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.component.web.common;
+package com.sunsharing.component.eos.clientproxy.web.common;
 
 /**
  * <pre></pre>

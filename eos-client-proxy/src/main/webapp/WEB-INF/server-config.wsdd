@@ -1,0 +1,14 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+            xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+    <handler name="URLMapper"
+             type="java:org.apache.axis.handlers.http.URLMapper"/>
+    <service name="eosProxy" provider="java:RPC">
+        <parameter name="className"
+                   value="com.sunsharing.component.eos.clientproxy.ws.WebServiceProxy"/>
+    </service>
+    <transport name="http">
+        <requestFlow>
+            <handler type="URLMapper"/>
+        </requestFlow>
+    </transport>
+</deployment>

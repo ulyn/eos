@@ -24,6 +24,8 @@ import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.FilterManager;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
@@ -55,13 +57,12 @@ public class DynamicRpc {
     RequestPro req = null;
     RpcContext rpcContext;
     String transporter = Constants.DEFAULT_TRANSPORTER;
-    int timeout = 30000;
+    int timeout = Constants.DEFAULT_TIMEOUT;
 
     protected DynamicRpc(RequestPro req) {
         req.setDebugServerIp(SysProp.getDebugServerIp(req.getAppId()));
         this.req = req;
     }
-
     public static DynamicRpc create(String appId, String serviceId, String v) {
         RequestPro req = new RequestPro();
         req.setAppId(appId);
@@ -104,6 +105,21 @@ public class DynamicRpc {
     }
 
 
+    public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
+        RequestPro requestPro = serviceRequest.getRequestPro();
+        FilterChain filterChain =
+                FilterManager.createFilterChain(requestPro.getAppId(), requestPro.getServiceId());
+        RpcFilter rpcFilter = new RpcFilter();
+        filterChain.addFilter(rpcFilter);
+        try {
+            filterChain.doFilter(serviceRequest, serviceResponse);
+        } catch (RpcException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new RpcException(e);
+        }
+    }
+
     /**
      * 执行调用
      *
@@ -134,16 +150,14 @@ public class DynamicRpc {
         } catch (Exception e) {
             throw new RpcException("设置RpcInvocation异常", e);
         }
+        ServiceRequest request = new ServiceRequest(req, transporter, timeout);
 
         ResponsePro responsePro = new ResponsePro();
         responsePro.setSerialization(this.req.getSerialization());
-        FilterChain filterChain =
-                FilterManager.createFilterChain(this.req.getAppId(), this.req.getServiceId());
-        RpcFilter rpcFilter = new RpcFilter(transporter, timeout);
-        filterChain.addFilter(rpcFilter);
+        ServiceResponse serviceResponse = new ServiceResponse(responsePro);
+        doInvoke(request, serviceResponse);
         try {
-            filterChain.doFilter(this.req, responsePro);
-            Object o = getResult(req, retType, responsePro);
+            Object o = getResult(req, retType, serviceResponse.getResponsePro());
             return (T) o;
         } catch (RpcException e) {
             throw e;
@@ -162,7 +176,7 @@ public class DynamicRpc {
      * @throws Throwable
      */
     private Object getResult(RequestPro requestPro, Class retType, ResponsePro responsePro) throws Throwable {
-        boolean isMock = StringUtils.isBlank(requestPro.getMock());
+        boolean isMock = !StringUtils.isBlank(requestPro.getMock());
         Result rpcResult = responsePro.toResult();
         if (responsePro.getStatus() == Constants.STATUS_ERROR) {
             if (rpcResult.hasException()) {

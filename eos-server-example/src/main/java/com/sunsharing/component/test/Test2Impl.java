@@ -1,6 +1,6 @@
 package com.sunsharing.component.test;
 
-import com.sunsharing.component.dao.SimpleHibernateDao;
+import com.sunsharing.component.eos.clientproxy.dao.SimpleHibernateDao;
 import com.sunsharing.component.model.BmClzt;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

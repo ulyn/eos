@@ -1,11 +1,11 @@
-package com.sunsharing.component.web.exception;
+package com.sunsharing.component.eos.clientproxy.web.exception;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sunsharing.component.web.common.BaseController;
+import com.sunsharing.component.eos.clientproxy.web.common.BaseController;
 
-import com.sunsharing.component.web.common.ResponseHelper;
+import com.sunsharing.component.eos.clientproxy.web.common.ResponseHelper;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;

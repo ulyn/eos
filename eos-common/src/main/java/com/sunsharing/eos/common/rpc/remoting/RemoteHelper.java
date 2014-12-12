@@ -17,6 +17,8 @@
 package com.sunsharing.eos.common.rpc.remoting;
 
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.RpcClient;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
@@ -42,14 +44,16 @@ public class RemoteHelper {
     static Logger logger = Logger.getLogger(RemoteHelper.class);
 
 
-    public ResponsePro call(RequestPro requestPro, String ip, int port, String transporter, int timeout) throws Throwable {
+    public ServiceResponse call(ServiceRequest serviceRequest,
+                                String ip, int port) throws Throwable {
         RpcClient client = null;
+        String transporter = serviceRequest.getTransporter();
         if (Constants.SHORT_NETTY.equalsIgnoreCase(transporter)) {
             client = new ShortNettyClient();
         } else if (Constants.LONG_NETTY.equalsIgnoreCase(transporter)) {
             client = new LongNettyClient();
         }
-        return client.doRpc(requestPro, ip, port, timeout);
+        return client.doRpc(serviceRequest, ip, port);
     }
 
 }

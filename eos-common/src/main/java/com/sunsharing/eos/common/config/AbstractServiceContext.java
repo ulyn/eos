@@ -62,6 +62,7 @@ public abstract class AbstractServiceContext {
     protected static Map<String, Object> servicesMapByKeyServiceId = new HashMap<String, Object>(); //key值为ServiceId
 
     protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();//key值为getServiceConfigKey(appId,serviceId)
+    protected static Map<String, List<ServiceConfig>> serviceConfigMapByKeyServiceId = new HashMap<String, List<ServiceConfig>>();//key值为serviceId
 
 
     /**
@@ -163,7 +164,12 @@ public abstract class AbstractServiceContext {
                 servicesMapByKeyServiceId.put(config.getId(), bean);
 
                 serviceConfigMap.put(key, config);
-
+                List<ServiceConfig> serviceConfigs = serviceConfigMapByKeyServiceId.get(config.getId());
+                if (serviceConfigs == null) {
+                    serviceConfigs = new ArrayList<ServiceConfig>();
+                    serviceConfigMapByKeyServiceId.put(config.getId(), serviceConfigs);
+                }
+                serviceConfigs.add(config);
             }
         }
     }
@@ -366,6 +372,11 @@ public abstract class AbstractServiceContext {
 
     public static ServiceConfig getServiceConfig(String appId, String serviceId) {
         return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
+    }
+
+    public static List<ServiceConfig> getServiceConfig(String serviceId) {
+        List<ServiceConfig> configs = serviceConfigMapByKeyServiceId.get(serviceId);
+        return configs;
     }
 
     public static List<ServiceConfig> getServiceConfigList() {

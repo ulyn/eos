@@ -1,4 +1,4 @@
-package com.sunsharing.component.dao;
+package com.sunsharing.component.eos.clientproxy.dao;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;

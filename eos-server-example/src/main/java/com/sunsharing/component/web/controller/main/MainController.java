@@ -1,4 +1,4 @@
-package com.sunsharing.component.web.controller.main;
+package com.sunsharing.component.eos.clientproxy.web.controller.main;
 
 
 
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sunsharing.component.web.common.BaseController;
+import com.sunsharing.component.eos.clientproxy.web.common.BaseController;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

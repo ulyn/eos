@@ -1,4 +1,4 @@
-package com.sunsharing.component.sys;
+package com.sunsharing.component.eos.clientproxy.sys;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;

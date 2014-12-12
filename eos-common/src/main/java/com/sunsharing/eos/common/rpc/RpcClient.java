@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.common.rpc;
 
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
@@ -34,12 +36,11 @@ public interface RpcClient {
     /**
      * 执行远程调用的方法
      *
-     * @param pro
+     * @param serviceRequest
      * @param ip
      * @param port
-     * @param timeout
      * @return
      */
-    ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable;
+    ServiceResponse doRpc(ServiceRequest serviceRequest, String ip, int port) throws Throwable;
 }
 

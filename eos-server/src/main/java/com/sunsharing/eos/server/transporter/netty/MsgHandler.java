@@ -1,7 +1,10 @@
 package com.sunsharing.eos.server.transporter.netty;
 
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.FilterManager;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcContext;
@@ -59,7 +62,8 @@ public class MsgHandler extends SimpleChannelHandler {
                     RequestPro req = (RequestPro) basePro;
                     ResponsePro responsePro = null;
                     try {
-                        responsePro = rpcServer.callService(req);
+                        ServiceResponse response = rpcServer.callService(new ServiceRequest(req, Constants.LONG_NETTY));
+                        responsePro = response.getResponsePro();
                     } catch (Exception e) {
                         responsePro = new ResponsePro();
                         responsePro.setMsgId(basePro.getMsgId());

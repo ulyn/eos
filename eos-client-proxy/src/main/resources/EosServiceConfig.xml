@@ -1,0 +1,9 @@
+<eos>
+    <!--<filters>  注意在做代理的时候不要配置过滤器-->
+    <!--<filter>-->
+    <!--&lt;!&ndash;过滤路径应用id+服务名，正则表达式，/{appid}/{service}&ndash;&gt;-->
+    <!--<path>/*</path>-->
+    <!--<class>com.sunsharing.component.eos.clientproxy.ws.WebServiceProxyFilter</class>-->
+    <!--</filter>-->
+    <!--</filters>-->
+</eos>

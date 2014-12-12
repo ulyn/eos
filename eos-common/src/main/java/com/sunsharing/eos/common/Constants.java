@@ -3,15 +3,19 @@ package com.sunsharing.eos.common;
 
 public class Constants {
 
-    /**长连接*/
+    /**
+     * 长连接
+     */
     public static final String LONG_NETTY = "longNetty";
-    /**短连接*/
+    /**
+     * 短连接
+     */
     public static final String SHORT_NETTY = "netty";
 
     public static final String DEFAULT_SERIALIZATION = "hessian";
     public static final String DEFAULT_PROXY = "jdk";
     public static final String DEFAULT_TRANSPORTER = LONG_NETTY;
-
+    public static final int DEFAULT_TIMEOUT = 30000;
 
 
     //eos的部署模式

@@ -4,6 +4,8 @@
 <%@ page import="java.util.concurrent.ExecutorService" %>
 <%@ page import="java.util.concurrent.Executors" %>
 <%@ page import="com.sunsharing.component.test.Test2" %>
+<%@ page import="com.sunsharing.eos.client.rpc.DynamicRpc" %>
+<%@ page import="java.util.Map" %>
 <%--
   Created by IntelliJ IDEA.
   User: criss
@@ -17,8 +19,8 @@
     <title></title>
 </head>
 <body>
-    <%
-//        ExecutorService service = Executors.newCachedThreadPool();
+<%
+    //        ExecutorService service = Executors.newCachedThreadPool();
 //        for(int i=0;i<100;i++)
 //        {
 //            final int k = i;
@@ -30,14 +32,17 @@
 //                }
 //            });
 //        }
-        try
-        {
-        Test2 test = ServiceContext.getBean(Test2.class);
-        test.sayHello("abcd");
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    %>
+    Map map = DynamicRpc.create("legend", "appService", "0.5")
+            .setMock("success").doInvoke(Map.class, "getSystemConfig");
+    System.out.println("dong tai diao yong:" + map);
+//        try
+//        {
+//        Test2 test = ServiceContext.getBean(Test2.class);
+//        test.sayHello("abcd");
+//        }catch (Exception e)
+//        {
+//            e.printStackTrace();
+//        }
+%>
 </body>
 </html>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+    <!-- ========================= Spring的配置 ========================= -->
+    <!-- 使Spring关注Annotation 启动注解功能-->
+    <context:annotation-config/>
+
+    <!-- 让Spring通过自动扫描来查询和管理Bean,并检查@Required,@Autowired的属性已被注入
+            这样配置之后,就省去了DAO层和Service层等配置代码.会让代码变得容易管理	 -->
+    <context:component-scan base-package="com.sunsharing"/>
+
+    <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+
+    <!-- ========================= 数据源的配置 ========================= -->
+
+    <!-- 数据源配置,主要用于开发测试环境 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@192.168.0.224:1521:orcl"/>
+        <property name="username" value="ferrari"/>
+        <property name="password" value="admin"/>
+    </bean>
+
+
+    <!-- 数据源配置,主要用于部署测试环境
+      <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean" lazy-init="default" autowire="default" dependency-check="default">
+        <property name="jndiName">
+            <value>JDBC/RMC</value>
+        </property>
+    </bean>-->
+
+    <!-- 数据源配置,在生产环境使用应用服务器的数据库连接池 JNDI DataSource for JEE environments -->
+    <!--<jee:jndi-lookup id="dataSource"
+        jndi-name="java:comp/env/jdbc/demo" />-->
+
+    <!-- 添加jdbcTemplate -->
+    <bean id="jdbcTemplate"
+          class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- ========================= Hibernate 的SessionFactory类的配置,包含是否打印SQL语句等信息 ========================= -->
+
+    <!-- Hibernate配置
+        AnnotationSessionFactoryBean这个类在LocalSessionFactoryBean的基础上添加了mapping class方式实现实体类映射
+        (详见AnnotationSessionFactoryBean类的源代码)
+     -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="namingStrategy">
+            <bean class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+        </property>
+        <property name="lobHandler" ref="lobHandler"/>
+        <property name="hibernateProperties">
+            <props>
+                <!--<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>-->
+                <prop key="hibernate.dialect">org.hibernate.dialect.Oracle9iDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.jdbc.batch_size">0</prop>
+                <!--<prop key="hibernate.hbm2ddl.auto">none</prop>根据class生产数据库表，auto 可以有create update and none 等-->
+                <!--<prop key="hibernate.cache.use_query_cache">true</prop>-->
+            </props>
+        </property>
+        <!-- 表与实体类的映射 -->
+        <property name="packagesToScan">
+            <list>
+            </list>
+        </property>
+        <property name="mappingDirectoryLocations">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- =========================Spring中用Hibernate处理事务的配置========================= -->
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+    <!-- 事务配置 Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
+    <!-- Hibernate 与spring jdbcTemplate共享事物的管理 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 也可这样填写事务配置
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+            p:sessionFactory-ref="sessionFactory"/>
+    -->
+
+    <!-- =========================Spring处理Oracle大数据LOB存储的配置========================= -->
+
+    <!--tomcat开发时使用-->
+    <bean id="nactiveJdbcExtrator" class="org.springframework.jdbc.support.nativejdbc.SimpleNativeJdbcExtractor"/>
+
+    <!-- websphere部署时使用
+    <bean id="nactiveJdbcExtrator" class="org.springframework.jdbc.support.nativejdbc.WebSphereNativeJdbcExtractor"/>
+    -->
+
+    <!--oracle10g -->
+    <!--    
+    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true">
+        <property name="nativeJdbcExtractor" ref="nactiveJdbcExtrator"/>
+    </bean>
+    -->
+    <!--oracle 9i-->
+    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true">
+        <property name="nativeJdbcExtractor" ref="nactiveJdbcExtrator"/>
+    </bean>
+
+
+    <!-- ===========================Spring的其它配置============================ -->
+
+    <bean id="exceptionResolver"
+          class="com.sunsharing.component.eos.clientproxy.web.exception.ExceptionResolver"></bean>
+</beans> 

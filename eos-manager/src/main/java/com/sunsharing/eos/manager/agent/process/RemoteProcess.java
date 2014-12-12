@@ -19,6 +19,7 @@ package com.sunsharing.eos.manager.agent.process;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
@@ -86,7 +87,8 @@ public class RemoteProcess implements Process {
             String transporter = config.getString("transporter");
 
             RemoteHelper remoteHelper = new RemoteHelper();
-            ResponsePro responsePro = remoteHelper.call(req, ip, port, transporter, timeout);
+            ServiceRequest serviceRequest = new ServiceRequest(req, transporter, timeout);
+            ResponsePro responsePro = remoteHelper.call(serviceRequest, ip, port).getResponsePro();
 
             res.setStatus(responsePro.getStatus());
             res.setResultBytes(responsePro.getResultBytes());

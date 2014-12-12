@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.common.filter;
 
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
@@ -62,7 +63,11 @@ public class FilterChain {
      * @param req
      * @param res
      */
-    public void doFilter(RequestPro req, ResponsePro res) throws Exception {
+    public void doFilter(ServiceRequest req, ServiceResponse res) throws Exception {
+        if (res.getResponsePro().getStatus() == Constants.STATUS_ERROR) {
+            // 有异常的时候退出过滤
+            return;
+        }
         if (index < this.filters.size()) {
             AbstractServiceFilter filter = this.filters.get(index);
             index++;

@@ -1,4 +1,4 @@
-package com.sunsharing.component.sys;
+package com.sunsharing.component.eos.clientproxy.sys;
 
 import com.sunsharing.eos.server.EosInit;
 import org.apache.log4j.Logger;

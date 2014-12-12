@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.component.sys;
+package com.sunsharing.component.eos.clientproxy.sys;
 
 import com.sunsharing.eos.client.sys.SysParamVar;
 

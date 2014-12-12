@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class FilterManager {
     private static Logger logger = Logger.getLogger(FilterManager.class);
-    private static List<Filter> filters = new ArrayList<Filter>();
+    private static List<AbstractServiceFilter> filters = new ArrayList<AbstractServiceFilter>();
 
     public static FilterChain createFilterChain(String appId, String serviceId) {
         List<AbstractServiceFilter> filters = FilterManager.matchFilters(appId, serviceId);
@@ -47,15 +47,16 @@ public class FilterManager {
     public static void registerFilter(String pathRegex, String filterClassName) {
         try {
             AbstractServiceFilter filter = (AbstractServiceFilter) Class.forName(filterClassName).newInstance();
-            registerFilter(pathRegex, filter);
-            logger.info(String.format("注册过滤器：%s", filterClassName));
+            filter.setPathRegex(pathRegex);
+            registerFilter(filter);
         } catch (Exception e) {
             logger.error(String.format("注册过滤器newInstance异常!：%s", filterClassName), e);
         }
     }
 
-    public static void registerFilter(String pathRegex, AbstractServiceFilter filter) {
-        filters.add(new Filter(pathRegex, filter));
+    public static void registerFilter(AbstractServiceFilter filter) {
+        filters.add(filter);
+        logger.info(String.format("注册过滤器：%s", filter.getClass().getName()));
     }
 
     /**
@@ -68,38 +69,15 @@ public class FilterManager {
     private static List<AbstractServiceFilter> matchFilters(String appId, String serviceId) {
         String path = "/" + appId + "/" + serviceId;
         List<AbstractServiceFilter> filterList = new ArrayList<AbstractServiceFilter>();
-        for (Filter filter : filters) {
-            if (path.matches(filter.getPath())) {
-                filterList.add(filter.getServiceFilter());
+        for (int i = 0, l = filters.size(); i < l; i++) {
+            AbstractServiceFilter filter = filters.get(i);
+            if (path.matches(filter.getPathRegex())) {
+                filterList.add(filter);
             }
         }
         return filterList;
     }
 
-    private static class Filter {
-        private String path;
-        private AbstractServiceFilter serviceFilter;
 
-        public Filter(String path, AbstractServiceFilter serviceFilter) {
-            this.path = path;
-            this.serviceFilter = serviceFilter;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public void setPath(String path) {
-            this.path = path;
-        }
-
-        public AbstractServiceFilter getServiceFilter() {
-            return serviceFilter;
-        }
-
-        public void setServiceFilter(AbstractServiceFilter serviceFilter) {
-            this.serviceFilter = serviceFilter;
-        }
-    }
 }
 

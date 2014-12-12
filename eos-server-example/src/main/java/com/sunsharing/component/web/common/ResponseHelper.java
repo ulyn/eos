@@ -14,7 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.component.web.common;
+package com.sunsharing.component.eos.clientproxy.web.common;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.log4j.Logger;

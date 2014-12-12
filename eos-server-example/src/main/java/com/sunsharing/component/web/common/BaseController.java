@@ -8,7 +8,7 @@
  * 类描述：Controller的基类
  * 
  */
-package com.sunsharing.component.web.common;
+package com.sunsharing.component.eos.clientproxy.web.common;
 
 import org.apache.log4j.Logger;
 

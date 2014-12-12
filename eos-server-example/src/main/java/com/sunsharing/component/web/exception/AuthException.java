@@ -1,4 +1,4 @@
-package com.sunsharing.component.web.exception;
+package com.sunsharing.component.eos.clientproxy.web.exception;
 
 /**
  * Created with IntelliJ IDEA.

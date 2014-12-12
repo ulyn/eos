@@ -22,6 +22,8 @@ import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.filter.AbstractServiceFilter;
 import com.sunsharing.eos.common.filter.FilterChain;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
@@ -42,24 +44,21 @@ import org.apache.log4j.Logger;
 public class RpcFilter extends AbstractServiceFilter {
     private Logger logger = Logger.getLogger(RpcFilter.class);
 
-    String transporter = Constants.DEFAULT_TRANSPORTER;
-    int timeout = 30000;
-
-    public RpcFilter(String transporter, int timeout) {
-        this.transporter = transporter;
-        this.timeout = timeout;
+    public RpcFilter() {
     }
 
 
     /**
      * 执行过滤
      *
-     * @param requestPro
-     * @param responsePro
+     * @param serviceRequest
+     * @param serviceResponse
      * @param fc
      */
     @Override
-    protected void doFilter(RequestPro requestPro, ResponsePro responsePro, FilterChain fc) throws Exception {
+    protected void doFilter(ServiceRequest serviceRequest,
+                            ServiceResponse serviceResponse, FilterChain fc) throws Exception {
+        RequestPro requestPro = serviceRequest.getRequestPro();
         //zookeeper取得服务的ip
         boolean isMock = StringUtils.isBlank(requestPro.getMock());
         if (isMock) {
@@ -73,15 +72,14 @@ public class RpcFilter extends AbstractServiceFilter {
         RemoteHelper helper = new RemoteHelper();
         ResponsePro retResponse = null;
         try {
-            retResponse = helper.call(requestPro, ip, port, transporter, timeout);
+            ServiceResponse response = helper.call(serviceRequest, ip, port);
+            serviceResponse.write(response.getResponsePro());
         } catch (RpcException e) {
             throw e;
         } catch (Throwable throwable) {
             throw new RpcException(RpcException.NETWORK_EXCEPTION, throwable);
         }
-        responsePro.setStatus(retResponse.getStatus());
-        responsePro.setResultBytes(retResponse.getResultBytes());
-        fc.doFilter(requestPro, responsePro);
+        fc.doFilter(serviceRequest, serviceResponse);
     }
 
     private JSONObject getEosLocation(String appId, String serviceId, String serviceVersion, boolean isMock) throws RpcException {

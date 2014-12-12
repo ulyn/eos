@@ -118,23 +118,6 @@ public abstract class BaseProtocol {
         return null;
     }
 
-    protected byte[] getSerializationBytes(Object o) throws Exception {
-        Serialization serial = SerializationFactory.createSerialization(serialization);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutput objectOutput = serial.serialize(outputStream);
-        objectOutput.writeObject(o);
-        objectOutput.flushBuffer();
-        return outputStream.toByteArray();
-    }
-
-    protected <T> T serializationBytesToObject(byte[] bytes, Class<T> cls) throws Exception {
-        Serialization serial = SerializationFactory.createSerialization(serialization);
-        InputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInput objectInput = serial.deserialize(inputStream);
-        return objectInput.readObject(cls);
-    }
-
-
     protected abstract int getRealBodyLength();
 
     public abstract ChannelBuffer generate();

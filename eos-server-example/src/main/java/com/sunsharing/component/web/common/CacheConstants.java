@@ -1,4 +1,4 @@
-package com.sunsharing.component.web.common;
+package com.sunsharing.component.eos.clientproxy.web.common;
 
 /**  主要存放缓存用到的key
  * Created with IntelliJ IDEA.

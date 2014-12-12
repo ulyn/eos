@@ -1,5 +1,7 @@
 package com.sunsharing.eos.common.rpc.remoting.netty;
 
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import org.jboss.netty.channel.Channel;
@@ -10,25 +12,30 @@ import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
  */
 public class ShortNettyClient extends NettyClient {
 
+    /**
+     * 执行远程调用的方法
+     *
+     * @param serviceRequest
+     * @param ip
+     * @param port
+     * @return
+     */
     @Override
-    public ResponsePro doRpc(RequestPro pro, String ip, int port, int timeout) throws Throwable {
-
-        Channel channel = connect(ip,port);
+    public ServiceResponse doRpc(ServiceRequest serviceRequest, String ip, int port) throws Throwable {
+        Channel channel = connect(ip, port);
         logger.debug("client is connected to netty server " + ip + ":" + port);
         ShortChannel shortChannel = new ShortChannel();
         shortChannel.setChannel(channel);
-        try
-        {
-            return getResult(pro,shortChannel,timeout);
-        }catch (Exception e)
-        {
+        try {
+            ResponsePro responsePro = getResult(serviceRequest.getRequestPro(), shortChannel, serviceRequest.getTimeout());
+            return new ServiceResponse(responsePro);
+        } catch (Exception e) {
             logger.error("请求出错！", e);
             throw e;
-        }finally {
+        } finally {
             if (channel != null) {
                 channel.close();
             }
         }
     }
-
 }

@@ -1,7 +1,5 @@
-package com.sunsharing.component.web.common;
+package com.sunsharing.component.eos.clientproxy.web.common;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import com.sunsharing.component.web.exception.AuthException;
+import com.sunsharing.component.eos.clientproxy.web.exception.AuthException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.ModelAndView;

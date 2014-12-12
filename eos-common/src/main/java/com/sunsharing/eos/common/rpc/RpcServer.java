@@ -17,6 +17,8 @@
 package com.sunsharing.eos.common.rpc;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
@@ -44,6 +46,6 @@ public interface RpcServer {
 
     void start();
 
-    ResponsePro callService(RequestPro requestPro);
+    ServiceResponse callService(ServiceRequest request);
 }
 

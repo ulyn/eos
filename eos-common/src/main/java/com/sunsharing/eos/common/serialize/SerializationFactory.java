@@ -16,9 +16,15 @@
  */
 package com.sunsharing.eos.common.serialize;
 
+import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.common.serialize.support.hessian.Hessian2Serialization;
 import com.sunsharing.eos.common.serialize.support.java.JavaSerialization;
 import com.sunsharing.eos.common.serialize.support.json.FastJsonSerialization;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <pre></pre>
@@ -43,6 +49,32 @@ public class SerializationFactory {
         } else {
             throw new RuntimeException("指定的序列化方式找不到实现类：serialization=" + serialization);
         }
+    }
+
+    public static byte[] serializeToBytes(Object o, String serialization) throws IOException {
+        Serialization serial = SerializationFactory.createSerialization(serialization);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutput objectOutput = serial.serialize(outputStream);
+        objectOutput.writeObject(o);
+        objectOutput.flushBuffer();
+        return outputStream.toByteArray();
+    }
+
+    public static String serializeToBase64Str(Object o, String serialization) throws IOException {
+        byte[] bytes = serializeToBytes(o, serialization);
+        return Base64.encode(bytes);
+    }
+
+    public static <T> T deserializeBytes(byte[] bytes, Class<T> cls, String serialization) throws IOException, ClassNotFoundException {
+        Serialization serial = SerializationFactory.createSerialization(serialization);
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        ObjectInput objectInput = serial.deserialize(inputStream);
+        return objectInput.readObject(cls);
+    }
+
+    public static <T> T deserializeBase64Str(String base64Str, Class<T> cls, String serialization) throws IOException, ClassNotFoundException {
+        byte[] bytes = Base64.decode(base64Str);
+        return deserializeBytes(bytes, cls, serialization);
     }
 }
 

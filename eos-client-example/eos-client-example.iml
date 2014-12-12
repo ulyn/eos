@@ -8,11 +8,12 @@
         </descriptors>
         <webroots>
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
+          <root url="file://$MODULE_DIR$/lib" relative="WEB-INF/lib" />
         </webroots>
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -28,7 +29,7 @@
     <orderEntry type="library" name="Maven: org.hibernate:hibernate:3.2.6.ga" level="project" />
     <orderEntry type="library" name="Maven: net.sf.ehcache:ehcache:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.0.4" level="project" />
-    <orderEntry type="library" name="Maven: commons-collections:commons-collections:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: javax.transaction:jta:1.0.1B" level="project" />
     <orderEntry type="library" name="Maven: asm:asm-attrs:1.5.3" level="project" />
     <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
@@ -66,14 +67,23 @@
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.1.23" level="project" />
     <orderEntry type="module" module-name="eos-client" />
     <orderEntry type="module" module-name="eos-common" />
-    <orderEntry type="library" name="Maven: com.caucho:hessian:4.0.7" level="project" />
+    <orderEntry type="library" name="Maven: com.caucho:hessian:4.0.33" level="project" />
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: jline:jline:0.9.94" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.netty:netty:3.2.2.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.sunsharing.component:resvalidate:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.sunsharing.component:resvalidate:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.sunsharing.component:utils:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:15.0" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.sunsharing.eos:interface:1.0.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jedi.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

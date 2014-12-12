@@ -20,6 +20,8 @@ import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.AbstractServiceFilter;
 import com.sunsharing.eos.common.filter.FilterChain;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
@@ -57,17 +59,18 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
     /**
      * 执行过滤
      *
-     * @param requestPro
-     * @param responsePro
+     * @param req
+     * @param res
      * @param fc
      */
     @Override
-    protected void doFilter(RequestPro requestPro, ResponsePro responsePro, FilterChain fc) throws Exception {
+    protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain fc) throws Exception {
+        RequestPro requestPro = req.getRequestPro();
         Invocation inv = requestPro.toInvocation();
         RpcContext rpcContext = requestPro.toRpcContext();
         Result result = call(requestPro.getServiceId(), inv, rpcContext);
-        responsePro.setResult(result);
-        fc.doFilter(requestPro, responsePro);
+        res.write(result);
+        fc.doFilter(req, res);
     }
 
     public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {

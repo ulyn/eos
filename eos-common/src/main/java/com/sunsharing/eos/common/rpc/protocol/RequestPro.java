@@ -19,6 +19,7 @@ package com.sunsharing.eos.common.rpc.protocol;
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -128,7 +129,7 @@ public class RequestPro extends BaseProtocol {
      */
     public void setInvocation(Invocation invocation) throws Exception {
         this.invocation = invocation;
-        setInvocationBytes(getSerializationBytes(invocation));
+        setInvocationBytes(SerializationFactory.serializeToBytes(invocation, this.getSerialization()));
     }
 
     /**
@@ -138,7 +139,7 @@ public class RequestPro extends BaseProtocol {
      * @throws Exception
      */
     public Invocation toInvocation() throws Exception {
-        return serializationBytesToObject(invocationBytes, RpcInvocation.class);
+        return SerializationFactory.deserializeBytes(invocationBytes, RpcInvocation.class, this.getSerialization());
     }
 
     /**
@@ -148,7 +149,7 @@ public class RequestPro extends BaseProtocol {
      */
     public void setRpcContext(RpcContext rpcContext) throws Exception {
         this.rpcContext = rpcContext;
-        setRpcContextBytes(getSerializationBytes(rpcContext));
+        setRpcContextBytes(SerializationFactory.serializeToBytes(rpcContext, this.getSerialization()));
     }
 
     /**
@@ -158,7 +159,7 @@ public class RequestPro extends BaseProtocol {
      * @throws Exception
      */
     public RpcContext toRpcContext() throws Exception {
-        return serializationBytesToObject(rpcContextBytes, RpcContext.class);
+        return SerializationFactory.deserializeBytes(rpcContextBytes, RpcContext.class, this.getSerialization());
     }
 
     @Override

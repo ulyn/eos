@@ -95,7 +95,7 @@
 
     <servlet>
         <servlet-name>SysInit</servlet-name>
-        <servlet-class>com.sunsharing.component.eos.serverexample.sys.SysInit</servlet-class>
+        <servlet-class>com.sunsharing.eos.serverexample.sys.SysInit</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet>

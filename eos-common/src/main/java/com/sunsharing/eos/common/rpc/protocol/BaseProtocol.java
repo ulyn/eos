@@ -28,6 +28,7 @@ import org.jboss.netty.channel.Channel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public abstract class BaseProtocol {
+public abstract class BaseProtocol implements Serializable {
     protected static byte REQUEST_MSG = 'A';
     protected static byte REQUEST_MSG_RESULT = 'B';
     protected static byte HEART_BEAT = 'H';

@@ -78,5 +78,5 @@
     <!-- ===========================Spring的其它配置============================ -->
 
     <bean id="exceptionResolver"
-          class="com.sunsharing.component.eos.clientexample.web.exception.ExceptionResolver"></bean>
+          class="com.sunsharing.eos.clientexample.web.exception.ExceptionResolver"></bean>
 </beans> 

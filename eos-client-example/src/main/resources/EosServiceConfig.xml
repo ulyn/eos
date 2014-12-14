@@ -8,10 +8,10 @@
         </bean>
     </beans>
     <filters>
-        <!--<filter>-->
-        <!--过滤路径应用id+服务名，正则表达式，/{appid}/{service}-->
-        <!--<path>/\w*/\w*</path>-->
-        <!--<class>com.sunsharing.component.eos.clientexample.test.WebServiceProxyFilter</class>-->
-        <!--</filter>-->
+        <filter>
+            <!--过滤路径应用id+服务名，正则表达式，/{appid}/{service}-->
+            <path>/\w*/\w*</path>
+            <class>com.sunsharing.eos.clientexample.test.WebServiceProxyFilter</class>
+        </filter>
     </filters>
 </eos>

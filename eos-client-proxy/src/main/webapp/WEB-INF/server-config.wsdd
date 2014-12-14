@@ -4,7 +4,7 @@
              type="java:org.apache.axis.handlers.http.URLMapper"/>
     <service name="eosProxy" provider="java:RPC">
         <parameter name="className"
-                   value="com.sunsharing.component.eos.clientproxy.ws.WebServiceProxy"/>
+                   value="com.sunsharing.eos.clientproxy.ws.WebServiceProxy"/>
     </service>
     <transport name="http">
         <requestFlow>

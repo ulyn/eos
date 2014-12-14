@@ -123,5 +123,5 @@
     <!-- ===========================Spring的其它配置============================ -->
 
     <bean id="exceptionResolver"
-          class="com.sunsharing.component.eos.clientproxy.web.exception.ExceptionResolver"></bean>
+          class="com.sunsharing.eos.clientproxy.web.exception.ExceptionResolver"></bean>
 </beans> 

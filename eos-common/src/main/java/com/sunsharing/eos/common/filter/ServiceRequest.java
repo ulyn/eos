@@ -24,10 +24,7 @@ import com.sunsharing.eos.common.serialize.ObjectOutput;
 import com.sunsharing.eos.common.serialize.Serialization;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +39,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class ServiceRequest {
+public class ServiceRequest implements Serializable {
 
     private RequestPro requestPro;
     private String transporter;

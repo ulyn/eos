@@ -92,7 +92,7 @@
         </init-param>
         <init-param>
             <param-name>sysParamVar</param-name>
-            <param-value>com.sunsharing.component.eos.clientexample.sys.ParamVarImpl</param-value>
+            <param-value>com.sunsharing.eos.clientexample.sys.ParamVarImpl</param-value>
         </init-param>
         <load-on-startup>0</load-on-startup>
     </servlet>
@@ -106,7 +106,7 @@
 
     <servlet>
         <servlet-name>SysInit</servlet-name>
-        <servlet-class>com.sunsharing.component.eos.clientexample.sys.SysInit</servlet-class>
+        <servlet-class>com.sunsharing.eos.clientexample.sys.SysInit</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet>

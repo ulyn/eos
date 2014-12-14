@@ -16,19 +16,11 @@
  */
 package com.sunsharing.eos.common.filter;
 
-import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.serialize.ObjectInput;
-import com.sunsharing.eos.common.serialize.ObjectOutput;
-import com.sunsharing.eos.common.serialize.Serialization;
-import com.sunsharing.eos.common.serialize.SerializationFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.Serializable;
 
 /**
  * <pre></pre>
@@ -41,7 +33,7 @@ import java.io.InputStream;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class ServiceResponse {
+public class ServiceResponse implements Serializable {
 
     ResponsePro responsePro;
     Class retType = null;
@@ -55,15 +47,15 @@ public class ServiceResponse {
         this.responsePro = responsePro;
     }
 
-    public void write(ResponsePro responsePro) {
+    public void writeResponsePro(ResponsePro responsePro) {
         this.responsePro = responsePro;
     }
 
-    public void write(RpcResult result) {
+    public void writeResult(Result result) {
         this.responsePro.setResult(result);
     }
 
-    public void write(Object o) {
+    public void writeValue(Object o) {
         RpcResult result = new RpcResult(o);
         this.responsePro.setResult(result);
     }
@@ -81,5 +73,14 @@ public class ServiceResponse {
         return retType;
     }
 
+    public static void main(String[] args) {
+        ServiceResponse response = new ServiceResponse(new ResponsePro());
+        Result result = new RpcResult();
+        response.writeResult(result);
+        response.writeResult(new RpcResult());
+        response.writeResponsePro(new ResponsePro());
+        response.writeValue("");
+
+    }
 }
 

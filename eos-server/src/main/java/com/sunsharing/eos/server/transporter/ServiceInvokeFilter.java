@@ -69,7 +69,7 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
         Invocation inv = requestPro.toInvocation();
         RpcContext rpcContext = requestPro.toRpcContext();
         Result result = call(requestPro.getServiceId(), inv, rpcContext);
-        res.write(result);
+        res.writeResult(result);
         fc.doFilter(req, res);
     }
 

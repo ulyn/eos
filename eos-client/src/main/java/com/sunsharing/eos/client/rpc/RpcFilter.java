@@ -72,7 +72,7 @@ public class RpcFilter extends AbstractServiceFilter {
         RemoteHelper helper = new RemoteHelper();
         try {
             ServiceResponse response = helper.call(serviceRequest, ip, port);
-            serviceResponse.write(response.getResponsePro());
+            serviceResponse.writeResponsePro(response.getResponsePro());
         } catch (RpcException e) {
             throw e;
         } catch (Throwable throwable) {

@@ -1,14 +1,7 @@
-<%@ page import="com.sunsharing.eos.client.EosInit" %>
 <%@ page import="com.sunsharing.eos.client.ServiceContext" %>
-<%@ page import="com.sunsharing.component.eos.clientexample.test.TestType" %>
-<%@ page import="java.util.concurrent.ExecutorService" %>
-<%@ page import="java.util.concurrent.Executors" %>
-<%@ page import="com.sunsharing.component.eos.clientexample.test.Test2" %>
 <%@ page import="com.sunsharing.eos.client.rpc.DynamicRpc" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.sunsharing.jedi.server.service.Complaint" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.sunsharing.component.eos.clientexample.test.TestService" %>
+<%@ page import="com.sunsharing.eos.clientexample.test.TestService" %>
 <%--
   Created by IntelliJ IDEA.
   User: criss

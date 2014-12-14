@@ -20,6 +20,7 @@ import com.sunsharing.eos.common.filter.AbstractServiceFilter;
 import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.rpc.RpcException;
 
 /**
  * <pre></pre>
@@ -46,6 +47,6 @@ public abstract class ProxyFilter extends AbstractServiceFilter {
 //        filterChain.doFilter(req,res);代理走，不继续往下执行了
     }
 
-    public abstract void process(ServiceRequest req, ServiceResponse res);
+    public abstract void process(ServiceRequest req, ServiceResponse res) throws Exception;
 }
 

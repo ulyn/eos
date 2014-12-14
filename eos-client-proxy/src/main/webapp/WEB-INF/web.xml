@@ -6,8 +6,8 @@
 	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 
-    <display-name>Ferrari</display-name>
-    <description>Ferrari Application</description>
+    <display-name>eos-client-proxy</display-name>
+    <description>eos-client-proxy Application</description>
 
     <!-- Spring ApplicationContext配置文件的路径,可使用通配符,多个路径用,号分隔此参数用于后面的Spring Context Loader-->
     <context-param>

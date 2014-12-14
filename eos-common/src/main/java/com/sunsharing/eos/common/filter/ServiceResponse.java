@@ -59,6 +59,10 @@ public class ServiceResponse {
         this.responsePro = responsePro;
     }
 
+    public void write(RpcResult result) {
+        this.responsePro.setResult(result);
+    }
+
     public void write(Object o) {
         RpcResult result = new RpcResult(o);
         this.responsePro.setResult(result);

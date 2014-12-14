@@ -60,7 +60,7 @@ public class RpcFilter extends AbstractServiceFilter {
                             ServiceResponse serviceResponse, FilterChain fc) throws Exception {
         RequestPro requestPro = serviceRequest.getRequestPro();
         //zookeeper取得服务的ip
-        boolean isMock = StringUtils.isBlank(requestPro.getMock());
+        boolean isMock = !StringUtils.isBlank(requestPro.getMock());
         if (isMock) {
             logger.info(requestPro.getServiceId() + "." + requestPro.getInvocation().getMethodName() + " use mock:" + requestPro.getMock());
         }
@@ -70,7 +70,6 @@ public class RpcFilter extends AbstractServiceFilter {
         int port = jo.getInteger("port");
 
         RemoteHelper helper = new RemoteHelper();
-        ResponsePro retResponse = null;
         try {
             ServiceResponse response = helper.call(serviceRequest, ip, port);
             serviceResponse.write(response.getResponsePro());

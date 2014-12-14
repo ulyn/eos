@@ -1,11 +1,14 @@
 <%@ page import="com.sunsharing.eos.client.EosInit" %>
 <%@ page import="com.sunsharing.eos.client.ServiceContext" %>
-<%@ page import="com.sunsharing.component.test.TestType" %>
+<%@ page import="com.sunsharing.component.eos.clientexample.test.TestType" %>
 <%@ page import="java.util.concurrent.ExecutorService" %>
 <%@ page import="java.util.concurrent.Executors" %>
-<%@ page import="com.sunsharing.component.test.Test2" %>
+<%@ page import="com.sunsharing.component.eos.clientexample.test.Test2" %>
 <%@ page import="com.sunsharing.eos.client.rpc.DynamicRpc" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="com.sunsharing.jedi.server.service.Complaint" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.sunsharing.component.eos.clientexample.test.TestService" %>
 <%--
   Created by IntelliJ IDEA.
   User: criss
@@ -32,9 +35,12 @@
 //                }
 //            });
 //        }
-    Map map = DynamicRpc.create("legend", "appService", "0.5")
-            .setMock("success").doInvoke(Map.class, "getSystemConfig");
+    List map = DynamicRpc.create("jedi", "complaint", "1.0")
+            .setMock("success")
+            .doInvoke(List.class, "getComplaintHistory");
     System.out.println("dong tai diao yong:" + map);
+    TestService test = ServiceContext.getBean(TestService.class);
+    System.out.println(test.testString("1", "1"));
 //        try
 //        {
 //        Test2 test = ServiceContext.getBean(Test2.class);

@@ -1,11 +1,11 @@
 /**
- * @(#)ProxyFilter
+ * @(#)ServiceFilterException
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
  *<br> Copyright:  Copyright (c) 2014
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-12-12 下午3:53
+ *<br> 14-12-15 上午10:29
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,36 +14,35 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.client.rpc;
-
-import com.sunsharing.eos.common.filter.*;
-import com.sunsharing.eos.common.rpc.RpcException;
+package com.sunsharing.eos.common.filter;
 
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
  * <br> <b>功能描述:</b>
- * <br> 代理过滤器
+ * <br>
  * <br> 注意事项:
  * <br>
  * <br>
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public abstract class ProxyFilter extends AbstractServiceFilter {
-    /**
-     * 执行过滤
-     *
-     * @param req
-     * @param res
-     * @param filterChain
-     */
-    @Override
-    protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws ServiceFilterException, RpcException {
-        process(req, res);
-//        filterChain.doFilter(req,res);代理走，不继续往下执行了
+public class ServiceFilterException extends Exception {
+
+    public ServiceFilterException() {
+        super();
     }
 
-    public abstract void process(ServiceRequest req, ServiceResponse res) throws ServiceFilterException, RpcException;
+    public ServiceFilterException(String message) {
+        super(message);
+    }
+
+    public ServiceFilterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ServiceFilterException(Throwable cause) {
+        super(cause);
+    }
 }
 

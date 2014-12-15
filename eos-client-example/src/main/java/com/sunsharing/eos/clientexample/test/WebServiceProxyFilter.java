@@ -17,6 +17,7 @@
 package com.sunsharing.eos.clientexample.test;
 
 import com.sunsharing.eos.client.rpc.ProxyFilter;
+import com.sunsharing.eos.common.filter.ServiceFilterException;
 import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
@@ -35,12 +36,16 @@ import com.sunsharing.eos.common.serialize.SerializationFactory;
 public class WebServiceProxyFilter extends ProxyFilter {
 
     @Override
-    public void process(ServiceRequest req, ServiceResponse res) throws Exception {
-        String serialization = req.getRequestPro().getSerialization();
-        String base = SerializationFactory.serializeToBase64Str(req, serialization);
-        String resutlstr = (String) CallWs.send("http://192.168.0.60:8095/services/eosProxy?wsdl", "invoke", new Object[]{base, serialization});
-        ServiceResponse response = SerializationFactory.deserializeBase64Str(resutlstr, ServiceResponse.class, serialization);
-        res.writeResponsePro(response.getResponsePro());
+    public void process(ServiceRequest req, ServiceResponse res) throws ServiceFilterException {
+        try {
+            String serialization = req.getRequestPro().getSerialization();
+            String base = SerializationFactory.serializeToBase64Str(req, serialization);
+            String resutlstr = (String) CallWs.send("http://192.168.0.60:8095/services/eosProxy?wsdl", "invoke", new Object[]{base, serialization});
+            ServiceResponse response = SerializationFactory.deserializeBase64Str(resutlstr, ServiceResponse.class, serialization);
+            res.writeResponsePro(response.getResponsePro());
+        } catch (Exception e) {
+            throw new ServiceFilterException(e.getMessage(), e);
+        }
     }
 }
 

@@ -24,6 +24,8 @@ import com.sunsharing.eos.common.utils.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
+import java.io.IOException;
+
 
 /**
  * <pre></pre>
@@ -127,7 +129,7 @@ public class RequestPro extends BaseProtocol {
      *
      * @param invocation
      */
-    public void setInvocation(Invocation invocation) throws Exception {
+    public void setInvocation(Invocation invocation) throws IOException {
         this.invocation = invocation;
         setInvocationBytes(SerializationFactory.serializeToBytes(invocation, this.getSerialization()));
     }
@@ -138,7 +140,7 @@ public class RequestPro extends BaseProtocol {
      * @return
      * @throws Exception
      */
-    public Invocation toInvocation() throws Exception {
+    public Invocation toInvocation() throws IOException, ClassNotFoundException {
         return SerializationFactory.deserializeBytes(invocationBytes, RpcInvocation.class, this.getSerialization());
     }
 
@@ -147,7 +149,7 @@ public class RequestPro extends BaseProtocol {
      *
      * @param rpcContext
      */
-    public void setRpcContext(RpcContext rpcContext) throws Exception {
+    public void setRpcContext(RpcContext rpcContext) throws IOException {
         this.rpcContext = rpcContext;
         setRpcContextBytes(SerializationFactory.serializeToBytes(rpcContext, this.getSerialization()));
     }
@@ -158,7 +160,7 @@ public class RequestPro extends BaseProtocol {
      * @return
      * @throws Exception
      */
-    public RpcContext toRpcContext() throws Exception {
+    public RpcContext toRpcContext() throws IOException, ClassNotFoundException {
         return SerializationFactory.deserializeBytes(rpcContextBytes, RpcContext.class, this.getSerialization());
     }
 

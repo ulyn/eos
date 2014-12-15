@@ -36,7 +36,7 @@ import java.io.Serializable;
 public class ServiceResponse implements Serializable {
 
     ResponsePro responsePro;
-    Class retType = null;
+//    Class retType = null;
 
     public ServiceResponse(String serialization) {
         this.responsePro = new ResponsePro();
@@ -69,9 +69,9 @@ public class ServiceResponse implements Serializable {
         return responsePro;
     }
 
-    public Class getRetType() {
-        return retType;
-    }
+//    public Class getRetType() {
+//        return retType;
+//    }
 
     public static void main(String[] args) {
         ServiceResponse response = new ServiceResponse(new ResponsePro());

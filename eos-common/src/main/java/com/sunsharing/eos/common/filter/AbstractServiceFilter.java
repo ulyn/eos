@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.common.filter;
 
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
@@ -45,7 +46,7 @@ public abstract class AbstractServiceFilter {
     /**
      * 执行过滤
      */
-    protected abstract void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws Exception;
+    protected abstract void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws ServiceFilterException, RpcException;
 
 }
 

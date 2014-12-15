@@ -18,10 +18,7 @@ package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
-import com.sunsharing.eos.common.filter.AbstractServiceFilter;
-import com.sunsharing.eos.common.filter.FilterChain;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
@@ -64,13 +61,17 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
      * @param fc
      */
     @Override
-    protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain fc) throws Exception {
-        RequestPro requestPro = req.getRequestPro();
-        Invocation inv = requestPro.toInvocation();
-        RpcContext rpcContext = requestPro.toRpcContext();
-        Result result = call(requestPro.getServiceId(), inv, rpcContext);
-        res.writeResult(result);
-        fc.doFilter(req, res);
+    protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain fc) throws ServiceFilterException, RpcException {
+        try {
+            RequestPro requestPro = req.getRequestPro();
+            Invocation inv = requestPro.toInvocation();
+            RpcContext rpcContext = requestPro.toRpcContext();
+            Result result = call(requestPro.getServiceId(), inv, rpcContext);
+            res.writeResult(result);
+            fc.doFilter(req, res);
+        } catch (Exception e) {
+            throw new RpcException(e.getMessage(), e);
+        }
     }
 
     public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {

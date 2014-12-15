@@ -22,10 +22,7 @@ import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.filter.FilterChain;
-import com.sunsharing.eos.common.filter.FilterManager;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
@@ -53,7 +50,7 @@ import java.util.Map;
  * <br>
  */
 public class DynamicRpc {
-    Logger logger = Logger.getLogger(DynamicRpc.class);
+
     RequestPro req = null;
     RpcContext rpcContext;
     String transporter = Constants.DEFAULT_TRANSPORTER;
@@ -105,7 +102,7 @@ public class DynamicRpc {
     }
 
 
-    public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
+    public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) throws RpcException {
         RequestPro requestPro = serviceRequest.getRequestPro();
         FilterChain filterChain =
                 FilterManager.createFilterChain(requestPro.getAppId(), requestPro.getServiceId());
@@ -113,10 +110,8 @@ public class DynamicRpc {
         filterChain.addFilter(rpcFilter);
         try {
             filterChain.doFilter(serviceRequest, serviceResponse);
-        } catch (RpcException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RpcException(e);
+        } catch (ServiceFilterException e) {
+            throw new RpcException(e.getMessage(), e);
         }
     }
 
@@ -140,7 +135,7 @@ public class DynamicRpc {
         try {
             this.req.setRpcContext(this.rpcContext);
         } catch (Exception e) {
-            throw new RpcException("设置RpcContext异常", e);
+            throw new RpcException("设置RpcContext异常:" + e.getMessage(), e);
         }
         RpcInvocation invocation = new RpcInvocation();
         invocation.setMethodName(methodName);
@@ -148,7 +143,7 @@ public class DynamicRpc {
         try {
             this.req.setInvocation(invocation);
         } catch (Exception e) {
-            throw new RpcException("设置RpcInvocation异常", e);
+            throw new RpcException("设置RpcInvocation异常:" + e.getMessage(), e);
         }
         ServiceRequest request = new ServiceRequest(req, transporter, timeout);
 
@@ -162,7 +157,7 @@ public class DynamicRpc {
         } catch (RpcException e) {
             throw e;
         } catch (Throwable e) {
-            throw new RpcException(e);
+            throw new RpcException(e.getMessage(), e);
         }
     }
 

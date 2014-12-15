@@ -63,7 +63,7 @@ public class FilterChain {
      * @param req
      * @param res
      */
-    public void doFilter(ServiceRequest req, ServiceResponse res) throws Exception {
+    public void doFilter(ServiceRequest req, ServiceResponse res) throws ServiceFilterException {
         if (res.getResponsePro().getStatus() == Constants.STATUS_ERROR) {
             // 有异常的时候退出过滤
             return;

@@ -20,10 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.filter.AbstractServiceFilter;
-import com.sunsharing.eos.common.filter.FilterChain;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
@@ -57,7 +54,7 @@ public class RpcFilter extends AbstractServiceFilter {
      */
     @Override
     protected void doFilter(ServiceRequest serviceRequest,
-                            ServiceResponse serviceResponse, FilterChain fc) throws Exception {
+                            ServiceResponse serviceResponse, FilterChain fc) throws ServiceFilterException, RpcException {
         RequestPro requestPro = serviceRequest.getRequestPro();
         //zookeeper取得服务的ip
         boolean isMock = !StringUtils.isBlank(requestPro.getMock());

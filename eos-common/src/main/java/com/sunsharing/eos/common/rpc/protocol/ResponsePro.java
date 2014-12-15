@@ -18,11 +18,14 @@ package com.sunsharing.eos.common.rpc.protocol;
 
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.Result;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+
+import java.io.IOException;
 
 /**
  * <pre></pre>
@@ -36,7 +39,6 @@ import org.jboss.netty.buffer.ChannelBuffers;
  * <br>
  */
 public class ResponsePro extends BaseProtocol {
-    Logger logger = Logger.getLogger(ResponsePro.class);
 
     /**
      * status 0 正常 1异常
@@ -67,8 +69,9 @@ public class ResponsePro extends BaseProtocol {
         }
         try {
             setResultBytes(SerializationFactory.serializeToBytes(result, this.getSerialization()));
-        } catch (Exception e1) {
-            logger.error("eos代理返回异常结果序列化出错！", e1);
+        } catch (Exception e) {
+//            logger.error("eos代理返回异常结果序列化出错！", e1);
+            setExceptionResult(new RpcException(RpcException.SERIALIZATION_EXCEPTION, "eos代理返回异常结果序列化出错！", e));
             setStatus(Constants.STATUS_ERROR);
         }
     }
@@ -77,7 +80,7 @@ public class ResponsePro extends BaseProtocol {
         setResult(new RpcResult(throwable));
     }
 
-    public Result toResult() throws Exception {
+    public Result toResult() throws IOException, ClassNotFoundException {
         if (resultBytes == null || resultBytes.length == 0) {
             return null;
         }

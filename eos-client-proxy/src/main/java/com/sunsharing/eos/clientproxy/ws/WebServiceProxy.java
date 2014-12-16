@@ -17,11 +17,14 @@
 package com.sunsharing.eos.clientproxy.ws;
 
 import com.sunsharing.eos.client.rpc.DynamicRpc;
+import com.sunsharing.eos.clientproxy.ProxyInvoke;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -37,20 +40,15 @@ import java.io.IOException;
  * <br>
  */
 public class WebServiceProxy {
+    private Logger logger = Logger.getLogger(WebServiceProxy.class);
 
     /**
      * @param serviceReqBase64Str ServiceRequest对象的base64字符串
      * @param serialization       ServiceRequest串的序列化方式，当为空时，默认为Constants.DEFAULT_SERIALIZATION
      * @return
      */
-    public String invoke(String serviceReqBase64Str, String serialization) throws IOException, ClassNotFoundException {
-        if (StringUtils.isBlank(serialization)) {
-            serialization = Constants.DEFAULT_SERIALIZATION;
-        }
-        ServiceRequest request = SerializationFactory.deserializeBase64Str(serviceReqBase64Str, ServiceRequest.class, serialization);
-        ServiceResponse response = new ServiceResponse(serialization);
-        DynamicRpc.doInvoke(request, response);
-        return SerializationFactory.serializeToBase64Str(response, serialization);
+    public String invoke(String serviceReqBase64Str, String serialization) throws IOException {
+        return ProxyInvoke.invoke(serviceReqBase64Str, serialization);
     }
 }
 

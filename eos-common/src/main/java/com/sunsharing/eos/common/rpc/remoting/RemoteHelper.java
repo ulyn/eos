@@ -53,6 +53,11 @@ public class RemoteHelper {
         } else if (Constants.LONG_NETTY.equalsIgnoreCase(transporter)) {
             client = new LongNettyClient();
         }
+        RequestPro requestPro = serviceRequest.getRequestPro();
+        logger.info(String.format("request target %s:%s:%s-%s-%s", ip, port,
+                requestPro.getAppId(),
+                requestPro.getServiceId(),
+                requestPro.getServiceVersion()));
         return client.doRpc(serviceRequest, ip, port);
     }
 

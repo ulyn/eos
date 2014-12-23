@@ -16,11 +16,15 @@
  */
 package com.sunsharing.eos.clientproxy;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sunsharing.eos.client.rpc.DynamicRpc;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
@@ -49,6 +53,8 @@ public class ProxyInvoke {
      * @return
      */
     public static String invoke(String serviceReqBase64Str, String serialization) throws IOException {
+//        logger.info("serviceReqBase64Str="+serviceReqBase64Str);
+//        logger.info("serialization=" + serialization);
         if (StringUtils.isBlank(serialization)) {
             serialization = Constants.DEFAULT_SERIALIZATION;
         }
@@ -90,6 +96,12 @@ public class ProxyInvoke {
         } finally {
             return SerializationFactory.serializeToBytes(response, serialization);
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        ServiceRequest re = new ServiceRequest(new RequestPro(), "fastjson");
+        System.out.println(JSON.toJSONString(re, SerializerFeature.WriteMapNullValue));
+        System.out.println(SerializationFactory.serializeToBase64Str(re, "fastjson"));
     }
 }
 

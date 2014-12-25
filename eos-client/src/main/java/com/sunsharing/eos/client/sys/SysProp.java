@@ -44,7 +44,7 @@ public class SysProp {
     static Logger logger = Logger.getLogger(SysProp.class);
 
     @ParamField(name = "zookeeper_ip", required = false)
-    public static String zookeeperIp = "localhost";
+    public static String zookeeperIp = "";
 
     @ParamField(name = "zookeeper_port", required = false)
     @NumValidate

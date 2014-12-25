@@ -38,6 +38,10 @@ public class ServiceLocation {
      * 用线程初始化
      */
     public void connect() {
+        if (StringUtils.isBlank(SysProp.zookeeperIp)) {
+            logger.warn("zookeeperIp未配置，系统不进行连接 ^_^ ");
+            return;
+        }
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.setZooKeeperIP(SysProp.zookeeperIp);
         utils.setZooKeeperPort(SysProp.zookeeperPort);

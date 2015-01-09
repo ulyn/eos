@@ -40,7 +40,8 @@ public class ServiceCache {
         {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
             List<String> list = utils.getChildren(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId,true);
-            serviceMap.clear();
+            //不能先清除 serviceMap.clear();
+            Map<String,JSONArray> serviceTmpMap = new ConcurrentHashMap<String,JSONArray>();
             for(String path:list)
             {
                 String p = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path,false),"UTF-8");
@@ -50,18 +51,19 @@ public class ServiceCache {
                 String serviceId = jsonObject.getString(PathConstant.SERVICE_ID_KEY);
                 String version = jsonObject.getString(PathConstant.VERSION_KEY);
                 JSONArray obj = null;
-                if(serviceMap.get(appId+serviceId+version)!=null)
+                if(serviceTmpMap.get(appId+serviceId+version)!=null)
                 {
-                    obj = (JSONArray)serviceMap.get(appId+serviceId+version);
+                    obj = (JSONArray)serviceTmpMap.get(appId+serviceId+version);
                 }else
                 {
                      obj = new JSONArray();
 
                 }
                 obj.add(jsonObject);
-                serviceMap.put(appId+serviceId+version,obj);
+                serviceTmpMap.put(appId+serviceId+version,obj);
             }
-
+            serviceMap.clear();
+            serviceMap.putAll(serviceTmpMap);
         }catch (Exception e)
         {
             logger.error("获取"+SysProp.eosId+"节点信息失败",e);

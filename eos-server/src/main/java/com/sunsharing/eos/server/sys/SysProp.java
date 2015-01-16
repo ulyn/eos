@@ -39,11 +39,9 @@ public class SysProp {
     public static String appId;
 
     @ParamField(name = "zookeeper_ip", required = false)
-    @IpValidate
     public static String zookeeperIp = "127.0.0.1";
 
     @ParamField(name = "zookeeper_port", required = false)
-    @NumValidate
     public static int zookeeperPort = 2181;
 
     @ParamField(name = "eos_id")

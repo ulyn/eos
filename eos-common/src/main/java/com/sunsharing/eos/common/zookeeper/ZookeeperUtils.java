@@ -100,7 +100,12 @@ public class ZookeeperUtils {
                 //3.是Watcher对象的实例。Watcher对象接受ZooKeeper的响应，并通知它各种事件。
                 // ZooKeeper客户端正是通过注册Watcher的方法来获取状态变化的信息。
                 logger.info("连接"+zooKeeperIP +":"+zooKeeperPort);
-                zookeeper =new ZooKeeper(zooKeeperIP +":"+zooKeeperPort, 5000 , new DefaultWatcher());
+                String connectString = zooKeeperIP +":"+zooKeeperPort;
+                if(zooKeeperIP.indexOf(",")!=-1)
+                {
+                    connectString = zooKeeperIP;
+                }
+                zookeeper =new ZooKeeper(connectString , 5000 , new DefaultWatcher());
                 logger.info("连接完成");
                 //在使用zookeeper对象前，等待连接建立。这里利用Java的CountDownLatch类
                 //（java.util.concurrent.CountDownLatch）来阻塞，直到zookeeper实例准备好。

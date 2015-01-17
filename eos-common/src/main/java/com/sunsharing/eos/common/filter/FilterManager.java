@@ -39,15 +39,16 @@ public class FilterManager {
     private static List<AbstractServiceFilter> filters = new ArrayList<AbstractServiceFilter>();
 
     public static FilterChain createFilterChain(String appId, String serviceId) {
-        List<AbstractServiceFilter> filters = FilterManager.matchFilters(appId, serviceId);
+        List<AbstractServiceFilter> filters = matchFilters(appId, serviceId);
         FilterChain filterChain = new FilterChain(filters);
         return filterChain;
     }
 
-    public static void registerFilter(String pathRegex, String filterClassName) {
+    public static void registerFilter(String filterClassName, List<String> pathPatterns, List<String> excludePaths) {
         try {
             AbstractServiceFilter filter = (AbstractServiceFilter) Class.forName(filterClassName).newInstance();
-            filter.setPathRegex(pathRegex);
+            filter.setExcludePaths(excludePaths);
+            filter.setPathPatterns(pathPatterns);
             registerFilter(filter);
         } catch (Exception e) {
             logger.error(String.format("注册过滤器newInstance异常!：%s", filterClassName), e);
@@ -67,11 +68,10 @@ public class FilterManager {
      * @return
      */
     private static List<AbstractServiceFilter> matchFilters(String appId, String serviceId) {
-        String path = "/" + appId + "/" + serviceId;
         List<AbstractServiceFilter> filterList = new ArrayList<AbstractServiceFilter>();
         for (int i = 0, l = filters.size(); i < l; i++) {
             AbstractServiceFilter filter = filters.get(i);
-            if (path.matches(filter.getPathRegex())) {
+            if (filter.matches(appId, serviceId)) {
                 filterList.add(filter);
             }
         }

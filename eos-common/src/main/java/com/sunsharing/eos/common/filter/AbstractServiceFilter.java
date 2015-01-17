@@ -20,6 +20,9 @@ import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -32,15 +35,45 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  * <br>
  */
 public abstract class AbstractServiceFilter {
+    private List<String> pathRegexList = new ArrayList<String>();
+    private List<String> pathPatterns = new ArrayList<String>();
+    private List<String> excludePaths = new ArrayList<String>();
 
-    private String pathRegex;
-
-    public String getPathRegex() {
-        return pathRegex;
+    public List<String> getPathPatterns() {
+        return pathPatterns;
     }
 
-    public void setPathRegex(String pathRegex) {
-        this.pathRegex = pathRegex;
+    public void setPathPatterns(List<String> pathPatterns) {
+        this.pathPatterns = pathPatterns;
+        if (pathPatterns != null && pathPatterns.size() > 0) {
+            for (String pattern : pathPatterns) {
+                this.pathRegexList.add(pattern.replaceAll("\\*", "(.*)"));
+            }
+        } else {
+            this.pathRegexList.clear();
+        }
+    }
+
+    public List<String> getExcludePaths() {
+        return excludePaths;
+    }
+
+    public void setExcludePaths(List<String> excludePaths) {
+        this.excludePaths = excludePaths;
+    }
+
+    public boolean matches(String appId, String serviceId) {
+        String path = appId + "." + serviceId;
+        if (excludePaths != null && excludePaths.contains(path)) {
+            return false;
+        } else {
+            for (String regex : pathRegexList) {
+                if (path.matches(regex)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /**

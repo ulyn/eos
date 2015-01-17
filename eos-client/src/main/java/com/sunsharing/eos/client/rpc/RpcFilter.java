@@ -65,7 +65,10 @@ public class RpcFilter extends AbstractServiceFilter {
         int port = jo.getInteger("port");
 
         try {
-            ResponsePro responsePro = RpcClientFactory.create(serviceRequest.getTransporter()).doRpc(serviceRequest.toRequestPro(), ip, port, serviceRequest.getTimeout());
+            logger.info(String.format("request %s-%s-%s target eos %s:%s",
+                    serviceRequest.getAppId(), serviceRequest.getServiceId(), serviceRequest.getServiceVersion(), ip, port));
+            ResponsePro responsePro = RpcClientFactory.create(serviceRequest.getTransporter())
+                    .doRpc(serviceRequest.toRequestPro(), ip, port, serviceRequest.getTimeout());
             Result rpcResult = responsePro.toResult();
             if (responsePro.getStatus() == Constants.STATUS_ERROR) {
                 if (rpcResult.hasException()) {

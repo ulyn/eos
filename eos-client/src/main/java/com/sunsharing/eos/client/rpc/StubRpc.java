@@ -46,7 +46,7 @@ import java.util.List;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class StubRpc {
+public class StubRpc extends RpcInvoker {
     Logger logger = Logger.getLogger(StubRpc.class);
 
     public Object doInvoke(RpcInvocation invocation, ServiceConfig config) throws RpcException {

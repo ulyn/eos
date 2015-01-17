@@ -16,10 +16,14 @@
  */
 package com.sunsharing.eos.common.filter;
 
+import com.sunsharing.component.utils.base.StringUtils;
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.serialize.SerializationFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -35,51 +39,75 @@ import java.io.Serializable;
  */
 public class ServiceResponse implements Serializable {
 
-    ResponsePro responsePro;
-//    Class retType = null;
+    private Object value;
+    private Throwable exception;
+    private String serialization = Constants.DEFAULT_SERIALIZATION;
 
-    public ServiceResponse(String serialization) {
-        this.responsePro = new ResponsePro();
-        this.responsePro.setSerialization(serialization);
+    public ServiceResponse() {
     }
 
-    public ServiceResponse(ResponsePro responsePro) {
-        this.responsePro = responsePro;
+    public ServiceResponse(ServiceRequest request) {
+        this.serialization = request.getSerialization();
     }
 
-    public void writeResponsePro(ResponsePro responsePro) {
-        this.responsePro = responsePro;
+    public String getSerialization() {
+        return serialization;
     }
 
-    public void writeResult(Result result) {
-        this.responsePro.setResult(result);
+    public void setSerialization(String serialization) {
+        if (!StringUtils.isBlank(serialization)) {
+            this.serialization = serialization;
+        }
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public Throwable getException() {
+        return exception;
+    }
+
+    public boolean hasException() {
+        return exception != null;
     }
 
     public void writeValue(Object o) {
-        RpcResult result = new RpcResult(o);
-        this.responsePro.setResult(result);
+        this.value = o;
     }
 
     public void writeError(Throwable ex) {
-        RpcResult result = new RpcResult(ex);
-        this.responsePro.setResult(result);
+        this.exception = ex;
     }
 
-    public ResponsePro getResponsePro() {
+    public ResponsePro toResponsePro() {
+        ResponsePro responsePro = new ResponsePro();
+        if (this.hasException()) {
+            responsePro.setExceptionResult(this.exception);
+        } else {
+            responsePro.setSerialization(this.serialization);
+            RpcResult result = new RpcResult(this.getValue());
+            responsePro.setResult(result);
+        }
         return responsePro;
     }
 
-//    public Class getRetType() {
-//        return retType;
-//    }
+    public byte[] serializeToBytes() throws IOException {
+        return SerializationFactory.serializeToBytes(this, this.serialization);
+    }
+
+    public static ServiceResponse createServiceResponse(byte[] serviceResponseBytes, String serialization) throws IOException, ClassNotFoundException {
+        ServiceResponse serviceResponse = SerializationFactory.deserializeBytes(serviceResponseBytes, ServiceResponse.class, serialization);
+        return serviceResponse;
+    }
 
     public static void main(String[] args) {
-        ServiceResponse response = new ServiceResponse(new ResponsePro());
-        Result result = new RpcResult();
-        response.writeResult(result);
-        response.writeResult(new RpcResult());
-        response.writeResponsePro(new ResponsePro());
-        response.writeValue("");
+//        ServiceResponse response = new ServiceResponse(new ResponsePro());
+//        Result result = new RpcResult();
+//        response.writeResult(result);
+//        response.writeResult(new RpcResult());
+//        response.writeResponsePro(new ResponsePro());
+//        response.writeValue("");
 
     }
 }

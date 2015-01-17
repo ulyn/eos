@@ -145,7 +145,7 @@ public class RpcServlet extends HttpServlet {
             invocation.setMethodName(methodName);
 //            invocation.setId(serviceId);
 //            invocation.setRetType(serviceMethod.getRetType().getName());
-            invocation.setParameterTypes(serviceMethod.getParameterTypes());
+//            invocation.setParameterTypes(serviceMethod.getParameterTypes());
             //是否模拟的参数
             String mock = req.getParameter("eos_mock");
             invocation.setMock(mock);

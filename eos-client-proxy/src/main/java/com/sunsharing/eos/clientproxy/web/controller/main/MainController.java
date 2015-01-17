@@ -1,9 +1,8 @@
 package com.sunsharing.eos.clientproxy.web.controller.main;
 
 
-import com.sunsharing.eos.clientproxy.ProxyInvoke;
+import com.sunsharing.eos.client.rpc.RpcInvoker;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,7 +23,7 @@ public class MainController extends BaseController {
      */
     @RequestMapping(value = "/service.do")
     public String service(Model model, HttpServletRequest request) throws Exception {
-        return ProxyInvoke.invoke(request.getParameter("serviceReqBase64Str")
+        return RpcInvoker.invoke(request.getParameter("serviceReqBase64Str")
                 , request.getParameter("serialization"));
     }
 }

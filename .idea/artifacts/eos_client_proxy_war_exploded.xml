@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="eos-client-proxy:war exploded">
-    <output-path>$PROJECT_DIR$/eos-client-proxy/target/eos-client-proxy-2.2.0</output-path>
+    <output-path>$PROJECT_DIR$/eos-client-proxy/target/eos-client-proxy-2.2.4</output-path>
     <root id="root">
       <element id="javaee-facet-resources" facet="eos-client-proxy/web/Web" />
       <element id="directory" name="WEB-INF">
@@ -8,10 +8,10 @@
           <element id="module-output" name="eos-client-proxy" />
         </element>
         <element id="directory" name="lib">
-          <element id="archive" name="eos-client-2.2.0.jar">
+          <element id="archive" name="eos-client-2.2.4.jar">
             <element id="module-output" name="eos-client" />
           </element>
-          <element id="archive" name="eos-common-2.2.0.jar">
+          <element id="archive" name="eos-common-2.2.4.jar">
             <element id="module-output" name="eos-common" />
           </element>
           <element id="library" level="project" name="Maven: com.caucho:hessian:4.0.33" />

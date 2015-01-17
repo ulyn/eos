@@ -59,6 +59,10 @@ public class RpcContext implements Serializable {
         return attributeMap;
     }
 
+    public void setAttributeMap(Map attributeMap) {
+        this.attributeMap = attributeMap;
+    }
+
     public String getUserAgent() {
         return userAgent;
     }

@@ -16,14 +16,10 @@
  */
 package com.sunsharing.eos.client.proxy;
 
-import com.sunsharing.eos.client.rpc.DynamicRpc;
 import com.sunsharing.eos.client.rpc.StubRpc;
-import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
-import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 
 /**

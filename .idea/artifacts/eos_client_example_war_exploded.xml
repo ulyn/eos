@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="eos-client-example:war exploded">
-    <output-path>$PROJECT_DIR$/eos-client-example/target/eos-client-example-2.2.0</output-path>
+    <output-path>$PROJECT_DIR$/eos-client-example/target/eos-client-example-2.2.1</output-path>
     <root id="root">
       <element id="javaee-facet-resources" facet="eos-client-example/web/Web" />
       <element id="directory" name="WEB-INF">
@@ -51,10 +51,10 @@
           <element id="library" level="project" name="Maven: javax.xml:jaxrpc-api:1.1" />
           <element id="library" level="project" name="Maven: commons-discovery:commons-discovery:0.2" />
           <element id="library" level="project" name="Maven: wsdl4j:wsdl4j:1.6.2" />
-          <element id="archive" name="eos-client-2.2.0.jar">
+          <element id="archive" name="eos-client-2.2.4.jar">
             <element id="module-output" name="eos-client" />
           </element>
-          <element id="archive" name="eos-common-2.2.0.jar">
+          <element id="archive" name="eos-common-2.2.4.jar">
             <element id="module-output" name="eos-common" />
           </element>
           <element id="library" level="project" name="Maven: com.caucho:hessian:4.0.33" />

@@ -22,9 +22,8 @@ import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
+import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -55,21 +54,32 @@ public class RpcFilter extends AbstractServiceFilter {
     @Override
     protected void doFilter(ServiceRequest serviceRequest,
                             ServiceResponse serviceResponse, FilterChain fc) throws ServiceFilterException, RpcException {
-        RequestPro requestPro = serviceRequest.getRequestPro();
         //zookeeper取得服务的ip
-        boolean isMock = !StringUtils.isBlank(requestPro.getMock());
+        boolean isMock = !StringUtils.isBlank(serviceRequest.getMock());
         if (isMock) {
-            logger.info(requestPro.getServiceId() + "." + requestPro.getInvocation().getMethodName() + " use mock:" + requestPro.getMock());
+            logger.info(serviceRequest.getServiceId() + "." + serviceRequest.getMethodName() + " use mock:" + serviceRequest.getMock());
         }
-        JSONObject jo = getEosLocation(requestPro.getAppId(), requestPro.getServiceId(),
-                requestPro.getServiceVersion(), isMock);
+        JSONObject jo = getEosLocation(serviceRequest.getAppId(), serviceRequest.getServiceId(),
+                serviceRequest.getServiceVersion(), isMock);
         String ip = jo.getString("ip");
         int port = jo.getInteger("port");
 
-        RemoteHelper helper = new RemoteHelper();
         try {
-            ServiceResponse response = helper.call(serviceRequest, ip, port);
-            serviceResponse.writeResponsePro(response.getResponsePro());
+            ResponsePro responsePro = RpcClientFactory.create(serviceRequest.getTransporter()).doRpc(serviceRequest.toRequestPro(), ip, port, serviceRequest.getTimeout());
+            Result rpcResult = responsePro.toResult();
+            if (responsePro.getStatus() == Constants.STATUS_ERROR) {
+                if (rpcResult.hasException()) {
+                    throw new RpcException(rpcResult.getException().getMessage(), rpcResult.getException());
+                } else {
+                    String error = "服务调用失败！协议头标识了错误！"
+                            + serviceRequest.getAppId() + "-"
+                            + serviceRequest.getServiceId() + "-"
+                            + serviceRequest.getServiceVersion();
+                    throw new RpcException(RpcException.UNKNOWN_EXCEPTION, error);
+                }
+            }
+            serviceResponse.setSerialization(responsePro.getSerialization());
+            serviceResponse.writeValue(rpcResult.getValue());
         } catch (RpcException e) {
             throw e;
         } catch (Throwable throwable) {

@@ -27,6 +27,7 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,22 +77,28 @@ public abstract class AbstractServer implements RpcServer {
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
-    public ServiceResponse callService(ServiceRequest req) {
-        RequestPro requestPro = req.getRequestPro();
+    @Override
+    public ResponsePro callService(RequestPro requestPro) {
+        ServiceRequest request = null;
+        try {
+            request = ServiceRequest.createServiceRequest(requestPro);
+        } catch (IOException e) {
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
+        }
 
-        ResponsePro responsePro = new ResponsePro();
-        responsePro.setSerialization(requestPro.getSerialization());
-        ServiceResponse response = new ServiceResponse(responsePro);
+        ServiceResponse response = new ServiceResponse(request);
         try {
             FilterChain filterChain = FilterManager.createFilterChain(SysProp.appId, requestPro.getServiceId());
             filterChain.addFilter(serviceInvokeFilter);
-            filterChain.doFilter(req, response);
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.writeError(e);
-        } finally {
-            response.getResponsePro().setMsgId(requestPro.getMsgId());
         }
-        return response;
+        ResponsePro responsePro = response.toResponsePro();
+        responsePro.setMsgId(requestPro.getMsgId());
+        return responsePro;
     }
 
     public boolean isRunning() {

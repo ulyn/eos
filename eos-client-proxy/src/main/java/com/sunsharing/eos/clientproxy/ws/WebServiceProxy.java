@@ -16,14 +16,7 @@
  */
 package com.sunsharing.eos.clientproxy.ws;
 
-import com.sunsharing.eos.client.rpc.DynamicRpc;
-import com.sunsharing.eos.clientproxy.ProxyInvoke;
-import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
-import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.serialize.SerializationFactory;
-import com.sunsharing.eos.common.utils.StringUtils;
+import com.sunsharing.eos.client.rpc.RpcInvoker;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -48,7 +41,7 @@ public class WebServiceProxy {
      * @return
      */
     public String invoke(String serviceReqBase64Str, String serialization) throws IOException {
-        return ProxyInvoke.invoke(serviceReqBase64Str, serialization);
+        return RpcInvoker.invoke(serviceReqBase64Str, serialization);
     }
 }
 

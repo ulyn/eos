@@ -15,20 +15,21 @@ public class ShortNettyClient extends NettyClient {
     /**
      * 执行远程调用的方法
      *
-     * @param serviceRequest
+     * @param requestPro
      * @param ip
      * @param port
+     * @param timeout
      * @return
      */
     @Override
-    public ServiceResponse doRpc(ServiceRequest serviceRequest, String ip, int port) throws Throwable {
+    public ResponsePro doRpc(RequestPro requestPro, String ip, int port, int timeout) throws Throwable {
         Channel channel = connect(ip, port);
         logger.debug("client is connected to netty server " + ip + ":" + port);
         ShortChannel shortChannel = new ShortChannel();
         shortChannel.setChannel(channel);
         try {
-            ResponsePro responsePro = getResult(serviceRequest.getRequestPro(), shortChannel, serviceRequest.getTimeout());
-            return new ServiceResponse(responsePro);
+            ResponsePro responsePro = getResult(requestPro, shortChannel, timeout);
+            return responsePro;
         } catch (Exception e) {
             logger.error("请求出错！", e);
             throw e;

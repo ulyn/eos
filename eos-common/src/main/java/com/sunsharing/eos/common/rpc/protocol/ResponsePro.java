@@ -47,6 +47,8 @@ public class ResponsePro extends BaseProtocol {
 
     byte[] resultBytes;
 
+    RpcResult result;
+
     public byte getStatus() {
         return status;
     }
@@ -63,28 +65,22 @@ public class ResponsePro extends BaseProtocol {
         this.resultBytes = resultBytes;
     }
 
-    public void setResult(Result result) {
+    public void setResult(RpcResult result) {
         if (result.hasException()) {
             setStatus(Constants.STATUS_ERROR);
         }
-        try {
-            setResultBytes(SerializationFactory.serializeToBytes(result, this.getSerialization()));
-        } catch (Exception e) {
-//            logger.error("eos代理返回异常结果序列化出错！", e1);
-            setExceptionResult(new RpcException(RpcException.SERIALIZATION_EXCEPTION, "eos代理返回异常结果序列化出错！", e));
-            setStatus(Constants.STATUS_ERROR);
-        }
+        this.result = result;
     }
 
     public void setExceptionResult(Throwable throwable) {
         setResult(new RpcResult(throwable));
     }
 
-    public Result toResult() throws IOException, ClassNotFoundException {
+    public RpcResult toResult() throws IOException, ClassNotFoundException {
         if (resultBytes == null || resultBytes.length == 0) {
             return null;
         }
-        Result result = SerializationFactory.deserializeBytes(resultBytes, RpcResult.class, this.getSerialization());
+        RpcResult result = SerializationFactory.deserializeBytes(resultBytes, RpcResult.class, this.getSerialization());
         return result;
     }
 
@@ -98,6 +94,15 @@ public class ResponsePro extends BaseProtocol {
     @Override
     public ChannelBuffer generate() {
         setAction(REQUEST_MSG_RESULT);
+        if (resultBytes == null && result != null) {
+            try {
+                setResultBytes(SerializationFactory.serializeToBytes(result, this.getSerialization()));
+            } catch (Exception e) {
+//            logger.error("eos代理返回异常结果序列化出错！", e1);
+                setExceptionResult(new RpcException(RpcException.SERIALIZATION_EXCEPTION, "eos代理返回异常结果序列化出错！", e));
+                setStatus(Constants.STATUS_ERROR);
+            }
+        }
 
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());

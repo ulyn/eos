@@ -1,17 +1,26 @@
-<beans>
-    <!--<beans advice="" mock="">        -->
-    <!--<bean id="testService1111" mock="success" advice="com.sunsharing.test.TestAdvice">-->
-    <!--<methods>-->
-    <!--<sayHello mock="error" advice="com.sunsharing.test.TestAdvice"/>-->
-    <!--<getList mock="error"/>-->
-    <!--</methods>-->
-    <!--</bean>-->
-    <bean id="testService">
-        <methods>
-            <sayHello mock="success"/>
-        </methods>
-    </bean>
-
-
-
-</beans>
+<eos>
+    <beans mock="success">
+        <!--<bean id="beanId" impl="com.sunsharing.eos.server.test.TestService"  mock="error">-->
+        <!--<testInt mock="success"/>-->
+        <!--</bean>-->
+        <bean id="testType">
+            <testInt mock="error"/>
+        </bean>
+    </beans>
+    <filters>
+        <!--过滤路径应用id+服务名，{appid}.{service}-->
+        <filter>
+            <class>com.sunsharing.eos.clientexample.test.WebServiceProxyFilter</class>
+            <path-pattern>
+                <!--<value>legend.*</value>-->
+                <!--<value>test.*Service</value>-->
+                <value>*</value>
+            </path-pattern>
+            <exclude-path>
+                <value>legend.testService</value>
+                <!--<value>test.testService</value>-->
+            </exclude-path>
+        </filter>
+    </filters>
+    <exceptionResolver class="com.sunsharing.eos.clientexample.test.HandlerExceptionResolver"></exceptionResolver>
+</eos>

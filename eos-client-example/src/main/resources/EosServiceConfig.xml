@@ -22,4 +22,5 @@
             </exclude-path>
         </filter>
     </filters>
+    <exceptionResolver class="com.sunsharing.eos.clientexample.test.HandlerExceptionResolver"></exceptionResolver>
 </eos>

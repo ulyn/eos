@@ -74,6 +74,7 @@ public class ServiceResponse implements Serializable {
 
     public void writeValue(Object o) {
         this.value = o;
+        this.exception = null;
     }
 
     public void writeError(Throwable ex) {

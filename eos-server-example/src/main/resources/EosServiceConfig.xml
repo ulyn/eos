@@ -7,29 +7,20 @@
             <testInt mock="error"/>
         </bean>
     </beans>
-    <!--advice针对到类级别，方法级别在advice实现自行判断-->
-    <advices>
-        <advice>
-            <class>com.sunsharing.eos.server.TestAdvice</class>
-            <packagesToScan>
-                <list>
-                    <value>com.sunsharing.eos.server</value>
-                    <value>com.sunsharing.eos.server</value>
-                </list>
-                <excludeBean>
-                    <list>
-                        <value>testService</value>
-                        <value>peopleService</value>
-                    </list>
-                </excludeBean>
-            </packagesToScan>
-            <beansToScan>
-                <list>
-                    <value>testService</value>
-                    <value>peopleService</value>
-                </list>
-            </beansToScan>
-        </advice>
-    </advices>
-
+    <filters>
+        <!--过滤路径应用id+服务名，{appid}.{service}-->
+        <filter>
+            <class>com.sunsharing.eos.serverexample.test.MyFilter</class>
+            <path-pattern>
+                <!--<value>legend.*</value>-->
+                <!--<value>test.*Service</value>-->
+                <value>*</value>
+            </path-pattern>
+            <exclude-path>
+                <value>legend.testService</value>
+                <!--<value>test.testService</value>-->
+            </exclude-path>
+        </filter>
+    </filters>
+    <exceptionResolver class="com.sunsharing.eos.serverexample.test.HandlerExceptionResolver"></exceptionResolver>
 </eos>

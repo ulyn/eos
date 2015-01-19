@@ -18,7 +18,9 @@ package com.sunsharing.eos.client.rpc;
 
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.component.utils.crypto.Base64;
+import com.sunsharing.eos.client.ServiceContext;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
@@ -81,16 +83,17 @@ public class RpcInvoker {
         return response.serializeToBytes();
     }
 
-    public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) throws RpcException {
+    public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
         FilterChain filterChain =
                 FilterManager.createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
         RpcFilter rpcFilter = new RpcFilter();
         filterChain.addFilter(rpcFilter);
         try {
             filterChain.doFilter(serviceRequest, serviceResponse);
-        } catch (ServiceFilterException e) {
-            throw new RpcException(e.getMessage(), e);
+        } catch (Exception e) {
+            serviceResponse.writeError(e);
         }
+        ExceptionHandler.tryHandleException(serviceRequest, serviceResponse, ServiceContext.getExceptionResolver());
     }
 
     /**

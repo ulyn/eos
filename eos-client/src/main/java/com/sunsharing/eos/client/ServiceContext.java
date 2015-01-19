@@ -20,10 +20,8 @@ import com.sunsharing.eos.client.proxy.AbstractProxy;
 import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.exception.ExceptionResolver;
 import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <pre></pre>
@@ -39,6 +37,12 @@ import java.util.Map;
 public class ServiceContext extends AbstractServiceContext {
     Logger logger = Logger.getLogger(ServiceContext.class);
 
+    //全局异常处理器
+    private static ExceptionResolver exceptionResolver = null;
+
+    public static ExceptionResolver getExceptionResolver() {
+        return exceptionResolver;
+    }
     //存储服务对象,key为服务name
 //    protected static Map<String, Object> interfaceServiceMap = new HashMap<String, Object>();
 
@@ -53,6 +57,11 @@ public class ServiceContext extends AbstractServiceContext {
         Object bean = proxy.getProxy(interfaces, config);
 //        interfaceServiceMap.put(interfaces.getName(), bean);
         return bean;
+    }
+
+    @Override
+    public void setExceptionResolver(ExceptionResolver exceptionResolver) {
+        ServiceContext.exceptionResolver = exceptionResolver;
     }
 
     /**

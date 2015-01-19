@@ -17,6 +17,7 @@
 package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.filter.ServiceRequest;
@@ -24,6 +25,7 @@ import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.server.ServiceContext;
 import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 
@@ -79,6 +81,7 @@ public abstract class AbstractServer implements RpcServer {
 
     @Override
     public ResponsePro callService(RequestPro requestPro) {
+        ServiceResponse response = null;
         ServiceRequest request = null;
         try {
             request = ServiceRequest.createServiceRequest(requestPro);
@@ -90,7 +93,7 @@ public abstract class AbstractServer implements RpcServer {
         } catch (ClassNotFoundException e) {
             throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
         }
-        ServiceResponse response = new ServiceResponse(request);
+        response = new ServiceResponse(request);
         try {
             FilterChain filterChain = FilterManager.createFilterChain(SysProp.appId, requestPro.getServiceId());
             filterChain.addFilter(serviceInvokeFilter);
@@ -98,6 +101,9 @@ public abstract class AbstractServer implements RpcServer {
         } catch (Exception e) {
             response.writeError(e);
         }
+        //尝试处理全局异常
+        ExceptionHandler.tryHandleException(request, response, ServiceContext.getExceptionResolver());
+
         ResponsePro responsePro = response.toResponsePro();
         responsePro.setMsgId(requestPro.getMsgId());
         return responsePro;

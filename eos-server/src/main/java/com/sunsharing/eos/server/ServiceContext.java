@@ -18,6 +18,7 @@ package com.sunsharing.eos.server;
 
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.exception.ExceptionResolver;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
@@ -42,6 +43,12 @@ public class ServiceContext extends AbstractServiceContext {
     static Logger logger = Logger.getLogger(ServiceContext.class);
 
     ApplicationContext ctx;
+    //全局异常处理器
+    private static ExceptionResolver exceptionResolver = null;
+
+    public static ExceptionResolver getExceptionResolver() {
+        return exceptionResolver;
+    }
 
     /**
      * 没有结合spring的构造
@@ -132,6 +139,11 @@ public class ServiceContext extends AbstractServiceContext {
 //            this.services.put(interfaces.getName(), bean);
         }
         return bean;
+    }
+
+    @Override
+    public void setExceptionResolver(ExceptionResolver exceptionResolver) {
+        ServiceContext.exceptionResolver = exceptionResolver;
     }
 
     public static void main(String[] args) {

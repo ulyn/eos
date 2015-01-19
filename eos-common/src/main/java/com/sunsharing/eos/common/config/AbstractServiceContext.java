@@ -19,6 +19,7 @@ package com.sunsharing.eos.common.config;
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
 import com.sunsharing.eos.common.filter.FilterManager;
+import com.sunsharing.eos.common.exception.ExceptionResolver;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.ClassUtils;
@@ -102,6 +103,16 @@ public abstract class AbstractServiceContext {
             List<String> excludePaths = (List<String>) filter.get("excludePaths");
             String filterClassName = (String) filter.get("class");
             FilterManager.registerFilter(filterClassName, pathPatterns, excludePaths);
+        }
+        //注册全局异常处理器
+        String exceptionResolverClassName = (String) xmlMap.get("exceptionResolver");
+        if (StringUtils.isNotEmpty(exceptionResolverClassName)) {
+            try {
+                ExceptionResolver exceptionResolver = (ExceptionResolver) Class.forName(exceptionResolverClassName).newInstance();
+                setExceptionResolver(exceptionResolver);
+            } catch (Exception e) {
+                logger.error(String.format("注册ExceptionResolver异常!：%s", exceptionResolverClassName), e);
+            }
         }
 
         ClassFilter filter = new ClassFilter() {
@@ -209,7 +220,10 @@ public abstract class AbstractServiceContext {
 
                 Element beansEl = root.element("beans");
                 Element filtersEl = root.element("filters");
-
+                Element exceptionResolverEl = root.element("exceptionResolver");
+                if (exceptionResolverEl != null) {
+                    rtnMap.put("exceptionResolver", exceptionResolverEl.attributeValue("class"));
+                }
                 //获取beans配置
                 Map beansMap = new HashMap();
                 if (beansEl != null) {
@@ -354,5 +368,13 @@ public abstract class AbstractServiceContext {
      * @return
      */
     protected abstract Object createBean(Class interfaces, ServiceConfig config);
+
+    /**
+     * 创建异常处理器
+     *
+     * @param resolver
+     * @return
+     */
+    protected abstract void setExceptionResolver(ExceptionResolver resolver);
 }
 

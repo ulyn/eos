@@ -77,6 +77,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public String testString(String s, String sw) {
+//        throw new RuntimeException("故意的异常...");
         if ("-1".equals(s)) {
             return "-1";
         }

@@ -395,17 +395,19 @@ public final class StringUtils {
      * @param index
      */
     public static void putString(byte[] bb, String str, int index) {
-        try {
-            byte[] cc = str.getBytes("UTF-8");
-            int maxLen = cc.length;
-            if (maxLen > bb.length - index) {
-                maxLen = bb.length - index;
+        if (str != null) {
+            try {
+                byte[] cc = str.getBytes("UTF-8");
+                int maxLen = cc.length;
+                if (maxLen > bb.length - index) {
+                    maxLen = bb.length - index;
+                }
+                for (int i = 0; i < maxLen; i++) {
+                    bb[i + index] = cc[i];
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            for (int i = 0; i < maxLen; i++) {
-                bb[i + index] = cc[i];
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

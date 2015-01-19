@@ -84,8 +84,6 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
                 if (method == null) {
                     throw new NoSuchMethodException(req.getMethodName() + "的ServiceMethod==null");
                 }
-                //设置rpc上下文
-                RpcContextContainer.setRpcContext(req.createRpcContext());
 
                 //这边暂时直接使用jdk代理执行
                 //此处的parameterTypes不用invocation的，规定不允许方法重载

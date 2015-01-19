@@ -82,12 +82,14 @@ public abstract class AbstractServer implements RpcServer {
         ServiceRequest request = null;
         try {
             request = ServiceRequest.createServiceRequest(requestPro);
+            //设置rpc上下文 ---- 封装成serviceRequest后，server基本不需要设置这个上下文了。此处预留兼容
+            //上下文消息使用 request.getAttribute获取
+            RpcContextContainer.setRpcContext(request.createRpcContext());
         } catch (IOException e) {
             throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
         } catch (ClassNotFoundException e) {
             throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
         }
-
         ServiceResponse response = new ServiceResponse(request);
         try {
             FilterChain filterChain = FilterManager.createFilterChain(SysProp.appId, requestPro.getServiceId());

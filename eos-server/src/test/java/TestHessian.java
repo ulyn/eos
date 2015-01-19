@@ -46,7 +46,7 @@ public class TestHessian {
         invocation.setMethodName("sayHello");
         invocation.setMock("");
 //        invocation.setParameterTypes(new Class[]{String.class});
-        invocation.setParameterTypes(null);
+//        invocation.setParameterTypes(null);
 
         System.out.println(getSerializationBytes(invocation).length);
 

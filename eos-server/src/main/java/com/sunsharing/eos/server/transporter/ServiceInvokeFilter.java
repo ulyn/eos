@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.server.transporter;
 
+import com.alibaba.fastjson.JSON;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.*;
@@ -63,59 +64,52 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
     @Override
     protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain fc) throws ServiceFilterException, RpcException {
         try {
-            RequestPro requestPro = req.getRequestPro();
-            Invocation inv = requestPro.toInvocation();
-            RpcContext rpcContext = requestPro.toRpcContext();
-            Result result = call(requestPro.getServiceId(), inv, rpcContext);
-            res.writeResult(result);
+            doServiceInvoke(req, res);
             fc.doFilter(req, res);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e);
         }
     }
 
-    public Result call(String serviceId, Invocation invocation, RpcContext rpcContext) {
+    private void doServiceInvoke(ServiceRequest req, ServiceResponse res) {
         if (logger.isDebugEnabled()) {
-            logger.debug(serviceId + "::" + invocation + "::" + rpcContext);
+            logger.debug(JSON.toJSONString(req));
         }
-        Object obj = this.serviceEngine.get(serviceId);
-        ServiceConfig serviceConfig = this.serviceConfigEngine.get(serviceId);
-        RpcResult result = new RpcResult();
+        Object obj = this.serviceEngine.get(req.getServiceId());
+        ServiceConfig serviceConfig = this.serviceConfigEngine.get(req.getServiceId());
+//        RpcResult result = new RpcResult();
         if (obj != null) {
             try {
-                ServiceMethod method = serviceConfig.getMethod(invocation.getMethodName());
+                ServiceMethod method = serviceConfig.getMethod(req.getMethodName());
                 if (method == null) {
-                    throw new NoSuchMethodException(invocation.getMethodName() + "的ServiceMethod==null");
+                    throw new NoSuchMethodException(req.getMethodName() + "的ServiceMethod==null");
                 }
-                //设置rpc上下文
-                RpcContextContainer.setRpcContext(rpcContext);
 
                 //这边暂时直接使用jdk代理执行
                 //此处的parameterTypes不用invocation的，规定不允许方法重载
-                Method m = obj.getClass().getMethod(invocation.getMethodName(), method.getParameterTypes());
-                Object o = m.invoke(obj, invocation.getArguments());
+                Method m = obj.getClass().getMethod(req.getMethodName(), method.getParameterTypes());
+                Object o = m.invoke(obj, req.getArguments());
 
-                result.setValue(o);
+                res.writeValue(o);
             } catch (NoSuchMethodException e) {
-                String errorMsg = "has no these class serviceId：" + serviceId + " - " + invocation.getMethodName();
+                String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethodName();
                 logger.error(errorMsg, e);
-                result.setException(new IllegalArgumentException(errorMsg, e));
+                res.writeError(new IllegalArgumentException(errorMsg, e));
             } catch (InvocationTargetException e) {
                 logger.error("处理服务InvocationTargetException异常", e);
-                result.setException(e.getTargetException());
+                res.writeError(e.getTargetException());
             } catch (Exception th) {
-                String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + invocation.getMethodName();
+                String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + req.getMethodName();
                 logger.error(errorMsg, th);
                 ByteArrayOutputStream input = new ByteArrayOutputStream();
                 th.printStackTrace(new PrintStream(input));
-                result.setException(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + input.toString()));
+                res.writeError(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + input.toString()));
             }
         } else {
-            String errorMsg = "has no these class serviceId：" + serviceId + " - " + invocation.getMethodName();
+            String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethodName();
             logger.error(errorMsg);
-            result.setException(new IllegalArgumentException(errorMsg));
+            res.writeError(new IllegalArgumentException(errorMsg));
         }
-        return result;
     }
 
 }

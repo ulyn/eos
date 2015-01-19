@@ -46,6 +46,6 @@ public interface RpcServer {
 
     void start();
 
-    ServiceResponse callService(ServiceRequest request);
+    ResponsePro callService(RequestPro requestPro);
 }
 

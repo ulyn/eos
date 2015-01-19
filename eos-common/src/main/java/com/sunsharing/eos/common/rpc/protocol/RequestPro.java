@@ -18,6 +18,7 @@ package com.sunsharing.eos.common.rpc.protocol;
 
 import com.sunsharing.eos.common.rpc.Invocation;
 import com.sunsharing.eos.common.rpc.RpcContext;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
@@ -124,14 +125,9 @@ public class RequestPro extends BaseProtocol {
         this.rpcContextBytes = rpcContextBytes;
     }
 
-    /**
-     * 设置前请先设置序列化方式，否则使用默认值
-     *
-     * @param invocation
-     */
-    public void setInvocation(Invocation invocation) throws IOException {
+
+    public void setInvocation(Invocation invocation) {
         this.invocation = invocation;
-        setInvocationBytes(SerializationFactory.serializeToBytes(invocation, this.getSerialization()));
     }
 
     /**
@@ -144,14 +140,9 @@ public class RequestPro extends BaseProtocol {
         return SerializationFactory.deserializeBytes(invocationBytes, RpcInvocation.class, this.getSerialization());
     }
 
-    /**
-     * 设置前请先设置序列化方式，否则使用默认值
-     *
-     * @param rpcContext
-     */
-    public void setRpcContext(RpcContext rpcContext) throws IOException {
+
+    public void setRpcContext(RpcContext rpcContext) {
         this.rpcContext = rpcContext;
-        setRpcContextBytes(SerializationFactory.serializeToBytes(rpcContext, this.getSerialization()));
     }
 
     /**
@@ -166,9 +157,16 @@ public class RequestPro extends BaseProtocol {
 
     @Override
     protected int getRealBodyLength() {
-        if (invocationBytes == null) {
+        if (invocationBytes == null && invocation == null) {
             return 0;
         } else {
+            if (invocationBytes == null) {
+                try {
+                    setInvocationBytes(SerializationFactory.serializeToBytes(invocation, this.getSerialization()));
+                } catch (IOException e) {
+                    throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, "序列化参数invocation异常:" + invocation, e);
+                }
+            }
             return invocationBytes.length;
         }
     }
@@ -188,6 +186,13 @@ public class RequestPro extends BaseProtocol {
         buffer.writeBytes(getHeaderBytes());
         buffer.writeBytes(subHeader);
         //写入rpcContext
+        if (rpcContextBytes == null) {
+            try {
+                setRpcContextBytes(SerializationFactory.serializeToBytes(rpcContext, this.getSerialization()));
+            } catch (IOException e) {
+                throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, "序列化参数rpcContext异常:" + invocation, e);
+            }
+        }
         buffer.writeBytes(StringUtils.intToBytes(rpcContextBytes.length));
         buffer.writeBytes(rpcContextBytes);
 

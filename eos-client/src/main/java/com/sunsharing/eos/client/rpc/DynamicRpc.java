@@ -16,24 +16,15 @@
  */
 package com.sunsharing.eos.client.rpc;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.filter.*;
-import com.sunsharing.eos.common.rpc.Result;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
-import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
-import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,38 +40,40 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class DynamicRpc {
-
-    RequestPro req = null;
+public class DynamicRpc extends RpcInvoker {
+    String appId;
+    String serviceId;
+    String serviceVersion;
+    String debugServerIp;
+    String serialization;
+    String mock;
     RpcContext rpcContext;
     String transporter = Constants.DEFAULT_TRANSPORTER;
     int timeout = Constants.DEFAULT_TIMEOUT;
 
-    protected DynamicRpc(RequestPro req) {
-        req.setDebugServerIp(SysProp.getDebugServerIp(req.getAppId()));
-        this.req = req;
+    public DynamicRpc(String appId, String serviceId, String v) {
+        this.setDebugServerIp(SysProp.getDebugServerIp(appId));
+        this.appId = appId;
+        this.serviceId = serviceId;
+        this.serviceVersion = v;
     }
     public static DynamicRpc create(String appId, String serviceId, String v) {
-        RequestPro req = new RequestPro();
-        req.setAppId(appId);
-        req.setServiceId(serviceId);
-        req.setServiceVersion(v);
-        return new DynamicRpc(req);
+        return new DynamicRpc(appId, serviceId, v);
     }
 
     public DynamicRpc setDebugServerIp(String debugServerIp) {
-        this.req.setDebugServerIp(debugServerIp);
+        this.debugServerIp = debugServerIp;
         return this;
     }
 
     public DynamicRpc setSerialization(String serialization) {
-        this.req.setSerialization(serialization);
+        this.serialization = serialization;
         return this;
     }
 
     public DynamicRpc setMock(String mock) {
         if (SysProp.use_mock) {
-            this.req.setMock(mock);
+            this.mock = mock;
         }
         return this;
     }
@@ -102,18 +95,6 @@ public class DynamicRpc {
     }
 
 
-    public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) throws RpcException {
-        RequestPro requestPro = serviceRequest.getRequestPro();
-        FilterChain filterChain =
-                FilterManager.createFilterChain(requestPro.getAppId(), requestPro.getServiceId());
-        RpcFilter rpcFilter = new RpcFilter();
-        filterChain.addFilter(rpcFilter);
-        try {
-            filterChain.doFilter(serviceRequest, serviceResponse);
-        } catch (ServiceFilterException e) {
-            throw new RpcException(e.getMessage(), e);
-        }
-    }
 
     /**
      * 执行调用
@@ -132,27 +113,27 @@ public class DynamicRpc {
             }
             this.setRpcContext(rpcContext);
         }
-        try {
-            this.req.setRpcContext(this.rpcContext);
-        } catch (Exception e) {
-            throw new RpcException("设置RpcContext异常:" + e.getMessage(), e);
-        }
-        RpcInvocation invocation = new RpcInvocation();
-        invocation.setMethodName(methodName);
-        invocation.setArguments(args);
-        try {
-            this.req.setInvocation(invocation);
-        } catch (Exception e) {
-            throw new RpcException("设置RpcInvocation异常:" + e.getMessage(), e);
-        }
-        ServiceRequest request = new ServiceRequest(req, transporter, timeout);
 
-        ResponsePro responsePro = new ResponsePro();
-        responsePro.setSerialization(this.req.getSerialization());
-        ServiceResponse serviceResponse = new ServiceResponse(responsePro);
+
+        ServiceRequest request = new ServiceRequest.Builder()
+                .setAppId(this.appId)
+                .setServiceId(this.serviceId)
+                .setServiceVersion(this.serviceVersion)
+                .setDebugServerIp(this.debugServerIp)
+                .setSerialization(this.serialization)
+                .setMock(this.mock)
+                .setTimeout(this.timeout)
+                .setTransporter(this.transporter)
+                .setRpcContext(rpcContext)
+                .setMethodName(methodName)
+                .setArguments(args)
+                .build();
+
+        ServiceResponse serviceResponse = new ServiceResponse(request);
+
         doInvoke(request, serviceResponse);
         try {
-            Object o = getResult(req, retType, serviceResponse.getResponsePro());
+            Object o = getResult(request, serviceResponse, retType);
             return (T) o;
         } catch (RpcException e) {
             throw e;
@@ -161,44 +142,6 @@ public class DynamicRpc {
         }
     }
 
-    /**
-     * 转换ResponsePro获取返回结果
-     *
-     * @param requestPro
-     * @param retType
-     * @param responsePro
-     * @return
-     * @throws Throwable
-     */
-    private Object getResult(RequestPro requestPro, Class retType, ResponsePro responsePro) throws Throwable {
-        boolean isMock = !StringUtils.isBlank(requestPro.getMock());
-        Result rpcResult = responsePro.toResult();
-        if (responsePro.getStatus() == Constants.STATUS_ERROR) {
-            if (rpcResult.hasException()) {
-                throw rpcResult.getException();
-            } else {
-                String error = "服务调用失败！"
-                        + requestPro.getAppId() + "-"
-                        + requestPro.getServiceId() + "-"
-                        + requestPro.getServiceVersion();
-                throw new RpcException(RpcException.UNKNOWN_EXCEPTION, error);
-            }
-        } else {
-            Object value = rpcResult.getValue();
-            if (isMock) {
-                if (void.class == retType || value == null) {
-                    return null;
-                }
-                //返回的类型一样，则不需要进行转换，返回类型是string或者不是模拟返回
-                //返回的类型不一样，则需要进行转换
-//                if (value.getClass() != retType) {
-                if (value instanceof String && !retType.isInstance(value)) {
-                    value = CompatibleTypeUtils.compatibleTypeConvert((String) value, retType);
-                }
-            }
-            return value;
-        }
-    }
 
     public static void main(String[] args) {
         ConfigContext.instancesBean(SysProp.class);

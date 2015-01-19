@@ -38,13 +38,13 @@ public interface Invocation {
      * @return
      */
     String getMethodName();
-
-    /**
-     * 获取方法入参类型数组，使用simpleName
-     *
-     * @return
-     */
-    String[] getParameterTypes();
+//
+//    /**
+//     * 获取方法入参类型数组，使用simpleName
+//     *
+//     * @return
+//     */
+//    String[] getParameterTypes();
 
     /**
      * 获取参数值

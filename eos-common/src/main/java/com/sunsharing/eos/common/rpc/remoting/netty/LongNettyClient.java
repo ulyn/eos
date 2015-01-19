@@ -15,15 +15,15 @@ public class LongNettyClient extends NettyClient {
     /**
      * 执行远程调用的方法
      *
-     * @param serviceRequest
+     * @param requestPro
      * @param ip
      * @param port
      * @return
      */
     @Override
-    public ServiceResponse doRpc(ServiceRequest serviceRequest, String ip, int port) throws Throwable {
+    public ResponsePro doRpc(RequestPro requestPro, String ip, int port, int timeout) throws Throwable {
         LongChannel longChannel = ClientCache.getChannel(this, ip, port + "");
-        ResponsePro responsePro = getResult(serviceRequest.getRequestPro(), longChannel, serviceRequest.getTimeout());
-        return new ServiceResponse(responsePro);
+        ResponsePro responsePro = getResult(requestPro, longChannel, timeout);
+        return responsePro;
     }
 }

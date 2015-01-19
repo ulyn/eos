@@ -31,9 +31,9 @@
     List map = DynamicRpc.create("jedi", "complaint", "1.0")
             .setMock("success")
             .doInvoke(List.class, "getComplaintHistory");
-    System.out.println("dong tai diao yong:" + map);
+    response.getWriter().println("dong tai diao yong:" + map);
     TestService test = ServiceContext.getBean(TestService.class);
-    System.out.println(test.testString("1", "1"));
+    response.getWriter().println(test.testString("1", "1"));
 //        try
 //        {
 //        Test2 test = ServiceContext.getBean(Test2.class);

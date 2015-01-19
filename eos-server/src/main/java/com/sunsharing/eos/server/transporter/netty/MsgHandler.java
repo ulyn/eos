@@ -62,8 +62,7 @@ public class MsgHandler extends SimpleChannelHandler {
                     RequestPro req = (RequestPro) basePro;
                     ResponsePro responsePro = null;
                     try {
-                        ServiceResponse response = rpcServer.callService(new ServiceRequest(req, Constants.LONG_NETTY));
-                        responsePro = response.getResponsePro();
+                        responsePro = rpcServer.callService(req);
                     } catch (Exception e) {
                         responsePro = new ResponsePro();
                         responsePro.setMsgId(basePro.getMsgId());

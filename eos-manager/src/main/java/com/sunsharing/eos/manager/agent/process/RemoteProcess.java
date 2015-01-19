@@ -19,12 +19,10 @@ package com.sunsharing.eos.manager.agent.process;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.rpc.remoting.RemoteHelper;
+import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.manager.sys.SysProp;
 import com.sunsharing.eos.manager.zookeeper.ServiceCache;
@@ -86,15 +84,15 @@ public class RemoteProcess implements Process {
             int timeout = config.getIntValue("timeout");
             String transporter = config.getString("transporter");
 
-            RemoteHelper remoteHelper = new RemoteHelper();
-            ServiceRequest serviceRequest = new ServiceRequest(req, transporter, timeout);
-            ResponsePro responsePro = remoteHelper.call(serviceRequest, ip, port).getResponsePro();
+            logger.info(String.format("request target %s:%s:%s-%s-%s", ip, port,
+                    req.getAppId(), req.getServiceId(), req.getServiceVersion()));
 
+            ResponsePro responsePro = RpcClientFactory.create(transporter).doRpc(req, ip, port, timeout);
             res.setStatus(responsePro.getStatus());
             res.setResultBytes(responsePro.getResultBytes());
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.error(String.format("服务调用异常，%s:%s:%s", req.getAppId(), req.getServiceId(), req.getServiceVersion()), e);
             res.setExceptionResult(e);
         }
     }

@@ -38,7 +38,7 @@ import java.util.Arrays;
 public class RpcInvocation implements Invocation, Serializable {
 
     private String methodName;
-    private String[] parameterTypes;
+    //    private String[] parameterTypes;
     private Object[] arguments;
     private String mock;
 
@@ -51,20 +51,20 @@ public class RpcInvocation implements Invocation, Serializable {
         this.methodName = methodName;
     }
 
-    @Override
-    public String[] getParameterTypes() {
-        return parameterTypes;
-    }
+//    @Override
+//    public String[] getParameterTypes() {
+//        return parameterTypes;
+//    }
 
-    /**
-     * 设置入参类型
-     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
-     *
-     * @param parameterTypes
-     */
-    public void setParameterTypes(Class[] parameterTypes) {
-
-    }
+//    /**
+//     * 设置入参类型
+//     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
+//     *
+//     * @param parameterTypes
+//     */
+//    public void setParameterTypes(Class[] parameterTypes) {
+//
+//    }
 
     @Override
     public Object[] getArguments() {
@@ -85,9 +85,9 @@ public class RpcInvocation implements Invocation, Serializable {
 
     @Override
     public String toString() {
-        return "RpcInvocation {methodName=" + methodName + ", parameterTypes="
-                + Arrays.toString(parameterTypes) + ", arguments=" + Arrays.toString(arguments)
-                + "}";
+        return "RpcInvocation { methodName=" + methodName + ", " +
+                " arguments=" + Arrays.toString(arguments)
+                + " }";
     }
 
     /**

@@ -95,10 +95,13 @@ public abstract class AbstractServiceContext {
         Map xmlMap = loadXmlServiceConfig(xmlConfigFileName);
         Map beansMap = (Map) xmlMap.get("beansMap");
         Map<String, ServiceConfig> xmlServiceConfigMap = (Map<String, ServiceConfig>) beansMap.get("configMap");
-        List<Map<String, String>> filters = (List<Map<String, String>>) xmlMap.get("filters");
+        List<Map<String, Object>> filters = (List<Map<String, Object>>) xmlMap.get("filters");
         //注册过滤器
-        for (Map<String, String> filter : filters) {
-            FilterManager.registerFilter(filter.get("path"), filter.get("class"));
+        for (Map<String, Object> filter : filters) {
+            List<String> pathPatterns = (List<String>) filter.get("pathPatterns");
+            List<String> excludePaths = (List<String>) filter.get("excludePaths");
+            String filterClassName = (String) filter.get("class");
+            FilterManager.registerFilter(filterClassName, pathPatterns, excludePaths);
         }
 
         ClassFilter filter = new ClassFilter() {
@@ -235,14 +238,16 @@ public abstract class AbstractServiceContext {
                 beansMap.put("configMap", configMap);
                 rtnMap.put("beansMap", beansMap);
                 //获取filters配置
-                List<Map<String, String>> filters = new ArrayList<Map<String, String>>();
+                List<Map<String, Object>> filters = new ArrayList<Map<String, Object>>();
                 if (filtersEl != null) {
                     List<Element> elements = filtersEl.elements("filter");
                     for (Element el : elements) {
-                        String path = el.elementTextTrim("path");
+                        List<String> pathPatterns = getListByElement(el.element("path-pattern"));
+                        List<String> excludePaths = getListByElement(el.element("exclude-path"));
                         String clazzName = el.elementTextTrim("class");
-                        Map<String, String> filterMap = new HashMap<String, String>();
-                        filterMap.put("path", path);
+                        Map<String, Object> filterMap = new HashMap<String, Object>();
+                        filterMap.put("pathPatterns", pathPatterns);
+                        filterMap.put("excludePaths", excludePaths);
                         filterMap.put("class", clazzName);
                         filters.add(filterMap);
                     }
@@ -257,61 +262,19 @@ public abstract class AbstractServiceContext {
     }
 
     /**
-     * 取得el下的list节点的值
+     * 取得el下的value节点的值
      *
      * @return
      */
-    private List<String> getListByListElement(Element el) {
+    private List<String> getListByElement(Element el) {
         List<String> list = new ArrayList<String>();
         if (el != null) {
-            Element listEl = el.element("list");
-            if (listEl != null) {
-                List<Element> values = listEl.elements("value");
-                for (Element element : values) {
-                    list.add(element.getTextTrim());
-                }
+            List<Element> values = el.elements("value");
+            for (Element element : values) {
+                list.add(element.getTextTrim());
             }
         }
         return list;
-    }
-
-    /**
-     * 从配置的advice中取得class的advice
-     *
-     * @param advices
-     * @param c
-     * @return
-     */
-    private String getAdviceClassName(List advices, Class c, String beanId) {
-        for (Object o : advices) {
-            Map map = (Map) o;
-
-            //包含在bean的配置
-            List<String> beans = (List<String>) map.get("beans");
-            for (String bean : beans) {
-                if (beanId.equals(bean)) {
-                    return (String) map.get("advice");
-                }
-            }
-            //包含在包n的配置
-            List<String> packages = (List<String>) map.get("packages");
-            List<String> excludeBeans = (List<String>) map.get("excludeBeans");
-            boolean isExclude = false;
-            for (String bean : excludeBeans) {
-                if (beanId.equals(bean)) {
-                    isExclude = true;
-                }
-            }
-            if (isExclude) {
-                continue;
-            }
-            for (String pac : packages) {
-                if (c.getName().startsWith(pac)) {
-                    return (String) map.get("advice");
-                }
-            }
-        }
-        return null;
     }
 
     /**

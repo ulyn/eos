@@ -17,6 +17,7 @@
 package com.sunsharing.eos.uddi.web.common;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
@@ -56,7 +57,7 @@ public class ResponseHelper {
      * @return
      */
     public static String covert2Json(JsonResponse jsonResponse){
-        return JSON.toJSONString(jsonResponse);
+        return JSON.toJSONString(jsonResponse, SerializerFeature.BrowserCompatible, SerializerFeature.WriteMapNullValue);
     }
     /**
      *  输出特定json对象的响应流

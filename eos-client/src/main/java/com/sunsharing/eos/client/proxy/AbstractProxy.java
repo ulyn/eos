@@ -45,6 +45,10 @@ public abstract class AbstractProxy implements ClientProxy {
      * @throws Exception
      */
     public Object doInvoke(RpcInvocation invocation, ServiceConfig config) throws Exception {
+        if ("toString".equals(invocation.getMethodName())) {
+            //打印getBean获得的对象时，直接返回服务名称
+            return String.format("eos service [%s-%s-%s]", config.getAppId(), config.getId(), config.getVersion());
+        }
         return new StubRpc().doInvoke(invocation, config);
     }
 

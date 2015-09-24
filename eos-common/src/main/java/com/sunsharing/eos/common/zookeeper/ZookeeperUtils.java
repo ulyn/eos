@@ -105,7 +105,7 @@ public class ZookeeperUtils {
                 {
                     connectString = zooKeeperIP;
                 }
-                zookeeper =new ZooKeeper(connectString , 5000 , new DefaultWatcher());
+                zookeeper =new ZooKeeper(connectString , 30000 , new DefaultWatcher());
                 logger.info("连接完成");
                 //在使用zookeeper对象前，等待连接建立。这里利用Java的CountDownLatch类
                 //（java.util.concurrent.CountDownLatch）来阻塞，直到zookeeper实例准备好。

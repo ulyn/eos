@@ -17,6 +17,9 @@ public class Eos {
 
 
     public static void main(String[] a) {
+
+        //测试分支
+
         ConfigContext.instancesBean(SysProp.class);
         ServiceServer.startUp();
         new Thread() {

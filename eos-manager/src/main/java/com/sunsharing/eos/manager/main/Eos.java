@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
  */
 public class Eos {
 
+
     public static void main(String[] a) {
         ConfigContext.instancesBean(SysProp.class);
         ServiceServer.startUp();

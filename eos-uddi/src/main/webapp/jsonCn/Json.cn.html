@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="max-age=7200">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <title>Json在线解析及格式化验证 - Json.cn</title>
+
+    <link href="lib/bootstrapt/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="lib/font-awesome-4.4.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+    <link href="style/css/base.css" rel="stylesheet" type="text/css">
+    <link href="style/css/json.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="lib/html5shiv/html5shiv.min.js"></script>
+    <script src="lib/html5shiv/respond.min.js"></script>
+    <![endif]-->
+
+    <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
+    .en-markup-crop-options {
+        top: 18px !important;
+        left: 50% !important;
+        margin-left: -100px !important;
+        width: 200px !important;
+        border: 2px rgba(255, 255, 255, .38) solid !important;
+        border-radius: 4px !important;
+    }
+
+    .en-markup-crop-options div div:first-of-type {
+        margin-left: 0px !important;
+    }
+    </style>
+</head>
+<body style="over-flow:hidden;">
+<main class="row-fluid">
+    <div class="col-md-12" style="padding:0;">
+        <div style="padding:10px;font-size:16px;border-bottom:solid 1px #ddd;" class="navi">
+            <a href="javascript:void(0)" class="tip zip" title="" data-placement="bottom" data-original-title="校验" style="color:#999;">
+                <i class="fa fa-database"></i>
+                <!--<span class="glyphicon glyphicon-sort-by-attributes-alt" style="display: inline-block; width: 16px;height: 16px;color: #999"></span>-->
+            </a>
+            <a href="javascript:void(0)" class="tip save" title="" data-placement="bottom" data-original-title="保存">
+                <i class="fa fa-floppy-o"></i>
+                <!--<span class="glyphicon glyphicon-floppy-save" style="display: inline-block; width: 16px;height: 16px;color: #999"></span>-->
+            </a>
+            <a href="javascript:void(0)" class="tip add" title="" data-placement="bottom" data-original-title="添加">
+                <i class="fa fa-plus"></i>
+            </a>
+            <a href="javascript:void(0)" class="tip minus" title="" data-placement="bottom" data-original-title="删除">
+                <i class="fa fa-minus"></i>
+            </a>
+            <span><input id="status" class="simple_field" name="desc" style="width: 380px" id="desc" type="text" /></span>
+            <span class="modal-title" >可以使用JS表达式</span>
+        </div>
+        <div id="json-target" contenteditable="true"
+             style="height:400px;padding:20px;border-right:solid 1px #ddd;border-bottom:solid 1px #ddd;
+             border-radius:0;resize: none;overflow-y:scroll; outline:none;"></div>
+
+        <div id="json-error" style="border-bottom: solid 1px #ddd;height: 100px;padding:20px;display: none"></div>
+    </div>
+    <br style="clear:both;">
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        添加模拟数据
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form">
+                        <div class="form-group">
+                            <label for="js-desc">模拟数据描述</label>
+                            <input type="text" class="form-control" id="js-desc" placeholder="模拟数据描述">
+                        </div>
+                        <div class="form-group">
+                            <label for="js-status">模拟数据匹配表达式</label>
+                            <input type="text" class="form-control" id="js-status" placeholder="支持JS表达式">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary js-savemock">
+                        提交更改
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</main>
+<script src="lib/jquery/jquery.min.js"></script>
+<script src="lib/jquery/jquery.message.js"></script>
+<div id="jquery-beauty-msg"></div>
+<script src="lib/jquery/jquery.json.js"></script>
+<script src="lib/jquery/jquery.xml2json.js"></script>
+<script src="lib/jquery/jquery.json2xml.js"></script>
+<script src="js/json2.js"></script>
+<script src="js/jsonlint.js"></script>
+<script src="lib/bootstrapt/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+    var methodId = "";
+    var source_json = "";
+    var current_json = '';
+    var current_json_str = '';
+    var xml_flag = false;
+    var zip_flag = false;
+    $('.tip').tooltip();
+    function init() {
+        xml_flag = false;
+        zip_flag = false;
+        $('.xml').attr('style', 'color:#999;');
+        $('.zip').attr('style', 'color:#999;');
+    }
+    function trans(content)
+    {
+        if(content.indexOf("{")==-1 && content.indexOf("[")==-1)
+        {
+            var o = new Object();
+            o.status = true;
+            o.result = content;
+            current_json = content;
+            return o;
+        }
+        content = content.replace(/，/gm,",");
+        content = content.replace(/“/gm,"\"");
+        content = content.replace(/”/gm,"\"");
+        content = content.replace(/：/gm,":");
+        var o = new Object();
+        o.status = true;
+        //如果是xml,那么转换为json
+        if (content.substr(0, 1) === '<' && content.substr(-1, 1) === '>') {
+            try {
+                var json_obj = $.xml2json(content);
+                content = JSON.stringify(json_obj);
+                o.result = content;
+            } catch (e) {
+                result = '解析错误：<span style="color: #f1592a;font-weight:bold;">' + e.message + '</span>';
+                current_json_str = result;
+                $('#json-target').html(result);
+                o.status = false;
+                o.result = result;
+            }
+
+        }else
+        {
+            try {
+                current_json = jsonlint.parse(content);
+                current_json_str = JSON.stringify(current_json);
+                //current_json = JSON.parse(content);
+                result = new JSONFormat(current_json_str, 4).toString();
+                o.result = result;
+            } catch (e) {
+                console.info(e);
+                result = '<span style="color: #f1592a;font-weight:bold;">' + e + '</span>';
+                current_json_str = result;
+                o.status = false;
+                o.result = result;
+            }
+        }
+        return o;
+    }
+
+    $('#json-src').keyup(function () {
+//        init();
+//        var content = $.trim($(this).val());
+//        var result = '';
+//        if (content != '') {
+//           var o1 = trans(content);
+//            $('#json-target').html(o1.result);
+//        } else {
+//            $('#json-target').html('');
+//        }
+
+    });
+    $('.xml').click(function () {
+        if (xml_flag) {
+            $('#json-src').keyup();
+        } else {
+            var result = $.json2xml(current_json);
+            $('#json-target').html('<textarea style="width:100%;height:100%;border:0;resize:none;">' + result + '</textarea>');
+            xml_flag = true;
+            $(this).attr('style', 'color:#15b374;');
+        }
+
+    });
+    $('.zip').click(function () {
+        init();
+        var content = $('#json-target').text();
+        console.info(content);
+        if (content != '') {
+            var o1 = trans(content);
+            if(o1.status==true)
+            {
+                $('#json-target').html(o1.result);
+                $('#json-error').hide();
+            }else
+            {
+                $('#json-error').html(o1.result);
+                $('#json-error').show();
+            }
+        } else {
+            $('#json-target').html('');
+            $('#json-error').hide();
+        }
+
+    });
+    $('.clear').click(function () {
+        $('#json-src').val('');
+        $('#json-target').html('');
+    });
+    $('.save').click(function () {
+        $('.zip').trigger("click");
+        var display = $('#json-error').css("display");
+        if(display=="" || display=="block")
+        {
+            alert("请先校验通过");
+            return;
+        }
+        if(methodId == "")
+        {
+            alert("请选择方法");
+            return;
+        }
+        if(current_json=="")
+        {
+            alert("请先校验JSON");
+            return;
+        }
+        if($("#status").val()=="")
+        {
+            alert("请先选择模拟数据");
+            return;
+        }
+        if(Object.prototype.toString.call(current_json) === "[object String]")
+        {
+            var content = current_json;
+        }else{
+            var content = JSON.stringify(current_json);
+        }
+
+        $.post("../addTestCode.do", { "desc": "","status":$("#status").val(),
+                    "method_id":methodId,"content":content },
+                function(data){
+                    alert("保存成功");
+                    parent.location.reload();
+                }, "json");
+    });
+
+    $('.add').click(function(){
+        $("#js-desc").val("");
+        $("#js-status").val("");
+        $("#myModal").modal("show");
+
+    });
+
+    $('.minus').click(function(){
+        if(methodId == "")
+        {
+            alert("请选择方法");
+            return;
+        }
+        if($("#status").val()=="")
+        {
+            alert("请先选择模拟数据");
+            return;
+        }
+        $.post("../deleteTestCode.do", { "desc": "","status":$("#status").val(),
+                    "method_id":methodId },
+                function(data){
+                    alert("删除成功");
+                    parent.location.reload();
+                }, "json");
+    });
+
+    function initData(text,status)
+    {
+        current_json = "";
+        $("#json-target").text(text);
+        $('.zip').trigger("click");
+        $('#status').val(status);
+
+    }
+
+    $(".js-savemock").click(function(){
+        if(methodId == "")
+        {
+            alert("请选择方法");
+            return;
+        }
+        var desc = $("#js-desc").val();
+        var status = $("#js-status").val();
+
+        $.post("../addTestCode.do", { "desc": desc,"status":status,
+                    "method_id":methodId,"content":"" },
+                function(data){
+                    alert("保存成功");
+                    parent.location.reload();
+                }, "json");
+    });
+
+</script>
+</body>
+</html>

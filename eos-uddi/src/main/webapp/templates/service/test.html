@@ -12,18 +12,81 @@
     </div>
 
     <div class="g_12 separator"><span></span></div>
-
-    <div class="g_12" ng-repeat="method in methods">
+<style>
+    .version{
+        position: relative;
+        width: 30px;
+        height: 23px;
+        display: inline-block;
+        top: 8px;
+        float:left;
+    }
+    /*.version:hover .top_tooltip{*/
+        /*display: block;*/
+    /*}*/
+    .version .top_tooltip {
+        display: block;
+        padding-top: 5px;
+        position: absolute;
+        z-index: 5;
+        left: 0;
+        right: auto;
+        top: 100%;
+    }
+    .version .top_tooltip>div{
+        width: 120px;
+        height: auto;
+        padding: 6px 0 0;
+    }
+    .version .top_tooltip ul{
+        margin: 0;
+        padding-left: 0;
+        text-align: center;
+    }
+    .version .top_tooltip ul li{
+        list-style-type: none;
+        cursor: pointer;
+        float: left;
+        height: 30px;
+        line-height: 30px;
+        width: 100%;
+    }
+    .version .top_tooltip ul li:hover
+    {
+        background-color: #eee;
+    }
+</style>
+    <div class="g_12">
         <div class="widget_header">
-            <h4 class="widget_header_title wwIcon i_16_forms">{{method.methodName}}</h4>
+            <select id="selectMethod"  class="cs-select cs-skin-rotate" ng-model="selectValue" ng-change="changeMethod()"
+                    ng-options="method.methodName for method in methods">
+                <option value="">请选择函数</option>
+            </select>
+            <select id="selectStatus" class="cs-select cs-skin-rotate" ng-model="selectStatus" ng-change="changeStatus()"
+                    ng-options="rs.label for rs in mockResult">
+                <option value="">请选择模拟数据</option>
+            </select>
+
+            <span class="label">[版本:{{version}}]{{desc}}</span>
+            <a href="javascript:void(0)" class="version i_22_upload search_icon" ng-click="showOrHide()" title="Settings">
+                <div class="js-top top_tooltip left_direction" style="display:none">
+                    <div>
+                        <ul class="clearfix">
+                            <li class="label" ng-click="rollbackMock(v.version)" ng-repeat = "v in versions">{{v.version}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </a>
+            <!--<h4 class="widget_header_title wwIcon i_16_forms">{{method.methodName}}</h4>-->
         </div>
         <div class="widget_contents noPadding">
-                <div class="line_grid" ng-repeat="r in method.mockResult">
-                    <div class="g_3"><span class="label">{{r.status}}</span></div>
-                    <div class="g_9">
-                        <div class="label">{{r.desc}}</div>
-                        <textarea  class="simple_field" name="{{r.status}}_{{method.methodId}}"   placeholder="">{{r.content}}</textarea>
-                    </div>
+                <div class="line_grid">
+                    <!--<div class="g_3"><span class="label">{{r.status}}</span></div>-->
+                    <!--<div class="g_9">-->
+                        <!--<div class="label">{{r.desc}}</div>-->
+                        <!--<textarea  class="simple_field" name="{{r.status}}_{{method.methodId}}"   placeholder="">{{r.content}}</textarea>-->
+                    <!--</div>-->
+                    <iframe id="contentIframe" scrolling="no" name="contentIframe" src="jsonCn/Json.cn.html?8" frameborder="0" width="100%" height="560px" />
                 </div>
         </div>
     </div>
@@ -38,3 +101,5 @@
     </div>
 
 </div>
+
+

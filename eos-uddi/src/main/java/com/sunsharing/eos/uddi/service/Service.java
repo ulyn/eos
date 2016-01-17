@@ -11,6 +11,7 @@ import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.msgcenter.productClient.MsgSendClient;
+import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -212,11 +213,28 @@ public class Service {
         send.sendMsg(jo.toJSONString());
     }
 
-    public List<Object> seachmethod(String appId, String serviceId, String version) {
-        String sql = "select methodId,methodName,mockResult from TMethod where  version.appCode=? and version.service.serviceId=? and version.version=?";
+    public List<Object[]> seachmethod(String appId, String serviceId, String version) {
+        String sql = "select methodId,methodName,mockResult,params from TMethod where  version.appCode=? and version.service.serviceId=? and version.version=?";
         TApp app = appDao.get(new Integer(appId));
         Query query = versionDao.createQuery(sql, app.getAppCode(), new Integer(serviceId), version);
         return query.list();
+    }
+
+    public List<TServiceVersion> searchVersion(String serviceId)
+    {
+        String sql = "from TServiceVersion where service.serviceId=?";
+        List<TServiceVersion> list = versionDao.find(sql,new Integer(serviceId));
+        return list;
+    }
+
+    public void copyMock(String fromMethodId,String toMethodId)
+    {
+        //String sql = "select MOCK_RESULT from T_METHOD where METHOD_ID =  "+fromMethodId;
+        TMethod oldMethod = methodDao.get(new Integer(fromMethodId));
+        TMethod newMethod = methodDao.get(new Integer(toMethodId));
+        //String sql = "update T_SERVICE_VERSION set ";
+        newMethod.setMockResult(oldMethod.getMockResult());
+        methodDao.update(newMethod);
     }
 
     public void saveMethod(String methodId, String status, String content) {
@@ -331,6 +349,68 @@ public class Service {
 
         }
 
+    }
+
+    Logger logger = Logger.getLogger(Service.class);
+
+    public void addTestCode(String methodId,
+                            String status,String desc,String content)
+    {
+        TMethod method = methodDao.get(new Integer(methodId));
+        JSONArray array = JSONArray.parseArray(method.getMockResult());
+        JSONObject obj = null;
+        for(int i=0;i<array.size();i++)
+        {
+            String  sta = array.getJSONObject(i).getString("status");
+            if(sta.equals(status))
+            {
+                obj = array.getJSONObject(i);
+                obj.put("desc",desc);
+                obj.put("content",content);
+                break;
+            }
+        }
+        if(obj==null){
+            obj = new JSONObject();
+            obj.put("status",status);
+            obj.put("desc",desc);
+            obj.put("content",content);
+            array.add(obj);
+        }
+        method.setMockResult(array.toString());
+        methodDao.update(method);
+
+        try {
+            updateTestCode(methodId);
+        }catch (Exception e)
+        {
+            logger.error("",e);
+        }
+
+    }
+
+    public void deleteTestCode(String methodId,String status)
+    {
+        TMethod method = methodDao.get(new Integer(methodId));
+        JSONArray array = JSONArray.parseArray(method.getMockResult());
+        for(int i=0;i<array.size();i++)
+        {
+            String  sta = array.getJSONObject(i).getString("status");
+            if(sta.equals(status))
+            {
+                array.remove(i);
+                break;
+            }
+        }
+        method.setMockResult(array.toString());
+        methodDao.update(method);
+
+        try {
+            updateTestCode(methodId);
+        }catch (Exception e)
+        {
+            logger.error("",e);
+        }
     }
 
     public void updateTestCode(String methodId) throws Exception {

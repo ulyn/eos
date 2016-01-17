@@ -486,6 +486,7 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
     var version = $routeParams.version;
 
     $scope.appId = appId;
+    $scope.version = version;
 
     $http({
         url: '/getmothod.do',
@@ -496,9 +497,23 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
             if(data.status)
             {
                 var o = data.data;
-                console.info(o);
+                console.info(o.versions);
+                $scope.methods = o.list;
+                var vs = [];
+                for(var i=0;i< o.versions.length;i++)
+                {
+                    if(o.versions[i].version != version)
+                    {
+                        vs[vs.length] = o.versions[i];
+                    }
+                }
+                console.info(vs);
+                $scope.versions = vs;
 
-                $scope.methods = o;
+                //window.setTimeout("[].slice.call( document.querySelectorAll( 'select.cs-select' ) )." +
+                //    "forEach( function(el) {new SelectFx(el);} );",200);
+                window.setTimeout("$(\"#selectMethod\").uniform();",200);
+                window.setTimeout("$(\"#selectStatus\").uniform();",200);
             }else
             {
                 alert(data.msg);
@@ -511,6 +526,87 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
     $scope.returnlist = function()
     {
         location.href = "#servicelist/"+appId+"/0";
+    }
+
+    $scope.rollbackMock = function (v) {
+        if ($scope.selectValue == null) {
+            alert("请选择要回滚数据的函数");
+            return;
+        }
+        if (confirm("你确定要将" + $scope.selectValue.methodName + "回滚到版本：" + v + "吗？")) {
+            var oldVersion = version;
+            var newVersion = v;
+            $http({
+                url: '/rollbackMock.do',
+                method: "POST",
+                data: "appId=" + appId + "&serviceId=" + serviceId + "&oldVersion=" + oldVersion + "&newVersion=" + newVersion + "" +
+                "&methodName=" + $scope.selectValue.methodName,
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).success(function (data, status, headers, config) {
+                alert("回滚成功");
+                location.reload();
+            }).error(function (data, status, headers, config) {
+
+            });
+        }
+    }
+
+    $scope.showOrHide = function()
+    {
+        $(".js-top").toggle();
+    }
+
+    $scope.changeMethod =function()
+    {
+        if($scope.selectValue!=null)
+        {
+            var t = document.getElementById("contentIframe").contentWindow;
+            t.methodId = $scope.selectValue.methodId;
+        }
+        var methods = $scope.methods;
+        if(methods!=null)
+        {
+            for(var i=0;i<methods.length;i++)
+            {
+                if(methods[i].methodId==$scope.selectValue.methodId)
+                {
+                    var result = methods[i].mockResult;
+                    for(var j=0;j<result.length;j++)
+                    {
+                        if(result[j].desc!="" && result[j].desc!=null)
+                        {
+                            result[j].label = result[j].desc;
+                        }else{
+                            result[j].label = result[j].status;
+                        }
+                    }
+                    $scope.mockResult = result;
+                    $scope.selectStatus = "";
+                    $scope.desc ="入参:("+methods[i].params+")";
+                    window.setTimeout("$('#selectStatus').trigger('change')",200);
+                    break;
+                }
+            }
+        }
+    }
+
+    $scope.changeStatus = function()
+    {
+        var t = document.getElementById("contentIframe").contentWindow;
+        var selectStatus = $scope.selectStatus;
+        if(selectStatus!=null && selectStatus!="")
+        {
+            if(selectStatus.desc==null)
+            {
+                selectStatus.desc = "";
+            }
+            $scope.desc =selectStatus.desc+"入参:("+$scope.selectValue.params+")";
+            var content = selectStatus.content;
+
+            t.initData(content,selectStatus.status);
+        }else{
+            t.initData("","");
+        }
     }
 
     $scope.saveMethod = function()

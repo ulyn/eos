@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
-import com.sunsharing.eos.uddi.model.TApp;
-import com.sunsharing.eos.uddi.model.TMethod;
-import com.sunsharing.eos.uddi.model.TService;
-import com.sunsharing.eos.uddi.model.TUser;
+import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.InterfaceServcie;
 import com.sunsharing.eos.uddi.service.NodeJSService;
@@ -174,7 +171,18 @@ public class ServiceController {
     @RequestMapping(value = {"/getmothod.do"}, method = RequestMethod.POST)
     public void getMethods(String appId, String serviceId, String version,
                            HttpServletResponse response, HttpServletRequest request) {
-        List<Object> method = service.seachmethod(appId, serviceId, version);
+        List<Object[]> method = service.seachmethod(appId, serviceId, version);
+        List<TServiceVersion> versions = service.searchVersion(serviceId);
+        List lists = new ArrayList();
+        for(TServiceVersion version1 : versions)
+        {
+            Map o = new HashMap();
+            String v = version1.getVersion();
+            int vId = version1.getVersionId();
+            o.put("version",v);
+            //o.put("versionId",vId);
+            lists.add(o);
+        }
         List<Map> result = new ArrayList();
         for (int i = 0; i < method.size(); i++) {
             Map m = new HashMap();
@@ -182,11 +190,46 @@ public class ServiceController {
             m.put("methodId", obj[0].toString());
             m.put("methodName", obj[1].toString());
             m.put("mockResult", JSONArray.parseArray(obj[2].toString()));
+            if(obj[3]!=null) {
+                m.put("params", obj[3].toString());
+            }else {
+                m.put("params", "");
+            }
             result.add(m);
         }
-        String result2 = ResponseHelper.covert2Json(true, "", result);
+        Map rs = new HashMap();
+        rs.put("versions",lists);
+        rs.put("list",result);
+        String result2 = ResponseHelper.covert2Json(true, "", rs);
         ResponseHelper.printOut(response, result2);
     }
+
+    @RequestMapping(value = {"/rollbackMock.do"}, method = RequestMethod.POST)
+    public void rollbackMock(String appId, String serviceId, String oldVersion,String newVersion,String methodName,
+                           HttpServletResponse response, HttpServletRequest request)
+    {
+        List<Object[]> method = service.seachmethod(appId, serviceId, oldVersion);
+        List<Object[]> newMethod = service.seachmethod(appId, serviceId, newVersion);
+
+        for(Object[] newM:newMethod)
+        {
+            String newMethodId = newM[0].toString();
+            String newMethodName =  newM[1].toString();
+            if(newMethodName.equals(methodName)) {
+                for (Object[] oldM : method) {
+                    String oldMethodId = oldM[0].toString();
+                    String oldMethodName = oldM[1].toString();
+                    if (oldMethodName.equals(methodName)) {
+                        service.copyMock(newMethodId, oldMethodId);
+                        break;
+                    }
+                }
+            }
+        }
+        ResponseHelper.printOut(response, "{}");
+
+    }
+
 
     @RequestMapping(value = {"/saveMethod.do"}, method = RequestMethod.POST)
     public void getMethods(
@@ -211,6 +254,25 @@ public class ServiceController {
         String result2 = ResponseHelper.covert2Json(true, "", "");
         ResponseHelper.printOut(response, result2);
     }
+
+    @RequestMapping(value = {"/addTestCode.do"}, method = RequestMethod.POST)
+    public void addTestCode(
+            HttpServletResponse response, HttpServletRequest request) throws Exception {
+        String methodId = request.getParameter("method_id");
+        String status = request.getParameter("status");
+        String desc = request.getParameter("desc");
+        String content = request.getParameter("content");
+        service.addTestCode(methodId,status,desc,content);
+        ResponseHelper.printOut(response, "{}");
+    }
+    @RequestMapping(value = {"/deleteTestCode.do"}, method = RequestMethod.POST)
+    public void deleteTestCode(HttpServletResponse response, HttpServletRequest request) throws Exception{
+        String methodId = request.getParameter("method_id");
+        String status = request.getParameter("status");
+        service.deleteTestCode(methodId,status);
+        ResponseHelper.printOut(response, "{}");
+    }
+
 
     @RequestMapping(value = {"/getJava.do"}, method = RequestMethod.POST)
     public void getJava(String versionId,

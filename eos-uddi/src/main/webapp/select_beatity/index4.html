@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1"> 
+		<link href='http://fonts.useso.com/css?family=Raleway:400,300,500,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/cs-select.css" />
+		<link rel="stylesheet" type="text/css" href="css/cs-skin-slide.css" />
+		<!--[if IE]>
+  		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+	<body class="color-4">
+		<div class="container">
+			<header class="codrops-header">
+				<h1><span>Inspiration for</span> Custom Select Elements</h1>	
+				<nav class="codrops-demos">
+					<a href="index.html">Border</a>
+					<a href="index2.html">Underline</a>
+					<a href="index3.html">Elastic</a>
+					<a class="current-demo" href="index4.html">Slide</a>
+					<a href="index5.html">Overlay</a>
+					<a href="index6.html">Rotate</a>
+					<a href="index7.html">Box Select</a>
+					<a href="index8.html">Circular</a>
+				</nav>
+			</header>
+			<section>
+				<label class="select-label">Travel Type</label>
+				<select class="cs-select cs-skin-slide">
+					<option value="sightseeing" data-class="icon-camera">Sight Seeing</option>
+					<option value="business" data-class="icon-money">Business</option>
+					<option value="honeymoon" data-class="icon-heart">Honeymoon</option>
+					<option value="food" data-class="icon-food">Gourmet</option>
+					<option value="shopping" data-class="icon-shirt">Shopping</option>
+				</select>
+			</section>
+		</div><!-- /container -->
+		<script src="js/classie.js"></script>
+		<script src="js/selectFx.js"></script>
+		<script>
+			(function() {
+				[].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {	
+					new SelectFx(el);
+				} );
+			})();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,45 @@
+@charset "utf-8";
+/**
+ * 版权所有：厦门畅享信息技术有限公司
+ * Copyright 2014 Xiamen Sunsharing Information CO., LTD.
+ * All right reserved. 
+ *====================================================
+ * 文件名称: json.css
+ * 修订记录：
+ * No    日期				作者(操作:具体内容)
+ * 1.   2016/1/12			linyh(创建:创建文件)
+ *====================================================
+ * 文件描述：(说明本文件需要实现的内容)
+ * 
+ */
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+}
+
+.json_key {
+    color: #92278f;
+    font-weight: bold;
+}
+
+.json_null {
+    color: #f1592a;
+    font-weight: bold;
+}
+
+.json_string {
+    color: #3ab54a;
+    font-weight: bold;
+}
+
+.json_number {
+    color: #25aae2;
+    font-weight: bold;
+}
+
+.json_link {
+    color: #717171;
+    font-weight: bold;
+}
+
+.json_array_brackets {
+}

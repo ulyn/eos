@@ -16,15 +16,23 @@
  */
 package com.sunsharing.eos.client.rpc;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.StringUtils;
+import com.sunsharing.eos.client.ServiceContext;
+import com.sunsharing.eos.client.mock.MockUtils;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
 import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre></pre>
@@ -57,7 +65,30 @@ public class RpcFilter extends AbstractServiceFilter {
         //zookeeper取得服务的ip
         boolean isMock = !StringUtils.isBlank(serviceRequest.getMock());
         if (isMock) {
-            logger.info(serviceRequest.getServiceId() + "." + serviceRequest.getMethodName() + " use mock:" + serviceRequest.getMock());
+            String msg = "%s-%s[%s].%s use mock:%s";
+            logger.info(String.format(msg,serviceRequest.getAppId(),serviceRequest.getServiceId(),
+                    serviceRequest.getServiceVersion(),serviceRequest.getMethodName(),serviceRequest.getMock()));
+            MockUtils mockUtils = new MockUtils();
+            ServiceConfig serviceConfig = ServiceContext.getServiceConfig(serviceRequest.getAppId(),
+                    serviceRequest.getServiceId());
+            Map params = new HashMap();
+            //能到此处，serviceConfig不可能空，不判断非空
+            ServiceMethod serviceMethod = serviceConfig.getMethod(serviceRequest.getMethodName());
+            String[] paramNames = serviceMethod.getParameterNames();
+            Object[] args = serviceRequest.getArguments();
+            if(paramNames!=null){
+                for(int i=0;i<paramNames.length;i++){
+                    params.put(paramNames[i],args[i]);
+                }
+            }
+            logger.info("params = " + JSON.toJSONString(params));
+            String str = mockUtils.transMockMatch(serviceRequest.getAppId(),
+                    serviceRequest.getServiceId(),
+                    serviceRequest.getServiceVersion(),
+                    serviceRequest.getMethodName(),
+                    serviceRequest.getMock(), params);
+            serviceResponse.writeValue(str);
+            return;
         }
         JSONObject jo = getEosLocation(serviceRequest.getAppId(), serviceRequest.getServiceId(),
                 serviceRequest.getServiceVersion(), isMock);
@@ -65,7 +96,7 @@ public class RpcFilter extends AbstractServiceFilter {
         int port = jo.getInteger("port");
 
         try {
-            logger.info(String.format("request %s-%s-%s target eos %s:%s",
+            logger.debug(String.format("request %s-%s-%s target eos %s:%s",
                     serviceRequest.getAppId(), serviceRequest.getServiceId(), serviceRequest.getServiceVersion(), ip, port));
             ResponsePro responsePro = RpcClientFactory.create(serviceRequest.getTransporter())
                     .doRpc(serviceRequest.toRequestPro(), ip, port, serviceRequest.getTimeout());

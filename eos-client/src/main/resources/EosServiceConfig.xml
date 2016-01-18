@@ -8,19 +8,19 @@
         </bean>
     </beans>
     <filters>
-        <!--过滤路径应用id+服务名，{appid}.{service}-->
-        <filter>
-            <class>com.sunsharing.eos.clientexample.test.WebServiceProxyFilter</class>
-            <path-pattern>
-                <!--<value>legend.*</value>-->
-                <!--<value>test.*Service</value>-->
-                <value>*</value>
-            </path-pattern>
-            <exclude-path>
-                <value>legend.testService</value>
-                <!--<value>test.testService</value>-->
-            </exclude-path>
-        </filter>
+        <!--&lt;!&ndash;过滤路径应用id+服务名，{appid}.{service}&ndash;&gt;-->
+        <!--<filter>-->
+            <!--<class>com.sunsharing.eos.clientexample.test.WebServiceProxyFilter</class>-->
+            <!--<path-pattern>-->
+                <!--&lt;!&ndash;<value>legend.*</value>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value>test.*Service</value>&ndash;&gt;-->
+                <!--<value>*</value>-->
+            <!--</path-pattern>-->
+            <!--<exclude-path>-->
+                <!--<value>legend.testService</value>-->
+                <!--&lt;!&ndash;<value>test.testService</value>&ndash;&gt;-->
+            <!--</exclude-path>-->
+        <!--</filter>-->
     </filters>
     <exceptionResolver class="com.sunsharing.eos.clientexample.test.HandlerExceptionResolver"></exceptionResolver>
 </eos>

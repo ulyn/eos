@@ -11,10 +11,10 @@
 <script>
     $(document).ready(function () {
         $.eosRemote({
-            serviceId: "testType",
-            mock: "error",
-            method: "testMap",
-            data: {"m": {"a1":"a1","a2":"a2"},"l2":"abc1234"},
+            serviceId: "union",
+            mock: "success",
+            method: "detail",
+            data: {"frbh":"2"},
             success: function (data) {
                 console.info(data);
                 alert("返回结果:" + data);

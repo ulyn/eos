@@ -47,16 +47,31 @@ public class MockUtils {
                 for (int i = 0; i < array.size(); i++) {
                     JSONObject jo = array.getJSONObject(i);
                     String status = jo.getString("status");
-                    if(status.indexOf("${")==-1) {
+                    if(status.indexOf("${")!=-1) {
                         //走原来的模式
-                        DynamicString ds = new DynamicString(status);
-                        status = ds.convert(params);
-                        if("true".equals(evalStr(status)))
+                        try {
+                            DynamicString ds = new DynamicString(status);
+                            status = ds.convert(params);
+                        }catch (Exception e)
                         {
-                            String content = jo.getString("content");
-                            return content;
+                            logger.error("模拟参数转换参数报错，参数信息："+status,e);
+                            throw new RuntimeException("模拟参数转换参数报错，参数信息："+status);
                         }
                     }
+                    try {
+                        if (status.indexOf("&&") != -1 || status.indexOf("==") != -1 || status.indexOf("||") != -1) {
+                            if ("true".equals(evalStr(status))) {
+                                String content = jo.getString("content");
+                                return content;
+                            }
+                        }
+                    }catch (Exception e)
+                    {
+                        logger.error("模拟参数JS处理报错，参数信息："+status,e);
+                        throw new RuntimeException("模拟参数JS处理报错，参数信息："+status);
+                    }
+
+
                 }
                 //再走名字匹配
                 for (int i = 0; i < array.size(); i++) {
@@ -73,7 +88,7 @@ public class MockUtils {
                 String error = "服务接口" + appId + "-"
                         + serviceId + "-"
                         + version + "-"
-                        + method + "没有配置指定的mock:" + mockName;
+                        + method + "没有配置指定的mock:" + mockName+"或者入参无法匹配";
                 logger.error(error);
                 throw new RpcException(RpcException.MOCK_EXCEPTION, error);
         } catch (Exception e) {

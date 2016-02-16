@@ -1,5 +1,6 @@
 package com.sunsharing.eos.uddi.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.DateUtils;
@@ -18,9 +19,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -249,6 +248,8 @@ public class Service {
         }
         method.setMockResult(array.toJSONString());
         methodDao.saveOrUpdate(method);
+
+
     }
 
     public String getName(String versionId) {
@@ -359,14 +360,19 @@ public class Service {
         TMethod method = methodDao.get(new Integer(methodId));
         JSONArray array = JSONArray.parseArray(method.getMockResult());
         JSONObject obj = null;
+
         for(int i=0;i<array.size();i++)
         {
             String  sta = array.getJSONObject(i).getString("status");
             if(sta.equals(status))
             {
                 obj = array.getJSONObject(i);
+                if(StringUtils.isBlank(desc)) {
+                    desc = array.getJSONObject(i).getString("desc");
+                }
                 obj.put("desc",desc);
                 obj.put("content",content);
+
                 break;
             }
         }
@@ -377,6 +383,8 @@ public class Service {
             obj.put("content",content);
             array.add(obj);
         }
+
+
         method.setMockResult(array.toString());
         methodDao.update(method);
 
@@ -386,6 +394,143 @@ public class Service {
         {
             logger.error("",e);
         }
+
+    }
+
+    public String[] getMock(String methodId)
+    {
+        List<String> mock = new ArrayList<String>();
+        TMethod method = methodDao.get(new Integer(methodId));
+        JSONArray array = JSONArray.parseArray(method.getMockResult());
+        for(int i=0;i<array.size();i++)
+        {
+            JSONObject jsonObject = array.getJSONObject(i);
+            String sta = jsonObject.getString("status");
+            String de = jsonObject.getString("desc");
+            mock.add("${" + sta + "}" + de);
+            String con = jsonObject.getString("content");
+            con = con.replaceAll("：",":");
+            con = con.replaceAll("“","\"");
+            con = con.replaceAll("”","\"");
+            con = con.replaceAll("，",",");
+            con = con.replaceAll("\\{","{");
+            con = con.replaceAll("\\}","}");
+            con = con.replaceAll("\\【","[");
+            con = con.replaceAll("\\】","]");
+            if(con.startsWith("{"))
+            {
+                String l = (JSON.toJSONString(JSONObject.parseObject(con), true));
+                String arr [] =  l.split("\n");
+                for(int j=0;j<arr.length;j++)
+                {
+                    mock.add(arr[j]);
+                }
+            }else if(con.startsWith("["))
+            {
+                JSONArray arrayTmp = JSONArray.parseArray(con);
+                String l = JSONArray.toJSONString(arrayTmp,true);
+                String arr [] =  l.split("\n");
+                for(int j=0;j<arr.length;j++)
+                {
+                    mock.add(arr[j]);
+                }
+            }
+            else
+            {
+                mock.add(con);
+            }
+            mock.add(" ");
+
+        }
+        return mock.toArray(new String[]{});
+    }
+
+
+    public void save2JavaFile(String methodId,String[] mocks)
+    {
+        TMethod method = methodDao.get(new Integer(methodId));
+        String methodName = method.getMethodName();
+        String appId = method.getVersion().getAppCode();
+        String serviceId = method.getVersion().getService().getServiceCode();
+        String version = method.getVersion().getVersion();
+
+        File path = new File(SysInit.path + File.separator + "interface" + File.separator + appId
+        + File.separator+serviceId+"_"+version+".java");
+        BufferedReader reader = null;
+        FileOutputStream w = null;
+        String [] result = null;
+        try {
+            //reader = new BufferedReader(new FileReader(source));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+            List<String> str2 = new ArrayList<String>();
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                str2.add(line);
+            }
+            InterfaceServcie servcie = new InterfaceServcie();
+            result = servcie.synMock(methodName,str2.toArray(new String[]{}),mocks);
+
+        } catch (Exception e) {
+            logger.error("", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                }catch (Exception e)
+                {
+
+                }
+            }
+            if (w != null) {
+                try {
+                    w.close();
+                }catch (Exception e)
+                {
+
+                }
+            }
+        }
+        boolean rst = false;
+        int i = 0;
+        while(!rst)
+        {
+            i++;
+            rst = path.delete();
+            try {
+                Thread.sleep(100);
+            }catch (Exception e)
+            {
+
+            }
+            if(i>20)
+            {
+                break;
+            }
+        }
+        FileOutputStream out = null;
+        try
+        {
+            out = new FileOutputStream(path);
+            for(int j=0;j<result.length;j++)
+            {
+                out.write(result[j].getBytes("UTF-8"));
+                out.write("\n".getBytes("UTF-8"));
+            }
+
+        }catch (Exception e)
+        {
+            logger.error("", e);
+            throw new RuntimeException(e);
+        }finally {
+            try {
+                out.close();
+            }catch (Exception e)
+            {
+
+            }
+        }
+
 
     }
 

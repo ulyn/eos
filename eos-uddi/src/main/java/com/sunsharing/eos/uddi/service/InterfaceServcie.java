@@ -1,5 +1,6 @@
 package com.sunsharing.eos.uddi.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.sunsharing.eos.common.utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -125,7 +126,8 @@ public class InterfaceServcie {
                     functions.append(lines[i]);
                 }
                 //开始处理
-                if(functionstart==false && !StringUtils.isBlank(lines[i].trim()) && !lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*"))
+                if(functionstart==false && !StringUtils.isBlank(lines[i].trim()) &&
+                        !lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*"))
                 {
                     functionstart = true;
                     functions.append(lines[i]);
@@ -221,6 +223,136 @@ public class InterfaceServcie {
 
     }
 
+    public String[] synMock(String methodName,String[] lines,String []mocks)
+    {
+        boolean start = false;
+        boolean functionstart = false;
+
+        StringBuffer functions = new StringBuffer();
+        int mockBeginLine = 0;
+        int mockEndLine=0;
+        int blankNum = 0;
+
+        for(int i=0;i<lines.length;i++)
+        {
+            if(lines[i].trim().startsWith("public interface"))
+            {
+                start = true;
+            }
+
+            if(start && !lines[i].trim().startsWith("public interface"))
+            {
+                if(functionstart)
+                {
+                    if(!StringUtils.isBlank(lines[i]))
+                    {
+                        functions.append(lines[i]);
+                    }
+                }
+
+                if(functionstart==false && !StringUtils.isBlank(lines[i].trim())
+                 && lines[i].trim().startsWith("*"))
+                {
+                    String line = lines[i].trim();
+                    int index = line.indexOf("*");
+                    blankNum = lines[i].indexOf("*");
+                    line = line.substring(index+1).trim();
+                    if(line.startsWith("@") &&
+                            !line.startsWith("@ParameterNames"))
+                    {
+                        mockBeginLine = 0;
+                        mockEndLine=0;
+                    }else if(line.trim().startsWith("${") || line.trim().startsWith("/") ||
+                            line.trim().equals(""))
+                    {
+                        if(mockBeginLine == 0)
+                        {
+                            mockBeginLine = i;
+                        }
+                    }
+                }
+
+                //开始处理
+                if(functionstart==false && !StringUtils.isBlank(lines[i].trim()) &&
+                        !lines[i].trim().startsWith("/*") &&
+                        !lines[i].trim().startsWith("*")
+                        )
+                {
+                    functionstart = true;
+                    functions.append(lines[i]);
+                    mockEndLine = i;
+                }
+
+
+                if(lines[i].trim().endsWith(");"))
+                {
+
+                    functionstart = false;
+                    if(lines[i].trim().indexOf("(")==-1)
+                    {
+                        functions.append(lines[i]);
+                    }
+                    String str = functions.toString();
+                    str = str.replaceAll("@ParameterNames\\(.*?\\)","");
+                    functions = new StringBuffer();
+                    System.out.println(str);
+                    int startIndex = str.indexOf("(");
+                    int m = 0;
+                    for(m=startIndex;m>0;m--)
+                    {
+                        if(str.charAt(m)==' ')
+                        {
+                            break;
+                        }
+                    }
+                    String functionName = str.substring(m,startIndex);
+
+                    if(functionName.trim().equals(methodName))
+                    {
+                        if(mockBeginLine==0)
+                        {
+                            return lines;
+                        }
+                        for(int k=0;k<mocks.length;k++)
+                        {
+                            mocks[k] = "* "+mocks[k];
+                            for(int j=0;j<blankNum;j++)
+                            {
+                                mocks[k] = " "+mocks[k];
+                            }
+                        }
+                        String[] mocks2 = new String[mocks.length+1];
+                        System.arraycopy(mocks,0,mocks2,0,mocks.length);
+                        mocks2[mocks2.length-1] = "*/";
+                        for(int j=0;j<blankNum;j++)
+                        {
+                            mocks2[mocks2.length-1] = " "+mocks2[mocks2.length-1];
+                        }
+
+                        String [] newStr1 = Arrays.copyOfRange(lines, 0, mockBeginLine);
+                        String [] newStr2 = Arrays.copyOfRange(lines, mockEndLine, lines.length);
+                        String[] result = new String[newStr1.length + newStr2.length + mocks2.length];
+                        System.arraycopy(newStr1,0,result,0,newStr1.length);
+                        System.arraycopy(mocks2,0,result,newStr1.length,mocks2.length);
+                        System.arraycopy(newStr2,0,result,newStr1.length+mocks2.length,newStr2.length);
+                        return result;
+                    }else
+                    {
+                        mockBeginLine = 0;
+                        mockEndLine = 0;
+                    }
+
+                }
+            }
+            if(lines[i].trim().endsWith("}") && !lines[i].trim().startsWith("/*") &&
+                    !lines[i].trim().startsWith("*"))
+            {
+                start = false;
+            }
+        }
+        return null;
+    }
+
 
     public Map getFunction(String[]lines)
     {
@@ -289,7 +421,8 @@ public class InterfaceServcie {
                 startresult = true;
                 newfunction = false;
             }
-            if(startresult && lines[i].trim().startsWith("*")  && !lines[i].trim().startsWith("*/") && !lines[i].trim().substring(1).trim().startsWith("@return"))
+            if(startresult && lines[i].trim().startsWith("*")  && !lines[i].trim().startsWith("*/")
+                    && !lines[i].trim().substring(1).trim().startsWith("@return"))
             {
                 if(!StringUtils.isBlank(lines[i].trim().substring(1).trim()))
                 result.add(lines[i].trim().substring(1).trim());
@@ -359,7 +492,7 @@ public class InterfaceServcie {
                     functionMap.put(tmp.get("status"),tmp);
                 }
                 tmp = new HashMap();
-                int index = l.indexOf("}");
+                int index = l.lastIndexOf("}");
                 String status = l.substring(2,index);
                 System.out.println(status);
                 tmp.put("status",status);
@@ -388,7 +521,8 @@ public class InterfaceServcie {
     {
         boolean str = StringUtils.isBlank("\n".trim());
         System.out.println(str);
-        File f = new File("/Users/criss/Desktop/projectDev/eosgit/eos-server/src/test/java/TestInterfaceAnno.java");
+        File f = new File("/Users/criss/Desktop/projectDev/eos_git/eos-client-example/src" +
+                "/main/java/com/sunsharing/eos/clientexample/test/Union.java");
         BufferedReader reader = new BufferedReader(new FileReader(f));
         List<String> str2 = new ArrayList<String>();
         String line = "";
@@ -398,11 +532,20 @@ public class InterfaceServcie {
         }
         String [] lines = str2.toArray(new String[]{});
         InterfaceServcie service = new InterfaceServcie();
-        String versiont = service.getVersion(lines);
-        System.out.println(versiont);
-        String name = service.getInterfaceName(lines);
-        System.out.println(name);
-        service.getFunction(lines);
+//        String versiont = service.getVersion(lines);
+//        System.out.println(versiont);
+//        String name = service.getInterfaceName(lines);
+//        System.out.println(name);
+//        service.getFunction(lines);
+        String[] mocks = new String[2];
+        mocks[0] = "1111111111";
+        mocks[1] = "\n";
+        String[] array = service.synMock("detail",lines,mocks);
+        for(int i=0;i<array.length;i++)
+        {
+            System.out.println(array[i]);
+        }
+
     }
 
 }

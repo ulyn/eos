@@ -11,9 +11,9 @@
 <script>
     $(document).ready(function () {
         $.eosRemote({
-            serviceId: "union",
-            mock: "success",
-            method: "detail",
+            serviceId: "loginService",
+            mock: "error",
+            method: "login",
             data: {"frbh":"2"},
             success: function (data) {
                 console.info(data);

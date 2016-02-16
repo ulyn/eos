@@ -33,23 +33,8 @@ public interface Union {
      *     "XZQH":"" //行政区划 如果社区ID不为空 传社区ID，如果社区为空，传街道ID
      * }
      * @return
-     * ${success}
      *
-     * {
-     *     "currentPage":"",
-     *     "linesPerPage":"",
-     *     "totalNum":"",
-     *     "list":[{
-     *     "FRBH":"法人编号",
-     *     "FRMC":"法人名称",
-     *     "HYDM":"行业",
-     *     "ZCDZ":"注册地址",
-     *     "DJRQ":"登记日期",
-     *     "QYYGRS":"用工人数",
-     *     "SFCLGH":"是否工会",
-     *     "GHCLSJ":"工会成立时间",
-     *     }]
-     * }
+     *
      */
 @ParameterNames(value = {"reqData"})
     Map list(Map reqData);

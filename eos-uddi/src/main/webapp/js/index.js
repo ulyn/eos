@@ -540,7 +540,7 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
                 url: '/rollbackMock.do',
                 method: "POST",
                 data: "appId=" + appId + "&serviceId=" + serviceId + "&oldVersion=" + oldVersion + "&newVersion=" + newVersion + "" +
-                "&methodName=" + $scope.selectValue.methodName,
+                "&methodName=" + $scope.selectValue.methodName+"&methodId="+$scope.selectValue.methodId,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).success(function (data, status, headers, config) {
                 alert("回滚成功");
@@ -594,12 +594,16 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
     {
         var t = document.getElementById("contentIframe").contentWindow;
         var selectStatus = $scope.selectStatus;
+
+
+
         if(selectStatus!=null && selectStatus!="")
         {
             if(selectStatus.desc==null)
             {
                 selectStatus.desc = "";
             }
+            selectDesc = selectStatus.desc;
             $scope.desc =selectStatus.desc+"入参:("+$scope.selectValue.params+")";
             var content = selectStatus.content;
 
@@ -849,6 +853,7 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
 
 });
 
+var selectDesc = "";
 
 function upload(o,appId)
 {

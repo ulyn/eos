@@ -250,6 +250,7 @@ public class DynamicString {
         keyValue.put("abc","hexin22");
         Map<String,Object> param = new java.util.HashMap<String,Object>(4);
         param.put("SomeThing",keyValue);
+        param.put("ddc",keyValue);
         String result = ds.convert(param);
         System.out.println("" + result);
     }

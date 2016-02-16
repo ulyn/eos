@@ -121,19 +121,19 @@ public class AppService {
             for(TService ser:services)
             {
                 List<TServiceVersion> versions = ser.getVersions();
-//                String max = "";
-                TServiceVersion maxVersion = versions.get(0);
-//                for(TServiceVersion v:versions)
-//                {
-//                    if(v.getStatus().equals("1"))
-//                    {
-//                        if(v.getVersion().compareTo(max)>0)
-//                        {
-//                            maxVersion = v;
-//
-//                        }
-//                    }
-//                }
+                String max = "0";
+                TServiceVersion maxVersion = null;
+                for(TServiceVersion v:versions)
+                {
+                    if(v.getStatus().equals("1"))
+                    {
+                        if(compareVersion(v.getVersion(),max)>0)
+                        {
+                            max = v.getVersion();
+                            maxVersion = v;
+                        }
+                    }
+                }
                 if(maxVersion!=null)
                 {
                     String sourceApp = SysInit.path+ File.separator+"interface"+
@@ -382,8 +382,53 @@ public class AppService {
 
     public static void main(String[]a)
     {
-        String ki = "com.sunsharing.componetent.test".replaceAll("\\.","\\\\");
-        System.out.println(ki);
+        String t = "2.2.0";
+        String t2 = "1.1";
+        System.out.print(compareVersion(t,t2));
+
+    }
+    public static  int compareVersion(String a1,String a2)
+    {
+        a1 = a1.trim();
+        a2 = a2.trim();
+        String []a1Arr = a1.split("\\.");
+        String []a2Arr = a2.split("\\.");
+
+        int maxLen = a1Arr.length>a2Arr.length?a1Arr.length:a2Arr.length;
+
+        for(int i=0;i<maxLen;i++)
+        {
+            int a1V = 0;
+            int a2V = 0;
+            if(a1Arr.length-1>=i)
+            {
+                try {
+                    a1V = new Integer(a1Arr[i].trim());
+                }catch (Exception e)
+                {
+
+                }
+            }
+            if(a2Arr.length-1>=i)
+            {
+                try {
+                    a2V = new Integer(a2Arr[i].trim());
+                }catch (Exception e)
+                {
+
+                }
+            }
+            if(a1V > a2V)
+            {
+                return 1;
+            }
+            if(a1V < a2V)
+            {
+                return -1;
+            }
+        }
+        return 0;
+
     }
 
 }

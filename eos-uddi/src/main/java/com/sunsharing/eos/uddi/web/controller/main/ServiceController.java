@@ -23,10 +23,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by criss on 14-2-1.
@@ -47,6 +44,26 @@ public class ServiceController {
 
 
         List<TService> services = service.query(appId, module);
+
+        for(TService service:services)
+        {
+            List<TServiceVersion> versons =  service.getVersions();
+            Collections.sort(versons, new Comparator<TServiceVersion>() {
+                public int compare(TServiceVersion tServiceVersion, TServiceVersion t1) {
+                    int i = AppService.compareVersion(tServiceVersion.getVersion(),t1.getVersion());
+                    if(i>0)
+                    {
+                        return -1;
+                    }else if(i<0)
+                    {
+                        return 1;
+                    }else
+                    {
+                        return 0;
+                    }
+                }
+            });
+        }
 
         String str = JSONArray.toJSONString(services);
         JSONArray arr = JSONArray.parseArray(str);
@@ -205,7 +222,7 @@ public class ServiceController {
     }
 
     @RequestMapping(value = {"/rollbackMock.do"}, method = RequestMethod.POST)
-    public void rollbackMock(String appId, String serviceId, String oldVersion,String newVersion,String methodName,
+    public void rollbackMock(String appId, String serviceId, String oldVersion,String newVersion,String methodName,String methodId,
                            HttpServletResponse response, HttpServletRequest request)
     {
         List<Object[]> method = service.seachmethod(appId, serviceId, oldVersion);
@@ -226,6 +243,10 @@ public class ServiceController {
                 }
             }
         }
+
+        String[] mock = service.getMock(methodId);
+        service.save2JavaFile(methodId,mock);
+
         ResponseHelper.printOut(response, "{}");
 
     }
@@ -263,6 +284,9 @@ public class ServiceController {
         String desc = request.getParameter("desc");
         String content = request.getParameter("content");
         service.addTestCode(methodId,status,desc,content);
+
+        String[] mock = service.getMock(methodId);
+        service.save2JavaFile(methodId,mock);
         ResponseHelper.printOut(response, "{}");
     }
     @RequestMapping(value = {"/deleteTestCode.do"}, method = RequestMethod.POST)
@@ -270,6 +294,8 @@ public class ServiceController {
         String methodId = request.getParameter("method_id");
         String status = request.getParameter("status");
         service.deleteTestCode(methodId,status);
+        String[] mock = service.getMock(methodId);
+        service.save2JavaFile(methodId,mock);
         ResponseHelper.printOut(response, "{}");
     }
 

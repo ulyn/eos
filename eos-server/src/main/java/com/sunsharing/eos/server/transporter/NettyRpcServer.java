@@ -76,6 +76,7 @@ public class NettyRpcServer extends AbstractServer {
             nettyServer.startup();
         } catch (Exception e) {
             logger.error("启动netty服务器失败！", e);
+            System.exit(0);
         }
     }
 }

@@ -69,7 +69,7 @@ public class RpcFilter extends AbstractServiceFilter {
             logger.info(String.format(msg,serviceRequest.getAppId(),serviceRequest.getServiceId(),
                     serviceRequest.getServiceVersion(),serviceRequest.getMethodName(),serviceRequest.getMock()));
             MockUtils mockUtils = new MockUtils();
-            ServiceConfig serviceConfig = ServiceContext.getServiceConfig(serviceRequest.getAppId(),
+            ServiceConfig serviceConfig = ServiceContext.getInstance().getServiceConfig(serviceRequest.getAppId(),
                     serviceRequest.getServiceId());
             Map params = new HashMap();
             //能到此处，serviceConfig不可能空，不判断非空

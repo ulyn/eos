@@ -19,17 +19,12 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
     public void afterConnect(WatchedEvent event) {
         try {
             logger.info("登录成功了开始调用回调");
+
+            PathConstant.initEOSPath();
+
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            utils.createNode(PathConstant.SERVICE_STATE, "", CreateMode.PERSISTENT);
 
-            //创建EOS节点
-            utils.createNode(PathConstant.SERVICE_STATE + "/" + SysProp.eosId, "", CreateMode.PERSISTENT);
-            //utils.watchNode(PathConstant.SERVICE_STATE + "/" + SysProp.eosId);
-            //添加监听
-            utils.watchChildren(PathConstant.SERVICE_STATE + "/" + SysProp.eosId);
 
-            //EOS状态
-            utils.createNode(PathConstant.EOS_STATE, "", CreateMode.PERSISTENT);
             while (utils.isExists(PathConstant.EOS_STATE + "/" + SysProp.eosId,false)) {
                 logger.info("存在节点:" + utils.isExists(PathConstant.EOS_STATE + "/" + SysProp.eosId,false) + "等待关闭");
                 Thread.sleep(1000);
@@ -38,7 +33,15 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
                     CreateMode.EPHEMERAL);
 
             //utils.printNode("/");
+            if(!utils.isExists(PathConstant.SERVICE_STATE_EOS + "/" + SysProp.eosId,false))
+            {
+                utils.createNodeNowatch(PathConstant.SERVICE_STATE_EOS + "/" + SysProp.eosId,"",CreateMode.PERSISTENT);
+            }
+
             ServiceCache.getInstance().resetServiceMap();
+
+            //添加监听
+            utils.watchChildren(PathConstant.SERVICE_STATE_EOS + "/" + SysProp.eosId);
 
         } catch (Exception e) {
             logger.error("初始化EOS出错", e);
@@ -48,7 +51,7 @@ public class ManagerConnectCallBack implements ZookeeperCallBack {
     @Override
     public void watchNodeChange(WatchedEvent event) {
         if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-            if (event.getPath().startsWith(PathConstant.SERVICE_STATE)) {
+            if (event.getPath().startsWith(PathConstant.SERVICE_STATE_EOS)) {
                 ServiceCache.getInstance().resetServiceMap();
             }
         }

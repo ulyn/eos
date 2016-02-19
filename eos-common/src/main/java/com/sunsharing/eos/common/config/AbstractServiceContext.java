@@ -20,18 +20,18 @@ import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
 import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.exception.ExceptionResolver;
-import com.sunsharing.eos.common.utils.ClassFilter;
-import com.sunsharing.eos.common.utils.ClassHelper;
-import com.sunsharing.eos.common.utils.ClassUtils;
-import com.sunsharing.eos.common.utils.StringUtils;
+import com.sunsharing.eos.common.utils.*;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -51,19 +51,31 @@ import java.util.Map;
  * <br>
  */
 public abstract class AbstractServiceContext {
+
+    public AbstractServiceContext()
+    {
+
+    }
+
+    public AbstractServiceContext(String packagePath) {
+//        this.ctx = ctx;
+        this.packagePath = packagePath;
+
+    }
+
     Logger logger = Logger.getLogger(AbstractServiceContext.class);
 
     //    protected ApplicationContext ctx;
     protected String packagePath;
 
     //存储服务对象,key为服务id
-    protected static Map<String, Object> servicesMapByKeyClassName = new HashMap<String, Object>();//key值为接口类名
-    protected static Map<String, Object> servicesMapByKeyAppServiceId = new HashMap<String, Object>();//key值为getServiceConfigKey(appId,serviceId)
+    protected  Map<String, Object> servicesMapByKeyClassName = new HashMap<String, Object>();//key值为接口类名
+    protected  Map<String, Object> servicesMapByKeyAppServiceId = new HashMap<String, Object>();//key值为getServiceConfigKey(appId,serviceId)
     //为适应废弃的getBean
-    protected static Map<String, Object> servicesMapByKeyServiceId = new HashMap<String, Object>(); //key值为ServiceId
+    protected  Map<String, Object> servicesMapByKeyServiceId = new HashMap<String, Object>(); //key值为ServiceId
 
-    protected static Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();//key值为getServiceConfigKey(appId,serviceId)
-    protected static Map<String, List<ServiceConfig>> serviceConfigMapByKeyServiceId = new HashMap<String, List<ServiceConfig>>();//key值为serviceId
+    protected  Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();//key值为getServiceConfigKey(appId,serviceId)
+    protected  Map<String, List<ServiceConfig>> serviceConfigMapByKeyServiceId = new HashMap<String, List<ServiceConfig>>();//key值为serviceId
 
 
     /**
@@ -81,11 +93,7 @@ public abstract class AbstractServiceContext {
         }
     }
 
-    public AbstractServiceContext(String packagePath) {
-//        this.ctx = ctx;
-        this.packagePath = packagePath;
 
-    }
 
     /**
      * 初始化
@@ -299,7 +307,7 @@ public abstract class AbstractServiceContext {
      * @return
      */
     @Deprecated
-    public static <T> T getBean(String id) {
+    protected   <T> T getBean(String id) {
         Object o = servicesMapByKeyServiceId.get(id);
         if (o == null) {
             return null;
@@ -335,6 +343,10 @@ public abstract class AbstractServiceContext {
                 if (paramSize != annParamSize) {
                     throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
                 }
+            }else
+            {
+                //如果注解取不到，从类中获取
+                throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解没有，无法注册");
             }
 
             ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
@@ -343,20 +355,21 @@ public abstract class AbstractServiceContext {
         return list;
     }
 
-    public static Map<String, ServiceConfig> getServiceConfigMap() {
+
+    public  Map<String, ServiceConfig> getServiceConfigMap() {
         return serviceConfigMap;
     }
 
-    public static ServiceConfig getServiceConfig(String appId, String serviceId) {
+    public  ServiceConfig getServiceConfig(String appId, String serviceId) {
         return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
     }
 
-    public static List<ServiceConfig> getServiceConfig(String serviceId) {
+    public  List<ServiceConfig> getServiceConfig(String serviceId) {
         List<ServiceConfig> configs = serviceConfigMapByKeyServiceId.get(serviceId);
         return configs;
     }
 
-    public static List<ServiceConfig> getServiceConfigList() {
+    public  List<ServiceConfig> getServiceConfigList() {
         return new ArrayList<ServiceConfig>(serviceConfigMap.values());
     }
 

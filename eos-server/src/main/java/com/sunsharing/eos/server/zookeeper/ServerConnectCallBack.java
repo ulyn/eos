@@ -2,6 +2,7 @@ package com.sunsharing.eos.server.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
@@ -27,14 +28,12 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
     public void afterConnect(WatchedEvent event) {
         try {
             logger.info("登录成功了开始调用回调");
-            ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            utils.watchNode(PathConstant.EOS_STATE);
+
+            PathConstant.initEOSPath();
 
             ServiceRegister serviceRegister = ServiceRegister.getInstance();
-            //先注册EOSID可以多个
-            //serviceRegister.registerEos("criss");
-
-            List<ServiceConfig> serviceConfigs = ServiceContext.getServiceConfigList();
+            //先注册服务
+            List<ServiceConfig> serviceConfigs = ServiceContext.getInstance().getServiceConfigList();
 
             for (ServiceConfig config : serviceConfigs) {
                 if(StringUtils.isBlank(config.getAppId()))
@@ -50,9 +49,12 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                     obj.put("port", SysProp.nettyServerPort);
                     obj.put("ip", SysProp.localIp);
                     obj.put("real_ip",getRealIp());
-                    serviceRegister.registerService(SysProp.eosId, obj.toJSONString());
+                    obj.put("eosIds",SysProp.eosId);
+                    serviceRegister.registerService(SysProp.eosId,SysProp.appId, obj.toJSONString());
                 }
             }
+
+            serviceRegister.registerEos(SysProp.eosId,SysProp.appId,SysProp.localIp,SysProp.nettyServerPort+"");
 
 
 //            utils.printNode("/");

@@ -86,7 +86,7 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
                     break;
                 }
             }
-            if (beFilter) {
+            if (false) {
                 //Object obj = Session.getInstance().getAttribute(request,CacheConstants.SESSIONUSERKEY);
                 Object obj = null;
                 if (null == obj && uri.indexOf("webapp") == -1) {

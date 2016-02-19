@@ -134,7 +134,8 @@ public class ServiceController {
                         InterfaceServcie service = new InterfaceServcie();
                         service.addAppCode(appcode, lines);
                         Map functionMap = new HashMap();
-                        lines = service.addParams(lines,functionMap);
+                        //去掉注解，不增加注解
+                        //lines = service.addParams(lines,functionMap);
                         for (int i = 0; i < lines.length; i++) {
                             //System.out.println(lines[i]);
                         }

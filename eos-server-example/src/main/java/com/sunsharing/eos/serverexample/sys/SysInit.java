@@ -1,6 +1,9 @@
 package com.sunsharing.eos.serverexample.sys;
 
+import com.sunsharing.eos.client.zookeeper.ClientConnectCallBack;
+import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.server.EosInit;
+import com.sunsharing.eos.server.zookeeper.ServerConnectCallBack;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -43,7 +46,12 @@ public class SysInit extends HttpServlet {
         SysParam.setSysPath(sysPath);
         SysParam.init();
 
+
+        ZookeeperUtils.getInstance().addCallBack(new ServerConnectCallBack());
+        ZookeeperUtils.getInstance().addCallBack(new ClientConnectCallBack());
+
         EosInit.start(ctx, "com.sunsharing");
+        com.sunsharing.eos.client.EosInit.start("com.sunsharing");
 
         logger.info("初始化其它参数结束...");
     }

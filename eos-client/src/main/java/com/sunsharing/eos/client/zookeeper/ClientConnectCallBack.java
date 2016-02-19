@@ -1,9 +1,12 @@
 package com.sunsharing.eos.client.zookeeper;
 
+import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import org.apache.log4j.Logger;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
@@ -17,6 +20,11 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
 
     CountDownLatch connectedSignal = null;
 
+    public ClientConnectCallBack()
+    {
+
+    }
+
     public ClientConnectCallBack(CountDownLatch connectedSignal)
     {
         this.connectedSignal = connectedSignal;
@@ -28,11 +36,31 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
         try
         {
             logger.info("登录成功了开始调用回调");
+            String appIds = SysProp.app_id;
+            if(StringUtils.isBlank(appIds))
+            {
+                throw new RuntimeException("E3的配置文件必须增加app_id");
+            }
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            utils.watchNode(PathConstant.EOS_STATE);
-            utils.watchNode(PathConstant.SERVICE_STATE);
+            PathConstant.initEOSPath();
+            /**
+             * 初始化应用
+             */
+            String[] appArr = appIds.split(",");
+            for(int i=0;i<appArr.length;i++)
+            {
+                String appPath = PathConstant.SERVICE_STATE_APPS+"/"+appArr[i];
+                if(!utils.isExists(appPath,false))
+                {
+                    utils.createNodeNowatch(appPath,"", CreateMode.PERSISTENT);
+                }
+            }
+            ServiceLocation.getInstance().updateEos();
 
-            ServiceLocation.getInstance().loadAllServices();
+            for(int i=0;i<appArr.length;i++)
+            {
+                ServiceLocation.getInstance().updateEosServices(appArr[i]);
+            }
 
             logger.info("````````````````````````````");
             ServiceLocation.getInstance().printCache();
@@ -67,16 +95,15 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
                     logger.error("初始化EOS出错",e);
                 }
             }
-            if(event.getPath().startsWith(PathConstant.SERVICE_STATE))
+            if(event.getPath().startsWith(PathConstant.SERVICE_STATE_APPS))
             {
-                logger.info("有Service上线,或者下线了，重新加载");
+                logger.info("有Service上线,或者下线了，重新加载,"+event.getPath());
                 try
                 {
                     String [] paths = event.getPath().split("\\/");
-                    if(paths.length==3)
+                    if(paths.length==5)
                     {
-
-                            ServiceLocation.getInstance().updateEosServices(paths[2]);
+                            ServiceLocation.getInstance().updateEosServices(paths[4]);
                     }
                 }catch (Exception e)
                 {

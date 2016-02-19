@@ -60,6 +60,9 @@ public class SysProp {
     @ParamField(name = "eos_filter", required = false)
     public static String eosFilter = "";
 
+    @ParamField(name = "app_id", required = false)
+    public static String app_id = "";
+
 
     static Map<String, String> debugServerIpMap = null;
 

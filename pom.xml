@@ -142,7 +142,11 @@
                     </execution>
                 </executions>
             </plugin>
+
+
         </plugins>
     </build>
+
+    <!-- Put in your POM.xml file -->
 
 </project>

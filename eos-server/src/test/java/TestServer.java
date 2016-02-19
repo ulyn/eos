@@ -16,7 +16,8 @@ public class TestServer {
 
     public static void main(String[] a) throws Exception {
         ConfigContext.instancesBean(SysProp.class);
-        ServiceContext serviceContext = new ServiceContext(null, "com.sunsharing.eos");
+        ServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
+        ServiceContext.getInstance().init();
 
         new Thread() {
             public void run() {

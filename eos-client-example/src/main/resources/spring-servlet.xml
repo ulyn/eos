@@ -8,7 +8,7 @@
     http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
     <!-- 自动扫描bean，把作了注解的类转换为bean -->
-    <context:component-scan base-package="com.sunsharing.eos.serverexample.web"/>
+    <context:component-scan base-package="com.sunsharing"/>
 
     <!--拦截器-->
     <bean

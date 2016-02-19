@@ -44,8 +44,8 @@ public class EosInit {
     public static void start(String packagePath) {
         if (!inited) {
             ConfigContext.instancesBean(SysProp.class);
-            ServiceContext serviceContext = new ServiceContext(packagePath);
-            serviceContext.init();
+            ServiceContext.getInstance().initPackagePath(packagePath);
+            ServiceContext.getInstance().init();
 
             new Thread() {
                 public void run() {
@@ -64,8 +64,8 @@ public class EosInit {
      */
     public synchronized static void synStart(String packagePath) {
         ConfigContext.instancesBean(SysProp.class);
-        ServiceContext serviceContext = new ServiceContext(packagePath);
-        serviceContext.init();
+        ServiceContext.getInstance().initPackagePath(packagePath);
+        ServiceContext.getInstance().init();
         ServiceLocation.getInstance().synConnect();
     }
 

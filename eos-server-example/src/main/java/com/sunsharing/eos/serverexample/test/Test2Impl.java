@@ -6,11 +6,13 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by criss on 14-2-14.
  */
 @Service
+@Transactional
 public class Test2Impl implements Test2 {
 
     @Autowired
@@ -31,6 +33,7 @@ public class Test2Impl implements Test2 {
 //        jdbcTemplate.execute(sql);
         BmClzt clz = new BmClzt();
         clz.setCode("addd");
+        clz.setName("sds");
         activityDao.save(clz);
         return "我是真实的";
     }

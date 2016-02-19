@@ -46,74 +46,76 @@ public class ServiceRegister {
 //     * 先注册EOS
 //     * @param eosIds
 //     */
-//    public synchronized void registerEos(String eosIds) throws Exception
-//    {
-//        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-//        String []eosArr = eosIds.split(",");
-//        for(int i=0;i<eosArr.length;i++)
-//        {
-//            utils.watchNode(PathConstant.EOS_STATE+"/"+eosArr[i]);
-//        }
-//    }
+    public synchronized void registerEos(String eosIds,String appId,String localIp,String localPort) throws Exception
+    {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+
+        String[] ids = eosIds.split(",");
+
+        //初始化EOS节点
+        for(int i=0;i<ids.length;i++)
+        {
+            String eosId = ids[i];
+            try {
+                utils.createNodeNowatch(PathConstant.SERVICE_STATE_EOS+"/" + eosId, "", CreateMode.PERSISTENT);
+                JSONObject object = new JSONObject();
+                object.put("ip",localIp);
+                object.put("port",localPort);
+
+                utils.createEleSerNode(PathConstant.SERVICE_STATE_EOS + "/" + eosId + "/" + appId, object.toJSONString(),comparableData);
+            }catch (Exception e)
+            {
+                logger.error("注册服务错误，无法创建节点,"+PathConstant.SERVICE_STATE_EOS + "/" + eosId,e);
+            }
+        }
+
+    }
+    ZookeeperUtils.CompareData comparableData = new ZookeeperUtils.CompareData() {
+        public boolean compare(String d1, String d2) {
+            JSONObject obj1 = JSONObject.parseObject(d1);
+            JSONObject obj2 = JSONObject.parseObject(d2);
+            String ip1 = obj1.getString("ip");
+            String port1 = obj1.getString("port");
+            String ip2 = obj2.getString("ip");
+            String port2 = obj2.getString("port");
+            if(ip1.equals(ip2) && port1.equals(port2))
+            {
+                return true;
+            }
+            return false;
+        }
+    };
 
     /**
      *
-     * @param eosIds 用逗号分隔的EOSID
+     * @param appId 用逗号分隔的EOSID
      * @param json 必须要有的字段包括如下：
      *  JSONObject obj = new JSONObject();
      *  obj.put("appId",appId);
      *  obj.put("serviceId",serviceId);
      *  obj.put("version", version);
+     *
      */
-    public synchronized boolean registerService(String eosIds,String json)
+    public synchronized boolean registerService(String eosIds,String appId,String json)
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
+
         String[] ids = eosIds.split(",");
         JSONObject obj = JSONObject.parseObject(json);
         String servicePath = obj.getString(PathConstant.APPID_KEY)+
                 obj.getString(PathConstant.SERVICE_ID_KEY)+
                 obj.getString(PathConstant.VERSION_KEY)+"_";
-        JSONObject destJson = JSONObject.parseObject(json);
-        boolean result = false;
-        for(int i=0;i<ids.length;i++)
-        {
-            String eosId = ids[i];
-            try
-            {
-                utils.createNodeNowatch(PathConstant.SERVICE_STATE + "/" + eosId, "", CreateMode.PERSISTENT);
-//                JSONArray array = new JSONArray();
-//                if(utils.isExists(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath))
-//                {
-//                    String str = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath),"UTF-8");
-//                    array = JSONArray.parseArray(str);
-//                }
-//                array.add(JSONObject.parseObject(js
-                List<String> list = utils.getChildrenNotWatch(PathConstant.SERVICE_STATE + "/" + eosId,false);
-                for(String p:list)
-                {
-                    if(p.startsWith(servicePath))
-                    {
-                        //相同服务
-                        byte[] bytes = utils.getData(PathConstant.SERVICE_STATE+"/"+eosId+"/"+p,false);
-                        JSONObject tmpObj = JSONObject.parseObject(new String(bytes,"UTF-8"));
-                        if(tmpObj.getString("ip").equals(destJson.getString("ip")) &&
-                                tmpObj.getString("port").equals(destJson.getString("port")))
-                        {
-                            logger.warn("存在相同的服务注册:"+p+"删除之");
-                            utils.deleteNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+p);
-                        }
-                    }
-                }
 
-                utils.createNode(PathConstant.SERVICE_STATE+"/"+eosId+"/"+servicePath,json,
-                        CreateMode.EPHEMERAL_SEQUENTIAL);
-                result = true;
-            }catch (Exception e)
-            {
-                logger.error("注册失败",e);
-            }
+        //处理APP节点
+        try {
+            utils.createNodeNowatch(PathConstant.SERVICE_STATE_APPS + "/" + appId, "", CreateMode.PERSISTENT);
+            utils.createEleSerNode(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, json,comparableData);
+        }catch (Exception e)
+        {
+            logger.error("注册服务失败",e);
+            return false;
         }
-        return result;
+        return true;
     }
 
 

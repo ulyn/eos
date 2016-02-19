@@ -7,8 +7,7 @@ import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.manager.sys.SysProp;
 import org.apache.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,31 +38,76 @@ public class ServiceCache {
         try
         {
             ZookeeperUtils utils = ZookeeperUtils.getInstance();
-            List<String> list = utils.getChildren(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId,true);
-            //不能先清除 serviceMap.clear();
-            Map<String,JSONArray> serviceTmpMap = new ConcurrentHashMap<String,JSONArray>();
-            for(String path:list)
-            {
-                String p = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path,false),"UTF-8");
-                logger.info("更新service:"+p);
-                JSONObject jsonObject = JSONObject.parseObject(p);
-                String appId = jsonObject.getString(PathConstant.APPID_KEY);
-                String serviceId = jsonObject.getString(PathConstant.SERVICE_ID_KEY);
-                String version = jsonObject.getString(PathConstant.VERSION_KEY);
-                JSONArray obj = null;
-                if(serviceTmpMap.get(appId+serviceId+version)!=null)
-                {
-                    obj = (JSONArray)serviceTmpMap.get(appId+serviceId+version);
-                }else
-                {
-                     obj = new JSONArray();
+            List<String> applist = utils.getChildren(PathConstant.SERVICE_STATE_EOS+"/"+ SysProp.eosId,true);
 
-                }
-                obj.add(jsonObject);
-                serviceTmpMap.put(appId+serviceId+version,obj);
+
+            Map<String,JSONArray> serviceTmpMap = new ConcurrentHashMap<String,JSONArray>();
+            Set<String> apps = new HashSet();
+            for(String app:applist) {
+                app = app.substring(0, app.length() - 10);
+                apps.add(app);
             }
+            for(String app:apps)
+            {
+                List<String> services =  utils.getChildren(PathConstant.SERVICE_STATE_APPS+"/"+app,false);
+                for(String path:services)
+                {
+
+                    String p = new String(utils.getData(PathConstant.SERVICE_STATE_APPS+"/"+ app+"/"+path,false),"UTF-8");
+                    logger.info("更新service:"+p);
+                    JSONObject jsonObject = JSONObject.parseObject(p);
+                    String appId = jsonObject.getString(PathConstant.APPID_KEY);
+                    String serviceId = jsonObject.getString(PathConstant.SERVICE_ID_KEY);
+                    String version = jsonObject.getString(PathConstant.VERSION_KEY);
+                    String ip = jsonObject.getString("ip");
+                    String port = jsonObject.get("port").toString();
+                    String eosIds = jsonObject.get("eosIds").toString();
+                    String[] eosArr = eosIds.split(",");
+                    List eosList = Arrays.asList(eosArr);
+                    if(!eosList.contains(SysProp.eosId))
+                    {
+                        continue;
+                    }
+
+                    JSONArray obj = null;
+                    if(serviceTmpMap.get(appId+serviceId+version)!=null)
+                    {
+                        obj = (JSONArray)serviceTmpMap.get(appId+serviceId+version);
+                    }else
+                    {
+                        obj = new JSONArray();
+
+                    }
+                    boolean exist = false;
+                    for(int i=0;i<obj.size();i++)
+                    {
+                        JSONObject tmp = (JSONObject)obj.get(i);
+                        String ip1 = tmp.get("ip").toString();
+                        String port1 = tmp.get("port").toString();
+                        if(ip.equals(ip1) && port.equals(port1))
+                        {
+                            exist = true;
+                        }
+                    }
+                    if(!exist) {
+                        obj.add(jsonObject);
+                    }
+                    serviceTmpMap.put(appId+serviceId+version,obj);
+                }
+            }
+
+            //不能先清除 serviceMap.clear();
             serviceMap.clear();
             serviceMap.putAll(serviceTmpMap);
+
+            Set keys = serviceMap.keySet();
+            for(Iterator iter = keys.iterator();iter.hasNext();)
+            {
+                String key = (String)iter.next();
+                int size = ((JSONArray)serviceMap.get(key)).size();
+                logger.info("同步后:"+key+":个数:"+size);
+            }
+
         }catch (Exception e)
         {
             logger.error("获取"+SysProp.eosId+"节点信息失败",e);

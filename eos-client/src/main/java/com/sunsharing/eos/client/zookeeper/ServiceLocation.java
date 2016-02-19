@@ -20,7 +20,10 @@ public class ServiceLocation {
 
     Logger logger = Logger.getLogger(ServiceLocation.class);
 
-    private static Map<String, JSONObject> eosMap = new ConcurrentHashMap<String, JSONObject>();
+    //private static Map<String, JSONObject> eosMap = new ConcurrentHashMap<String, JSONObject>();
+
+    private static Map<String,JSONObject> onlineEos = new ConcurrentHashMap<String, JSONObject>();
+    private static Map<String,JSONObject> serviceMap = new ConcurrentHashMap<String,JSONObject>();
 
     private ServiceLocation() {
 
@@ -69,19 +72,7 @@ public class ServiceLocation {
         logger.info("成功初始化...");
     }
 
-    /**
-     * 加载所有服务
-     *
-     * @throws Exception
-     */
-    public synchronized void loadAllServices() throws Exception {
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        List<String> onlineEos = utils.getChildren(PathConstant.EOS_STATE,true);
-        for (String eosId : onlineEos) {
-            logger.info("jiazai:" + eosId);
-            addEos(eosId);
-        }
-    }
+
 
     /**
      * 更新Eos所有服务
@@ -90,127 +81,69 @@ public class ServiceLocation {
      */
     public synchronized void updateEos() throws Exception {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        List<String> onlineEos = utils.getChildren(PathConstant.EOS_STATE,true);
-        for (String eosId : onlineEos) {
-            System.out.println("online:" + eosId);
-            if (!eosMap.containsKey(eosId)) {
-                logger.info("EOS:" + eosId + "上线");
-                addEos(eosId);
-            }
+        List<String> onlineEosTmp = utils.getChildren(PathConstant.EOS_STATE,true);
+        Map tmplist = new HashMap();
+        for (String eosId : onlineEosTmp) {
+            byte[] data = utils.getData(PathConstant.EOS_STATE+"/"+eosId,false);
+            String eosData = new String(data,"UTF-8");
+            String ip = eosData.split(":")[0];
+            String port = eosData.split(":")[1];
+            JSONObject object = new JSONObject();
+            object.put("eosId",eosId);
+            object.put("eosIp", ip);
+            object.put("eosPort", port);
+            tmplist.put(eosId, object);
         }
-        for (String eosId : new ArrayList<String>(eosMap.keySet())) {
-            if (!onlineEos.contains(eosId)) {
-                logger.info("EOS:" + eosId + "下线");
-                removeEos(eosId);
-            }
-        }
+        onlineEos.clear();
+        onlineEos.putAll(tmplist);
+        logger.info("更新线上EOS:"+JSONArray.toJSONString(tmplist));
     }
 
     /**
      * 更新服务变化
      *
-     * @param eosId
+     * @param appId
      * @throws Exception
      */
-    public synchronized void updateEosServices(String eosId) throws Exception {
-        if(!StringUtils.isBlank(SysProp.eosFilter))
-        {
-            if(!eosId.startsWith(SysProp.eosFilter))
-            {
-                return;
-            }
-        }
+    public synchronized void updateEosServices(String appId) throws Exception {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        List<String> onlineServices = utils.getChildren(PathConstant.SERVICE_STATE+"/"+eosId,true);
-        List<String> realOnline = new ArrayList<String>();
+        List<String> onlineServices = utils.getChildren(PathConstant.SERVICE_STATE_APPS+"/"+appId,true);
+        Map tmp = new HashMap();
         //处理online
         for (String servicePath : onlineServices) {
+            byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS+"/"+appId+"/"+servicePath,false);
+            JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
+            String eosIds = (String)serviceData.get("eosIds");
             int i = servicePath.lastIndexOf("_");
             String real = servicePath.substring(0, i);
-            realOnline.add(real);
-        }
-
-        JSONObject eos = eosMap.get(eosId);
-        JSONObject service = eos.getJSONObject("services");
-        for (String online : realOnline) {
-            if (!service.containsKey(online)) {
-                logger.info("Service:" + online + "上线");
-                service.put(online, "AA");
-            }
-        }
-        for (String ser : new ArrayList<String>(service.keySet()) ) {
-            if (!realOnline.contains(ser)) {
-                logger.info("Service:" + ser + "下线");
-                service.remove(ser);
-            }
-        }
-    }
-
-
-    /**
-     * 加载某个EOS的所有服务
-     *
-     * @param eosId
-     * @throws Exception
-     */
-    public synchronized void addEos(String eosId) throws Exception {
-        if(!StringUtils.isBlank(SysProp.eosFilter))
-        {
-            if(!eosId.startsWith(SysProp.eosFilter))
+            JSONObject serviceData2 = new JSONObject();
+            Set eosIdSet = new HashSet();
+            if(tmp.get(real)!=null)
             {
-                return;
+                JSONObject jsonObject = (JSONObject)tmp.get(real);
+                eosIdSet = (Set)jsonObject.get("eosIds");
             }
+            String [] eosArr = eosIds.split(",");
+            for(i=0;i<eosArr.length;i++)
+            {
+                eosIdSet.add(eosArr[i]);
+            }
+            serviceData2.put("servicePath",real);
+            serviceData2.put("eosIds",eosIdSet);
+            logger.info("加载服务："+real+","+eosIdSet.toString());
+            tmp.put(real,serviceData2);
         }
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        //判断EOS是否在线
-        boolean isonline = utils.isExists(PathConstant.EOS_STATE + "/" + eosId,true);
-        logger.info("监听:" + PathConstant.SERVICE_STATE + "/" + eosId);
-        utils.watchNode(PathConstant.SERVICE_STATE + "/" + eosId);
-        logger.info("isonline:" + isonline);
-        if (!isonline) {
-            return;
-        }
-        JSONObject eosObj = new JSONObject();
-        String eosIpPort = new String(utils.getData(PathConstant.EOS_STATE + "/" + eosId,true), "UTF-8");
-        JSONObject servicesObj = new JSONObject();
-        eosObj.put("eos_ip", eosIpPort.split(":")[0]);
-        eosObj.put("eos_port", eosIpPort.split(":")[1]);
-        List<String> services = utils.getChildren(PathConstant.SERVICE_STATE + "/" + eosId,true);
-        for (String service : services) {
-            int i = service.lastIndexOf("_");
-            String realpath = service.substring(0, i);
-            logger.info("sercice:" + realpath);
-            servicesObj.put(realpath, "AA");
-        }
-        eosObj.put("services", servicesObj);
-        eosMap.put(eosId, eosObj);
+        serviceMap.clear();
+        serviceMap.putAll(tmp);
     }
 
-    /**
-     * 移除EOS
-     *
-     * @param eosId
-     * @throws Exception
-     */
-    public synchronized void removeEos(String eosId) throws Exception {
-        if(!StringUtils.isBlank(SysProp.eosFilter))
-        {
-            if(!eosId.startsWith(SysProp.eosFilter))
-            {
-                return;
-            }
-        }
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        //判断EOS是否在线
-        boolean isonline = utils.isExists(PathConstant.EOS_STATE + "/" + eosId,true);
-        if (!isonline) {
-            eosMap.remove(eosId);
-        }
-    }
+
+
 
     public synchronized void printCache() {
-        for (String eosId : eosMap.keySet()) {
-            logger.info("eosId:" + eosId + "--" + eosMap.get(eosId).toString());
+        logger.info("成功加载EOS："+JSONArray.toJSONString(onlineEos));
+        for (String servicePath : serviceMap.keySet()) {
+            logger.info("成功加载服务:" + servicePath + "--" + serviceMap.get(servicePath).toString());
         }
     }
 
@@ -238,16 +171,33 @@ public class ServiceLocation {
     private JSONObject getServiceLocation
             (String appId, String serviceId, String version, boolean mock) {
         JSONArray ips = new JSONArray();
-        String servicePath = appId + serviceId + version;
-        for (String eosId : eosMap.keySet()) {
-            JSONObject eos = eosMap.get(eosId);
-            if (mock || eos.getJSONObject("services").get(servicePath) != null) {
+        if(mock)
+        {
+            Set<String> eosIds = onlineEos.keySet();
+            for(String eosId:eosIds)
+            {
+                JSONObject ipport = (JSONObject) onlineEos.get(eosId);
                 JSONObject obj = new JSONObject();
-                obj.put("ip", eos.get("eos_ip"));
-                obj.put("port", eos.get("eos_port"));
+                obj.put("ip", ipport.get("eosIp"));
+                obj.put("port", ipport.get("eosPort"));
                 ips.add(obj);
             }
+        }else {
+            String servicePath = appId + serviceId + version;
+            JSONObject object = serviceMap.get(servicePath);
+            Set<String> eosIds = (Set) object.get("eosIds");
+            for (String eosId : eosIds) {
+                if (onlineEos.get(eosId) != null) {
+                    //在线
+                    JSONObject ipport = (JSONObject) onlineEos.get(eosId);
+                    JSONObject obj = new JSONObject();
+                    obj.put("ip", ipport.get("eosIp"));
+                    obj.put("port", ipport.get("eosPort"));
+                    ips.add(obj);
+                }
+            }
         }
+
         if (ips.size() == 0) {
             return null;
         }

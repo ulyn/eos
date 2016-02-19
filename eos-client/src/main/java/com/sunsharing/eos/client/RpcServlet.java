@@ -107,7 +107,7 @@ public class RpcServlet extends HttpServlet {
             String appId = req.getParameter("eos_appid");
             ServiceConfig serviceConfig = null;
             if (StringUtils.isBlank(appId)) {
-                List<ServiceConfig> serviceConfigList = ServiceContext.getServiceConfig(serviceId);
+                List<ServiceConfig> serviceConfigList = ServiceContext.getInstance().getServiceConfig(serviceId);
                 if (serviceConfigList == null) {
                     throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + serviceId);
                 }
@@ -129,7 +129,7 @@ public class RpcServlet extends HttpServlet {
                         break;
                 }
             } else {
-                serviceConfig = ServiceContext.getServiceConfig(appId, serviceId);
+                serviceConfig = ServiceContext.getInstance().getServiceConfig(appId, serviceId);
             }
             if (serviceConfig == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "没有指定的服务接口：" + appId + "-" + serviceId);

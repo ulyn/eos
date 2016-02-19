@@ -1,5 +1,6 @@
 package com.sunsharing.eos.common.zookeeper;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -241,6 +242,31 @@ public class ZookeeperUtils {
          zookeeper.setData(path,arr,-1);
     }
 
+    public boolean createEleSerNode(String path,String data,CompareData compareData) throws Exception
+    {
+        int index = path.lastIndexOf("/");
+        String name = path.substring(index+1);
+        String parentPath = path.substring(0,index);
+        List<String> list = utils.getChildrenNotWatch(parentPath,false);
+        boolean exist = false;
+        for(String p:list) {
+            byte[] bytes = utils.getData(parentPath+"/"+p,false);
+            if (p.startsWith(name)
+                    && compareData.compare(data,new String(bytes,"UTF-8")))
+            {
+                logger.info("已经存在删除节点:" + parentPath + "/" + p);
+                deleteNode(parentPath + "/" + p);
+                break;
+            }
+        }
+        createNodeNowatch(path, data, CreateMode.EPHEMERAL_SEQUENTIAL);
+        return true;
+    }
+
+    public interface CompareData
+    {
+        boolean compare(String d1,String d2);
+    }
 
 
     public synchronized void close()

@@ -35,6 +35,14 @@ import org.apache.log4j.Logger;
  * <br>
  */
 public class ServiceContext extends AbstractServiceContext {
+
+    private static ServiceContext sc = new ServiceContext();
+
+    public static ServiceContext getInstance()
+    {
+        return sc;
+    }
+
     Logger logger = Logger.getLogger(ServiceContext.class);
 
     //全局异常处理器
@@ -46,8 +54,8 @@ public class ServiceContext extends AbstractServiceContext {
     //存储服务对象,key为服务name
 //    protected static Map<String, Object> interfaceServiceMap = new HashMap<String, Object>();
 
-    public ServiceContext(String packagePath) {
-        super(packagePath);
+    public void initPackagePath(String packagePath) {
+        this.packagePath = packagePath;
     }
 
     @Override
@@ -64,6 +72,22 @@ public class ServiceContext extends AbstractServiceContext {
         ServiceContext.exceptionResolver = exceptionResolver;
     }
 
+    private <T> T getBeanPri(Class<T> clazz)
+    {
+        Object o = servicesMapByKeyClassName.get(clazz.getName());
+        if (o == null) {
+            return null;
+        }
+        return (T) o;
+    }
+    private  <T> T getBeanPri(String appId, String serviceId) {
+        Object o = servicesMapByKeyAppServiceId.get(getServiceConfigKey(appId, serviceId));
+        if (o == null) {
+            return null;
+        }
+        return (T) o;
+    }
+
     /**
      * 根据接口取得服务bean
      *
@@ -72,24 +96,13 @@ public class ServiceContext extends AbstractServiceContext {
      * @return
      */
     public static <T> T getBean(Class<T> clazz) {
-        Object o = servicesMapByKeyClassName.get(clazz.getName());
-        if (o == null) {
-            return null;
-        }
-        return (T) o;
+        return sc.getBeanPri(clazz);
     }
 
     public static <T> T getBean(String appId, String serviceId) {
-        Object o = servicesMapByKeyAppServiceId.get(getServiceConfigKey(appId, serviceId));
-        if (o == null) {
-            return null;
-        }
-        return (T) o;
+        return sc.getBeanPri(appId,serviceId);
     }
 
-    public static void main(String[] args) {
-        ServiceContext context = new ServiceContext("com.sunsharing.eos");
 
-    }
 }
 

@@ -40,6 +40,9 @@ import java.util.*;
  * <br>
  */
 public class ServiceContext extends AbstractServiceContext {
+
+    private static ServiceContext sc = new ServiceContext();
+
     static Logger logger = Logger.getLogger(ServiceContext.class);
 
     ApplicationContext ctx;
@@ -50,13 +53,23 @@ public class ServiceContext extends AbstractServiceContext {
         return exceptionResolver;
     }
 
+    private ServiceContext()
+    {
+
+    }
+
+    public static ServiceContext getInstance()
+    {
+        return sc;
+    }
+
     /**
      * 没有结合spring的构造
      *
      * @param packagePath
      */
-    public ServiceContext(String packagePath) {
-        super(packagePath);
+    public void initPackagePath(String packagePath) {
+        this.packagePath = packagePath;
     }
 
     /**
@@ -65,8 +78,8 @@ public class ServiceContext extends AbstractServiceContext {
      * @param ctx
      * @param packagePath
      */
-    public ServiceContext(ApplicationContext ctx, String packagePath) {
-        super(packagePath);
+    public void initPackagePath(ApplicationContext ctx, String packagePath) {
+        this.packagePath = packagePath;
         this.ctx = ctx;
     }
 
@@ -147,7 +160,7 @@ public class ServiceContext extends AbstractServiceContext {
     }
 
     public static void main(String[] args) {
-        ServiceContext context = new ServiceContext(null, "com.sunsharing.eos");
+        //ServiceContext context = new ServiceContext(null, "com.sunsharing.eos");
 
     }
 }

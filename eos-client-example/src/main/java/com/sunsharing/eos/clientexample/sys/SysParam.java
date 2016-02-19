@@ -132,14 +132,6 @@ public class SysParam {
 	}*/
 
     public static void main(String[] a) {
-        ConfigContext.instancesBean(SysProp.class);
-        ServiceContext serviceContext = new ServiceContext("com.sunsharing");
-        ServiceLocation.getInstance().synConnect();
-        for (int i = 0; i < 1000; i++) {
-//            TestFirst testFirst = ServiceContext.getBean(TestFirst.class);
-//            String out = testFirst.sayHello("hexin");
-//            System.out.println(out);
-        }
     }
 
 }

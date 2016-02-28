@@ -56,7 +56,7 @@ public class AppService {
         return appDao.find(app);
     }
 
-    public void saveApp(String app_en,String app_cn,String modules)
+    public void saveApp(String app_en,String app_cn,String modules,String dbs)
     {
         TApp app = new TApp();
         app.setAppCode(app_en);
@@ -76,11 +76,12 @@ public class AppService {
         appDao.save(app);
     }
 
-    public void updateApp(String appId,String app_en,String app_cn,String modules)
+    public void updateApp(String appId,String app_en,String app_cn,String modules,String dbs)
     {
         TApp app = appDao.get(new Integer(appId));
         app.setAppCode(app_en);
         app.setAppName(app_cn);
+        app.setDbs(dbs);
 
         app.getModules().clear();
 

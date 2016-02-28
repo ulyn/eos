@@ -174,6 +174,10 @@ public class UserController {
                 {
                     user.setRole("管理员");
                 }
+                if(role.equals("4"))
+                {
+                    user.setRole("数据组");
+                }
             }
         }
 
@@ -208,5 +212,14 @@ public class UserController {
         service.addUser(username,pwd,email);
         ResponseHelper.printOut(response,true,"","");
     }
+
+    @RequestMapping(value="/loginUser.do",method= RequestMethod.POST)
+    public void loginUser(HttpServletRequest request,HttpServletResponse response)
+    {
+        TUser user = (TUser)request.getSession().getAttribute("user");
+        ResponseHelper.printOut(response,JSONObject.toJSONString(user));
+    }
+
+
 
 }

@@ -37,6 +37,13 @@
                     <input ng-model="module" class="simple_field" name="app_modules" id="app_modules" type="text" placeholder="填写中文，多个模块用逗号分隔">
                 </div>
             </div>
+            <div class="line_grid">
+                <div class="g_3"><span class="label">数据库</span></div>
+                <div class="g_9">
+                    <input ng-model="dbs" class="simple_field"
+                          name="dbs" id="dbs" type="text" placeholder="填写中文，多个库用逗号分隔">
+                </div>
+            </div>
             <input type="hidden" id="appId" name="appId" ng-model="appId" />
             <div class="line_grid">
                 <div class="g_6"><input class="submitIt simple_buttons" ng-click="saveApp()" value="Add" type="button">

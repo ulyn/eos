@@ -178,9 +178,7 @@ public class Service {
                 };
                 new Thread(run).start();
             }
-
         }
-
     }
 
     public void deleteService(String serviceId)

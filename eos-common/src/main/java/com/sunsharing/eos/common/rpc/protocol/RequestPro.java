@@ -16,10 +16,8 @@
  */
 package com.sunsharing.eos.common.rpc.protocol;
 
-import com.sunsharing.eos.common.rpc.Invocation;
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.RpcContext;
-import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -43,30 +41,33 @@ public class RequestPro extends BaseProtocol {
 
     //应用id(32)
     protected String appId;
-    //服务id(20)
+    //服务id(30)
     protected String serviceId;
-    //服务版本(10)
-    protected String serviceVersion;
-    //模拟取值字段(20)
-    protected String mock = "";
+    //方法名(30)
+    protected String method;
+    //服务方法版本(5)
+    protected String methodVersion;
+    //调用超时时间,毫秒(4)
+    protected int timeout = Constants.DEFAULT_TIMEOUT;
     //联调ip(20)
     protected String debugServerIp;
+    //传输通道(10)
+    protected String transporter;
     //请求的上下文消息长度(4)
-    protected int rpcContextLength;
+//    private int rpcContextLength;
     //请求的上下文消息(rpcContextLength)
     protected byte[] rpcContextBytes;
-    //请求参数对象序列化的字节(bodyLength)
-    protected byte[] invocationBytes;
+    //请求参数对象序列化的字节长度(4)
+//    private int parameterLength;
+    //请求参数对象序列化的字节(parameterLength)
+    protected byte[] parameterMapBytes;
 
-    private RpcContext rpcContext;
-    private Invocation invocation;
-
-    public RpcContext getRpcContext() {
-        return rpcContext;
+    public String getAppId() {
+        return appId;
     }
 
-    public Invocation getInvocation() {
-        return invocation;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getServiceId() {
@@ -77,20 +78,28 @@ public class RequestPro extends BaseProtocol {
         this.serviceId = serviceId;
     }
 
-    public String getServiceVersion() {
-        return serviceVersion;
+    public String getMethod() {
+        return method;
     }
 
-    public void setServiceVersion(String serviceVersion) {
-        this.serviceVersion = serviceVersion;
+    public void setMethod(String method) {
+        this.method = method;
     }
 
-    public String getAppId() {
-        return appId;
+    public String getMethodVersion() {
+        return methodVersion;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setMethodVersion(String methodVersion) {
+        this.methodVersion = methodVersion;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     public String getDebugServerIp() {
@@ -101,20 +110,12 @@ public class RequestPro extends BaseProtocol {
         this.debugServerIp = debugServerIp;
     }
 
-    public String getMock() {
-        return mock;
+    public String getTransporter() {
+        return transporter;
     }
 
-    public void setMock(String mock) {
-        this.mock = mock;
-    }
-
-    public byte[] getInvocationBytes() {
-        return invocationBytes;
-    }
-
-    public void setInvocationBytes(byte[] invocationBytes) {
-        this.invocationBytes = invocationBytes;
+    public void setTransporter(String transporter) {
+        this.transporter = transporter;
     }
 
     public byte[] getRpcContextBytes() {
@@ -125,85 +126,44 @@ public class RequestPro extends BaseProtocol {
         this.rpcContextBytes = rpcContextBytes;
     }
 
-
-    public void setInvocation(Invocation invocation) {
-        this.invocation = invocation;
+    public byte[] getParameterMapBytes() {
+        return parameterMapBytes;
     }
 
-    /**
-     * 将invocation字节序列化为对象
-     *
-     * @return
-     * @throws Exception
-     */
-    public Invocation toInvocation() throws IOException, ClassNotFoundException {
-        return SerializationFactory.deserializeBytes(invocationBytes, RpcInvocation.class, this.getSerialization());
-    }
-
-
-    public void setRpcContext(RpcContext rpcContext) {
-        this.rpcContext = rpcContext;
-    }
-
-    /**
-     * 将rpcContext字节序列化为对象
-     *
-     * @return
-     * @throws Exception
-     */
-    public RpcContext toRpcContext() throws IOException, ClassNotFoundException {
-        return SerializationFactory.deserializeBytes(rpcContextBytes, RpcContext.class, this.getSerialization());
-    }
-
-    @Override
-    protected int getRealBodyLength() {
-        if (invocationBytes == null && invocation == null) {
-            return 0;
-        } else {
-            if (invocationBytes == null) {
-                try {
-                    setInvocationBytes(SerializationFactory.serializeToBytes(invocation, this.getSerialization()));
-                } catch (IOException e) {
-                    throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, "序列化参数invocation异常:" + invocation, e);
-                }
-            }
-            return invocationBytes.length;
-        }
+    public void setParameterMapBytes(byte[] parameterMapBytes) {
+        this.parameterMapBytes = parameterMapBytes;
     }
 
     @Override
     public ChannelBuffer generate() {
         setAction(REQUEST_MSG);
 
-        byte[] subHeader = new byte[102];
+        byte[] subHeader = new byte[131];
         StringUtils.putString(subHeader, appId, 0);
         StringUtils.putString(subHeader, serviceId, 32);
-        StringUtils.putString(subHeader, serviceVersion, 52);
-        StringUtils.putString(subHeader, mock, 62);
-        StringUtils.putString(subHeader, debugServerIp, 82);
+        StringUtils.putString(subHeader, method, 62);
+        StringUtils.putString(subHeader, methodVersion, 92);
+        StringUtils.putInt(subHeader, timeout, 97);
+        StringUtils.putString(subHeader, debugServerIp, 101);
+        StringUtils.putString(subHeader, transporter, 121);
 
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());
         buffer.writeBytes(subHeader);
-        //写入rpcContext
-        if (rpcContextBytes == null) {
-            try {
-                setRpcContextBytes(SerializationFactory.serializeToBytes(rpcContext, this.getSerialization()));
-            } catch (IOException e) {
-                throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, "序列化参数rpcContext异常:" + invocation, e);
-            }
-        }
+        //写入rpcContext，invocation
         buffer.writeBytes(StringUtils.intToBytes(rpcContextBytes.length));
-        buffer.writeBytes(rpcContextBytes);
+        buffer.writeBytes(StringUtils.intToBytes(parameterMapBytes.length));
 
-        buffer.writeBytes(invocationBytes);
+        buffer.writeBytes(rpcContextBytes);
+        buffer.writeBytes(parameterMapBytes);
         return buffer;
     }
 
     @Override
     public BaseProtocol createFromChannel(ChannelBuffer buffer) {
-        if (buffer.readableBytes() < 52 + 106) {
-            //多保证四个字节是rpcContextLength，所以102改为106
+        if (buffer.readableBytes() < 187) {
+            //  48 + 131 + 8
+            //多保证8个字节是rpcContextLength 和 parameterLength
             return null;
         }
         buffer.markReaderIndex();
@@ -212,24 +172,28 @@ public class RequestPro extends BaseProtocol {
         setHeader(pro, buffer);
 
         pro.appId = readString(32, buffer);
-        pro.serviceId = readString(20, buffer);
-        pro.serviceVersion = readString(10, buffer);
-        pro.mock = readString(20, buffer);
+        pro.serviceId = readString(30, buffer);
+        pro.method = readString(30, buffer);
+        pro.methodVersion = readString(5, buffer);
+        pro.timeout = buffer.readInt();
         pro.debugServerIp = readString(20, buffer);
-        pro.rpcContextLength = buffer.readInt();
+        pro.transporter = readString(10, buffer);
+        int rpcContextLength = buffer.readInt();
+        int parameterLength = buffer.readInt();
 
-        if (buffer.readableBytes() < pro.bodyLength + pro.rpcContextLength) {
+        if (buffer.readableBytes() < parameterLength + rpcContextLength) {
             buffer.resetReaderIndex();
             return null;
         }
-        byte[] rpcContextBytes = new byte[pro.rpcContextLength];
+        byte[] rpcContextBytes = new byte[rpcContextLength];
         buffer.readBytes(rpcContextBytes);
         pro.setRpcContextBytes(rpcContextBytes);
 
-        byte[] bodyBytes = new byte[pro.bodyLength];
+        byte[] bodyBytes = new byte[parameterLength];
         buffer.readBytes(bodyBytes);
-        pro.setInvocationBytes(bodyBytes);
+        pro.setParameterMapBytes(bodyBytes);
         return pro;
     }
+
 }
 

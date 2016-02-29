@@ -71,11 +71,8 @@ public abstract class AbstractServiceContext {
     //存储服务对象,key为服务id
     protected  Map<String, Object> servicesMapByKeyClassName = new HashMap<String, Object>();//key值为接口类名
     protected  Map<String, Object> servicesMapByKeyAppServiceId = new HashMap<String, Object>();//key值为getServiceConfigKey(appId,serviceId)
-    //为适应废弃的getBean
-    protected  Map<String, Object> servicesMapByKeyServiceId = new HashMap<String, Object>(); //key值为ServiceId
 
     protected  Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();//key值为getServiceConfigKey(appId,serviceId)
-    protected  Map<String, List<ServiceConfig>> serviceConfigMapByKeyServiceId = new HashMap<String, List<ServiceConfig>>();//key值为serviceId
 
 
     /**
@@ -180,18 +177,10 @@ public abstract class AbstractServiceContext {
             if (bean != null) {
                 logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
                 String key = getServiceConfigKey(config.getAppId(), config.getId());
-                //注意 对于server端appid为空
                 servicesMapByKeyClassName.put(c.getName(), bean);
                 servicesMapByKeyAppServiceId.put(key, bean);
-                servicesMapByKeyServiceId.put(config.getId(), bean);
 
                 serviceConfigMap.put(key, config);
-                List<ServiceConfig> serviceConfigs = serviceConfigMapByKeyServiceId.get(config.getId());
-                if (serviceConfigs == null) {
-                    serviceConfigs = new ArrayList<ServiceConfig>();
-                    serviceConfigMapByKeyServiceId.put(config.getId(), serviceConfigs);
-                }
-                serviceConfigs.add(config);
             }
         }
     }
@@ -299,22 +288,6 @@ public abstract class AbstractServiceContext {
         return list;
     }
 
-    /**
-     * 根据服务id取得服务bean，接口服务id不能有重复，否则可能得不到想要的结果
-     *
-     * @param id
-     * @param <T>
-     * @return
-     */
-    @Deprecated
-    protected   <T> T getBean(String id) {
-        Object o = servicesMapByKeyServiceId.get(id);
-        if (o == null) {
-            return null;
-        }
-        return (T) o;
-    }
-
     private String getBeanId(Class interfaces, String id) {
         if (id.equals("")) {
             id = interfaces.getSimpleName();
@@ -362,11 +335,6 @@ public abstract class AbstractServiceContext {
 
     public  ServiceConfig getServiceConfig(String appId, String serviceId) {
         return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
-    }
-
-    public  List<ServiceConfig> getServiceConfig(String serviceId) {
-        List<ServiceConfig> configs = serviceConfigMapByKeyServiceId.get(serviceId);
-        return configs;
     }
 
     public  List<ServiceConfig> getServiceConfigList() {

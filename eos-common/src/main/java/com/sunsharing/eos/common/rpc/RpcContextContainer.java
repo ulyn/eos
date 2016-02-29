@@ -35,8 +35,23 @@ public class RpcContextContainer {
         return rpcContextLocal.get();
     }
 
+    public static RpcContext setRpcContext(String userAgent,String remoteAddr) {
+        RpcContext rpcContext = getRpcContext();
+        if (rpcContext == null) {
+            rpcContext = new RpcContext();
+            setRpcContext(rpcContext);
+        }
+        rpcContext.setUserAgent(userAgent);
+        rpcContext.setRemoteAddr(remoteAddr);
+        return rpcContext;
+    }
+
     public static void setRpcContext(RpcContext rpcContext) {
         rpcContextLocal.set(rpcContext);
+    }
+
+    public static void remove() {
+        rpcContextLocal.remove();
     }
 }
 

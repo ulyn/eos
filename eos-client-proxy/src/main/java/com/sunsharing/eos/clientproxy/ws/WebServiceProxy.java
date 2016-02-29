@@ -41,7 +41,8 @@ public class WebServiceProxy {
      * @return
      */
     public String invoke(String serviceReqBase64Str, String serialization) throws IOException {
-        return RpcInvoker.invoke(serviceReqBase64Str, serialization);
+        return null;//todo
+//        return RpcInvoker.invoke(serviceReqBase64Str, serialization);
     }
 }
 

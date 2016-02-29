@@ -50,6 +50,7 @@ public final class RpcException extends RuntimeException {
     public static final int DEBUG_SERVER_OUTLINE_EXCEPTION = 8;
     public static final int REFLECT_INVOKE_EXCEPTION = 9;
     public static final int NO_TRANSPORTER_EXCEPTION = 10;
+    public static final int PARAMS_EXCEPTION = 11;
 
     private int code; // RpcException不能有子类，异常类型用ErrorCode表示，以便保持兼容。
 

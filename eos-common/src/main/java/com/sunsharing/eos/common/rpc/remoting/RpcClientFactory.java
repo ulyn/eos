@@ -58,7 +58,7 @@ public class RpcClientFactory {
 //        logger.info(String.format("request target %s:%s:%s-%s-%s", ip, port,
 //                requestPro.getAppId(),
 //                requestPro.getServiceId(),
-//                requestPro.getServiceVersion()));
+//                requestPro.getMethodVersion()));
 //        return client.doRpc(requestPro, ip, port,serviceRequest.getTimeout());
 //    }
 }

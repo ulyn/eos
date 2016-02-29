@@ -16,10 +16,7 @@
  */
 package com.sunsharing.eos.client.proxy;
 
-import com.sunsharing.eos.client.rpc.StubRpc;
-import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.rpc.ClientProxy;
 import org.apache.log4j.Logger;
 
 /**
@@ -44,13 +41,13 @@ public abstract class AbstractProxy implements ClientProxy {
      * @return
      * @throws Exception
      */
-    public Object doInvoke(RpcInvocation invocation, ServiceConfig config) throws Exception {
-        if ("toString".equals(invocation.getMethodName())) {
-            //打印getBean获得的对象时，直接返回服务名称
-            return String.format("eos service [%s-%s-%s]", config.getAppId(), config.getId(), config.getVersion());
-        }
-        return new StubRpc().doInvoke(invocation, config);
-    }
+//    public Object doInvoke(RpcInvocation invocation, ServiceConfig config) throws Exception {
+//        if ("toString".equals(invocation.getMethodName())) {
+//            //打印getBean获得的对象时，直接返回服务名称
+//            return String.format("eos service [%s-%s-%s]", config.getAppId(), config.getId(), config.getVersion());
+//        }
+//        return new StubRpc().doInvoke(invocation, config);
+//    }
 
 }
 

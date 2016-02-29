@@ -107,9 +107,9 @@ public abstract class NettyClient implements RpcClient {
             ResponsePro result = blockingQueue.poll(timeout, TimeUnit.MILLISECONDS);
             logger.debug("返回结果:" + result);
             if (result == null) {
-                String msg = "等待结果超时! %s-%s-%s,debugIp:%s,invocation:%s";
-                msg = String.format(msg,pro.getAppId(),pro.getServiceId(),pro.getServiceVersion()
-                    ,pro.getDebugServerIp(),pro.getInvocation());
+                String msg = "等待结果超时! %s-%s %s %s,debugIp:%s";
+                msg = String.format(msg,pro.getAppId(),pro.getServiceId(),pro.getMethod(),pro.getMethodVersion()
+                    ,pro.getDebugServerIp());
                 logger.error(msg);
                 throw new RpcException(RpcException.TIMEOUT_EXCEPTION, msg);
             }

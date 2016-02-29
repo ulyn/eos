@@ -2,16 +2,13 @@ package com.sunsharing.eos.server.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
-import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
-import com.sunsharing.eos.server.ServiceContext;
+import com.sunsharing.eos.server.ServerServiceContext;
 import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -33,7 +30,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 
             ServiceRegister serviceRegister = ServiceRegister.getInstance();
             //先注册服务
-            List<ServiceConfig> serviceConfigs = ServiceContext.getInstance().getServiceConfigList();
+            List<ServiceConfig> serviceConfigs = ServerServiceContext.getInstance().getServiceConfigList();
 
             for (ServiceConfig config : serviceConfigs) {
                 if(StringUtils.isBlank(config.getAppId()))

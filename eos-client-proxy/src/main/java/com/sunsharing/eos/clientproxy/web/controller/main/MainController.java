@@ -23,7 +23,8 @@ public class MainController extends BaseController {
      */
     @RequestMapping(value = "/service.do")
     public String service(Model model, HttpServletRequest request) throws Exception {
-        return RpcInvoker.invoke(request.getParameter("serviceReqBase64Str")
-                , request.getParameter("serialization"));
+        return null;          //todo
+//        return RpcInvoker.invoke(request.getParameter("serviceReqBase64Str")
+//                , request.getParameter("serialization"));
     }
 }

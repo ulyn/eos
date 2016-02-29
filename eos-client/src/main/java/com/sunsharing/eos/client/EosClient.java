@@ -32,19 +32,17 @@ import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class EosInit {
+public class EosClient {
 
     private static boolean inited = false;
 
     /**
      * 初始化eos系统
      *
-     * @param packagePath
      */
-    public static void start(String packagePath) {
+    public synchronized static void start() {
         if (!inited) {
             ConfigContext.instancesBean(SysProp.class);
-            ServiceContext.getInstance().initPackagePath(packagePath);
             ServiceContext.getInstance().init();
 
             new Thread() {
@@ -60,18 +58,11 @@ public class EosInit {
     /**
      * 同步初始化eos系统
      *
-     * @param packagePath
      */
-    public synchronized static void synStart(String packagePath) {
+    public synchronized static void synStart() {
         ConfigContext.instancesBean(SysProp.class);
-        ServiceContext.getInstance().initPackagePath(packagePath);
         ServiceContext.getInstance().init();
         ServiceLocation.getInstance().synConnect();
-    }
-
-    public static void main(String[] a) {
-        EosInit.synStart("com.sunsharing");
-        System.out.println("成功了~~~~~~");
     }
 
 }

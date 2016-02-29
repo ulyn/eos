@@ -16,12 +16,9 @@
  */
 package com.sunsharing.eos.common.rpc.protocol;
 
-import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.rpc.RpcResult;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
-import org.apache.log4j.Logger;
+import com.sunsharing.eos.common.utils.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
@@ -47,8 +44,6 @@ public class ResponsePro extends BaseProtocol {
 
     byte[] resultBytes;
 
-    RpcResult result;
-
     public byte getStatus() {
         return status;
     }
@@ -65,50 +60,17 @@ public class ResponsePro extends BaseProtocol {
         this.resultBytes = resultBytes;
     }
 
-    public void setResult(RpcResult result) {
-        if (result.hasException()) {
-            setStatus(Constants.STATUS_ERROR);
-        }
-        this.result = result;
-    }
-
-    public void setExceptionResult(Throwable throwable) {
-        setResult(new RpcResult(throwable));
-    }
-
-    public RpcResult toResult() throws IOException, ClassNotFoundException {
-        if (resultBytes == null || resultBytes.length == 0) {
-            return null;
-        }
-        RpcResult result = SerializationFactory.deserializeBytes(resultBytes, RpcResult.class, this.getSerialization());
-        return result;
-    }
-
-    @Override
-    protected int getRealBodyLength() {
-        if (resultBytes == null) {
-            return 0;
-        } else return resultBytes.length;
-    }
-
     @Override
     public ChannelBuffer generate() {
         setAction(REQUEST_MSG_RESULT);
-        if (resultBytes == null && result != null) {
-            try {
-                setResultBytes(SerializationFactory.serializeToBytes(result, this.getSerialization()));
-            } catch (Exception e) {
-//            logger.error("eos代理返回异常结果序列化出错！", e1);
-                setExceptionResult(new RpcException(RpcException.SERIALIZATION_EXCEPTION, "eos代理返回异常结果序列化出错！", e));
-                setStatus(Constants.STATUS_ERROR);
-            }
-        }
-
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes(getHeaderBytes());
         buffer.writeByte(status);
         if (resultBytes != null) {
+            buffer.writeBytes(StringUtils.intToBytes(resultBytes.length));
             buffer.writeBytes(resultBytes);
+        }else{
+            buffer.writeBytes(StringUtils.intToBytes(0));
         }
         return buffer;
     }
@@ -123,15 +85,17 @@ public class ResponsePro extends BaseProtocol {
         ResponsePro pro = new ResponsePro();
         setHeader(pro, buffer);
         pro.setStatus(buffer.readByte());
+        int bodyLength = buffer.readInt();
 
-        if (buffer.readableBytes() < pro.bodyLength) {
+        if (buffer.readableBytes() < bodyLength) {
             buffer.resetReaderIndex();
             return null;
         }
-        byte[] bodyBytes = new byte[pro.bodyLength];
+        byte[] bodyBytes = new byte[bodyLength];
         buffer.readBytes(bodyBytes);
         pro.setResultBytes(bodyBytes);
         return pro;
     }
+
 }
 

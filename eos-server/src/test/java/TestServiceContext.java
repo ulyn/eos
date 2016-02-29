@@ -15,7 +15,7 @@
  *————————————————————————————————
  */
 
-import com.sunsharing.eos.server.ServiceContext;
+import com.sunsharing.eos.server.ServerServiceContext;
 
 /**
  * <pre></pre>
@@ -30,7 +30,7 @@ import com.sunsharing.eos.server.ServiceContext;
  */
 public class TestServiceContext {
     public static void main(String[] args) {
-        ServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
+        ServerServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
 
     }
 }

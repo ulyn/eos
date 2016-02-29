@@ -43,46 +43,6 @@ public class RpcInvoker {
 
     private static Logger logger = Logger.getLogger(RpcInvoker.class);
 
-    /**
-     * 代理执行，返回序列化串
-     *
-     * @param serviceReqBase64Str ServiceRequest对象的base64字符串
-     * @param serialization       ServiceRequest串的序列化方式，当为空时，默认为Constants.DEFAULT_SERIALIZATION
-     * @return
-     */
-    public static String invoke(String serviceReqBase64Str, String serialization) throws IOException {
-//        logger.info("serviceReqBase64Str="+serviceReqBase64Str);
-//        logger.info("serialization=" + serialization);
-        byte[] bytes = Base64.decode(serviceReqBase64Str);
-        byte[] result = invoke(bytes, serialization);
-        return Base64.encode(result);
-    }
-
-    /**
-     * @param serviceReqBytes
-     * @param serialization
-     * @return
-     * @throws IOException
-     */
-    public static byte[] invoke(byte[] serviceReqBytes, String serialization) throws IOException {
-        if (com.sunsharing.eos.common.utils.StringUtils.isBlank(serialization)) {
-            serialization = Constants.DEFAULT_SERIALIZATION;
-        }
-        ServiceResponse response = new ServiceResponse();
-        response.setSerialization(serialization);
-        try {
-            ServiceRequest request = ServiceRequest.createServiceRequest(serviceReqBytes, serialization);
-            RpcInvoker.doInvoke(request, response);
-        } catch (RpcException e) {
-            logger.error("调用代理RpcInvoker异常！！", e);
-            response.writeError(e);
-        } catch (Exception e) {
-            logger.error("调用代理异常！！", e);
-            response.writeError(e);
-        }
-        return response.serializeToBytes();
-    }
-
     public static void doInvoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
         FilterChain filterChain =
                 FilterManager.createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
@@ -109,7 +69,7 @@ public class RpcInvoker {
         if (serviceResponse.hasException()) {
             throw new RpcException(serviceResponse.getException().getMessage(), serviceResponse.getException());
         }
-        boolean isMock = !StringUtils.isBlank(serviceRequest.getMock());
+        boolean isMock = false;//!StringUtils.isBlank(serviceRequest.getMock());
 
         Object value = serviceResponse.getValue();
         if (isMock) {
@@ -126,21 +86,5 @@ public class RpcInvoker {
         return value;
     }
 
-    public static void main(String[] args) throws IOException {
-        ServiceRequest serviceRequest = new ServiceRequest.Builder().setSerialization("fastjson").build();
-        byte[] bytes = serviceRequest.serializeToBytes();
-        System.out.println(new String(bytes));
-        System.out.println(Base64.encode(serviceRequest.serializeToBytes()));
-        ServiceRequest serviceRequest2 = new ServiceRequest.Builder().setSerialization("hessian").build();
-        System.out.println(Base64.encode(serviceRequest2.serializeToBytes()));
-
-        ServiceResponse serviceResponse = new ServiceResponse();
-        serviceResponse.setSerialization("fastjson");
-        byte[] responseBytes = serviceRequest.serializeToBytes();
-        System.out.println(new String(responseBytes));
-        System.out.println(Base64.encode(responseBytes));
-        serviceResponse.setSerialization("hessian");
-        System.out.println(Base64.encode(serviceResponse.serializeToBytes()));
-    }
 }
 

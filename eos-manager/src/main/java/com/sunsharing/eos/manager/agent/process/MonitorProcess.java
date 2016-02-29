@@ -43,7 +43,7 @@ public class MonitorProcess implements Process {
         if (res.getStatus() == Constants.STATUS_ERROR) {
             //调用出错了。。。
         }
-        EosMonitor.getInstance().addServiceCallCount(req.getAppId(), req.getServiceId(), req.getServiceVersion());
+        EosMonitor.getInstance().addServiceCallCount(req.getAppId(), req.getServiceId(), req.getMethodVersion());
         processChain.doProcess(req, res, processChain);
     }
 }

@@ -7,10 +7,6 @@ import org.jboss.netty.buffer.ChannelBuffers;
  * Created by criss on 14-2-19.
  */
 public class HeartPro extends BaseProtocol {
-    @Override
-    protected int getRealBodyLength() {
-        return 0;
-    }
 
     @Override
     public ChannelBuffer generate() {

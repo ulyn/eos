@@ -319,7 +319,7 @@ public class NodeJSService {
                 "        eos.Service.call(this,rpcContext);\n" +
                 "        this.appId = \"" + serviceVersion.getAppCode() + "\";\n" +
                 "        this.serviceId = \"" + service.getServiceCode() + "\";\n" +
-                "        this.serviceVersion = \"" + serviceVersion.getVersion() + "\";\n" +
+                "        this.methodVersion = \"" + serviceVersion.getVersion() + "\";\n" +
                 "    }\n" +
                 "    eos.util.inherits(" + service.getServiceCode() + ",eos.Service);\n\n");
         for (TMethod method : serviceVersion.getMethods()) {
@@ -504,12 +504,12 @@ public class NodeJSService {
         sb.append("\n ;(function (EosRemote) {\n" +
                 "    var appId = \"" + serviceVersion.getAppCode() + "\",\n" +
                 "        serviceId = \"" + service.getServiceCode() + "\",\n" +
-                "        serviceVersion = \"" + serviceVersion.getVersion() + "\";\n" +
+                "        methodVersion = \"" + serviceVersion.getVersion() + "\";\n" +
                 "\n" +
                 "    function " + service.getServiceCode() + "(){\n" +
                 "        this.appId = appId;\n" +
                 "        this.serviceId = serviceId;\n" +
-                "        this.serviceVersion = serviceVersion;\n" +
+                "        this.methodVersion = methodVersion;\n" +
                 "\n" +
                 "        this.eosRemote = new EosRemote({ \"appId\": this.appId, \"serviceId\": this.serviceId });\n" +
                 "    }\n" +

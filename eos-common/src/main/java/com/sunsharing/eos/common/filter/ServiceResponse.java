@@ -18,10 +18,11 @@ package com.sunsharing.eos.common.filter;
 
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
+import com.sunsharing.eos.common.rpc.RpcResult;
+import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
+import org.jboss.netty.buffer.ChannelBuffers;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -39,15 +40,34 @@ import java.io.Serializable;
  */
 public class ServiceResponse implements Serializable {
 
+    private String msgId;
+    private String eosVersion;
+    private String serialization = Constants.DEFAULT_SERIALIZATION;
+
     private Object value;
     private Throwable exception;
-    private String serialization = Constants.DEFAULT_SERIALIZATION;
 
     public ServiceResponse() {
     }
 
     public ServiceResponse(ServiceRequest request) {
         this.serialization = request.getSerialization();
+    }
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+    }
+
+    public String getEosVersion() {
+        return eosVersion;
+    }
+
+    public void setEosVersion(String eosVersion) {
+        this.eosVersion = eosVersion;
     }
 
     public String getSerialization() {
@@ -83,24 +103,61 @@ public class ServiceResponse implements Serializable {
 
     public ResponsePro toResponsePro() {
         ResponsePro responsePro = new ResponsePro();
+        responsePro.setAction(BaseProtocol.REQUEST_MSG_RESULT);
+        responsePro.setSerialization(this.serialization);
+        responsePro.setMsgId(this.getMsgId());
+        responsePro.setEosVersion(this.getEosVersion());
+        RpcResult result = new RpcResult(this.getValue());
         if (this.hasException()) {
-            responsePro.setExceptionResult(this.exception);
-        } else {
-            responsePro.setSerialization(this.serialization);
-            RpcResult result = new RpcResult(this.getValue());
-            responsePro.setResult(result);
+            result.setException(this.exception);
+            responsePro.setStatus(Constants.STATUS_ERROR);
+        }
+        try {
+            responsePro.setResultBytes(
+                    SerializationFactory.serializeToBytes(result, this.getSerialization()));
+        } catch (IOException e) {
+            throw new RuntimeException("["+ this.getSerialization()
+                    +"]序列化RpcResult对象异常：" + e.getMessage(),e);
         }
         return responsePro;
     }
 
-    public byte[] serializeToBytes() throws IOException {
-        return SerializationFactory.serializeToBytes(this, this.serialization);
+    public byte[] toBytes() throws IOException {
+        ResponsePro responsePro = this.toResponsePro();
+        return responsePro.generate().array();
     }
 
-    public static ServiceResponse createServiceResponse(byte[] serviceResponseBytes, String serialization) throws IOException, ClassNotFoundException {
-        ServiceResponse serviceResponse = SerializationFactory.deserializeBytes(serviceResponseBytes, ServiceResponse.class, serialization);
+    public static ServiceResponse formBytes(byte[] serviceResponseBytes) throws IOException, ClassNotFoundException {
+        ResponsePro responsePro = new ResponsePro();
+        responsePro.createFromChannel(ChannelBuffers.wrappedBuffer(serviceResponseBytes));
+        return createServiceResponse(responsePro);
+    }
+
+    private static ServiceResponse createServiceResponse(ResponsePro responsePro) throws IOException, ClassNotFoundException {
+        ServiceResponse serviceResponse = new ServiceResponse();
+        serviceResponse.setMsgId(responsePro.getMsgId());
+        serviceResponse.setSerialization(responsePro.getSerialization());
+        serviceResponse.setEosVersion(responsePro.getEosVersion());
+
+        RpcResult result = toResult(responsePro);
+        if(result.hasException()){
+            serviceResponse.writeError(result.getException());
+        }else{
+            serviceResponse.writeValue(result.getValue());
+        }
         return serviceResponse;
     }
+
+
+    public static RpcResult toResult(ResponsePro responsePro) throws IOException, ClassNotFoundException {
+        if (responsePro.getResultBytes() == null || responsePro.getResultBytes().length == 0) {
+            return null;
+        }
+        RpcResult result = SerializationFactory.deserializeBytes(responsePro.getResultBytes(),
+                RpcResult.class, responsePro.getSerialization());
+        return result;
+    }
+
 
     public static void main(String[] args) {
 //        ServiceResponse response = new ServiceResponse(new ResponsePro());

@@ -1,8 +1,10 @@
 package com.sunsharing.eos.client.zookeeper;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -117,22 +119,22 @@ public class ServiceLocation {
 
             int i = servicePath.lastIndexOf("_");
             String real = servicePath.substring(0, i);
-            JSONObject serviceData2 = new JSONObject();
-            Set eosIdSet = new HashSet();
+
+            JSONArray serviceArray = null;
             if(tmp.get(real)!=null)
             {
-                JSONObject jsonObject = (JSONObject)tmp.get(real);
-                eosIdSet = (Set)jsonObject.get("eosIds");
-            }
-            String [] eosArr = eosIds.split(",");
-            for(i=0;i<eosArr.length;i++)
+                serviceArray = (JSONArray)tmp.get(real);
+            }else
             {
-                eosIdSet.add(eosArr[i]);
+                serviceArray = new JSONArray();
             }
             JSONObject methodMap = (JSONObject)serviceData.get("methodMap");
-            serviceData2.put("servicePath",real);
-            serviceData2.put("eosIds",eosIdSet);
-            tmp.put(real,serviceData2);
+            JSONObject object = new JSONObject();
+            object.put("servicePath",real);
+            object.put("eosIds",eosIds);
+            object.put("methodMap",methodMap);
+            serviceArray.add(object);
+            tmp.put(real, serviceArray);
         }
         serviceMap.clear();
         serviceMap.putAll(tmp);
@@ -153,11 +155,11 @@ public class ServiceLocation {
      *
      * @param appId
      * @param serviceId
-     * @param version
      * @return {“ip”:"","port":""} 如果是null，表示不存在这个
      */
-    public synchronized JSONObject getServiceLocation(String appId, String serviceId, String version) {
-        return getServiceLocation(appId, serviceId, version, false);
+    public synchronized JSONObject getServiceLocation(String appId, String serviceId,String methodName ,String methodVersion)throws RpcException
+    {
+        return getServiceLocation(appId, serviceId, methodName,methodVersion,false);
     }
 
     /**
@@ -166,11 +168,12 @@ public class ServiceLocation {
      * @return {“ip”:"","port":""} 如果是null，表示不存在这个
      */
     public synchronized JSONObject getOnlineEOS() {
-        return getServiceLocation(null, null, null, true);
+        return getServiceLocation(null, null, null,null, true);
     }
 
     private JSONObject getServiceLocation
-            (String appId, String serviceId, String version, boolean mock) {
+            (String appId, String serviceId, String methodName ,String methodVersion, boolean mock)
+            throws RpcException{
         JSONArray ips = new JSONArray();
         if(mock)
         {
@@ -184,9 +187,41 @@ public class ServiceLocation {
                 ips.add(obj);
             }
         }else {
-            String servicePath = appId + serviceId + version;
-            JSONObject object = serviceMap.get(servicePath);
-            Set<String> eosIds = (Set) object.get("eosIds");
+            String servicePath = appId + serviceId;
+            JSONObject array = serviceMap.get(servicePath);
+            if(array == null)
+            {
+                logger.info("打印服务缓存信息.");
+                printCache();
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "找不到appId:"+appId+",serviceId:"+serviceId+"注册信息");
+            }
+            Set<String> eosIds = new HashSet<String>();
+            for(int i=0;i<array.size();i++)
+            {
+                JSONObject jsonObject = (JSONObject)array.get(i);
+                String eosIdsTmp = (String)jsonObject.get("eosIds");
+                JSONObject methodMap = (JSONObject)jsonObject.get("methodMap");
+                String methodV=(String)methodMap.get(methodName);
+                if(methodV.equals(methodVersion))
+                {
+                    String[] arr = eosIdsTmp.split(",");
+                    for(int j=0;j<arr.length;j++)
+                    {
+                        eosIds.add(arr[j]);
+                    }
+                }else
+                {
+                    logger.error("找到不同版本服务，appId:" + appId + ",serviceId:" + serviceId + ",函数名:" + methodName +
+                            ",服务器版本:" + methodV + ",调用版本:" + methodVersion + ",eosId:" + eosIdsTmp);
+                }
+            }
+            if(eosIds.size()==0)
+            {
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "找不到appId:"+appId+",serviceId:"+serviceId+"," +
+                        "methodName:"+methodName+",methodVersion:"+methodVersion+",注册的EOSID");
+            }
+
+
             for (String eosId : eosIds) {
                 if (onlineEos.get(eosId) != null) {
                     //在线

@@ -58,7 +58,6 @@ public class ServiceCache {
                     JSONObject jsonObject = JSONObject.parseObject(p);
                     String appId = jsonObject.getString(PathConstant.APPID_KEY);
                     String serviceId = jsonObject.getString(PathConstant.SERVICE_ID_KEY);
-                    String version = jsonObject.getString(PathConstant.VERSION_KEY);
                     String ip = jsonObject.getString("ip");
                     String port = jsonObject.get("port").toString();
                     String eosIds = jsonObject.get("eosIds").toString();
@@ -69,30 +68,39 @@ public class ServiceCache {
                         continue;
                     }
 
-                    JSONArray obj = null;
-                    if(serviceTmpMap.get(appId+serviceId+version)!=null)
+                    JSONObject methodVersion = jsonObject.getJSONObject("methodVersion");
+                    Set<String> methods = methodVersion.keySet();
+                    for(String method:methods)
                     {
-                        obj = (JSONArray)serviceTmpMap.get(appId+serviceId+version);
-                    }else
-                    {
-                        obj = new JSONArray();
+                        String v = (String)methodVersion.get(method);
 
-                    }
-                    boolean exist = false;
-                    for(int i=0;i<obj.size();i++)
-                    {
-                        JSONObject tmp = (JSONObject)obj.get(i);
-                        String ip1 = tmp.get("ip").toString();
-                        String port1 = tmp.get("port").toString();
-                        if(ip.equals(ip1) && port.equals(port1))
+                        JSONArray obj = null;
+                        if(serviceTmpMap.get(appId+serviceId+method+v)!=null)
                         {
-                            exist = true;
+                            obj = (JSONArray)serviceTmpMap.get(appId+serviceId+method+v);
+                        }else
+                        {
+                            obj = new JSONArray();
+
                         }
+                        boolean exist = false;
+                        for(int i=0;i<obj.size();i++)
+                        {
+                            JSONObject tmp = (JSONObject)obj.get(i);
+                            String ip1 = tmp.get("ip").toString();
+                            String port1 = tmp.get("port").toString();
+                            if(ip.equals(ip1) && port.equals(port1))
+                            {
+                                exist = true;
+                            }
+                        }
+                        if(!exist) {
+                            obj.add(jsonObject);
+                        }
+                        serviceTmpMap.put(appId+serviceId+method+v,obj);
                     }
-                    if(!exist) {
-                        obj.add(jsonObject);
-                    }
-                    serviceTmpMap.put(appId+serviceId+version,obj);
+
+
                 }
             }
 
@@ -124,9 +132,9 @@ public class ServiceCache {
      * @param version
      * @return 返回服务的注册信息
      */
-    public synchronized JSONArray getServiceData(String appId,String serviceId,String version)
+    public synchronized JSONArray getServiceData(String appId,String serviceId,String methodName,String version)
     {
-        return serviceMap.get(appId+serviceId+version);
+        return serviceMap.get(appId+serviceId+methodName+version);
     }
 
     /**

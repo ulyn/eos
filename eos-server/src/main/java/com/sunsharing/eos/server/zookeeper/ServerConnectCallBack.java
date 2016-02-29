@@ -2,6 +2,7 @@ package com.sunsharing.eos.server.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;

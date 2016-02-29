@@ -15,6 +15,7 @@ public class TApp implements Comparable {
     private int appId;
     private String appName;
     private String appCode;
+    private String dbs;
     private String creatTime;
 
     List<TModule> modules = new ArrayList<TModule>();
@@ -68,6 +69,16 @@ public class TApp implements Comparable {
 
     public void setAppCode(String appCode) {
         this.appCode = appCode;
+    }
+
+    @Basic
+    @Column(name = "DBS")
+    public String getDbs() {
+        return dbs;
+    }
+
+    public void setDbs(String dbs) {
+        this.dbs = dbs;
     }
 
     @Override

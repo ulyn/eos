@@ -88,6 +88,9 @@
                 <value>com.sunsharing.eos.uddi.model.TUserApp</value>
                 <value>com.sunsharing.eos.uddi.model.TService</value>
                 <value>com.sunsharing.eos.uddi.model.TServiceVersion</value>
+                <value>com.sunsharing.eos.uddi.model.TDbChange</value>
+                <value>com.sunsharing.eos.uddi.model.TDbPdm</value>
+                <value>com.sunsharing.eos.uddi.model.TDbChecklist</value>
             </list>
         </property>
     </bean>

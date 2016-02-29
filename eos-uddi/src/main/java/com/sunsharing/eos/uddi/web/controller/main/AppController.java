@@ -45,19 +45,19 @@ public class AppController {
 
     }
     @RequestMapping(value="/saveApp.do",method= RequestMethod.POST)
-    public void saveApp(String app_en,String app_cn,String app_modules,HttpServletResponse response)
+    public void saveApp(String app_en,String app_cn,String app_modules,String dbs,HttpServletResponse response)
             throws Exception {
 
-        appService.saveApp(app_en,app_cn,app_modules);
+        appService.saveApp(app_en,app_cn,app_modules,dbs);
         ResponseHelper.printOut(response, true, "", "");
 
     }
 
     @RequestMapping(value="/updateApp.do",method= RequestMethod.POST)
-    public void updateApp(String id,String app_en,String app_cn,String app_modules,HttpServletResponse response)
+    public void updateApp(String id,String app_en,String app_cn,String app_modules,String dbs,HttpServletResponse response)
             throws Exception {
 
-        appService.updateApp(id,app_en,app_cn,app_modules);
+        appService.updateApp(id,app_en,app_cn,app_modules,dbs);
         ResponseHelper.printOut(response, true, "", "");
 
     }

@@ -1,0 +1,105 @@
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">数据库变更管理</h3>
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="simple_buttons">
+            <div class="bwIcon i_16_help" ng-click="back()">返回</div>
+        </div>
+    </div>
+
+    <div class="g_12 separator"><span></span></div>
+
+    <div class="g_12">
+        <div class="widget_header">
+            <h4 class="widget_header_title wwIcon i_16_forms">数据库变更记录</h4>
+        </div>
+        <form id="serviceform" method="post"   enctype="multipart/form-data">
+            <div class="widget_contents noPadding">
+                <div class="line_grid">
+                    <div class="g_3"><span class="label">变更说明</span></div>
+                    <div class="g_9">
+                        <textarea id="changelog" class="simple_field wysiwyg" style="width: 300px"></textarea>
+                    </div>
+                </div>
+                <div class="line_grid">
+                    <div class="g_3"><span class="label">所属库</span></div>
+                    <div class="g_9">
+                        <span ng-repeat="row in dbs">
+                            <input type="radio" name="db" value="{{row}}" ng-model="db" class="simple_form" /><span class="label">{{row}}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="line_grid">
+                    <div class="g_3"><span class="label">PDM图上传</span>&nbsp;
+                        <div ng-if="!add" ng-click="downloadPdm()" class="simple_buttons">
+                            <div>下载</div>
+                        </div>
+                    </div>
+                    <div class="g_9">
+                        <div class="uploader" id="uniform-undefined2">
+                            <input type="file" id="file1" name="file1" onchange="changeFile(this)"
+                                   class="simple_form" size="36.4" style="opacity: 0;">
+                            <input type="hidden" id="pdm" name="pdm" />
+                            <span class="filename">No file selected</span>
+                            <span class="action"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="line_grid">
+                    <div class="g_3"><span class="label">脚本文件上传</span>&nbsp;
+                        <div ng-if="!add" ng-click="downloadScript()" class="simple_buttons">
+                            <div>下载</div>
+                        </div>
+                    </div>
+                    <div class="g_9">
+                        <div class="uploader" id="uniform-undefined">
+                            <input type="file" id="file2" name="file2" onchange="changeFile(this)"
+                                   class="simple_form" size="36.4" style="opacity: 0;" />
+                            <input type="hidden" id="sql" name="sql" />
+                            <span class="filename">No file selected</span>
+                            <span class="action"></span>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="appId" id="appId" value="{{appId}}"/>
+                <input type="hidden" name="changeId" id="changeId" value="{{changeId}}"/>
+                <div class="line_grid">
+                    <div class="g_6">
+                        <input class="submitIt simple_buttons" ng-if="!checkStatus" ng-click="savechange()" value="Add" type="button">
+                        <input class="submitIt simple_buttons" ng-click="commit()" ng-if="changeId!='' && checkUser" value="审批" type="button">
+                        <div class="dialog dConf" title="Do you agree?"><span class="label lwParagraph">
+                            <textarea id="checkcontent" class="simple_field"></textarea>
+                        </span></div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="g_12 separator"><span></span></div>
+    <div class="g_12">
+        <div class="widget_header">
+            <h4 class="widget_header_title wwIcon i_16_chats">审批意见</h4>
+        </div>
+        <div class="widget_contents noPadding">
+            <div class="line_grid" ng-repeat="row in checkList">
+                <div class="g_2 g_2M">
+                    <label class="label">{{row.userName}}</label></br>
+                    <span ng-if="row.checkStatus=='1'"><label class="label" style="color:green">同意</label></br></span>
+                    <span ng-if="row.checkStatus=='2'"><label class="label"  style="color:red">不同意</label></br></span>
+                    <label class="label">{{row.checkTime}}</label>
+                </div>
+                <div class="g_10 g_10M">
+                    <div class="message">
+                        <span class="label lwParagraph" data-ng-bind-html="row.checkContent"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

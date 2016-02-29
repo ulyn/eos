@@ -63,6 +63,12 @@ indexApp.config(['$routeProvider',
                 templateUrl: 'templates/service/blank.html'
                 //template:'criss',
                 //controller: 'userEdit'
+            }).when('/dblist/:appId',{
+                templateUrl: 'templates/db/dblist.html',
+                controller: 'dblist'
+            }).when('/dbAdd/:appId/:changeId',{
+                templateUrl: 'templates/db/dbAdd.html',
+                controller: 'dbAdd'
             });
 //            .otherwise({redirectTo: '/servicelist'});
     }]);
@@ -166,10 +172,11 @@ indexApp.controller('appAdd', function($scope, $routeParams,$http) {
         var app_en = $("#app_en").val();
         var app_cn = $("#app_cn").val();
         var app_modules = $("#app_modules").val();
+        var dbs = $("#dbs").val();
         $http({
             url: '/saveApp.do',
             method: "POST",
-            data: "app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules,
+            data: "app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules+"&dbs="+dbs,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
                 if(data.status)
@@ -201,6 +208,7 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
                 var appName = app.appName;
                 var appCode = app.appCode;
                 var modules = app.modules;
+                var dbs = app.dbs;
                 var module = "";
                 for(var i=0;i<modules.length;i++)
                 {
@@ -217,6 +225,7 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
                 $scope.appName = appName;
                 $scope.appCode = appCode;
                 $scope.module = module;
+                $scope.dbs = dbs;
 
             }else
             {
@@ -229,11 +238,12 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
         var app_en = $("#app_en").val();
         var app_cn = $("#app_cn").val();
         var app_modules = $("#app_modules").val();
+        var dbs = $("#dbs").val();
         var id = $scope.appId;
         $http({
             url: '/updateApp.do',
             method: "POST",
-            data: "id="+id+"&app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules,
+            data: "id="+id+"&app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules+"&dbs="+dbs,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
                 if(data.status)
@@ -362,6 +372,11 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
     $scope.test = function()
     {
         alert(serviceId);
+    }
+
+    $scope.toDbUrl = function()
+    {
+        location.href = "#dblist/"+appId;
     }
 
     $scope.addService = function()
@@ -777,6 +792,10 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
                 }if(data.data.role=="2")
                 {
                     document.getElementById("xzz").checked = true;
+                }
+                if(data.data.role=="4")
+                {
+                    document.getElementById("sjz").checked = true;
                 }
                 $scope.role = arr;
                 $scope.user = data.data;

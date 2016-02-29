@@ -1,6 +1,5 @@
-package com.sunsharing.eos.common;
+package com.sunsharing.eos.common.utils;
 
-import com.sunsharing.eos.common.utils.ClassHelper;
 import org.apache.log4j.Logger;
 
 import java.net.URL;
@@ -14,19 +13,19 @@ import java.util.Set;
  *
  * @author
  */
-public final class Version {
+public final class VersionUtil {
 
-    private Version() {
+    private VersionUtil() {
     }
 
-    private static final Logger logger = Logger.getLogger(Version.class);
+    private static final Logger logger = Logger.getLogger(VersionUtil.class);
 
-    private static final String VERSION = getVersion(Version.class, "1.0.0");
+    private static final String VERSION = getVersion(VersionUtil.class, "1.0.0");
 
 
     static {
         // 检查是否存在重复的jar包
-        Version.checkDuplicate(Version.class);
+        VersionUtil.checkDuplicate(VersionUtil.class);
     }
 
     public static String getVersion() {
@@ -35,7 +34,7 @@ public final class Version {
 
     private static boolean hasResource(String path) {
         try {
-            return Version.class.getClassLoader().getResource(path) != null;
+            return VersionUtil.class.getClassLoader().getResource(path) != null;
         } catch (Throwable t) {
             return false;
         }
@@ -97,7 +96,7 @@ public final class Version {
     public static void checkDuplicate(String path, boolean failOnError) {
         try {
             // 在ClassPath搜文件
-            Enumeration<URL> urls = ClassHelper.getCallerClassLoader(Version.class).getResources(path);
+            Enumeration<URL> urls = ClassHelper.getCallerClassLoader(VersionUtil.class).getResources(path);
             Set<String> files = new HashSet<String>();
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();

@@ -18,7 +18,7 @@ package com.sunsharing.eos.common.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.Version;
+import com.sunsharing.eos.common.utils.VersionUtil;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
@@ -286,7 +286,7 @@ public class ServiceRequest {
         //消息id(32)
         private String msgId = com.sunsharing.eos.common.utils.StringUtils.genUUID();
         //EOS版本号(5)
-        protected String eosVersion = Version.getVersion();
+        protected String eosVersion = VersionUtil.getVersion();
         //序列化方式(10)
         private String serialization = Constants.DEFAULT_SERIALIZATION;
 
@@ -323,11 +323,21 @@ public class ServiceRequest {
             this.methodVersion = methodVersion;
         }
 
+        /**
+         * 调用者不需要设置
+         * @param
+         * @return
+         */
         public Builder setMsgId(String msgId) {
             this.msgId = msgId;
             return this;
         }
 
+        /**
+         * 调用者不需要设置
+         * @param eosVersion
+         * @return
+         */
         public Builder setEosVersion(String eosVersion) {
             this.eosVersion = eosVersion;
             return this;

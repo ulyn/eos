@@ -16,23 +16,11 @@
  */
 package com.sunsharing.eos.client.rpc;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sunsharing.component.utils.base.StringUtils;
-import com.sunsharing.eos.client.ServiceContext;
-import com.sunsharing.eos.client.mock.MockUtils;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
-import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
 import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <pre></pre>
@@ -45,10 +33,10 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class RpcFilter extends AbstractServiceFilter {
-    private Logger logger = Logger.getLogger(RpcFilter.class);
+public class RpcCaller extends AbstractServiceFilter {
+    private Logger logger = Logger.getLogger(RpcCaller.class);
 
-    public RpcFilter() {
+    public RpcCaller() {
     }
 
 
@@ -123,9 +111,9 @@ public class RpcFilter extends AbstractServiceFilter {
     }
 
     private JSONObject getEosLocation(String appId, String serviceId, String serviceVersion, boolean isMock) throws RpcException {
-        JSONObject jo;
+        JSONObject jo = null;
         if (!isMock) {
-            jo = ServiceLocation.getInstance().getServiceLocation(appId, serviceId, serviceVersion);
+//            jo = ServiceLocation.getInstance().getServiceLocation(appId, serviceId, serviceVersion);
         } else {
             jo = ServiceLocation.getInstance().getOnlineEOS();
         }

@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class StubRpc extends RpcInvoker {
+public class StubRpc{
     Logger logger = Logger.getLogger(StubRpc.class);
 
 //    public Object doInvoke(RpcParams invocation, ServiceConfig config) throws RpcException {

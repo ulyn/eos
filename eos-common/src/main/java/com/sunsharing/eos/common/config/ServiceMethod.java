@@ -47,6 +47,7 @@ public class ServiceMethod {
     }
 
     private String methodName;
+    private String version;
     private Class<?>[] parameterTypes;
     private String[] parameterNames;
     private Class retType;
@@ -65,6 +66,7 @@ public class ServiceMethod {
         this.retType = method.getReturnType();
         this.parameterTypes = method.getParameterTypes();
         this.parameterNames = parameterNames;
+        this.version = version;
     }
 
     public String getMethodName() {
@@ -97,6 +99,14 @@ public class ServiceMethod {
 
     public void setAccessType(AccessType accessType) {
         this.accessType = accessType;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     /**

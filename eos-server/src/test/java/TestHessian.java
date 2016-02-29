@@ -16,7 +16,7 @@
  */
 
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.rpc.RpcParams;
 import com.sunsharing.eos.common.serialize.ObjectInput;
 import com.sunsharing.eos.common.serialize.ObjectOutput;
 import com.sunsharing.eos.common.serialize.Serialization;
@@ -24,9 +24,7 @@ import com.sunsharing.eos.common.serialize.SerializationFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * <pre></pre>
@@ -41,7 +39,7 @@ import java.util.Map;
  */
 public class TestHessian {
     public static void main(String[] args) throws Exception {
-        RpcInvocation invocation = new RpcInvocation();
+        RpcParams invocation = new RpcParams();
         invocation.setArguments(new Object[]{});
         invocation.setMethodName("sayHello");
         invocation.setMock("");

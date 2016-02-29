@@ -25,7 +25,7 @@ import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.*;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.server.ServiceContext;
+import com.sunsharing.eos.server.ServerServiceContext;
 import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 
@@ -102,7 +102,7 @@ public abstract class AbstractServer implements RpcServer {
             response.writeError(e);
         }
         //尝试处理全局异常
-        ExceptionHandler.tryHandleException(request, response, ServiceContext.getExceptionResolver());
+        ExceptionHandler.tryHandleException(request, response, ServerServiceContext.getExceptionResolver());
 
         ResponsePro responsePro = response.toResponsePro();
         responsePro.setMsgId(requestPro.getMsgId());

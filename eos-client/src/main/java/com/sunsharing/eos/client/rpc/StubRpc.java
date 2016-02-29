@@ -16,24 +16,7 @@
  */
 package com.sunsharing.eos.client.rpc;
 
-import com.sunsharing.eos.client.ServiceContext;
-import com.sunsharing.eos.client.proxy.AbstractProxy;
-import com.sunsharing.eos.client.proxy.ProxyFactory;
-import com.sunsharing.eos.client.sys.SysParamVar;
-import com.sunsharing.eos.client.sys.SysProp;
-import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.config.ServiceMethod;
-import com.sunsharing.eos.common.rpc.RpcContext;
-import com.sunsharing.eos.common.rpc.RpcContextContainer;
-import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
-import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <pre></pre>
@@ -49,24 +32,24 @@ import java.util.List;
 public class StubRpc extends RpcInvoker {
     Logger logger = Logger.getLogger(StubRpc.class);
 
-    public Object doInvoke(RpcInvocation invocation, ServiceConfig config) throws RpcException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("调用eos服务" + config.getId() + "入参：" + invocation);
-        }
-        if (StringUtils.isBlank(config.getAppId())) {
-            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
-        }
-
-        ServiceMethod serviceMethod = config.getMethod(invocation.getMethodName());
-        Class retType = serviceMethod.getRetType();
-        String mock = invocation.getRealMock(config, SysProp.use_mock, retType);
-
-        DynamicRpc dynamicRpc = DynamicRpc.create(config.getAppId(), config.getId(), config.getVersion())
-                .setSerialization(config.getSerialization())
-                .setTimeout(config.getTimeout())
-                .setTransporter(config.getTransporter())
-                .setMock(mock);
-        return dynamicRpc.doInvoke(retType, invocation.getMethodName(), invocation.getArguments());
-    }
+//    public Object doInvoke(RpcParams invocation, ServiceConfig config) throws RpcException {
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("调用eos服务" + config.getId() + "入参：" + invocation);
+//        }
+//        if (StringUtils.isBlank(config.getAppId())) {
+//            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "接口" + config.getId() + "不正确,没有appid,请确保是从eos下载");
+//        }
+//
+//        ServiceMethod serviceMethod = config.getMethod(invocation.getMethodName());
+//        Class retType = serviceMethod.getRetType();
+//        String mock = invocation.getRealMock(config, SysProp.use_mock, retType);
+//
+//        DynamicRpc dynamicRpc = DynamicRpc.create(config.getAppId(), config.getId(), config.getVersion())
+//                .setSerialization(config.getSerialization())
+//                .setTimeout(config.getTimeout())
+//                .setTransporter(config.getTransporter())
+//                .setMock(mock);
+//        return dynamicRpc.doInvoke(retType, invocation.getMethodName(), invocation.getArguments());
+//    }
 }
 

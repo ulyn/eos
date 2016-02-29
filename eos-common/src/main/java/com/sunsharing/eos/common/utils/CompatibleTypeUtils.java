@@ -42,6 +42,31 @@ public class CompatibleTypeUtils {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
+     * 判断一个类是否为基本数据类型。
+     * @param clazz 要判断的类。
+     * @return true 表示为基本数据类型。
+     */
+    public static boolean isBaseDataType(Class clazz)
+    {
+        return  (
+                clazz.equals(String.class) ||
+                        clazz.equals(Integer.class)||
+                        clazz.equals(Byte.class) ||
+                        clazz.equals(Long.class) ||
+                        clazz.equals(Double.class) ||
+                        clazz.equals(Float.class) ||
+                        clazz.equals(Character.class) ||
+                        clazz.equals(Short.class) ||
+                        clazz.equals(BigDecimal.class) ||
+                        clazz.equals(BigInteger.class) ||
+                        clazz.equals(Boolean.class) ||
+                        clazz.equals(Date.class) ||
+//                                clazz.equals(DateTime.class) ||
+                        clazz.isPrimitive()
+        );
+    }
+
+    /**
      * 类型转换，将String类型转换为指定类型，当类型为复杂对象时，value为json串
      *
      * @param value
@@ -109,15 +134,15 @@ public class CompatibleTypeUtils {
         }
     }
 
-    /**
-     * 将类型数组转换为eos支持的simpleName类型字符串的数组
-     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
-     *
-     * @param classes
-     * @return
-     */
-    public static String[] getTypesStringArray(Class<?>[] classes) {
-        return null;
-    }
+//    /**
+//     * 将类型数组转换为eos支持的simpleName类型字符串的数组
+//     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
+//     *
+//     * @param classes
+//     * @return
+//     */
+//    public static String[] getTypesStringArray(Class<?>[] classes) {
+//        return null;
+//    }
 }
 

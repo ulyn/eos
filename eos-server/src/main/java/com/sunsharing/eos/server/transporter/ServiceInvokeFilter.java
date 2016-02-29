@@ -21,9 +21,6 @@ import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -80,33 +77,33 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
 //        RpcResult result = new RpcResult();
         if (obj != null) {
             try {
-                ServiceMethod method = serviceConfig.getMethod(req.getMethodName());
+                ServiceMethod method = serviceConfig.getMethod(req.getMethod());
                 if (method == null) {
-                    throw new NoSuchMethodException(req.getMethodName() + "的ServiceMethod==null");
+                    throw new NoSuchMethodException(req.getMethod() + "的ServiceMethod==null");
                 }
 
                 //这边暂时直接使用jdk代理执行
                 //此处的parameterTypes不用invocation的，规定不允许方法重载
-                Method m = obj.getClass().getMethod(req.getMethodName(), method.getParameterTypes());
-                Object o = m.invoke(obj, req.getArguments());
+                Method m = obj.getClass().getMethod(req.getMethod(), method.getParameterTypes());
+                Object o = m.invoke(obj, null);  //todo
 
                 res.writeValue(o);
             } catch (NoSuchMethodException e) {
-                String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethodName();
+                String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethod();
                 logger.error(errorMsg, e);
                 res.writeError(new IllegalArgumentException(errorMsg, e));
             } catch (InvocationTargetException e) {
                 logger.error("处理服务InvocationTargetException异常", e);
                 res.writeError(e.getTargetException());
             } catch (Exception th) {
-                String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + req.getMethodName();
+                String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + req.getMethod();
                 logger.error(errorMsg, th);
                 ByteArrayOutputStream input = new ByteArrayOutputStream();
                 th.printStackTrace(new PrintStream(input));
                 res.writeError(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + input.toString()));
             }
         } else {
-            String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethodName();
+            String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethod();
             logger.error(errorMsg);
             res.writeError(new IllegalArgumentException(errorMsg));
         }

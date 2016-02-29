@@ -50,7 +50,7 @@ public class RemoteProcess implements Process {
             res.setSerialization(res.getSerialization());
             String appId = req.getAppId();
             String serviceId = req.getServiceId();
-            String serviceVersion = req.getServiceVersion();
+            String serviceVersion = req.getMethodVersion();
             //取得服务的ip和port
             JSONArray jsonArray = ServiceCache.getInstance().getServiceData(appId, serviceId, serviceVersion);
             if (jsonArray == null) {
@@ -85,15 +85,15 @@ public class RemoteProcess implements Process {
             String transporter = config.getString("transporter");
 
             logger.info(String.format("request target %s:%s:%s-%s-%s", ip, port,
-                    req.getAppId(), req.getServiceId(), req.getServiceVersion()));
+                    req.getAppId(), req.getServiceId(), req.getMethodVersion()));
 
             ResponsePro responsePro = RpcClientFactory.create(transporter).doRpc(req, ip, port, timeout);
             res.setStatus(responsePro.getStatus());
             res.setResultBytes(responsePro.getResultBytes());
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            logger.error(String.format("服务调用异常，%s:%s:%s", req.getAppId(), req.getServiceId(), req.getServiceVersion()), e);
-            res.setExceptionResult(e);
+            logger.error(String.format("服务调用异常，%s:%s:%s", req.getAppId(), req.getServiceId(), req.getMethodVersion()), e);
+//            res.setExceptionResult(e); todo
         }
     }
 }

@@ -46,33 +46,33 @@ import java.util.Map;
  * <br>
  */
 public abstract class BaseProtocol implements Serializable {
-    protected static byte REQUEST_MSG = 'A';
-    protected static byte REQUEST_MSG_RESULT = 'B';
-    protected static byte HEART_BEAT = 'H';
+    public static byte REQUEST_MSG = 'A';
+    public static byte REQUEST_MSG_RESULT = 'B';
+    public static byte HEART_BEAT = 'H';
 
     //协议类型,请求还是响应(1)
     protected byte action;
+    //EOS版本号(5)
+    protected String eosVersion;
     //消息id(32)
     protected String msgId;
-    //序列化方式(15)
+    //序列化方式(10)
     protected String serialization = Constants.DEFAULT_SERIALIZATION;
-    //报文体长度(4)
-    protected int bodyLength;
 
     protected byte[] getHeaderBytes() {
-        byte[] header = new byte[52];
+        byte[] header = new byte[48];
         header[0] = action;
-        StringUtils.putString(header, msgId, 1);
-        StringUtils.putString(header, serialization, 33);
-        StringUtils.putInt(header, getRealBodyLength(), 48);
+        StringUtils.putString(header, eosVersion, 1);
+        StringUtils.putString(header, msgId, 6);
+        StringUtils.putString(header, serialization, 38);
         return header;
     }
 
     protected void setHeader(BaseProtocol pro, ChannelBuffer buffer) {
         pro.action = buffer.readByte();
+        pro.eosVersion = readString(5, buffer);
         pro.msgId = readString(32, buffer);
-        pro.serialization = readString(15, buffer);
-        pro.bodyLength = buffer.readInt();
+        pro.serialization = readString(10, buffer);
     }
 
     public byte getAction() {
@@ -81,6 +81,14 @@ public abstract class BaseProtocol implements Serializable {
 
     public void setAction(byte action) {
         this.action = action;
+    }
+
+    public String getEosVersion() {
+        return eosVersion;
+    }
+
+    public void setEosVersion(String eosVersion) {
+        this.eosVersion = eosVersion;
     }
 
     public String getMsgId() {
@@ -99,14 +107,6 @@ public abstract class BaseProtocol implements Serializable {
         this.serialization = serialization;
     }
 
-    public int getBodyLength() {
-        return bodyLength;
-    }
-
-    public void setBodyLength(int bodyLength) {
-        this.bodyLength = bodyLength;
-    }
-
     protected String readString(int len, ChannelBuffer buffer) {
         byte[] bu = new byte[len];
         buffer.readBytes(bu);
@@ -119,38 +119,36 @@ public abstract class BaseProtocol implements Serializable {
         return null;
     }
 
-    protected abstract int getRealBodyLength();
-
     public abstract ChannelBuffer generate();
 
     public abstract BaseProtocol createFromChannel(ChannelBuffer buffer);
 
-    public static void main(String[] a) throws Exception {
-        Map o = new HashMap();
-        o.put("a", new BigDecimal("11.111"));
-        o.put("b", new Date());
-
-        Serialization serial = SerializationFactory.createSerialization("hessian");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutput objectOutput = serial.serialize(outputStream);
-        objectOutput.writeObject(o);
-        objectOutput.flushBuffer();
-
-
-        byte[] bytes = outputStream.toByteArray();
-
-        InputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInput objectInput = serial.deserialize(inputStream);
-        Object m = objectInput.readObject(Map.class);
-        Object ss = new HashMap();
-//        System.out.println(m.get("a"));
-//        System.out.println(m.get("b"));
-        System.out.println(m.getClass());
-        System.out.println(ss instanceof String);
-        System.out.println(Map.class.isInstance(m));
-        System.out.println(String.class.isInstance("sss"));
-
-
-    }
+//    public static void main(String[] a) throws Exception {
+//        Map o = new HashMap();
+//        o.put("a", new BigDecimal("11.111"));
+//        o.put("b", new Date());
+//
+//        Serialization serial = SerializationFactory.createSerialization("hessian");
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        ObjectOutput objectOutput = serial.serialize(outputStream);
+//        objectOutput.writeObject(o);
+//        objectOutput.flushBuffer();
+//
+//
+//        byte[] bytes = outputStream.toByteArray();
+//
+//        InputStream inputStream = new ByteArrayInputStream(bytes);
+//        ObjectInput objectInput = serial.deserialize(inputStream);
+//        Object m = objectInput.readObject(Map.class);
+//        Object ss = new HashMap();
+////        System.out.println(m.get("a"));
+////        System.out.println(m.get("b"));
+//        System.out.println(m.getClass());
+//        System.out.println(ss instanceof String);
+//        System.out.println(Map.class.isInstance(m));
+//        System.out.println(String.class.isInstance("sss"));
+//
+//
+//    }
 }
 

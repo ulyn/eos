@@ -16,15 +16,19 @@
  */
 package com.sunsharing.eos.common.filter;
 
-import com.sunsharing.component.utils.base.StringUtils;
+import com.alibaba.fastjson.JSON;
 import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.Invocation;
+import com.sunsharing.eos.common.Version;
 import com.sunsharing.eos.common.rpc.RpcContext;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
+import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
+import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
+import org.jboss.netty.buffer.ChannelBuffers;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,83 +45,144 @@ import java.util.Map;
  */
 public class ServiceRequest {
 
-    private Builder builder = null;
-    private String[] parameterTypes;
+    /**
+     * 基本协议字段 *
+     */
+    //消息id(32)
+    private String msgId;
+    //EOS版本号(5)
+    protected String eosVersion;
+    //序列化方式(10)
+    private String serialization;
 
-    public ServiceRequest(Builder builder) {
-        this.builder = builder;
+    //应用id(32)
+    private String appId;
+    //服务id(30)
+    private String serviceId;
+    //方法名(30)
+    private String method;
+    //服务方法版本(5)
+    private String methodVersion;
+    //调用超时时间,毫秒(4)
+    private int timeout;
+    //联调ip(20)
+    private String debugServerIp;
+
+    //执行参数
+    private Map<String,Object> parameterMap;
+
+    //上下文
+    //请求者地址
+    private String remoteAddr;
+    //userAgent,表明是java调用的还是前端js调用
+    private String userAgent;
+    //额外参数map
+    private Map<String, Object> attributeMap;
+
+    private String transporter;
+
+    private ServiceRequest(Builder builder) {
+        this.msgId = builder.msgId;
+        this.eosVersion = builder.eosVersion;
+        this.serialization = builder.serialization;
+        this.appId = builder.appId;
+        this.serviceId = builder.serviceId;
+        this.method = builder.method;
+        this.methodVersion = builder.methodVersion;
+        this.timeout = builder.timeout;
+        this.debugServerIp = builder.debugServerIp;
+
+        this.parameterMap = builder.parameterMap;
+
+        this.remoteAddr = builder.remoteAddr;
+        this.userAgent = builder.userAgent;
+        this.attributeMap = builder.attributeMap;
+
+        this.transporter = builder.transporter;
     }
 
-    public String getTransporter() {
-        return this.builder.getTransporter();
+    public String getMsgId() {
+        return msgId;
     }
 
-    public String[] getParameterTypes() {
-        return parameterTypes;
-    }
-
-    public void setParameterTypes(String[] parameterTypes) {
-        this.parameterTypes = parameterTypes;
-    }
-
-    public String getAppId() {
-        return this.builder.getAppId();
-    }
-
-    public String getServiceId() {
-        return this.builder.getServiceId();
-    }
-
-    public String getServiceVersion() {
-        return this.builder.getServiceVersion();
-    }
-
-    public String getMock() {
-        return this.builder.getMock();
-    }
-
-    public String getDebugServerIp() {
-        return this.builder.getDebugServerIp();
-    }
-
-    public String getMethodName() {
-        return this.builder.getMethodName();
-    }
-
-    public Object[] getArguments() {
-        return this.builder.getArguments();
-    }
-
-    public String getRemoteAddr() {
-        return this.builder.getRemoteAddr();
-    }
-
-    public String getUserAgent() {
-        return this.builder.getUserAgent();
-    }
-
-    public Map<String, Object> getAttributeMap() {
-        return this.builder.getAttributeMap();
+    public String getEosVersion() {
+        return eosVersion;
     }
 
     public String getSerialization() {
-        return this.builder.getSerialization();
+        return serialization;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public String getMethodVersion() {
+        return methodVersion;
     }
 
     public int getTimeout() {
-        return this.builder.getTimeout();
+        return timeout;
     }
 
-    public void setTimeout(int timeout) {
-        this.builder.setTimeout(timeout);
+    public String getDebugServerIp() {
+        return debugServerIp;
     }
 
-    public void setAttribute(String key, Object val) {
-        this.builder.setAttribute(key, val);
+    public String getRemoteAddr() {
+        return remoteAddr;
     }
 
-    public Object getAttribute(String key) {
-        return this.builder.getAttribute(key);
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public Map<String, Object> getAttributeMap() {
+        return attributeMap;
+    }
+
+    public String getTransporter() {
+        return transporter;
+    }
+
+    public void setAttribute(String key,Object attr) {
+        this.attributeMap.put(key,attr);
+    }
+
+    /**
+     * 取得 <T> 类型的参数
+     * @param key
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public <T> T getParameter(String key,Class<T> clazz){
+        Object o = parameterMap.get(key);
+        if(o == null){
+            return null;
+        }else if(clazz.isInstance(o)){
+            return (T)o;
+        }else{
+            String transStr;
+            if(CompatibleTypeUtils.isBaseDataType(o.getClass())){
+                transStr = o.toString();
+            }else{
+                transStr = JSON.toJSONString(o);
+            }
+            return (T)CompatibleTypeUtils.compatibleTypeConvert(transStr,clazz);
+        }
+    }
+
+    public Map<String, Object> getParameterMap() {
+        return Collections.unmodifiableMap(parameterMap);
     }
 
     public RpcContext createRpcContext() {
@@ -130,75 +195,117 @@ public class ServiceRequest {
 
     public RequestPro toRequestPro() {
         RequestPro requestPro = new RequestPro();
+        requestPro.setAction(BaseProtocol.REQUEST_MSG);
+        requestPro.setEosVersion(this.getEosVersion());
+        requestPro.setMsgId(this.getMsgId());
+        requestPro.setSerialization(this.getSerialization());
         requestPro.setAppId(this.getAppId());
         requestPro.setServiceId(this.getServiceId());
-        requestPro.setServiceVersion(this.getServiceVersion());
-        requestPro.setSerialization(this.getSerialization());
+        requestPro.setMethod(this.getMethod());
+        requestPro.setMethodVersion(this.getMethodVersion());
+        requestPro.setTimeout(this.getTimeout());
         requestPro.setDebugServerIp(this.getDebugServerIp());
-        requestPro.setMock(this.getMock());
 
         RpcContext context = new RpcContext();
         context.setUserAgent(this.getUserAgent());
         context.setRemoteAddr(this.getRemoteAddr());
         context.setAttributeMap(this.getAttributeMap());
-        requestPro.setRpcContext(context);
-
-        RpcInvocation rpcInvocation = new RpcInvocation();
-        rpcInvocation.setArguments(this.getArguments());
-        rpcInvocation.setMethodName(this.getMethodName());
-//        rpcInvocation.setMock(this.getMock());
-        requestPro.setInvocation(rpcInvocation);
+        try {
+            requestPro.setRpcContextBytes(
+                    SerializationFactory.serializeToBytes(context, this.getSerialization()));
+        } catch (IOException e) {
+            throw new RuntimeException("["+ this.getSerialization()
+                    +"]序列化上下文对象异常：" + e.getMessage(),e);
+        }
+        try {
+            requestPro.setParameterMapBytes(
+                    SerializationFactory.serializeToBytes(this.getParameterMap(), this.getSerialization()));
+        } catch (IOException e) {
+            throw new RuntimeException("["+ this.getSerialization()
+                    +"]序列化调用入参异常：" + e.getMessage(),e);
+        }
 
         return requestPro;
     }
 
     public static ServiceRequest createServiceRequest(RequestPro requestPro) throws IOException, ClassNotFoundException {
-        Invocation invocation = requestPro.getInvocation() == null ? requestPro.toInvocation() : requestPro.getInvocation();
-        RpcContext rpcContext = requestPro.getRpcContext() == null ? requestPro.toRpcContext() : requestPro.getRpcContext();
-        return new Builder().setAppId(requestPro.getAppId())
-                .setAppId(requestPro.getAppId())
-                .setServiceId(requestPro.getServiceId())
-                .setServiceVersion(requestPro.getServiceVersion())
-                .setDebugServerIp(requestPro.getDebugServerIp())
+        RpcContext rpcContext = toRpcContext(requestPro);
+        Map<String,Object> parameterMap = toParameterMap(requestPro);
+        return new Builder(requestPro.getAppId(),requestPro.getServiceId(),requestPro.getMethod(),requestPro.getMethodVersion())
+                .setMsgId(requestPro.getMsgId())
+                .setEosVersion(requestPro.getEosVersion())
                 .setSerialization(requestPro.getSerialization())
-                .setMock(requestPro.getMock())
-                .setRpcContext(rpcContext)
-                .setMethodName(invocation.getMethodName())
-                .setArguments(invocation.getArguments())
+                .setTimeout(requestPro.getTimeout())
+                .setTransporter(requestPro.getTransporter())
+                .setDebugServerIp(requestPro.getDebugServerIp())
+                .setUserAgent(rpcContext.getUserAgent())
+                .setRemoteAddr(rpcContext.getRemoteAddr())
+                .setAttributeMap(rpcContext.getAttributeMap())
+                .setParameterMap(parameterMap)
                 .build();
     }
 
-    public byte[] serializeToBytes() throws IOException {
-        return SerializationFactory.serializeToBytes(this.builder, this.builder.serialization);
+
+    /**
+     * 将rpcContext字节序列化为对象
+     *
+     * @return
+     * @throws Exception
+     */
+    private static RpcContext toRpcContext(RequestPro requestPro) throws IOException, ClassNotFoundException {
+        return SerializationFactory.deserializeBytes(requestPro.getRpcContextBytes(),
+                RpcContext.class, requestPro.getSerialization());
     }
 
-    public static ServiceRequest createServiceRequest(byte[] serviceRequestBytes, String serialization) throws IOException, ClassNotFoundException {
-        Builder newBuilder = SerializationFactory.deserializeBytes(serviceRequestBytes, Builder.class, serialization);
-        return new ServiceRequest(newBuilder);
+    /**
+     * 将入参对象字节序列化为对象
+     *
+     * @return
+     * @throws Exception
+     */
+    private static Map<String,Object> toParameterMap(RequestPro requestPro) throws IOException, ClassNotFoundException {
+        return SerializationFactory.deserializeBytes(requestPro.getParameterMapBytes(),
+                HashMap.class, requestPro.getSerialization());
+    }
+
+    public byte[] toBytes() throws IOException {
+        RequestPro requestPro = this.toRequestPro();
+        return requestPro.generate().array();
+    }
+
+    public static ServiceRequest formBytes(byte[] serviceRequestBytes) throws IOException, ClassNotFoundException {
+        RequestPro requestPro = new RequestPro();
+        requestPro.createFromChannel(ChannelBuffers.wrappedBuffer(serviceRequestBytes));
+        return createServiceRequest(requestPro);
     }
 
     public static class Builder implements Serializable {
         /**
          * 基本协议字段 *
          */
+        //消息id(32)
+        private String msgId = com.sunsharing.eos.common.utils.StringUtils.genUUID();
+        //EOS版本号(5)
+        protected String eosVersion = Version.getVersion();
+        //序列化方式(10)
+        private String serialization = Constants.DEFAULT_SERIALIZATION;
+
         //应用id(32)
         private String appId;
-        //服务id(20)
+        //服务id(30)
         private String serviceId;
-        //服务版本(10)
-        private String serviceVersion;
-        //模拟取值字段(20)
-        private String mock = "";
+        //方法名(30)
+        private String method;
+        //服务方法版本(5)
+        private String methodVersion;
+        //调用超时时间,毫秒(4)
+        private int timeout = Constants.DEFAULT_TIMEOUT;
         //联调ip(20)
         private String debugServerIp;
-        /**
-         * 基本协议字段 *
-         */
 
-        private String methodName;
-        //    private String[] parameterTypes;
-        private Object[] arguments;
-        //    private String mock;
+        //执行参数
+        private Map<String,Object> parameterMap = new HashMap<String, Object>();
+
         //上下文
         //请求者地址
         private String remoteAddr = "";
@@ -206,113 +313,29 @@ public class ServiceRequest {
         private String userAgent = "java_eos_client";
         //额外参数map
         private Map<String, Object> attributeMap = new HashMap<String, Object>();
-        protected String serialization = Constants.DEFAULT_SERIALIZATION;
-        private int timeout = Constants.DEFAULT_TIMEOUT;
+
         private String transporter = Constants.DEFAULT_TRANSPORTER;
 
-        public String getAppId() {
-            return appId;
-        }
-
-        public Builder setAppId(String appId) {
+        public Builder(String appId, String serviceId, String method, String methodVersion) {
             this.appId = appId;
-            return this;
-        }
-
-        public String getServiceId() {
-            return serviceId;
-        }
-
-        public Builder setServiceId(String serviceId) {
             this.serviceId = serviceId;
+            this.method = method;
+            this.methodVersion = methodVersion;
+        }
+
+        public Builder setMsgId(String msgId) {
+            this.msgId = msgId;
             return this;
         }
 
-        public String getServiceVersion() {
-            return serviceVersion;
-        }
-
-        public Builder setServiceVersion(String serviceVersion) {
-            this.serviceVersion = serviceVersion;
+        public Builder setEosVersion(String eosVersion) {
+            this.eosVersion = eosVersion;
             return this;
-        }
-
-        public String getMock() {
-            return mock;
-        }
-
-        public Builder setMock(String mock) {
-            this.mock = mock;
-            return this;
-        }
-
-        public String getDebugServerIp() {
-            return debugServerIp;
-        }
-
-        public Builder setDebugServerIp(String debugServerIp) {
-            this.debugServerIp = debugServerIp;
-            return this;
-        }
-
-        public String getMethodName() {
-            return methodName;
-        }
-
-        public Builder setMethodName(String methodName) {
-            this.methodName = methodName;
-            return this;
-        }
-
-        public Object[] getArguments() {
-            return arguments;
-        }
-
-        public Builder setArguments(Object[] arguments) {
-            this.arguments = arguments;
-            return this;
-        }
-
-        public String getRemoteAddr() {
-            return remoteAddr;
-        }
-
-        public Builder setRemoteAddr(String remoteAddr) {
-            this.remoteAddr = remoteAddr;
-            return this;
-        }
-
-        public String getUserAgent() {
-            return userAgent;
-        }
-
-        public Builder setUserAgent(String userAgent) {
-            this.userAgent = userAgent;
-            return this;
-        }
-
-        public Map<String, Object> getAttributeMap() {
-            return attributeMap;
-        }
-
-        public Builder setAttributeMap(Map<String, Object> attributeMap) {
-            this.attributeMap = attributeMap;
-            return this;
-        }
-
-        public String getSerialization() {
-            return serialization;
         }
 
         public Builder setSerialization(String serialization) {
-            if (!StringUtils.isBlank(serialization)) {
-                this.serialization = serialization;
-            }
+            this.serialization = serialization;
             return this;
-        }
-
-        public int getTimeout() {
-            return timeout;
         }
 
         public Builder setTimeout(int timeout) {
@@ -320,8 +343,24 @@ public class ServiceRequest {
             return this;
         }
 
-        public String getTransporter() {
-            return transporter;
+        public Builder setDebugServerIp(String debugServerIp) {
+            this.debugServerIp = debugServerIp;
+            return this;
+        }
+
+        public Builder setRemoteAddr(String remoteAddr) {
+            this.remoteAddr = remoteAddr;
+            return this;
+        }
+
+        public Builder setUserAgent(String userAgent) {
+            this.userAgent = userAgent;
+            return this;
+        }
+
+        public Builder setAttributeMap(Map<String, Object> attributeMap) {
+            this.attributeMap = attributeMap;
+            return this;
         }
 
         public Builder setTransporter(String transporter) {
@@ -329,19 +368,16 @@ public class ServiceRequest {
             return this;
         }
 
-        public Builder setAttribute(String key, Object val) {
-            this.attributeMap.put(key, val);
+        public Builder setParameterMap(Map<String,Object> parameterMap) {
+            this.parameterMap = parameterMap;
             return this;
         }
 
-        public Object getAttribute(String key) {
-            return this.attributeMap.get(key);
-        }
-
-        public Builder setRpcContext(RpcContext rpcContext) {
-            this.setRemoteAddr(rpcContext.getRemoteAddr());
-            this.setUserAgent(rpcContext.getUserAgent());
-            this.setAttributeMap(rpcContext.getAttributeMap());
+        public Builder setParameter(String parameterName,Object value) {
+            if(this.parameterMap == null){
+                this.parameterMap = new HashMap<String, Object>();
+            }
+            this.parameterMap.put(parameterName, value);
             return this;
         }
 

@@ -16,10 +16,8 @@
  */
 package com.sunsharing.eos.common.serialize.support.json;
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
-import com.sunsharing.eos.common.rpc.impl.RpcInvocation;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

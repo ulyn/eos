@@ -1,10 +1,7 @@
-import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.server.ServiceContext;
+import com.sunsharing.eos.server.ServerServiceContext;
 import com.sunsharing.eos.server.sys.SysProp;
 import com.sunsharing.eos.server.zookeeper.ServiceRegister;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,8 +13,8 @@ public class TestServer {
 
     public static void main(String[] a) throws Exception {
         ConfigContext.instancesBean(SysProp.class);
-        ServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
-        ServiceContext.getInstance().init();
+        ServerServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
+        ServerServiceContext.getInstance().init();
 
         new Thread() {
             public void run() {

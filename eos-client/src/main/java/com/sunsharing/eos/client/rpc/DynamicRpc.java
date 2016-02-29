@@ -41,59 +41,6 @@ import java.util.Map;
  * <br>
  */
 public class DynamicRpc extends RpcInvoker {
-    String appId;
-    String serviceId;
-    String serviceVersion;
-    String debugServerIp;
-    String serialization;
-    String mock;
-    RpcContext rpcContext;
-    String transporter = Constants.DEFAULT_TRANSPORTER;
-    int timeout = Constants.DEFAULT_TIMEOUT;
-
-    public DynamicRpc(String appId, String serviceId, String v) {
-        this.setDebugServerIp(SysProp.getDebugServerIp(appId));
-        this.appId = appId;
-        this.serviceId = serviceId;
-        this.serviceVersion = v;
-    }
-    public static DynamicRpc create(String appId, String serviceId, String v) {
-        return new DynamicRpc(appId, serviceId, v);
-    }
-
-    public DynamicRpc setDebugServerIp(String debugServerIp) {
-        this.debugServerIp = debugServerIp;
-        return this;
-    }
-
-    public DynamicRpc setSerialization(String serialization) {
-        this.serialization = serialization;
-        return this;
-    }
-
-    public DynamicRpc setMock(String mock) {
-        if (SysProp.use_mock) {
-            this.mock = mock;
-        }
-        return this;
-    }
-
-    public DynamicRpc setTimeout(int timeout) {
-        this.timeout = timeout;
-        return this;
-    }
-
-    public DynamicRpc setTransporter(String transporter) {
-        this.transporter = transporter;
-        return this;
-    }
-
-    public DynamicRpc setRpcContext(RpcContext context) {
-        //由于context需要serial后才可以进行 所以在调用时候才设置到req
-        this.rpcContext = context;
-        return this;
-    }
-
 
 
     /**
@@ -104,31 +51,7 @@ public class DynamicRpc extends RpcInvoker {
      * @return
      * @throws com.sunsharing.eos.common.rpc.RpcException
      */
-    public <T> T doInvoke(Class<T> retType, String methodName, Object... args) throws RpcException {
-        if (this.rpcContext == null) {
-            RpcContext rpcContext = RpcContextContainer.getRpcContext();
-            if (rpcContext == null) {
-                rpcContext = new RpcContext();
-                rpcContext.setUserAgent("eos-client DynamicRpc");
-            }
-            this.setRpcContext(rpcContext);
-        }
-
-
-        ServiceRequest request = new ServiceRequest.Builder()
-                .setAppId(this.appId)
-                .setServiceId(this.serviceId)
-                .setServiceVersion(this.serviceVersion)
-                .setDebugServerIp(this.debugServerIp)
-                .setSerialization(this.serialization)
-                .setMock(this.mock)
-                .setTimeout(this.timeout)
-                .setTransporter(this.transporter)
-                .setRpcContext(rpcContext)
-                .setMethodName(methodName)
-                .setArguments(args)
-                .build();
-
+    public <T> T doInvoke(ServiceRequest request,Class<T> retType) throws RpcException {
         ServiceResponse serviceResponse = new ServiceResponse(request);
 
         doInvoke(request, serviceResponse);
@@ -142,18 +65,5 @@ public class DynamicRpc extends RpcInvoker {
         }
     }
 
-
-    public static void main(String[] args) {
-        ConfigContext.instancesBean(SysProp.class);
-        ServiceLocation.getInstance().connect();
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        Map map = DynamicRpc.create("legend", "appService", "0.5")
-//                .serial("")
-//                .debugServerIp(SysProp.getDebugServerIp("legend"))
-//                .context(RpcContextContainer.getRpcContext())
-                .setMock("success")
-                .doInvoke(HashMap.class, "getSystemConfig");
-        System.out.println(map);
-    }
 }
 

@@ -1,22 +1,12 @@
 package com.sunsharing.eos.server.transporter.netty;
 
-import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.filter.FilterChain;
-import com.sunsharing.eos.common.filter.FilterManager;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
-import com.sunsharing.eos.common.rpc.Invocation;
-import com.sunsharing.eos.common.rpc.Result;
-import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcServer;
-import com.sunsharing.eos.common.rpc.impl.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerCache;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel;
-import com.sunsharing.eos.server.sys.SysProp;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
 
@@ -67,7 +57,7 @@ public class MsgHandler extends SimpleChannelHandler {
                         responsePro = new ResponsePro();
                         responsePro.setMsgId(basePro.getMsgId());
                         responsePro.setSerialization(basePro.getSerialization());
-                        responsePro.setExceptionResult(e);
+//                        responsePro.setExceptionResult(e); todo
                     } finally {
                         content.getChannel().write(responsePro);
                     }

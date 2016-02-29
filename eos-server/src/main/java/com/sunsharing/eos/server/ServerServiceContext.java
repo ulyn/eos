@@ -39,11 +39,11 @@ import java.util.*;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class ServiceContext extends AbstractServiceContext {
+public class ServerServiceContext extends AbstractServiceContext {
 
-    private static ServiceContext sc = new ServiceContext();
+    private static ServerServiceContext sc = new ServerServiceContext();
 
-    static Logger logger = Logger.getLogger(ServiceContext.class);
+    static Logger logger = Logger.getLogger(ServerServiceContext.class);
 
     ApplicationContext ctx;
     //全局异常处理器
@@ -53,12 +53,12 @@ public class ServiceContext extends AbstractServiceContext {
         return exceptionResolver;
     }
 
-    private ServiceContext()
+    private ServerServiceContext()
     {
 
     }
 
-    public static ServiceContext getInstance()
+    public static ServerServiceContext getInstance()
     {
         return sc;
     }
@@ -156,12 +156,8 @@ public class ServiceContext extends AbstractServiceContext {
 
     @Override
     public void setExceptionResolver(ExceptionResolver exceptionResolver) {
-        ServiceContext.exceptionResolver = exceptionResolver;
+        ServerServiceContext.exceptionResolver = exceptionResolver;
     }
 
-    public static void main(String[] args) {
-        //ServiceContext context = new ServiceContext(null, "com.sunsharing.eos");
-
-    }
 }
 

@@ -15,8 +15,7 @@ import org.apache.zookeeper.Watcher;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by criss on 14-1-27.
@@ -42,7 +41,8 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                     JSONObject obj = new JSONObject();
                     obj.put("appId", SysProp.appId);
                     obj.put("serviceId", config.getId());
-                    obj.put("version", config.getVersion());
+                    //去掉服务的版本号，增加服务的版本号
+                    obj.put("version", "");
                     obj.put("serialization", config.getSerialization());
                     obj.put("transporter", config.getTransporter());
                     obj.put("timeout", config.getTimeout());
@@ -50,6 +50,26 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                     obj.put("ip", SysProp.localIp);
                     obj.put("real_ip",getRealIp());
                     obj.put("eosIds",SysProp.eosId);
+                    //增加方法的版权
+                    JSONObject methodMap = new JSONObject();
+                    List<ServiceMethod> serviceMethodList =
+                            config.getServiceMethodList();
+                    List<String> methods = new ArrayList<String>();
+                    for(ServiceMethod serviceMethod:serviceMethodList)
+                    {
+                        String methodName = serviceMethod.getMethodName();
+                        if(methods.contains(methodName))
+                        {
+                            logger.error("服务:"+config.getId()+",存在同名函数"+methodName+"不支持");
+                            System.exit(0);
+                        }
+                        String version = serviceMethod.getVersion();
+                        methods.add(methodName);
+                        methodMap.put(methodName,version);
+                    }
+
+                    obj.put("methodVersion",methodMap);
+
                     serviceRegister.registerService(SysProp.eosId,SysProp.appId, obj.toJSONString());
                 }
             }

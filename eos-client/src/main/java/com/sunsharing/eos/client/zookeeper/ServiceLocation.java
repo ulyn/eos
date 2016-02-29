@@ -114,6 +114,7 @@ public class ServiceLocation {
             byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS+"/"+appId+"/"+servicePath,false);
             JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
             String eosIds = (String)serviceData.get("eosIds");
+
             int i = servicePath.lastIndexOf("_");
             String real = servicePath.substring(0, i);
             JSONObject serviceData2 = new JSONObject();
@@ -128,9 +129,9 @@ public class ServiceLocation {
             {
                 eosIdSet.add(eosArr[i]);
             }
+            JSONObject methodMap = (JSONObject)serviceData.get("methodMap");
             serviceData2.put("servicePath",real);
             serviceData2.put("eosIds",eosIdSet);
-            logger.info("加载服务："+real+","+eosIdSet.toString());
             tmp.put(real,serviceData2);
         }
         serviceMap.clear();

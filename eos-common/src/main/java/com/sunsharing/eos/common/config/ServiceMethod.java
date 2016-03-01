@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.common.config;
 
+import com.sunsharing.eos.common.annotation.Version;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -66,7 +68,8 @@ public class ServiceMethod {
         this.retType = method.getReturnType();
         this.parameterTypes = method.getParameterTypes();
         this.parameterNames = parameterNames;
-        this.version = version;
+        Version v = method.getAnnotation(Version.class);
+        this.version = v.value();
     }
 
     public String getMethodName() {

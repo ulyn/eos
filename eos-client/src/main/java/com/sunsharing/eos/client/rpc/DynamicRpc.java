@@ -36,6 +36,10 @@ import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 public class DynamicRpc{
 
 
+    public static void invoke(ServiceRequest request) throws RpcException {
+        invoke(request,void.class);
+    }
+
     /**
      * 执行调用
      *
@@ -49,8 +53,7 @@ public class DynamicRpc{
 
         invoke(request, serviceResponse);
         try {
-            Object o = getResult(request, serviceResponse, retType);
-            return (T) o;
+            return getResult(request, serviceResponse, retType);
         } catch (RpcException e) {
             throw e;
         } catch (Throwable e) {
@@ -80,25 +83,22 @@ public class DynamicRpc{
      * @return
      * @throws Throwable
      */
-    protected static Object getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class retType) throws RpcException {
+    protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class<T> retType) throws RpcException {
         if (serviceResponse.hasException()) {
-            throw new RpcException(serviceResponse.getException().getMessage(), serviceResponse.getException());
+            Throwable t = serviceResponse.getException();
+            throw new RpcException(t.getMessage() , t);
         }
-        boolean isMock = false;//!StringUtils.isBlank(serviceRequest.getMock());
-
+        if(void.class.equals(retType)){
+             return null;
+        }
         Object value = serviceResponse.getValue();
-        if (isMock) {
-            if (void.class == retType || value == null) {
-                return null;
-            }
-            //返回的类型一样，则不需要进行转换，返回类型是string或者不是模拟返回
-            //返回的类型不一样，则需要进行转换
-//                if (value.getClass() != retType) {
-            if (value instanceof String && !retType.isInstance(value)) {
-                value = CompatibleTypeUtils.compatibleTypeConvert((String) value, retType);
-            }
+        if(value == null){
+            return null;
+        }else if(retType.isInstance(value)){
+            return (T)value;
+        }else{
+            throw new RpcException(String.format("期望类型%s与实际返回类型%s匹配有误！",retType,value.getClass()));
         }
-        return value;
     }
 }
 

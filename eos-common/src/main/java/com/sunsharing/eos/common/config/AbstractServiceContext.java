@@ -75,6 +75,14 @@ public abstract class AbstractServiceContext {
     protected  Map<String, ServiceConfig> serviceConfigMap = new HashMap<String, ServiceConfig>();//key值为getServiceConfigKey(appId,serviceId)
 
 
+    //全局异常处理器
+    private ExceptionResolver exceptionResolver = null;
+
+    public ExceptionResolver getExceptionResolver() {
+        return exceptionResolver;
+    }
+
+
     /**
      * 取得服务配置map的key
      *
@@ -95,7 +103,7 @@ public abstract class AbstractServiceContext {
     /**
      * 初始化
      */
-    public void init() {
+    public void initConfig() {
         String xmlConfigFileName = "EosServiceConfig.xml";
         //key为接口name
         Map xmlMap = loadXmlServiceConfig(xmlConfigFileName);
@@ -117,70 +125,6 @@ public abstract class AbstractServiceContext {
                 setExceptionResolver(exceptionResolver);
             } catch (Exception e) {
                 logger.error(String.format("注册ExceptionResolver异常!：%s", exceptionResolverClassName), e);
-            }
-        }
-
-        ClassFilter filter = new ClassFilter() {
-            @Override
-            public boolean accept(Class clazz) {
-                if (Modifier.isInterface(clazz.getModifiers())) {
-                    Annotation ann = clazz.getAnnotation(EosService.class);
-                    if (ann != null) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
-        List<Class> classes = ClassUtils.scanPackage(packagePath, filter);
-
-        for (final Class c : classes) {
-            ServiceConfig config = new ServiceConfig();
-            EosService ann = (EosService) c.getAnnotation(EosService.class);
-
-            String id = getBeanId(c, ann.id());
-            config.setId(id);
-            config.setAppId(ann.appId());
-            config.setProxy(ann.proxy());
-            config.setSerialization(ann.serialization());
-            config.setTimeout(ann.timeout());
-            config.setTransporter(ann.transporter());
-            config.setVersion(ann.version());
-            config.setImpl(ann.impl());
-            config.setServiceMethodList(getInterfaceMethodList(c));
-
-            if (xmlServiceConfigMap.containsKey(id)) {
-                //有xml配置的使用xml配置
-                ServiceConfig xmlConfig = xmlServiceConfigMap.get(id);
-                if (!StringUtils.isBlank(xmlConfig.getMock())) {
-                    config.setMock(xmlConfig.getMock());
-                } else if (!StringUtils.isBlank((String) beansMap.get("rootMock"))) {
-                    config.setMock((String) beansMap.get("rootMock"));
-                }
-                Map xmlConfigMethodMockMap = xmlConfig.getMethodMockMap();
-                if (xmlConfigMethodMockMap != null) {
-                    Map configMethodMockMap = config.getMethodMockMap();
-                    if (configMethodMockMap == null) {
-                        configMethodMockMap = new HashMap();
-                        config.setMethodMockMap(configMethodMockMap);
-                    }
-                    for (Object mockKey : xmlConfigMethodMockMap.keySet()) {
-                        configMethodMockMap.put(mockKey, xmlConfigMethodMockMap.get(mockKey));
-                    }
-                }
-
-                if (!"".equals(xmlConfig.getImpl())) {
-                    config.setImpl(xmlConfig.getImpl());
-                }
-            }
-            Object bean = createBean(c, config);
-            if (bean != null) {
-                logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
-                String key = getServiceConfigKey(config.getAppId(), config.getId());
-                servicesMapByKeyClassName.put(c.getName(), bean);
-                servicesMapByKeyAppServiceId.put(key, bean);
-
-                serviceConfigMap.put(key, config);
             }
         }
     }
@@ -221,33 +165,7 @@ public abstract class AbstractServiceContext {
                 if (exceptionResolverEl != null) {
                     rtnMap.put("exceptionResolver", exceptionResolverEl.attributeValue("class"));
                 }
-                //获取beans配置
-                Map beansMap = new HashMap();
-                if (beansEl != null) {
-                    beansMap.put("rootMock", beansEl.attributeValue("mock"));
-                    List<Element> elements = beansEl.elements("bean");
-                    for (Element el : elements) {
-                        String id = el.attributeValue("id");
-                        ServiceConfig config = new ServiceConfig();
-                        config.setId(id);
-                        config.setMock(el.attributeValue("mock"));
-                        config.setImpl(el.attributeValue("impl"));
-                        List<Element> methodEls = el.elements();
-                        if (methodEls.size() > 0) {
-                            //set methodMock
-                            Map<String, String> methodMockMap = new HashMap<String, String>();
-                            for (Element methodEl : methodEls) {
-                                methodMockMap.put(methodEl.getName(), methodEl.attributeValue("mock"));
-                            }
-                            config.setMethodMockMap(methodMockMap);
-                        }
 
-                        configMap.put(id, config);
-                    }
-
-                }
-                beansMap.put("configMap", configMap);
-                rtnMap.put("beansMap", beansMap);
                 //获取filters配置
                 List<Map<String, Object>> filters = new ArrayList<Map<String, Object>>();
                 if (filtersEl != null) {
@@ -288,74 +206,15 @@ public abstract class AbstractServiceContext {
         return list;
     }
 
-    private String getBeanId(Class interfaces, String id) {
-        if (id.equals("")) {
-            id = interfaces.getSimpleName();
-            id = Character.toLowerCase(id.charAt(0)) + id.substring(1);
-        }
-        return id;
-    }
-
-    /**
-     * 取得类的公有方法
-     *
-     * @param interfaces
-     * @return
-     */
-    private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
-        List<ServiceMethod> list = new ArrayList<ServiceMethod>();
-        Method[] methods = interfaces.getDeclaredMethods();
-        for (Method method : methods) {
-            //取参数名的注解
-            ParameterNames ann = method.getAnnotation(ParameterNames.class);
-            String[] parameterNames = null;
-            if (ann != null) {
-                parameterNames = ann.value();
-                int paramSize = method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
-                int annParamSize = parameterNames == null ? 0 : parameterNames.length;
-                if (paramSize != annParamSize) {
-                    throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
-                }
-            }else
-            {
-                //如果注解取不到，从类中获取
-                throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解没有，无法注册");
-            }
-
-            ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
-            list.add(serviceMethod);
-        }
-        return list;
-    }
-
-
-    public  Map<String, ServiceConfig> getServiceConfigMap() {
-        return serviceConfigMap;
-    }
-
-    public  ServiceConfig getServiceConfig(String appId, String serviceId) {
-        return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
-    }
-
-    public  List<ServiceConfig> getServiceConfigList() {
-        return new ArrayList<ServiceConfig>(serviceConfigMap.values());
-    }
-
-    /**
-     * 创建bean对象
-     *
-     * @param interfaces
-     * @param config
-     * @return
-     */
-    protected abstract Object createBean(Class interfaces, ServiceConfig config);
-
     /**
      * 创建异常处理器
      *
-     * @param resolver
+     * @param exceptionResolver
      * @return
      */
-    protected abstract void setExceptionResolver(ExceptionResolver resolver);
+    public void setExceptionResolver(ExceptionResolver exceptionResolver) {
+        this.exceptionResolver = exceptionResolver;
+    }
+
 }
 

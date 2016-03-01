@@ -38,14 +38,12 @@ public interface RpcServer {
 
     void register(Object impl, ServiceConfig config);
 
-//    Result call(String serviceId, Invocation invocation, RpcContext rpcContext);
-
     boolean isRunning();
 
     void stop();
 
     void start();
 
-    ResponsePro callService(RequestPro requestPro);
+    ServiceResponse callService(ServiceRequest request);
 }
 

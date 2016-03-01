@@ -7,7 +7,7 @@ import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
 import com.sunsharing.eos.server.ServerServiceContext;
-import com.sunsharing.eos.server.sys.SysProp;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
 
@@ -37,17 +37,17 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                 {
                     //你可以在这里注册服务下面是示例
                     JSONObject obj = new JSONObject();
-                    obj.put("appId", SysProp.appId);
+                    obj.put("appId", EosServerProp.appId);
                     obj.put("serviceId", config.getId());
                     //去掉服务的版本号，增加服务的版本号
                     obj.put("version", "");
                     obj.put("serialization", config.getSerialization());
                     obj.put("transporter", config.getTransporter());
                     obj.put("timeout", config.getTimeout());
-                    obj.put("port", SysProp.nettyServerPort);
-                    obj.put("ip", SysProp.localIp);
+                    obj.put("port", EosServerProp.nettyServerPort);
+                    obj.put("ip", EosServerProp.localIp);
                     obj.put("real_ip",getRealIp());
-                    obj.put("eosIds",SysProp.eosId);
+                    obj.put("eosIds", EosServerProp.eosId);
                     //增加方法的版权
                     JSONObject methodMap = new JSONObject();
                     List<ServiceMethod> serviceMethodList =
@@ -68,11 +68,11 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 
                     obj.put("methodVersion",methodMap);
 
-                    serviceRegister.registerService(SysProp.eosId,SysProp.appId, obj.toJSONString());
+                    serviceRegister.registerService(EosServerProp.eosId, EosServerProp.appId, obj.toJSONString());
                 }
             }
 
-            serviceRegister.registerEos(SysProp.eosId,SysProp.appId,SysProp.localIp,SysProp.nettyServerPort+"");
+            serviceRegister.registerEos(EosServerProp.eosId, EosServerProp.appId, EosServerProp.localIp, EosServerProp.nettyServerPort+"");
 
 
 //            utils.printNode("/");

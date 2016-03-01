@@ -19,7 +19,8 @@ package com.sunsharing.eos.client.rpc;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.filter.*;
-import com.sunsharing.eos.common.rpc.*;
+import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,87 +51,37 @@ public class RpcCaller extends AbstractServiceFilter {
     @Override
     protected void doFilter(ServiceRequest serviceRequest,
                             ServiceResponse serviceResponse, FilterChain fc) throws ServiceFilterException, RpcException {
-//        //zookeeper取得服务的ip
-//        boolean isMock = !StringUtils.isBlank(serviceRequest.getMock());
-//        if (isMock) {
-//            String msg = "%s-%s[%s].%s use mock:%s";
-//            logger.info(String.format(msg,serviceRequest.getAppId(),serviceRequest.getServiceId(),
-//                    serviceRequest.getServiceVersion(),serviceRequest.getMethodName(),serviceRequest.getMock()));
-//            MockUtils mockUtils = new MockUtils();
-//            ServiceConfig serviceConfig = ServiceContext.getInstance().getServiceConfig(serviceRequest.getAppId(),
-//                    serviceRequest.getServiceId());
-//            Map params = new HashMap();
-//            //能到此处，serviceConfig不可能空，不判断非空
-//            ServiceMethod serviceMethod = serviceConfig.getMethod(serviceRequest.getMethodName());
-//            String[] paramNames = serviceMethod.getParameterNames();
-//            Object[] args = serviceRequest.getArguments();
-//            if(paramNames!=null){
-//                for(int i=0;i<paramNames.length;i++){
-//                    params.put(paramNames[i],args[i]);
-//                }
-//            }
-//            logger.info("params = " + JSON.toJSONString(params));
-//            String str = mockUtils.transMockMatch(serviceRequest.getAppId(),
-//                    serviceRequest.getServiceId(),
-//                    serviceRequest.getServiceVersion(),
-//                    serviceRequest.getMethodName(),
-//                    serviceRequest.getMock(), params);
-//            serviceResponse.writeValue(str);
-//            return;
-//        }
-//        JSONObject jo = getEosLocation(serviceRequest.getAppId(), serviceRequest.getServiceId(),
-//                serviceRequest.getServiceVersion(), isMock);
-//        String ip = jo.getString("ip");
-//        int port = jo.getInteger("port");
-//
-//        try {
-//            logger.debug(String.format("request %s-%s-%s target eos %s:%s",
-//                    serviceRequest.getAppId(), serviceRequest.getServiceId(), serviceRequest.getServiceVersion(), ip, port));
-//            ResponsePro responsePro = RpcClientFactory.create(serviceRequest.getTransporter())
-//                    .doRpc(serviceRequest.toRequestPro(), ip, port, serviceRequest.getTimeout());
-//            Result rpcResult = responsePro.toResult();
-//            if (responsePro.getStatus() == Constants.STATUS_ERROR) {
-//                if (rpcResult.hasException()) {
-//                    throw new RpcException(rpcResult.getException().getMessage(), rpcResult.getException());
-//                } else {
-//                    String error = "服务调用失败！协议头标识了错误！"
-//                            + serviceRequest.getAppId() + "-"
-//                            + serviceRequest.getServiceId() + "-"
-//                            + serviceRequest.getServiceVersion();
-//                    throw new RpcException(RpcException.UNKNOWN_EXCEPTION, error);
-//                }
-//            }
-//            serviceResponse.setSerialization(responsePro.getSerialization());
-//            serviceResponse.writeValue(rpcResult.getValue());
-//        } catch (RpcException e) {
-//            throw e;
-//        } catch (Throwable throwable) {
-//            throw new RpcException(RpcException.NETWORK_EXCEPTION, throwable);
-//        }
+        //zookeeper取得服务的ip
+        JSONObject jo = getEosLocation(serviceRequest.getAppId(), serviceRequest.getServiceId(),
+                serviceRequest.getMethod(), serviceRequest.getMethodVersion());
+        String ip = jo.getString("ip");
+        int port = jo.getInteger("port");
+
+        try {
+            logger.debug(String.format("request %s-%s-%s-%s target eos %s:%s",
+                    serviceRequest.getAppId(), serviceRequest.getServiceId(),
+                    serviceRequest.getMethod(),serviceRequest.getMethodVersion(), ip, port));
+            ServiceResponse response = RpcClientFactory.create(serviceRequest.getTransporter())
+                    .doRpc(serviceRequest, ip, port);
+            serviceResponse.copyForm(response);
+        } catch (RpcException e) {
+            throw e;
+        } catch (Throwable throwable) {
+            throw new RpcException(RpcException.NETWORK_EXCEPTION, throwable);
+        }
         fc.doFilter(serviceRequest, serviceResponse);
     }
 
-    private JSONObject getEosLocation(String appId, String serviceId, String serviceVersion, boolean isMock) throws RpcException {
-        JSONObject jo = null;
-        if (!isMock) {
-//            jo = ServiceLocation.getInstance().getServiceLocation(appId, serviceId, serviceVersion);
-        } else {
-            jo = ServiceLocation.getInstance().getOnlineEOS();
-        }
+    private JSONObject getEosLocation(String appId, String serviceId, String method, String methodVersion) throws RpcException {
+        // todo 取得可用服务
+        JSONObject jo = jo = ServiceLocation.getInstance().getServiceLocation(appId, serviceId,method, methodVersion);
         if (jo == null) {
-            if (isMock) {
-                String errTip = "对于模拟调用，没有找到可用的eos,请确保服务" + appId + "-"
-                        + serviceId + "-"
-                        + serviceVersion + "是否有效或者eos节点已经启动！";
-                logger.error(errTip);
-                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, errTip);
-            } else {
-                String errTip = "没有找到请求的可用的eos节点,请确保服务" + appId + "-"
-                        + serviceId + "-"
-                        + serviceVersion + "是否有效或者eos节点已经启动！";
-                logger.error(errTip);
-                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, errTip);
-            }
+            String errTip = "没有找到请求的可用的eos节点,请确保服务" + appId + "-"
+                    + serviceId + "-"
+                    + method + "-"
+                    + methodVersion + "是否有效或者eos节点已经启动！";
+            logger.error(errTip);
+            throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, errTip);
         }
         return jo;
     }

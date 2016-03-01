@@ -1,14 +1,11 @@
 package com.sunsharing.eos.server.zookeeper;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
-import com.sunsharing.eos.server.sys.SysProp;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
-
-import java.util.List;
 
 /**
  * Created by criss on 14-1-28.
@@ -35,8 +32,8 @@ public class ServiceRegister {
     public void init()
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        utils.setZooKeeperIP(SysProp.zookeeperIp);
-        utils.setZooKeeperPort(SysProp.zookeeperPort);
+        utils.setZooKeeperIP(EosServerProp.zookeeperIp);
+        utils.setZooKeeperPort(EosServerProp.zookeeperPort);
         utils.addCallBack(new ServerConnectCallBack());
         //如果zookeeper没有启动，会同步重试，请用线程初始化
         utils.connect();

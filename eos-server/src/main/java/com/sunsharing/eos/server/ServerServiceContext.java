@@ -16,8 +16,11 @@
  */
 package com.sunsharing.eos.server;
 
+import com.sunsharing.eos.common.annotation.EosService;
+import com.sunsharing.eos.common.annotation.ParameterNames;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
+import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.exception.ExceptionResolver;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
@@ -26,6 +29,9 @@ import com.sunsharing.eos.server.transporter.ServerFactory;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -46,12 +52,6 @@ public class ServerServiceContext extends AbstractServiceContext {
     static Logger logger = Logger.getLogger(ServerServiceContext.class);
 
     ApplicationContext ctx;
-    //全局异常处理器
-    private static ExceptionResolver exceptionResolver = null;
-
-    public static ExceptionResolver getExceptionResolver() {
-        return exceptionResolver;
-    }
 
     private ServerServiceContext()
     {
@@ -83,7 +83,111 @@ public class ServerServiceContext extends AbstractServiceContext {
         this.ctx = ctx;
     }
 
-    @Override
+
+    public void initService(){
+
+        ClassFilter filter = new ClassFilter() {
+            @Override
+            public boolean accept(Class clazz) {
+                if (Modifier.isInterface(clazz.getModifiers())) {
+                    Annotation ann = clazz.getAnnotation(EosService.class);
+                    if (ann != null) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        List<Class> classes = ClassUtils.scanPackage(packagePath, filter);
+
+        for (final Class c : classes) {
+            ServiceConfig config = new ServiceConfig();
+            EosService ann = (EosService) c.getAnnotation(EosService.class);
+
+            String id = getBeanId(c, ann.id());
+            config.setId(id);
+            config.setAppId(ann.appId());
+            config.setProxy(ann.proxy());
+            config.setSerialization(ann.serialization());
+            config.setTimeout(ann.timeout());
+            config.setTransporter(ann.transporter());
+            config.setVersion(ann.version());
+            config.setImpl(ann.impl());
+            config.setServiceMethodList(getInterfaceMethodList(c));
+
+            Object bean = createBean(c, config);
+            if (bean != null) {
+                logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
+                String key = getServiceConfigKey(config.getAppId(), config.getId());
+                servicesMapByKeyClassName.put(c.getName(), bean);
+                servicesMapByKeyAppServiceId.put(key, bean);
+
+                serviceConfigMap.put(key, config);
+            }
+        }
+    }
+
+
+    private String getBeanId(Class interfaces, String id) {
+        if (id.equals("")) {
+            id = interfaces.getSimpleName();
+            id = Character.toLowerCase(id.charAt(0)) + id.substring(1);
+        }
+        return id;
+    }
+
+    /**
+     * 取得类的公有方法
+     *
+     * @param interfaces
+     * @return
+     */
+    private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
+        List<ServiceMethod> list = new ArrayList<ServiceMethod>();
+        Method[] methods = interfaces.getDeclaredMethods();
+        for (Method method : methods) {
+            //取参数名的注解
+            ParameterNames ann = method.getAnnotation(ParameterNames.class);
+            String[] parameterNames = null;
+            if (ann != null) {
+                parameterNames = ann.value();
+                int paramSize = method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
+                int annParamSize = parameterNames == null ? 0 : parameterNames.length;
+                if (paramSize != annParamSize) {
+                    throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
+                }
+            }else
+            {
+                //如果注解取不到，从类中获取
+                throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解没有，无法注册");
+            }
+
+            ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
+            list.add(serviceMethod);
+        }
+        return list;
+    }
+
+
+    public  Map<String, ServiceConfig> getServiceConfigMap() {
+        return serviceConfigMap;
+    }
+
+    public  ServiceConfig getServiceConfig(String appId, String serviceId) {
+        return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
+    }
+
+    public  List<ServiceConfig> getServiceConfigList() {
+        return new ArrayList<ServiceConfig>(serviceConfigMap.values());
+    }
+
+    /**
+     * 创建bean对象
+     *
+     * @param interfaces
+     * @param config
+     * @return
+     */
     protected Object createBean(final Class interfaces, ServiceConfig config) {
         //服务端,找实现类
         Object bean = null;
@@ -152,11 +256,6 @@ public class ServerServiceContext extends AbstractServiceContext {
 //            this.services.put(interfaces.getName(), bean);
         }
         return bean;
-    }
-
-    @Override
-    public void setExceptionResolver(ExceptionResolver exceptionResolver) {
-        ServerServiceContext.exceptionResolver = exceptionResolver;
     }
 
 }

@@ -36,12 +36,11 @@ public interface RpcClient {
     /**
      * 执行远程调用的方法
      *
-     * @param requestPro
+     * @param request
      * @param ip
      * @param port
-     * @param timeout
      * @return
      */
-    ResponsePro doRpc(RequestPro requestPro, String ip, int port, int timeout) throws Throwable;
+    ServiceResponse doRpc(ServiceRequest request, String ip, int port) throws Throwable;
 }
 

@@ -1,9 +1,8 @@
 package com.sunsharing.eos.client.zookeeper;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
@@ -43,13 +42,13 @@ public class ServiceLocation {
      * 用线程初始化
      */
     public void connect() {
-        if (StringUtils.isBlank(SysProp.zookeeperIp)) {
+        if (StringUtils.isBlank(EosClientProp.zookeeperIp)) {
             logger.warn("zookeeperIp未配置，系统不进行连接 ^_^ ");
             return;
         }
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        utils.setZooKeeperIP(SysProp.zookeeperIp);
-        utils.setZooKeeperPort(SysProp.zookeeperPort);
+        utils.setZooKeeperIP(EosClientProp.zookeeperIp);
+        utils.setZooKeeperPort(EosClientProp.zookeeperPort);
         utils.addCallBack(new ClientConnectCallBack(null));
         utils.connect();
     }
@@ -60,8 +59,8 @@ public class ServiceLocation {
     public void synConnect(){
         CountDownLatch connectedSignal = new CountDownLatch(1);
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        utils.setZooKeeperIP(SysProp.zookeeperIp);
-        utils.setZooKeeperPort(SysProp.zookeeperPort);
+        utils.setZooKeeperIP(EosClientProp.zookeeperIp);
+        utils.setZooKeeperPort(EosClientProp.zookeeperPort);
         utils.addCallBack(new ClientConnectCallBack(connectedSignal));
         utils.connect();
         try

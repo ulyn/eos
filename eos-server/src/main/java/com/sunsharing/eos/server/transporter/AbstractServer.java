@@ -23,13 +23,10 @@ import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.filter.ServiceResponse;
 import com.sunsharing.eos.common.rpc.*;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.server.ServerServiceContext;
-import com.sunsharing.eos.server.sys.SysProp;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +50,7 @@ public abstract class AbstractServer implements RpcServer {
     //存储服务
     protected Map<String, Object> serviceEngine = new HashMap<String, Object>();
     protected Map<String, ServiceConfig> serviceConfigEngine = new HashMap<String, ServiceConfig>();
-    private ServiceInvokeFilter serviceInvokeFilter = null;
+    private ServiceInvoker serviceInvoker = null;
 
     public AbstractServer(int port) {
         this.port = port;
@@ -73,40 +70,29 @@ public abstract class AbstractServer implements RpcServer {
         if (!isRunning()) {
             this.start();
         }
-        if (serviceInvokeFilter == null) {
-            serviceInvokeFilter = new ServiceInvokeFilter(this.serviceEngine, this.serviceConfigEngine);
+        if (serviceInvoker == null) {
+            serviceInvoker = new ServiceInvoker(this.serviceEngine, this.serviceConfigEngine);
         }
         //往zookeeper注册服务，已经不需要了，直接写在ServiceConnectCallBack
     }
 
     @Override
-    public ResponsePro callService(RequestPro requestPro) {
+    public ServiceResponse callService(ServiceRequest request) {
         ServiceResponse response = null;
-        ServiceRequest request = null;
-        try {
-            request = ServiceRequest.createServiceRequest(requestPro);
-            //设置rpc上下文 ---- 封装成serviceRequest后，server基本不需要设置这个上下文了。此处预留兼容
-            //上下文消息使用 request.getAttribute获取
-            RpcContextContainer.setRpcContext(request.createRpcContext());
-        } catch (IOException e) {
-            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
-        } catch (ClassNotFoundException e) {
-            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e.getMessage(), e);
-        }
+        RpcContextContainer.setRpcContext(request.createRpcContext());
         response = new ServiceResponse(request);
         try {
-            FilterChain filterChain = FilterManager.createFilterChain(SysProp.appId, requestPro.getServiceId());
-            filterChain.addFilter(serviceInvokeFilter);
+            FilterChain filterChain = FilterManager.createFilterChain(EosServerProp.appId, request.getServiceId());
+            filterChain.addFilter(serviceInvoker);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.writeError(e);
         }
         //尝试处理全局异常
-        ExceptionHandler.tryHandleException(request, response, ServerServiceContext.getExceptionResolver());
+        ExceptionHandler.tryHandleException(request, response,
+                ServerServiceContext.getInstance().getExceptionResolver());
 
-        ResponsePro responsePro = response.toResponsePro();
-        responsePro.setMsgId(requestPro.getMsgId());
-        return responsePro;
+        return response;
     }
 
     public boolean isRunning() {

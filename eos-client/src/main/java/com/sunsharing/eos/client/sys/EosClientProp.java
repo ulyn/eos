@@ -18,7 +18,6 @@ package com.sunsharing.eos.client.sys;
 
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
-import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,9 +38,9 @@ import java.util.Map;
  * <br>
  */
 @Configuration(value = "eos-client.properties")
-public class SysProp {
+public class EosClientProp {
 
-    static Logger logger = Logger.getLogger(SysProp.class);
+    static Logger logger = Logger.getLogger(EosClientProp.class);
 
     @ParamField(name = "zookeeper_ip", required = false)
     public static String zookeeperIp = "";

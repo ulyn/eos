@@ -16,10 +16,10 @@
  */
 package com.sunsharing.eos.client;
 
+import com.sunsharing.eos.client.mock.MockUtils;
 import com.sunsharing.eos.client.rpc.DynamicRpc;
-import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
@@ -88,12 +88,8 @@ public class RpcServlet extends HttpServlet {
             builder.setSerialization(serialization);
             builder.setTransporter(transporter);
             builder.setTimeout(timeout);
-            builder.setDebugServerIp(SysProp.getDebugServerIp(appId));
+            builder.setDebugServerIp(EosClientProp.getDebugServerIp(appId));
 
-            RpcContext context = RpcContextContainer.getRpcContext();
-            builder.setRemoteAddr(context.getRemoteAddr());
-            builder.setUserAgent(context.getUserAgent());
-            builder.setAttributeMap(context.getAttributeMap());
             //设置请求参数
             Map<String,String[]> params = req.getParameterMap();
             for(String p : params.keySet()){
@@ -103,8 +99,11 @@ public class RpcServlet extends HttpServlet {
 
             //是否模拟的参数
             String mock = req.getParameter("eos_mock");
-            if(!StringUtils.isBlank(mock) && SysProp.use_mock){
-                rtnMap.put("result", "");//使用mock
+            if(!StringUtils.isBlank(mock) && EosClientProp.use_mock){
+                MockUtils mockUtils = new MockUtils();
+                String result = mockUtils.transMockMatch(appId,serviceId,version,methodName,mock,builder.build().getParameterMap());
+
+                rtnMap.put("result", result);//使用mock
             }else{
                 Object result = DynamicRpc.invoke(builder.build(),Object.class);
                 rtnMap.put("result", result);

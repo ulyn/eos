@@ -34,7 +34,7 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
  * <br>
  */
 @Configuration(value = "eos-server.properties")
-public class SysProp {
+public class EosServerProp {
     @ParamField(name = "app_id")
     public static String appId;
 

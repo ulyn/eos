@@ -18,6 +18,7 @@ package com.sunsharing.eos.common.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.utils.VersionUtil;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
@@ -391,7 +392,18 @@ public class ServiceRequest {
             return this;
         }
 
+        private Builder setRpcContextAttr(){
+            RpcContext context = RpcContextContainer.getRpcContext();
+            if(context != null){
+                this.setRemoteAddr(context.getRemoteAddr());
+                this.setUserAgent(context.getUserAgent());
+                this.setAttributeMap(context.getAttributeMap());
+            }
+            return this;
+        }
+
         public ServiceRequest build() {
+            setRpcContextAttr();
             return new ServiceRequest(this);
         }
     }

@@ -1,5 +1,6 @@
 package com.sunsharing.eos.client.zookeeper;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.sys.EosClientProp;
@@ -24,7 +25,7 @@ public class ServiceLocation {
     //private static Map<String, JSONObject> eosMap = new ConcurrentHashMap<String, JSONObject>();
 
     private static Map<String,JSONObject> onlineEos = new ConcurrentHashMap<String, JSONObject>();
-    private static Map<String,JSONObject> serviceMap = new ConcurrentHashMap<String,JSONObject>();
+    private static Map<String,JSONArray> serviceMap = new ConcurrentHashMap<String,JSONArray>();
 
     private ServiceLocation() {
 
@@ -145,7 +146,7 @@ public class ServiceLocation {
     public synchronized void printCache() {
         logger.info("成功加载EOS："+JSONArray.toJSONString(onlineEos));
         for (String servicePath : serviceMap.keySet()) {
-            logger.info("成功加载服务:" + servicePath + "--" + serviceMap.get(servicePath).toString());
+            logger.info("成功加载服务:" + servicePath + "--" + JSON.toJSONString(serviceMap.get(servicePath)));
         }
     }
 
@@ -187,7 +188,7 @@ public class ServiceLocation {
             }
         }else {
             String servicePath = appId + serviceId;
-            JSONObject array = serviceMap.get(servicePath);
+            JSONArray array = serviceMap.get(servicePath);
             if(array == null)
             {
                 logger.info("打印服务缓存信息.");

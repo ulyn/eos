@@ -207,6 +207,7 @@ public class ServiceRequest {
         requestPro.setMethodVersion(this.getMethodVersion());
         requestPro.setTimeout(this.getTimeout());
         requestPro.setDebugServerIp(this.getDebugServerIp());
+        requestPro.setTransporter(this.getTransporter());
 
         RpcContext context = new RpcContext();
         context.setUserAgent(this.getUserAgent());

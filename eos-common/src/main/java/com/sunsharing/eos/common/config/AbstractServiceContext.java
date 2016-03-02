@@ -108,7 +108,6 @@ public abstract class AbstractServiceContext {
         //key为接口name
         Map xmlMap = loadXmlServiceConfig(xmlConfigFileName);
         Map beansMap = (Map) xmlMap.get("beansMap");
-        Map<String, ServiceConfig> xmlServiceConfigMap = (Map<String, ServiceConfig>) beansMap.get("configMap");
         List<Map<String, Object>> filters = (List<Map<String, Object>>) xmlMap.get("filters");
         //注册过滤器
         for (Map<String, Object> filter : filters) {

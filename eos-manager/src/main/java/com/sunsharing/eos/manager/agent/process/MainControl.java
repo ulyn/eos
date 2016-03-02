@@ -16,8 +16,10 @@
  */
 package com.sunsharing.eos.manager.agent.process;
 
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,10 +39,10 @@ import java.util.List;
  * <br>
  */
 public class MainControl {
+    Logger logger = Logger.getLogger(getClass());
 
     Process[] processes = new Process[]{
             new ACLProcess(),
-            new MockProcess(),
             new RemoteProcess(),
             new MonitorProcess()
     };
@@ -48,7 +50,11 @@ public class MainControl {
     public void process(RequestPro req, ResponsePro res) {
         ProcessChain processChain = new ProcessChain();
         processChain.setProcessList(processes);
-        processChain.doProcess(req, res, processChain);
+        try{
+            processChain.doProcess(req, res, processChain);
+        }catch (Exception e){
+            logger.error("调用异常:" + e.getMessage(),e);
+        }
     }
 }
 

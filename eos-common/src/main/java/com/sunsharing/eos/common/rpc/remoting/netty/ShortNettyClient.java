@@ -14,13 +14,19 @@ public class ShortNettyClient extends NettyClient {
 
     @Override
     public ServiceResponse doRpc(ServiceRequest request, String ip, int port) throws Throwable {
+        ResponsePro responsePro = doRpc(request.toRequestPro(), ip, port);
+        return ServiceResponse.createServiceResponse(responsePro);
+    }
+
+    @Override
+    public ResponsePro doRpc(RequestPro request, String ip, int port) throws Throwable {
         Channel channel = connect(ip, port);
         logger.debug("client is connected to netty server " + ip + ":" + port);
         ShortChannel shortChannel = new ShortChannel();
         shortChannel.setChannel(channel);
         try {
-            ResponsePro responsePro = getResult(request.toRequestPro(), shortChannel, request.getTimeout());
-            return ServiceResponse.createServiceResponse(responsePro);
+            ResponsePro responsePro = getResult(request, shortChannel, request.getTimeout());
+            return responsePro;
         } catch (Exception e) {
             logger.error("请求出错！", e);
             throw e;

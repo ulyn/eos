@@ -1,15 +1,12 @@
 package com.sunsharing.eos.clientproxy.web.controller.main;
 
 
-import com.sunsharing.eos.client.rpc.RpcInvoker;
+import com.sunsharing.eos.clientproxy.web.common.BaseController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.sunsharing.eos.clientproxy.web.common.BaseController;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
 @Controller
 public class MainController extends BaseController {

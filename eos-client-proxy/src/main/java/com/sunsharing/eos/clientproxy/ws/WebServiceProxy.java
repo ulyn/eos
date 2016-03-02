@@ -16,7 +16,6 @@
  */
 package com.sunsharing.eos.clientproxy.ws;
 
-import com.sunsharing.eos.client.rpc.RpcInvoker;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;

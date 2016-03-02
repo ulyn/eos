@@ -39,7 +39,7 @@ public class ACLProcess implements Process {
     Logger logger = Logger.getLogger(ACLProcess.class);
 
     @Override
-    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) {
+    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain)  throws RpcException{
         if (SysProp.eosMode.equals(Constants.EOS_MODE_DEV)) {
             try {
                 boolean acl = ServiceCache.getInstance().getACL(req.getAppId(), req.getServiceId(), req.getMethodVersion());
@@ -49,9 +49,10 @@ public class ACLProcess implements Process {
                     String error = "服务调用失败，未通过审核的服务！"
                             + req.getAppId() + "-"
                             + req.getServiceId() + "-"
+                            + req.getMethod() + "-"
                             + req.getMethodVersion();
                     logger.info(error);
-//                    res.setExceptionResult(new RpcException(RpcException.FORBIDDEN_EXCEPTION, error));      todo
+                    throw new RpcException(RpcException.FORBIDDEN_EXCEPTION,error);
                 }
             } catch (Exception e) {
                 String error = "权限验证异常!";
@@ -59,7 +60,7 @@ public class ACLProcess implements Process {
                 if (e.getMessage().startsWith("服务方更新提醒")) {
                     error = e.getMessage();
                 }
-//                res.setExceptionResult(new RpcException(RpcException.FORBIDDEN_EXCEPTION, error));  //todo
+                throw new RpcException(RpcException.FORBIDDEN_EXCEPTION,error);
             }
         } else {
             processChain.doProcess(req, res, processChain);

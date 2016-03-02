@@ -14,8 +14,14 @@ public class LongNettyClient extends NettyClient {
 
     @Override
     public ServiceResponse doRpc(ServiceRequest request, String ip, int port) throws Throwable {
-        LongChannel longChannel = ClientCache.getChannel(this, ip, port + "");
-        ResponsePro responsePro = getResult(request.toRequestPro(), longChannel, request.getTimeout());
+        ResponsePro responsePro = doRpc(request.toRequestPro(),ip,port);
         return ServiceResponse.createServiceResponse(responsePro);
+    }
+
+    @Override
+    public ResponsePro doRpc(RequestPro request, String ip, int port) throws Throwable {
+        LongChannel longChannel = ClientCache.getChannel(this, ip, port + "");
+        ResponsePro responsePro = getResult(request, longChannel, request.getTimeout());
+        return responsePro;
     }
 }

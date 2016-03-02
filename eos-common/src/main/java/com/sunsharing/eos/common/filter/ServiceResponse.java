@@ -18,10 +18,12 @@ package com.sunsharing.eos.common.filter;
 
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.annotation.Version;
 import com.sunsharing.eos.common.rpc.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
+import com.sunsharing.eos.common.utils.VersionUtil;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import java.io.IOException;
@@ -48,10 +50,19 @@ public class ServiceResponse implements Serializable {
     private Throwable exception;
 
     public ServiceResponse() {
+        this.eosVersion = VersionUtil.getVersion();
+    }
+
+    public ServiceResponse(String msgId,String serialization) {
+        this.eosVersion = VersionUtil.getVersion();
+        this.serialization = serialization;
+        this.msgId = msgId;
     }
 
     public ServiceResponse(ServiceRequest request) {
         this.serialization = request.getSerialization();
+        this.msgId = request.getMsgId();
+        this.eosVersion = VersionUtil.getVersion();
     }
 
     public String getMsgId() {

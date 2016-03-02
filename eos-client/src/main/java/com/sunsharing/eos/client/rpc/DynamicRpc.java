@@ -71,7 +71,8 @@ public class DynamicRpc{
         } catch (Exception e) {
             serviceResponse.writeError(e);
         }
-        ExceptionHandler.tryHandleException(serviceRequest, serviceResponse, ServiceContext.getExceptionResolver());
+        ExceptionHandler.tryHandleException(serviceRequest, serviceResponse,
+                ServiceContext.getInstance().getExceptionResolver());
     }
 
     /**

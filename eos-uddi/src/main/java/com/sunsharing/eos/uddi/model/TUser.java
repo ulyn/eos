@@ -9,7 +9,7 @@ import java.util.List;
  * Created by criss on 14-1-30.
  */
 @Entity
-@Table(name = "T_USER", schema = "", catalog = "eos")
+@Table(name = "T_USER")
 public class TUser {
     private int userId;
     private String userName;

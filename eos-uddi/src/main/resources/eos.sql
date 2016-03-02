@@ -201,19 +201,4 @@ BEGIN;
 INSERT INTO `T_USER` VALUES ('29', 'hexin', '123456', '3', null, null, 'hexin@sunsharing.com.cn');
 COMMIT;
 
--- ----------------------------
---  Table structure for `T_USER_APP_copy`
--- ----------------------------
-DROP TABLE IF EXISTS `T_USER_APP_copy`;
-CREATE TABLE `T_USER_APP_copy` (
-	`USER_APP_ID` int(11) NOT NULL AUTO_INCREMENT,
-	`USER_ID` int(11) DEFAULT NULL,
-	`APP_ID` int(11) DEFAULT NULL,
-	PRIMARY KEY (`USER_APP_ID`),
-	CONSTRAINT `t_user_app_copy_ibfk_1` FOREIGN KEY (`USER_ID`) REFERENCES `T_USER` (`USER_ID`),
-	CONSTRAINT `t_user_app_copy_ibfk_2` FOREIGN KEY (`APP_ID`) REFERENCES `T_APP` (`APP_ID`),
-	INDEX `FK_Reference_2` (USER_ID),
-	INDEX `FK_Reference_3` (APP_ID)
-) ENGINE=`InnoDB` AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ROW_FORMAT=COMPACT COMMENT='用户APP' CHECKSUM=0 DELAY_KEY_WRITE=0;
 
-SET FOREIGN_KEY_CHECKS = 1;

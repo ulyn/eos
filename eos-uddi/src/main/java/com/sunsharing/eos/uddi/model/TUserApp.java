@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Created by criss on 14-1-30.
  */
 @Entity
-@Table(name = "T_USER_APP", schema = "", catalog = "eos")
+@Table(name = "T_USER_APP")
 public class TUserApp implements Comparable {
     private int userAppId;
 

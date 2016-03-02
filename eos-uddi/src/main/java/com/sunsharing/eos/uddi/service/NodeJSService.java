@@ -198,7 +198,8 @@ public class NodeJSService {
     private void createVersionCheckFile(String path, List<TService> services) throws Exception {
         JSONObject jo = new JSONObject();
         for (TService service : services) {
-            jo.put(service.getServiceCode(), service.getVersions().get(0).getVersion());
+            //TODO 去除服务版本号
+            //jo.put(service.getServiceCode(), service.getVersions().get(0).getVersion());
         }
         FileUtil.createFile(path + File.separator + "services.version", JSON.toJSONString(jo, true), "utf-8");
     }
@@ -222,7 +223,9 @@ public class NodeJSService {
         List list = new ArrayList();
         for (TService service : services) {
             String oldV = jo.getString(service.getServiceCode());
-            String newV = service.getVersions().get(0).getVersion();
+            //TODO 去除服务版本号
+            String newV = "";
+                    //service.getVersions().get(0).getVersion();
             Map map = new HashMap();
             if (StringUtils.isBlank(oldV)) {
                 map.put("name", service.getServiceCode());
@@ -256,7 +259,8 @@ public class NodeJSService {
         }
         sb.append("\n## 服务接口\n");
         for (TService service : services) {
-            sb.append("+ " + service.getServiceCode() + "-" + service.getVersions().get(0).getVersion() + "-" + service.getServiceName() + "\n");
+            //TODO 去除服务版本号
+            //sb.append("+ " + service.getServiceCode() + "-" + service.getVersions().get(0).getVersion() + "-" + service.getServiceName() + "\n");
         }
         FileUtil.createFile(path + File.separator + "README.md", sb.toString(), "utf-8");
     }
@@ -312,14 +316,16 @@ public class NodeJSService {
         TServiceVersion serviceVersion = service.getVersions().get(0);
         StringBuilder sb = new StringBuilder("/** \n");
         sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
-        sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
+        ////TODO 去除服务版本号
+        //sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
 
         sb.append("module.exports = function(eos,cache){\n" +
                 "    function " + service.getServiceCode() + "(rpcContext){\n" +
                 "        eos.Service.call(this,rpcContext);\n" +
                 "        this.appId = \"" + serviceVersion.getAppCode() + "\";\n" +
                 "        this.serviceId = \"" + service.getServiceCode() + "\";\n" +
-                "        this.methodVersion = \"" + serviceVersion.getVersion() + "\";\n" +
+                //TODO 去除服务版本号
+                //"        this.methodVersion = \"" + serviceVersion.getVersion() + "\";\n" +
                 "    }\n" +
                 "    eos.util.inherits(" + service.getServiceCode() + ",eos.Service);\n\n");
         for (TMethod method : serviceVersion.getMethods()) {
@@ -499,12 +505,14 @@ public class NodeJSService {
         TServiceVersion serviceVersion = service.getVersions().get(0);
         StringBuilder sb = new StringBuilder("/** \n");
         sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
-        sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
+        //TODO 去除服务版本号
+        //sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersion() + " \n*/\n");
         sb.append("\nif (typeof EosRemote === 'undefined') { throw new Error('EosRemote service 依赖 EosRemote'); }\n");
         sb.append("\n ;(function (EosRemote) {\n" +
                 "    var appId = \"" + serviceVersion.getAppCode() + "\",\n" +
                 "        serviceId = \"" + service.getServiceCode() + "\",\n" +
-                "        methodVersion = \"" + serviceVersion.getVersion() + "\";\n" +
+                //TODO 去除服务版本号
+                //"        methodVersion = \"" + serviceVersion.getVersion() + "\";\n" +
                 "\n" +
                 "    function " + service.getServiceCode() + "(){\n" +
                 "        this.appId = appId;\n" +

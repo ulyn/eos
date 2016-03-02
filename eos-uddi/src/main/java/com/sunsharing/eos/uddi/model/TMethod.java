@@ -6,13 +6,14 @@ import javax.persistence.*;
  * Created by criss on 14-2-1.
  */
 @Entity
-@Table(name = "T_METHOD", schema = "", catalog = "eos")
+@Table(name = "T_METHOD")
 public class TMethod {
     private int methodId;
-    private TServiceVersion version;
+    private TServiceVersion versionObj;
     private String methodName;
     private String mockResult;
     private String params;
+    private String methodVersion;
 
     @Id
     @Column(name = "METHOD_ID")
@@ -27,12 +28,22 @@ public class TMethod {
 
     @ManyToOne
     @JoinColumn(name = "VERSION_ID")
-    public TServiceVersion getVersion() {
-        return version;
+    public TServiceVersion getVersionObj() {
+        return versionObj;
     }
 
-    public void setVersion(TServiceVersion version) {
-        this.version = version;
+    public void setVersionObj(TServiceVersion versionObj) {
+        this.versionObj = versionObj;
+    }
+
+    @Basic
+    @Column(name = "VERSION")
+    public String getMethodVersion() {
+        return methodVersion;
+    }
+
+    public void setMethodVersion(String methodVersion) {
+        this.methodVersion = methodVersion;
     }
 
     @Basic

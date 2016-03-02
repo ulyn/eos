@@ -10,7 +10,7 @@ import java.util.List;
  * Created by criss on 14-1-30.
  */
 @Entity
-@Table(name = "T_APP", schema = "", catalog = "eos")
+@Table(name = "T_APP")
 public class TApp implements Comparable {
     private int appId;
     private String appName;

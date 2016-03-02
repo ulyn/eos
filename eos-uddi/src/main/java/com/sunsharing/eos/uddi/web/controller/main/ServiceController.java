@@ -50,11 +50,10 @@ public class ServiceController {
             List<TServiceVersion> versons =  service.getVersions();
             Collections.sort(versons, new Comparator<TServiceVersion>() {
                 public int compare(TServiceVersion tServiceVersion, TServiceVersion t1) {
-                    int i = AppService.compareVersion(tServiceVersion.getVersion(),t1.getVersion());
-                    if(i>0)
+                    if(tServiceVersion.getVersionId()>t1.getVersionId())
                     {
                         return -1;
-                    }else if(i<0)
+                    }else if(tServiceVersion.getVersionId()<t1.getVersionId())
                     {
                         return 1;
                     }else
@@ -139,8 +138,8 @@ public class ServiceController {
                         for (int i = 0; i < lines.length; i++) {
                             //System.out.println(lines[i]);
                         }
-                        String version = service.getVersion(lines);
-                        System.out.println(version);
+                        String version = this.service.getServiceVersion(lines);
+
                         String name = service.getInterfaceName(lines);
                         if (name.trim().length() > 20) {
                             throw new RuntimeException("接口名不允许超过20个字符");
@@ -195,7 +194,7 @@ public class ServiceController {
         for(TServiceVersion version1 : versions)
         {
             Map o = new HashMap();
-            String v = version1.getVersion();
+            String v = version1.getServiceVersion();
             int vId = version1.getVersionId();
             o.put("version",v);
             //o.put("versionId",vId);

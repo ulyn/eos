@@ -31,6 +31,8 @@ public class PathConstant {
     public static String SERVICE_STATE_PATH = "/E3/SERVICE_STATE/APPS/${app_id}/${service_path}";
     /**EOS服务状态*/
     public static String EOS_STATE_PATH = "/E3/SERVICE_STATE/EOS/${eos_id}/${app_id}";
+    /**服务授权*/
+    public static String ACL_PATH = "/E3/SERVICE_STATE/ACL/${appcode}${serviceId}/${methodVersion}";
 
     public static void initEOSPath()
     {

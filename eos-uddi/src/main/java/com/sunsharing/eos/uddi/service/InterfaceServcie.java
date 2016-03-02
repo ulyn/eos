@@ -14,24 +14,68 @@ import java.util.*;
  */
 public class InterfaceServcie {
 
-    public String getVersion(String[] lines)throws Exception
+//    public String getVersion(String[] lines)throws Exception
+//    {
+//        for(int i=0;i<lines.length;i++)
+//        {
+//            if(lines[i].trim().startsWith("@EosService"))
+//            {
+//                String line = lines[i].trim();
+//
+//                String value = line.substring(line.indexOf("(")+1,line.length()-1);
+//                value = value.replaceAll(",","\n");
+//
+//                Properties t = new Properties();
+//                t.load(new ByteArrayInputStream(value.getBytes("UTF-8")));
+//                String v = t.getProperty("version");
+//                return v.trim().substring(1,v.trim().length()-1);
+//            }
+//        }
+//        throw new RuntimeException("取不到Version");
+//    }
+
+    public Map getFuntionVersion(String[] lines)
     {
-        for(int i=0;i<lines.length;i++)
-        {
-            if(lines[i].trim().startsWith("@EosService"))
+        Map result = new HashMap();
+        for(int i=0;i<lines.length;i++) {
+            String line = lines[i].trim();
+            if (lines[i].trim().startsWith("@Version"))
             {
-                String line = lines[i].trim();
+                int start = lines[i].trim().indexOf("=");
+                int end = lines[i].trim().indexOf(")");
+                String v = line.substring(start,end).trim();
+                if(v.startsWith("\""))
+                {
+                    v = v.substring(1,v.length()-1);
+                }
+                int next = 1;
+                while(true)
+                {
+                    int nextLine = i+(next++);
+                    if(nextLine>=lines.length)
+                    {
+                        break;
+                    }
+                    if(!StringUtils.isBlank(lines[nextLine].trim())) {
+                        String functionLine = lines[nextLine].trim();
+                        int startIndex = functionLine.indexOf("(");
+                        int m = 0;
+                        for(m=startIndex;m>0;m--)
+                        {
+                            if(functionLine.charAt(m)==' ')
+                            {
+                                break;
+                            }
+                        }
+                        String functionName = functionLine.substring(m,startIndex);
+                        result.put(functionName,v.trim());
+                        break;
+                    }
+                }
 
-                String value = line.substring(line.indexOf("(")+1,line.length()-1);
-                value = value.replaceAll(",","\n");
-
-                Properties t = new Properties();
-                t.load(new ByteArrayInputStream(value.getBytes("UTF-8")));
-                String v = t.getProperty("version");
-                return v.trim().substring(1,v.trim().length()-1);
             }
         }
-        throw new RuntimeException("取不到Version");
+        return result;
     }
 
     public boolean isVoid(String methodName,String[] lines)

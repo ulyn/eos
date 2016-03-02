@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Created by criss on 16/2/24.
  */
 @Entity
-@Table(name = "T_DB_PDM", schema = "", catalog = "eos")
+@Table(name = "T_DB_PDM")
 public class TDbPdm {
     private int id;
     private TApp appId;

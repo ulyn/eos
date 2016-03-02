@@ -8,7 +8,7 @@ import java.util.List;
  * Created by criss on 16/2/24.
  */
 @Entity
-@Table(name = "T_DB_CHANGE", schema = "", catalog = "eos")
+@Table(name = "T_DB_CHANGE")
 public class TDbChange {
     private int id;
     private TApp appId;

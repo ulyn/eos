@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Created by criss on 16/2/24.
  */
 @Entity
-@Table(name = "T_DB_CHECKLIST", schema = "", catalog = "eos")
+@Table(name = "T_DB_CHECKLIST")
 public class TDbChecklist {
     private int id;
     private TUser checkUser;

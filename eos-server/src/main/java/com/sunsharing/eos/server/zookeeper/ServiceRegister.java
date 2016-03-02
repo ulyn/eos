@@ -103,8 +103,7 @@ public class ServiceRegister {
         String[] ids = eosIds.split(",");
         JSONObject obj = JSONObject.parseObject(json);
         String servicePath = obj.getString(PathConstant.APPID_KEY)+
-                obj.getString(PathConstant.SERVICE_ID_KEY)+
-                obj.getString(PathConstant.VERSION_KEY)+"_";
+                obj.getString(PathConstant.SERVICE_ID_KEY)+"_";
 
         //处理APP节点
         try {

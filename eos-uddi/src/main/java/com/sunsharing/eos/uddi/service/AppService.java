@@ -128,9 +128,9 @@ public class AppService {
                 {
                     if(v.getStatus().equals("1"))
                     {
-                        if(compareVersion(v.getVersion(),max)>0)
+                        if(compareVersion(v.getServiceVersion(),max)>0)
                         {
-                            max = v.getVersion();
+                            max = v.getServiceVersion();
                             maxVersion = v;
                         }
                     }
@@ -139,7 +139,7 @@ public class AppService {
                 {
                     String sourceApp = SysInit.path+ File.separator+"interface"+
                             File.separator+ser.getAppCode()+File.separator+ser.getServiceCode()+"_"+
-                            maxVersion.getVersion()+".java";
+                            maxVersion.getServiceVersion()+".java";
                     boolean isExist = new File(sourceApp).exists();
                     if(isExist)
                     {

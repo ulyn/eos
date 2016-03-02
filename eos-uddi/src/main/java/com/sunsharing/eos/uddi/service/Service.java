@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.DateUtils;
+import com.sunsharing.component.utils.crypto.Md5;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
@@ -50,7 +51,7 @@ public class Service {
     }
 
     public List<TService> query(String appId, String module) {
-        String sql = "from TService where appId=?";
+        String sql = "from TService where appId=?  ";
         if ("0".equals(module)) {
             module = "";
         }
@@ -74,26 +75,29 @@ public class Service {
         }
     }
 
-    public void saveService(String servicename, String appId, String module, String[] lines, int userId,Map functionMap) throws Exception {
+    public void saveService(String servicename, String appId, String module,String[] lines, int userId,Map functionMap) throws Exception {
         TApp app = appDao.get(new Integer(appId));
 
         InterfaceServcie s = new InterfaceServcie();
-        String version = s.getVersion(lines);
+        Map methondVersion = s.getFuntionVersion(lines);
         String infaceName = s.getInterfaceName(lines);
 
+        String sv = getServiceVersion(methondVersion);
+
         String sql = "from TServiceVersion where status='1' and appCode=? and service.serviceCode=? and version=?";
-        List<TServiceVersion> l2 = versionDao.find(sql, app.getAppCode(), infaceName, version);
+        List<TServiceVersion> l2 = versionDao.find(sql, app.getAppCode(), infaceName, sv);
         if (l2.size() > 0) {
             throw new RuntimeException("该服务已经审批通过，不能再创建，请更改版本号");
         }
         sql = "from TServiceVersion where  appCode=? and service.serviceCode=? and version=?";
-        l2 = versionDao.find(sql, app.getAppCode(), infaceName, version);
+        l2 = versionDao.find(sql, app.getAppCode(), infaceName, sv);
         TService service = null;
         TServiceVersion v = null;
         if (l2.size() > 0) {
             TServiceVersion ss = l2.get(0);
             v = ss;
         }
+
         sql = "from TService where appCode=? and serviceCode=?";
         List<TService> l3 = serviceDao.find(sql, app.getAppCode(), infaceName);
         if (l3.size() > 0) {
@@ -116,7 +120,7 @@ public class Service {
             v = new TServiceVersion();
         v.setStatus("0");
         v.setCreateTime(DateUtils.getDBString(new Date()));
-        v.setVersion(version);
+        v.setServiceVersion(sv);
         v.setAppCode(app.getAppCode());
         v.setService(service);
         v.getMethods().clear();
@@ -127,7 +131,8 @@ public class Service {
         List<String> allVoidFunction = s.getAllVoidFuntions(lines);
         for (String fun : keys) {
             TMethod me = new TMethod();
-            me.setVersion(v);
+            me.setVersionObj(v);
+            me.setMethodVersion((String)methondVersion.get(fun));
             me.setMethodName(fun);
             me.setParams((String)functionMap.get(fun));
             Map ll = (Map) m.get(fun);
@@ -143,7 +148,8 @@ public class Service {
         for(String fun:allVoidFunction)
         {
             TMethod me = new TMethod();
-            me.setVersion(v);
+            me.setVersionObj(v);
+            me.setMethodVersion((String)methondVersion.get(fun));
             me.setMethodName(fun);
             me.setMockResult("[{\"status\":\""+ Constants.MOCK_VOID+"\",\"content\":\"\"}]");
             v.getMethods().add(me);
@@ -153,10 +159,7 @@ public class Service {
             serviceDao.saveOrUpdate(service);
         }
         versionDao.saveOrUpdate(v);
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if (utils.isExists(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+version),false)) {
-            utils.deleteNode(PathConstant.ACL + "/" + (app.getAppCode() + infaceName +"/"+ version));
-        }
+
 
         //发送邮件通知
         sql = "from TUserApp where app.appId=?";
@@ -165,7 +168,7 @@ public class Service {
         {
             final String email = userApp.getUser().getEamil();
             final String content = user.getUserName()+"于"+DateUtils.getDisplay(new Date())+"更新了"+service.getServiceName()+
-                    "["+service.getServiceCode()+"]，最新的版本号为"+version+"," +
+                    "["+service.getServiceCode()+"]，最新的版本号为," +
                     "请小组长即时处理";
             final String title = app.getAppName()+"["+app.getAppCode()+"]服务版本更新通知";
             if(!StringUtils.isBlank(email))
@@ -180,6 +183,38 @@ public class Service {
             }
         }
     }
+    public String getServiceVersion(String[] lines)
+    {
+        InterfaceServcie s = new InterfaceServcie();
+        Map methodVersion = s.getFuntionVersion(lines);
+        return getServiceVersion(methodVersion);
+    }
+    public String getServiceVersion(TServiceVersion version)
+    {
+        List<TMethod> methods = version.getMethods();
+        Map methodVersion = new HashMap();
+        for(TMethod method:methods)
+        {
+            String methodName = method.getMethodName();
+            String v = method.getMethodVersion();
+            methodVersion.put(methodName,v);
+        }
+        return getServiceVersion(methodVersion);
+    }
+    private String getServiceVersion(Map methodVersion)
+    {
+        List<String> methodList = new ArrayList(methodVersion.keySet());
+        Collections.sort(methodList);
+        String source = "";
+        for(String m:methodList)
+        {
+            source+=m+methodVersion.get(source);
+        }
+        return Md5.MD5(source);
+    }
+
+
+
 
     public void deleteService(String serviceId)
     {
@@ -257,7 +292,7 @@ public class Service {
 
     public String getJava(String versionId) throws Exception {
         TServiceVersion version = versionDao.get(new Integer(versionId));
-        String version2 = version.getVersion();
+        String version2 = version.getServiceVersion();
         String serviceCode = version.getService().getServiceCode();
         String appcode = version.getAppCode();
 
@@ -304,10 +339,12 @@ public class Service {
 
         String appCode = version.getAppCode();
         String serviceId = version.getService().getServiceCode();
-        String ver = version.getVersion();
+        //String ver = version.getVersion();
 
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
         List<TMethod> methods = version.getMethods();
-        JSONObject obj = new JSONObject();
         for (TMethod me : methods) {
             String arr = "";
             if (StringUtils.isBlank(me.getMockResult())) {
@@ -315,24 +352,21 @@ public class Service {
             } else {
                 arr = me.getMockResult();
             }
-            obj.put(me.getMethodName(), JSONArray.parseArray(arr));
+            JSONArray array = JSONArray.parseArray(arr);
+            utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+me.getMethodVersion(),array.toJSONString() ,
+                    CreateMode.PERSISTENT);
         }
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
-                CreateMode.PERSISTENT);
 
         //发送邮件通知
         String sql = "from TUserApp where app.appId=?";
         List<TUserApp> list = userAppDao.find(sql,new Integer(version.getService().getAppId()));
         sql = "from TApp where appId=?";
-        List<TApp> apps = appDao.find(sql,version.getService().getAppId());
+        List<TApp> apps = appDao.find(sql, version.getService().getAppId());
         for(TUserApp userApp : list)
         {
             final String email = userApp.getUser().getEamil();
             final String content = version.getService().getServiceName()+
-                    "["+version.getService().getServiceCode()+"]的版本号为"+ver+"已经审批通过," +
+                    "["+version.getService().getServiceCode()+"]已经审批通过," +
                     "请相关人员即时处理";
             final String title = apps.get(0).getAppName()+"["+apps.get(0).getAppCode()+"]服务审批通知";
             if(!StringUtils.isBlank(email))
@@ -448,9 +482,9 @@ public class Service {
     {
         TMethod method = methodDao.get(new Integer(methodId));
         String methodName = method.getMethodName();
-        String appId = method.getVersion().getAppCode();
-        String serviceId = method.getVersion().getService().getServiceCode();
-        String version = method.getVersion().getVersion();
+        String appId = method.getVersionObj().getAppCode();
+        String serviceId = method.getVersionObj().getService().getServiceCode();
+        String version = method.getVersionObj().getServiceVersion();
 
         File path = new File(SysInit.path + File.separator + "interface" + File.separator + appId
         + File.separator+serviceId+"_"+version+".java");
@@ -558,14 +592,18 @@ public class Service {
 
     public void updateTestCode(String methodId) throws Exception {
         TMethod method = methodDao.get(new Integer(methodId));
-        if (method.getVersion().getStatus().equals("0")) {
+        if (method.getVersionObj().getStatus().equals("0")) {
             throw new RuntimeException("未审批");
         }
-        List<TMethod> methods = method.getVersion().getMethods();
-        String appCode = method.getVersion().getAppCode();
-        String serviceId = method.getVersion().getService().getServiceCode();
-        String ver = method.getVersion().getVersion();
-        JSONObject obj = new JSONObject();
+        List<TMethod> methods = method.getVersionObj().getMethods();
+        String appCode = method.getVersionObj().getAppCode();
+        String serviceId = method.getVersionObj().getService().getServiceCode();
+        String ver = method.getVersionObj().getServiceVersion();
+
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
+        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
+
         for (TMethod me : methods) {
             String arr = "";
             if (StringUtils.isBlank(me.getMockResult())) {
@@ -573,16 +611,10 @@ public class Service {
             } else {
                 arr = me.getMockResult();
             }
-            obj.put(me.getMethodName(), JSONArray.parseArray(arr));
+            JSONArray obj = JSONArray.parseArray(arr);
+            utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
+                    CreateMode.PERSISTENT);
         }
-
-
-        ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
-                CreateMode.PERSISTENT);
-
     }
 
     public void changeTest(String versionId) {

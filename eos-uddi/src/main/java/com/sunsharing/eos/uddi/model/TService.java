@@ -8,7 +8,7 @@ import java.util.List;
  * Created by criss on 14-2-1.
  */
 @Entity
-@Table(name = "T_SERVICE", schema = "", catalog = "eos")
+@Table(name = "T_SERVICE")
 public class TService {
     private int serviceId;
     private Integer appId;

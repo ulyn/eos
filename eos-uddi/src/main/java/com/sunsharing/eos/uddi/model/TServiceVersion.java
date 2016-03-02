@@ -10,13 +10,13 @@ import java.util.List;
  * Created by criss on 14-2-1.
  */
 @Entity
-@Table(name = "T_SERVICE_VERSION", schema = "", catalog = "eos")
+@Table(name = "T_SERVICE_VERSION")
 public class TServiceVersion {
     private int versionId;
     private TService service;
-    private String version;
     private String appCode;
     private String status;
+    private String serviceVersion;
     private String createTime;
 
     List<TMethod> methods = new ArrayList<TMethod>();
@@ -53,16 +53,6 @@ public class TServiceVersion {
     }
 
     @Basic
-    @Column(name = "VERSION")
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    @Basic
     @Column(name = "APP_CODE")
     public String getAppCode() {
         return appCode;
@@ -92,6 +82,16 @@ public class TServiceVersion {
         this.createTime = createTime;
     }
 
+    @Basic
+    @Column(name = "VERSION")
+    public String getServiceVersion() {
+        return serviceVersion;
+    }
+
+    public void setServiceVersion(String serviceVersion) {
+        this.serviceVersion = serviceVersion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -104,7 +104,6 @@ public class TServiceVersion {
         if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
         //if (serviceId != null ? !serviceId.equals(that.serviceId) : that.serviceId != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -113,10 +112,10 @@ public class TServiceVersion {
     public int hashCode() {
         int result = versionId;
         //result = 31 * result + (serviceId != null ? serviceId.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (appCode != null ? appCode.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (serviceVersion != null ? serviceVersion.hashCode() : 0);
         return result;
     }
 }

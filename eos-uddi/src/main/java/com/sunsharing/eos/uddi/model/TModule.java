@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Created by criss on 14-1-30.
  */
 @Entity
-@Table(name = "T_MODULE", schema = "", catalog = "eos")
+@Table(name = "T_MODULE")
 public class TModule {
     private int moduleId;
     private String moduleName;

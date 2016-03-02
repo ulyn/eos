@@ -14,7 +14,8 @@ public class TestServer {
     public static void main(String[] a) throws Exception {
         ConfigContext.instancesBean(EosServerProp.class);
         ServerServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
-        ServerServiceContext.getInstance().init();
+        ServerServiceContext.getInstance().initConfig();
+        ServerServiceContext.getInstance().initService();
 
         new Thread() {
             public void run() {

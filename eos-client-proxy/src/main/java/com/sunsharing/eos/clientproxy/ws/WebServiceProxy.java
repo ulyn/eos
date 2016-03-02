@@ -16,6 +16,10 @@
  */
 package com.sunsharing.eos.clientproxy.ws;
 
+import com.sunsharing.component.utils.crypto.Base64;
+import com.sunsharing.eos.client.rpc.DynamicRpc;
+import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.filter.ServiceResponse;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -36,12 +40,10 @@ public class WebServiceProxy {
 
     /**
      * @param serviceReqBase64Str ServiceRequest对象的base64字符串
-     * @param serialization       ServiceRequest串的序列化方式，当为空时，默认为Constants.DEFAULT_SERIALIZATION
      * @return
      */
-    public String invoke(String serviceReqBase64Str, String serialization) throws IOException {
-        return null;//todo
-//        return RpcInvoker.invoke(serviceReqBase64Str, serialization);
+    public String invoke(String serviceReqBase64Str){
+        return DynamicRpc.invoke(serviceReqBase64Str);
     }
 }
 

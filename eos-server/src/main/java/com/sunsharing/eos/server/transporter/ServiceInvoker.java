@@ -21,6 +21,7 @@ import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
+import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 
@@ -89,7 +90,11 @@ public class ServiceInvoker extends AbstractServiceFilter {
                 Object[] args = null;
                 if(parameterNames != null){
                     Class<?>[] parameterTypes = m.getParameterTypes();
-                    //todo 处理参数
+                    args = new Object[parameterTypes.length];
+                    for(int i=0,l= args.length;i<l;i++){
+                        String parameterName = parameterNames[i];
+                        args[i] = req.getParameter(parameterName,parameterTypes[i]);
+                    }
                 }
                 Object o = m.invoke(obj, args);
                 res.writeValue(o);

@@ -1,6 +1,6 @@
 package com.sunsharing.eos.clientexample.sys;
 
-import com.sunsharing.eos.client.EosInit;
+import com.sunsharing.eos.client.EosClient;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -43,7 +43,7 @@ public class SysInit extends HttpServlet {
         SysParam.setSysPath(sysPath);
         SysParam.init();
 
-        EosInit.start("com.sunsharing");
+        EosClient.start();
 
         logger.info("初始化其它参数结束...");
     }

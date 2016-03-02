@@ -54,8 +54,8 @@ public class MyFilter extends AbstractServiceFilter {
     @Override
     protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws ServiceFilterException, RpcException {
         logger.info("myFilter:" + req.getAppId() + "-"
-                + req.getServiceId() + "-" + req.getServiceVersion()
-                + "-" + req.getMethodName());
+                + req.getServiceId() + "-" + req.getMethod()
+                + "-" + req.getMethodVersion());
         logger.info("上下文：" + req.getAttributeMap());
         //这句一定要加上啊。。。不然不会往下执行
         filterChain.doFilter(req, res);

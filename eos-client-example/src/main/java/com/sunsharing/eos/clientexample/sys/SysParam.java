@@ -1,12 +1,9 @@
 package com.sunsharing.eos.clientexample.sys;
 
-import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.client.ServiceContext;
-import com.sunsharing.eos.client.sys.SysProp;
-import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**

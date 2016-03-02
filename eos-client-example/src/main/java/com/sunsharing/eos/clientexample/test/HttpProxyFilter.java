@@ -48,12 +48,12 @@ public class HttpProxyFilter extends ProxyFilter {
     @Override
     public void process(ServiceRequest req, ServiceResponse res) throws ServiceFilterException, RpcException {
         try {
-            String base = Base64.encode(req.serializeToBytes());
+            String base = Base64.encode(req.toBytes());
             Map<String, String> paramMap = new HashMap<String, String>();
             paramMap.put("serialization", req.getSerialization());
             paramMap.put("serviceReqBase64Str", base);
             String resutlstr = doHttp("http://192.168.0.60:8095/service.do", paramMap2Str(paramMap), "post", "utf-8");
-            ServiceResponse response = ServiceResponse.createServiceResponse(Base64.decode(resutlstr), req.getSerialization());
+            ServiceResponse response = ServiceResponse.formBytes(Base64.decode(resutlstr));
             if (response.hasException()) {
                 throw new ServiceFilterException(response.getException().getMessage(), response.getException());
             }

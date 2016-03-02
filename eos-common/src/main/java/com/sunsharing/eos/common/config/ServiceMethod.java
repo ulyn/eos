@@ -48,6 +48,7 @@ public class ServiceMethod {
         }
     }
 
+    private Method method;
     private String methodName;
     private String version;
     private Class<?>[] parameterTypes;
@@ -55,14 +56,15 @@ public class ServiceMethod {
     private Class retType;
     private AccessType accessType;
 
-    public ServiceMethod() {
-    }
-
-    public ServiceMethod(Method method) {
-        new ServiceMethod(method, null);
-    }
+//    public ServiceMethod() {
+//    }
+//
+//    public ServiceMethod(Method method) {
+//        this(method, null);
+//    }
 
     public ServiceMethod(Method method, String[] parameterNames) {
+        this.method = method;
         this.methodName = method.getName();
         this.accessType = AccessType.valueOf(method.getModifiers());
         this.retType = method.getReturnType();
@@ -70,6 +72,10 @@ public class ServiceMethod {
         this.parameterNames = parameterNames;
         Version v = method.getAnnotation(Version.class);
         this.version = v.value();
+    }
+
+    public Method getMethod() {
+        return method;
     }
 
     public String getMethodName() {

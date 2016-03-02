@@ -45,17 +45,18 @@ public class RemoteProcess implements Process {
     Logger logger = Logger.getLogger(RemoteProcess.class);
 
     @Override
-    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) {
+    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) throws RpcException{
         try {
-            res.setSerialization(res.getSerialization());
             String appId = req.getAppId();
             String serviceId = req.getServiceId();
-            String serviceVersion = req.getMethodVersion();
+            String methodVersion = req.getMethodVersion();
+            String method = req.getMethod();
             //取得服务的ip和port
-            JSONArray jsonArray = ServiceCache.getInstance().getServiceData(appId, serviceId, serviceVersion);
+            JSONArray jsonArray = ServiceCache.getInstance().getServiceData(appId, serviceId,method, methodVersion);
             if (jsonArray == null) {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION,
-                        "eos没有取到在线的服务端！appId=" + appId + ",serviceId=" + serviceId + ",version=" + serviceVersion);
+                        String.format("eos没有取到在线的服务端！appId=%s,serviceId=%s,method=%s,version=%s",
+                                appId,serviceId,method,methodVersion));
             }
             JSONObject config = null;
             if (!StringUtils.isBlank(req.getDebugServerIp()) && !Constants.EOS_MODE_PRO.equalsIgnoreCase(SysProp.eosMode)) {
@@ -81,19 +82,24 @@ public class RemoteProcess implements Process {
             }
             String ip = config.getString("ip");
             int port = config.getIntValue("port");
-            int timeout = config.getIntValue("timeout");
-            String transporter = config.getString("transporter");
+            String transporter = req.getTransporter();
 
-            logger.info(String.format("request target %s:%s:%s-%s-%s", ip, port,
-                    req.getAppId(), req.getServiceId(), req.getMethodVersion()));
+            logger.info(String.format("request target %s:%s:%s-%s-%s-%s", ip, port,
+                    req.getAppId(), req.getServiceId(),req.getMethod(), req.getMethodVersion()));
 
-            ResponsePro responsePro = RpcClientFactory.create(transporter).doRpc(req, ip, port, timeout);
+            ResponsePro responsePro = RpcClientFactory.create(transporter).doRpc(req, ip, port);
+            res.setEosVersion(responsePro.getEosVersion());
+            res.setMsgId(responsePro.getMsgId());
+            res.setSerialization(responsePro.getSerialization());
+            res.setAction(responsePro.getAction());
             res.setStatus(responsePro.getStatus());
             res.setResultBytes(responsePro.getResultBytes());
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            logger.error(String.format("服务调用异常，%s:%s:%s", req.getAppId(), req.getServiceId(), req.getMethodVersion()), e);
-//            res.setExceptionResult(e); todo
+            String str = String.format("Manager调用Server异常，%s:%s:%s:%s",
+                    req.getAppId(), req.getServiceId(), req.getMethod(), req.getMethodVersion());
+            logger.error(str, e);
+            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION,str,e);
         }
     }
 }

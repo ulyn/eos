@@ -21,6 +21,7 @@ import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.*;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -74,22 +75,26 @@ public class ServiceInvoker extends AbstractServiceFilter {
         }
         Object obj = this.serviceEngine.get(req.getServiceId());
         ServiceConfig serviceConfig = this.serviceConfigEngine.get(req.getServiceId());
-//        RpcResult result = new RpcResult();
         if (obj != null) {
             try {
-                ServiceMethod method = serviceConfig.getMethod(req.getMethod());
-                if (method == null) {
-                    throw new NoSuchMethodException(req.getMethod() + "的ServiceMethod==null");
+                ServiceMethod serviceMethod = serviceConfig.getMethod(req.getMethod());
+                if (serviceMethod == null) {
+                    throw new NoSuchMethodException(
+                            String.format("服务%s没有指定的方法：%s",req.getServiceId(),req.getMethod()));
                 }
 
                 //这边暂时直接使用jdk代理执行
-                //此处的parameterTypes不用invocation的，规定不允许方法重载
-                Method m = obj.getClass().getMethod(req.getMethod(), method.getParameterTypes());
-                Object o = m.invoke(obj, null);  //todo   这边要做转换参数的事情
-
+                Method m = serviceMethod.getMethod();
+                String[] parameterNames = serviceMethod.getParameterNames();
+                Object[] args = null;
+                if(parameterNames != null){
+                    Class<?>[] parameterTypes = m.getParameterTypes();
+                    //todo 处理参数
+                }
+                Object o = m.invoke(obj, args);
                 res.writeValue(o);
             } catch (NoSuchMethodException e) {
-                String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethod();
+                String errorMsg = "反射执行未找到指定方法：" + req.getServiceId() + " - " + req.getMethod();
                 logger.error(errorMsg, e);
                 res.writeError(new IllegalArgumentException(errorMsg, e));
             } catch (InvocationTargetException e) {
@@ -103,7 +108,8 @@ public class ServiceInvoker extends AbstractServiceFilter {
                 res.writeError(new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION, "服务端异常：" + input.toString()));
             }
         } else {
-            String errorMsg = "has no these class serviceId：" + req.getServiceId() + " - " + req.getMethod();
+            String errorMsg = String.format("%s(%s) 没有发现指定的serviceId：%s"
+                    ,EosServerProp.appId,EosServerProp.localIp,req.getServiceId());
             logger.error(errorMsg);
             res.writeError(new IllegalArgumentException(errorMsg));
         }

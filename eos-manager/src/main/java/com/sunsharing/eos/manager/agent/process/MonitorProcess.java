@@ -17,6 +17,7 @@
 package com.sunsharing.eos.manager.agent.process;
 
 import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.manager.zookeeper.EosMonitor;
@@ -38,7 +39,7 @@ public class MonitorProcess implements Process {
     Logger logger = Logger.getLogger(MonitorProcess.class);
 
     @Override
-    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) {
+    public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain)  throws RpcException {
         //todo 监控处理
         if (res.getStatus() == Constants.STATUS_ERROR) {
             //调用出错了。。。

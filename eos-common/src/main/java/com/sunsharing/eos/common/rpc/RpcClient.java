@@ -42,5 +42,15 @@ public interface RpcClient {
      * @return
      */
     ServiceResponse doRpc(ServiceRequest request, String ip, int port) throws Throwable;
+
+    /**
+     * 执行远程调用的方法
+     *
+     * @param request
+     * @param ip
+     * @param port
+     * @return
+     */
+    ResponsePro doRpc(RequestPro request, String ip, int port) throws Throwable;
 }
 

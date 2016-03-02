@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.manager.agent.process;
 
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
@@ -31,6 +32,6 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  * <br>
  */
 public interface Process {
-    void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain);
+    void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain) throws RpcException;
 }
 

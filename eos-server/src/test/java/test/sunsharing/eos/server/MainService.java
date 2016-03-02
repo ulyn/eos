@@ -1,11 +1,11 @@
 /**
- * @(#)WebService
+ * @(#)MainService
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
- *<br> Copyright:  Copyright (c) 2014
+ *<br> Copyright:  Copyright (c) 2016
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-12-12 下午5:44
+ *<br> 16-3-2 下午3:36
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,15 +14,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.clientproxy.ws;
+package test.sunsharing.eos.server;
 
-import com.sunsharing.component.utils.crypto.Base64;
-import com.sunsharing.eos.client.rpc.DynamicRpc;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
+import com.sunsharing.eos.common.annotation.EosService;
+import com.sunsharing.eos.common.annotation.Version;
 
 /**
  * <pre></pre>
@@ -35,15 +30,11 @@ import java.io.IOException;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class WebServiceProxy {
-    private Logger logger = Logger.getLogger(WebServiceProxy.class);
+@EosService(version = "1.0")
+public interface MainService {
 
-    /**
-     * @param serviceReqBase64Str ServiceRequest对象的base64字符串
-     * @return
-     */
-    public String invoke(String serviceReqBase64Str){
-        return DynamicRpc.invoke(serviceReqBase64Str);
-    }
+    @Version(value = "1.0")
+    int testInt();
+
 }
 

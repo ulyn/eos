@@ -16,11 +16,14 @@
  */
 package com.sunsharing.eos.client.rpc;
 
+import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.client.ServiceContext;
 import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
+
+import java.io.IOException;
 
 /**
  * <pre></pre>
@@ -73,6 +76,28 @@ public class DynamicRpc{
         }
         ExceptionHandler.tryHandleException(serviceRequest, serviceResponse,
                 ServiceContext.getInstance().getExceptionResolver());
+    }
+
+    /**
+     * @param serviceReqBase64Str ServiceRequest对象的base64字符串
+     * @return
+     */
+    public static String invoke(String serviceReqBase64Str) throws RpcException {
+        ServiceRequest request = null;
+        try {
+            request = ServiceRequest.formBytes(Base64.decode(serviceReqBase64Str));
+        } catch (IOException e) {
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION,e);
+        } catch (ClassNotFoundException e) {
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION,e);
+        }
+        ServiceResponse response = new ServiceResponse(request);
+        invoke(request, response);
+        try {
+            return Base64.encode(response.toBytes());
+        } catch (IOException e) {
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION,e);
+        }
     }
 
     /**

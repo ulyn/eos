@@ -38,9 +38,9 @@ public class WebServiceProxyFilter extends ProxyFilter {
     @Override
     public void process(ServiceRequest req, ServiceResponse res) throws ServiceFilterException {
         try {
-            String base = Base64.encode(req.serializeToBytes());
+            String base = Base64.encode(req.toBytes());
             String resutlstr = (String) CallWs.send("http://192.168.0.60:8095/services/eosProxy?wsdl", "invoke", new Object[]{base, req.getSerialization()});
-            ServiceResponse response = ServiceResponse.createServiceResponse(Base64.decode(resutlstr), req.getSerialization());
+            ServiceResponse response = ServiceResponse.formBytes(Base64.decode(resutlstr));
             if (response.hasException()) {
                 throw new ServiceFilterException(response.getException().getMessage(), response.getException());
             }

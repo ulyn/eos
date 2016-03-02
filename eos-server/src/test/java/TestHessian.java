@@ -37,7 +37,7 @@ import java.io.InputStream;
  * <br>
  */
 public class TestHessian {
-//    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 //        RpcParams invocation = new RpcParams();
 //        invocation.setArguments(new Object[]{});
 //        invocation.setMethodName("sayHello");
@@ -46,23 +46,23 @@ public class TestHessian {
 ////        invocation.setParameterTypes(null);
 //
 //        System.out.println(getSerializationBytes(invocation).length);
-//
-//    }
-//
-//    protected static byte[] getSerializationBytes(Object o) throws Exception {
-//        Serialization serial = SerializationFactory.createSerialization(Constants.DEFAULT_SERIALIZATION);
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        ObjectOutput objectOutput = serial.serialize(outputStream);
-//        objectOutput.writeObject(o);
-//        objectOutput.flushBuffer();
-//        return outputStream.toByteArray();
-//    }
-//
-//    protected static <T> T serializationBytesToObject(byte[] bytes, Class<T> cls) throws Exception {
-//        Serialization serial = SerializationFactory.createSerialization(Constants.DEFAULT_SERIALIZATION);
-//        InputStream inputStream = new ByteArrayInputStream(bytes);
-//        ObjectInput objectInput = serial.deserialize(inputStream);
-//        return objectInput.readObject(cls);
-//    }
+
+    }
+
+    protected static byte[] getSerializationBytes(Object o) throws Exception {
+        Serialization serial = SerializationFactory.createSerialization(Constants.DEFAULT_SERIALIZATION);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutput objectOutput = serial.serialize(outputStream);
+        objectOutput.writeObject(o);
+        objectOutput.flushBuffer();
+        return outputStream.toByteArray();
+    }
+
+    protected static <T> T serializationBytesToObject(byte[] bytes, Class<T> cls) throws Exception {
+        Serialization serial = SerializationFactory.createSerialization(Constants.DEFAULT_SERIALIZATION);
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        ObjectInput objectInput = serial.deserialize(inputStream);
+        return objectInput.readObject(cls);
+    }
 }
 

@@ -1,11 +1,11 @@
 /**
- * @(#)ParamVarImpl
+ * @(#)MyFilter
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
- *<br> Copyright:  Copyright (c) 2014
+ *<br> Copyright:  Copyright (c) 2016
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-2-18 上午9:44
+ *<br> 16-3-2 下午3:56
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,11 +14,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.clientexample.sys;
+package test.sunsharing.eos.server;
 
-import com.sunsharing.eos.client.sys.SysParamVar;
-
-import javax.servlet.ServletRequest;
+import com.sunsharing.eos.common.filter.*;
+import com.sunsharing.eos.common.rpc.RpcException;
 
 /**
  * <pre></pre>
@@ -31,16 +30,10 @@ import javax.servlet.ServletRequest;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class ParamVarImpl implements SysParamVar {
-
-    public void init() {
-
-    }
-
+public class MyFilter extends AbstractServiceFilter {
     @Override
-    public String getParamVariable(ServletRequest req, String paramKey) {
-
-        return null;
+    protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws ServiceFilterException, RpcException {
+        System.out.println("MyFilter:" + req.getServiceId());
     }
 }
 

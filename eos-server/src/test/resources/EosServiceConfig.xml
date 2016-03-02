@@ -1,0 +1,18 @@
+<eos>
+    <filters>
+        <!--过滤路径应用id+服务名，{appid}.{service}-->
+        <filter>
+            <class>test.sunsharing.eos.server.MyFilter</class>
+            <path-pattern>
+                <!--<value>legend.*</value>-->
+                <!--<value>test.*Service</value>-->
+                <value>*</value>
+            </path-pattern>
+            <exclude-path>
+                <value>legend.testService</value>
+                <!--<value>test.testService</value>-->
+            </exclude-path>
+        </filter>
+    </filters>
+    <exceptionResolver class="test.sunsharing.eos.server.HandlerExceptionResolver"></exceptionResolver>
+</eos>

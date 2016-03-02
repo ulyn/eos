@@ -166,6 +166,7 @@ public class ServiceRequest {
      * @return
      */
     public <T> T getParameter(String key,Class<T> clazz){
+        //todo  可能还有问题
         Object o = parameterMap.get(key);
         if(o == null){
             return null;

@@ -26,6 +26,8 @@ import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import com.sunsharing.eos.server.transporter.ServerFactory;
+import com.thoughtworks.paranamer.BytecodeReadingParanamer;
+import com.thoughtworks.paranamer.Paranamer;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
@@ -146,21 +148,9 @@ public class ServerServiceContext extends AbstractServiceContext {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
         for (Method method : methods) {
-            //取参数名的注解
-            ParameterNames ann = method.getAnnotation(ParameterNames.class);
-            String[] parameterNames = null;
-            if (ann != null) {
-                parameterNames = ann.value();
-                int paramSize = method.getParameterTypes() == null ? 0 : method.getParameterTypes().length;
-                int annParamSize = parameterNames == null ? 0 : parameterNames.length;
-                if (paramSize != annParamSize) {
-                    throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解不正确：参数个数不匹配");
-                }
-            }else
-            {
-                //如果注解取不到，从类中获取
-                throw new RuntimeException("服务" + interfaces + "的方法ParameterNames参数名注解没有，无法注册");
-            }
+            //取参数名
+            Paranamer paranamer = new BytecodeReadingParanamer();
+            String[] parameterNames = paranamer.lookupParameterNames(method, false);
 
             ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
             list.add(serviceMethod);

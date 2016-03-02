@@ -1,11 +1,11 @@
 /**
- * @(#)RpcClient
+ * @(#)Version
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
- *<br> Copyright:  Copyright (c) 2014
+ *<br> Copyright:  Copyright (c) 2016
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-1-31 下午11:43
+ *<br> 16-2-29 下午4:14
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,12 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.rpc;
+package com.sunsharing.eos.common.annotation;
 
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import java.lang.annotation.*;
 
 /**
  * <pre></pre>
@@ -32,15 +29,12 @@ import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public interface RpcClient {
-    /**
-     * 执行远程调用的方法
-     *
-     * @param request
-     * @param ip
-     * @param port
-     * @return
-     */
-    ServiceResponse doRpc(ServiceRequest request, String ip, int port) throws Throwable;
+@Documented
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Version {
+
+    String value();
+
 }
 

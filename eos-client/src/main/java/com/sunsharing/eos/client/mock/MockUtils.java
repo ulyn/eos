@@ -32,11 +32,11 @@ public class MockUtils {
      * 获取模拟数据
      * @return
      */
-    public String transMockMatch(String appId,String serviceId,String version,String method,String mockName,Map params) throws RpcException
+    public String transMockMatch(String appId,String serviceId,String methodVersion,String method,String mockName,Map params) throws RpcException
     {
         try {
             JSONArray array = getTestCode(appId, serviceId,
-                    version,method);
+                    methodVersion,method);
             if (array != null) {
                 //先走入参匹配
                 for (int i = 0; i < array.size(); i++) {
@@ -82,14 +82,14 @@ public class MockUtils {
             }
                 String error = "服务接口" + appId + "-"
                         + serviceId + "-"
-                        + version + "-"
+                        + methodVersion + "-"
                         + method + "没有配置指定的mock:" + mockName+"或者入参无法匹配";
                 logger.error(error);
                 throw new RpcException(RpcException.MOCK_EXCEPTION, error);
         } catch (Exception e) {
             String error = "获取模拟测试值异常！" + appId + "-"
                     + serviceId + "-"
-                    + version + "-"
+                    + methodVersion + "-"
                     + method + "-"
                     + mockName+",错误信息:"+e.getMessage();
             logger.error(error, e);

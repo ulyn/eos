@@ -16,6 +16,10 @@
  */
 package com.sunsharing.eos.client;
 
+import com.sunsharing.eos.client.mock.MockUtils;
+import com.sunsharing.eos.client.rpc.DynamicRpc;
+import com.sunsharing.eos.client.sys.EosClientProp;
+import com.sunsharing.eos.common.filter.ServiceRequest;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
@@ -44,6 +48,10 @@ import java.util.Map;
  */
 public class RpcServlet extends HttpServlet {
     Logger logger = Logger.getLogger(RpcServlet.class);
+
+    private String serialization;
+    private String transporter;
+    private int timeout;
 
     public RpcServlet() {
         super();
@@ -74,18 +82,33 @@ public class RpcServlet extends HttpServlet {
             String methodName = req.getParameter("eos_method_name");
             String version = req.getParameter("eos_version");
 
+            //设置上下文
+            ServiceRequest.Builder builder = new ServiceRequest.Builder(appId,serviceId,methodName,version);
+
+            builder.setSerialization(serialization);
+            builder.setTransporter(transporter);
+            builder.setTimeout(timeout);
+            builder.setDebugServerIp(EosClientProp.getDebugServerIp(appId));
+
+            //设置请求参数
+            Map<String,String[]> params = req.getParameterMap();
+            for(String p : params.keySet()){
+                String[] vs = params.get(p);
+                builder.setParameter(p,vs == null? null : vs[0]);
+            }
+
             //是否模拟的参数
             String mock = req.getParameter("eos_mock");
+            if(!StringUtils.isBlank(mock) && EosClientProp.use_mock){
+                MockUtils mockUtils = new MockUtils();
+                String result = mockUtils.transMockMatch(appId,serviceId,version,methodName,mock,builder.build().getParameterMap());
 
-            Map<String,String> params = req.getParameterMap();
-
-//            ServiceRequest.Builder request = new ServiceRequest.Builder("").build();
-
-//            AbstractProxy proxy = ProxyFactory.createProxy(serviceConfig.getProxy());
-//            Object o = proxy.doInvoke(invocation, serviceConfig);
-
+                rtnMap.put("result", result);//使用mock
+            }else{
+                Object result = DynamicRpc.invoke(builder.build(),Object.class);
+                rtnMap.put("result", result);
+            }
             rtnMap.put("status", true);
-            rtnMap.put("result", null);
         } catch (Throwable throwable) {
             logger.error("remote操作异常！", throwable);
             rtnMap.put("status", false);

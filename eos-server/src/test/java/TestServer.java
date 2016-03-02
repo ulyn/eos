@@ -1,6 +1,6 @@
 import com.sunsharing.component.resvalidate.config.ConfigContext;
 import com.sunsharing.eos.server.ServerServiceContext;
-import com.sunsharing.eos.server.sys.SysProp;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import com.sunsharing.eos.server.zookeeper.ServiceRegister;
 
 import java.io.BufferedReader;
@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 public class TestServer {
 
     public static void main(String[] a) throws Exception {
-        ConfigContext.instancesBean(SysProp.class);
+        ConfigContext.instancesBean(EosServerProp.class);
         ServerServiceContext.getInstance().initPackagePath(null, "com.sunsharing.eos");
         ServerServiceContext.getInstance().init();
 

@@ -17,7 +17,7 @@
 package com.sunsharing.eos.server;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.server.sys.SysProp;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import com.sunsharing.eos.server.zookeeper.ServiceRegister;
 import org.springframework.context.ApplicationContext;
 
@@ -32,7 +32,7 @@ import org.springframework.context.ApplicationContext;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class EosInit {
+public class EosServer {
     private static boolean inited = false;
 
     /**
@@ -52,9 +52,10 @@ public class EosInit {
      */
     public synchronized static void start(ApplicationContext ctx, String packagePath) {
         if (!inited) {
-            ConfigContext.instancesBean(SysProp.class);
-            ServerServiceContext.getInstance().initPackagePath(ctx,packagePath);
-            ServerServiceContext.getInstance().init();
+            ConfigContext.instancesBean(EosServerProp.class);
+            ServerServiceContext.getInstance().initPackagePath(ctx, packagePath);
+            ServerServiceContext.getInstance().initConfig();
+            ServerServiceContext.getInstance().initService();
             new Thread() {
                 public void run() {
                     ServiceRegister serviceRegister = ServiceRegister.getInstance();

@@ -1,6 +1,6 @@
 package com.sunsharing.eos.client.zookeeper;
 
-import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
@@ -10,7 +10,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -36,7 +35,7 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
         try
         {
             logger.info("登录成功了开始调用回调");
-            String appIds = SysProp.app_id;
+            String appIds = EosClientProp.app_id;
             if(StringUtils.isBlank(appIds))
             {
                 throw new RuntimeException("E3的配置文件必须增加app_id");

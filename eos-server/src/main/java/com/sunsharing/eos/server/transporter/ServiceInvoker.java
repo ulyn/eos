@@ -41,12 +41,12 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class ServiceInvokeFilter extends AbstractServiceFilter {
-    private Logger logger = Logger.getLogger(ServiceInvokeFilter.class);
+public class ServiceInvoker extends AbstractServiceFilter {
+    private Logger logger = Logger.getLogger(ServiceInvoker.class);
     private Map<String, Object> serviceEngine = new HashMap<String, Object>();
     private Map<String, ServiceConfig> serviceConfigEngine = new HashMap<String, ServiceConfig>();
 
-    public ServiceInvokeFilter(Map<String, Object> serviceEngine, Map<String, ServiceConfig> serviceConfigEngine) {
+    public ServiceInvoker(Map<String, Object> serviceEngine, Map<String, ServiceConfig> serviceConfigEngine) {
         this.serviceEngine = serviceEngine;
         this.serviceConfigEngine = serviceConfigEngine;
     }
@@ -85,7 +85,7 @@ public class ServiceInvokeFilter extends AbstractServiceFilter {
                 //这边暂时直接使用jdk代理执行
                 //此处的parameterTypes不用invocation的，规定不允许方法重载
                 Method m = obj.getClass().getMethod(req.getMethod(), method.getParameterTypes());
-                Object o = m.invoke(obj, null);  //todo
+                Object o = m.invoke(obj, null);  //todo   这边要做转换参数的事情
 
                 res.writeValue(o);
             } catch (NoSuchMethodException e) {

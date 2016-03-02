@@ -22,6 +22,7 @@ import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.exception.ExceptionResolver;
 import org.apache.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * <pre></pre>
@@ -43,51 +44,6 @@ public class ServiceContext extends AbstractServiceContext {
         return sc;
     }
 
-    Logger logger = Logger.getLogger(ServiceContext.class);
-
-    //全局异常处理器
-    private static ExceptionResolver exceptionResolver = null;
-
-    public static ExceptionResolver getExceptionResolver() {
-        return exceptionResolver;
-    }
-    //存储服务对象,key为服务name
-//    protected static Map<String, Object> interfaceServiceMap = new HashMap<String, Object>();
-
-    public void initPackagePath(String packagePath) {
-        this.packagePath = packagePath;
-    }
-
-    @Override
-    protected Object createBean(final Class interfaces, ServiceConfig config) {
-        //客户端,找实现代理类
-        AbstractProxy proxy = ProxyFactory.createProxy(config.getProxy());
-        Object bean = proxy.getProxy(interfaces, config);
-//        interfaceServiceMap.put(interfaces.getName(), bean);
-        return bean;
-    }
-
-    @Override
-    public void setExceptionResolver(ExceptionResolver exceptionResolver) {
-        ServiceContext.exceptionResolver = exceptionResolver;
-    }
-
-    private <T> T getBeanPri(Class<T> clazz)
-    {
-        Object o = servicesMapByKeyClassName.get(clazz.getName());
-        if (o == null) {
-            return null;
-        }
-        return (T) o;
-    }
-    private  <T> T getBeanPri(String appId, String serviceId) {
-        Object o = servicesMapByKeyAppServiceId.get(getServiceConfigKey(appId, serviceId));
-        if (o == null) {
-            return null;
-        }
-        return (T) o;
-    }
-
     /**
      * 根据接口取得服务bean
      *
@@ -96,13 +52,9 @@ public class ServiceContext extends AbstractServiceContext {
      * @return
      */
     public static <T> T getBean(Class<T> clazz) {
-        return sc.getBeanPri(clazz);
+        //todo 支持类方式调用
+        throw new NotImplementedException();
     }
-
-    public static <T> T getBean(String appId, String serviceId) {
-        return sc.getBeanPri(appId,serviceId);
-    }
-
 
 }
 

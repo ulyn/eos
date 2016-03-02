@@ -16,18 +16,11 @@
  */
 package com.sunsharing.eos.client.rpc;
 
-import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.client.sys.SysProp;
-import com.sunsharing.eos.client.zookeeper.ServiceLocation;
-import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.client.ServiceContext;
+import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.*;
-import com.sunsharing.eos.common.rpc.RpcContext;
-import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 
 /**
  * <pre></pre>
@@ -40,8 +33,12 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class DynamicRpc extends RpcInvoker {
+public class DynamicRpc{
 
+
+    public static void invoke(ServiceRequest request) throws RpcException {
+        invoke(request,void.class);
+    }
 
     /**
      * 执行调用
@@ -51,13 +48,12 @@ public class DynamicRpc extends RpcInvoker {
      * @return
      * @throws com.sunsharing.eos.common.rpc.RpcException
      */
-    public <T> T doInvoke(ServiceRequest request,Class<T> retType) throws RpcException {
+    public static <T> T invoke(ServiceRequest request,Class<T> retType) throws RpcException {
         ServiceResponse serviceResponse = new ServiceResponse(request);
 
-        doInvoke(request, serviceResponse);
+        invoke(request, serviceResponse);
         try {
-            Object o = getResult(request, serviceResponse, retType);
-            return (T) o;
+            return getResult(request, serviceResponse, retType);
         } catch (RpcException e) {
             throw e;
         } catch (Throwable e) {
@@ -65,5 +61,44 @@ public class DynamicRpc extends RpcInvoker {
         }
     }
 
+    public static void invoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
+        FilterChain filterChain =
+                FilterManager.createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
+        RpcCaller caller = new RpcCaller();
+        filterChain.addFilter(caller);
+        try {
+            filterChain.doFilter(serviceRequest, serviceResponse);
+        } catch (Exception e) {
+            serviceResponse.writeError(e);
+        }
+        ExceptionHandler.tryHandleException(serviceRequest, serviceResponse, ServiceContext.getExceptionResolver());
+    }
+
+    /**
+     * 转换ResponsePro获取返回结果
+     *
+     * @param serviceRequest
+     * @param serviceResponse
+     * @param retType
+     * @return
+     * @throws Throwable
+     */
+    protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class<T> retType) throws RpcException {
+        if (serviceResponse.hasException()) {
+            Throwable t = serviceResponse.getException();
+            throw new RpcException(t.getMessage() , t);
+        }
+        if(void.class.equals(retType)){
+             return null;
+        }
+        Object value = serviceResponse.getValue();
+        if(value == null){
+            return null;
+        }else if(retType.isInstance(value)){
+            return (T)value;
+        }else{
+            throw new RpcException(String.format("期望类型%s与实际返回类型%s匹配有误！",retType,value.getClass()));
+        }
+    }
 }
 

@@ -58,7 +58,7 @@ public class ServiceResponse implements Serializable {
         return msgId;
     }
 
-    public void setMsgId(String msgId) {
+    private void setMsgId(String msgId) {
         this.msgId = msgId;
     }
 
@@ -66,7 +66,7 @@ public class ServiceResponse implements Serializable {
         return eosVersion;
     }
 
-    public void setEosVersion(String eosVersion) {
+    private void setEosVersion(String eosVersion) {
         this.eosVersion = eosVersion;
     }
 
@@ -74,7 +74,7 @@ public class ServiceResponse implements Serializable {
         return serialization;
     }
 
-    public void setSerialization(String serialization) {
+    private void setSerialization(String serialization) {
         if (!StringUtils.isBlank(serialization)) {
             this.serialization = serialization;
         }
@@ -122,6 +122,18 @@ public class ServiceResponse implements Serializable {
         return responsePro;
     }
 
+    /**
+     * 复制对象
+     * @param response
+     */
+    public void copyForm(ServiceResponse response){
+        this.setSerialization(response.getSerialization());
+        this.setEosVersion(response.getEosVersion());
+        this.setMsgId(response.getMsgId());
+        this.writeValue(response.getValue());
+        this.writeError(response.getException());
+    }
+
     public byte[] toBytes() throws IOException {
         ResponsePro responsePro = this.toResponsePro();
         return responsePro.generate().array();
@@ -133,7 +145,7 @@ public class ServiceResponse implements Serializable {
         return createServiceResponse(responsePro);
     }
 
-    private static ServiceResponse createServiceResponse(ResponsePro responsePro) throws IOException, ClassNotFoundException {
+    public static ServiceResponse createServiceResponse(ResponsePro responsePro) throws IOException, ClassNotFoundException {
         ServiceResponse serviceResponse = new ServiceResponse();
         serviceResponse.setMsgId(responsePro.getMsgId());
         serviceResponse.setSerialization(responsePro.getSerialization());

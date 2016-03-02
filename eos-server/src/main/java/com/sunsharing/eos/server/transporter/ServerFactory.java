@@ -18,7 +18,7 @@ package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.RpcServer;
-import com.sunsharing.eos.server.sys.SysProp;
+import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -44,11 +44,11 @@ public class ServerFactory {
         if (server == null) {
             logger.info("server为空,重新New");
             if (Constants.SHORT_NETTY.equals(transporter)) {
-                server = new NettyRpcServer(SysProp.nettyServerPort);
+                server = new NettyRpcServer(EosServerProp.nettyServerPort);
                 serverMap.put(transporter,server);
             } else if (Constants.LONG_NETTY.equals(transporter))
             {
-                server = new NettyRpcServer(SysProp.nettyServerPort);
+                server = new NettyRpcServer(EosServerProp.nettyServerPort);
                 serverMap.put(transporter,server);
             }else
             {

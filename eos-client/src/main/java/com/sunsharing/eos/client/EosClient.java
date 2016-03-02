@@ -17,7 +17,7 @@
 package com.sunsharing.eos.client;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.client.sys.SysProp;
+import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 
@@ -42,8 +42,8 @@ public class EosClient {
      */
     public synchronized static void start() {
         if (!inited) {
-            ConfigContext.instancesBean(SysProp.class);
-            ServiceContext.getInstance().init();
+            ConfigContext.instancesBean(EosClientProp.class);
+            ServiceContext.getInstance().initConfig();
 
             new Thread() {
                 public void run() {
@@ -60,8 +60,8 @@ public class EosClient {
      *
      */
     public synchronized static void synStart() {
-        ConfigContext.instancesBean(SysProp.class);
-        ServiceContext.getInstance().init();
+        ConfigContext.instancesBean(EosClientProp.class);
+        ServiceContext.getInstance().initConfig();
         ServiceLocation.getInstance().synConnect();
     }
 

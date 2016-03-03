@@ -126,18 +126,41 @@ public class TDbChange {
         boolean sjj = false;
         for(TDbChecklist check:dbChecklistList)
         {
-            if("1".equals(check.getCheckStatus()))
+            //
             {
                 //审批通过
                 if("2".equals(check.getCheckUser().getRole()) ||
                         "3".equals(check.getCheckUser().getRole()))
                 {
-                    xzz = true;
+                    if("1".equals(check.getCheckStatus()))
+                    {
+                        xzz = true;
+                    }else
+                    {
+                        xzz = false;
+                    }
+                    break;
                 }
+
+            }
+        }
+        for(TDbChecklist check:dbChecklistList)
+        {
+            //
+            {
+                //审批通过
                 if("4".equals(check.getCheckUser().getRole()))
                 {
-                    sjj = true;
+                    if("1".equals(check.getCheckStatus()))
+                    {
+                        sjj = true;
+                    }else
+                    {
+                        sjj = false;
+                    }
+                    break;
                 }
+
             }
         }
         if(xzz && sjj)

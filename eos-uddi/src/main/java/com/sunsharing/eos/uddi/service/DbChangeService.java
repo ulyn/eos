@@ -44,12 +44,26 @@ public class DbChangeService {
         checkListDao = new SimpleHibernateDao<TDbChecklist, Integer>(sessionFactory, TDbChecklist.class);
     }
 
-    public List<TDbChange> list()
+    public List<TDbChange> list(String appId)
     {
-        String hql = "from TDbChange order by version desc";
-        Query query = dbCheckListDao.createQuery(hql);
+        String hql = "from TDbChange where appId.appId=?  order by version desc";
+        Query query = dbCheckListDao.createQuery(hql,new Integer(appId));
         query.setMaxResults(100);
         return  query.list();
+    }
+
+    public List<TDbChange> getDownLoadList(String appId,String beginVersion,String endVersion)
+    {
+        if(StringUtils.isBlank(beginVersion))
+        {
+            beginVersion = "0000000000";
+        }
+        if(StringUtils.isBlank(endVersion))
+        {
+            endVersion = "9999999999";
+        }
+        String hql = "from TDbChange where  version>=? and version<=? order by version desc";
+        return dbChangeDao.find(hql,beginVersion,endVersion);
     }
 
     public TDbPdm isNotMyLock(int appId,int userId)
@@ -165,6 +179,22 @@ public class DbChangeService {
             TDbPdm pdm = pdmList.get(0);
             pdm.setLock("1");
             pdm.setLockUserId(user);
+            pdmDao.update(pdm);
+        }else
+        {
+            return;
+        }
+    }
+
+    public void unlockPdm(String appId)
+    {
+        String hql = "from TDbPdm where appId.appId=?";
+        List<TDbPdm> pdmList = pdmDao.find(hql,new Integer(appId));
+        if(pdmList.size()>0)
+        {
+            TDbPdm pdm = pdmList.get(0);
+            pdm.setLock("0");
+            pdm.setLockUserId(null);
             pdmDao.update(pdm);
         }else
         {

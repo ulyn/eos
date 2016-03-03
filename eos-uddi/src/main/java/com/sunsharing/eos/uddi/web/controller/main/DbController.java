@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.service.AppService;
@@ -13,6 +14,8 @@ import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,9 +43,14 @@ public class DbController {
     @RequestMapping(value="/listDb.do",method= RequestMethod.POST)
     public void eos(Model model,HttpServletRequest request,
                     HttpServletResponse response) throws Exception {
-        List<TDbChange> changeList = dbChangeService.list();
+
         Map<Integer,Boolean> changeStatus = new HashMap<Integer, Boolean>();
         Map<Integer,String> userName = new HashMap<Integer, String>();
+
+        String appId = request.getParameter("appId");
+        String status = request.getParameter("status");
+        List<TDbChange> changeList = dbChangeService.list(appId);
+
         for(TDbChange change:changeList)
         {
             userName.put(change.getId(),change.getUser().getUserName());
@@ -55,6 +63,20 @@ public class DbController {
             String pubishTime = (String)next.get("pubishTime");
             int id = next.getInteger("id");
             boolean checkStatus = changeStatus.get(id);
+            if(status.equals("1"))
+            {
+                if(!checkStatus)
+                {
+                    iterator.remove();
+                }
+            }else if(status.equals("2"))
+            {
+                if(checkStatus)
+                {
+                    iterator.remove();
+                }
+            }
+
             next.put("checkStatus",checkStatus);
             next.put("userName",userName.get(id));
             next.put("pubishTime",pubishTime.substring(0,8));
@@ -86,6 +108,15 @@ public class DbController {
             {
                 result.put("isLock",false);
             }
+            TUser user = (TUser)request.getSession().getAttribute("user");
+            if(user.getRole().equals("3"))
+            {
+                result.put("manage",true);
+            }else
+            {
+                result.put("manage",false);
+            }
+
 
         }
         ResponseHelper.printOut(response,JSON.toJSONString(result));
@@ -198,7 +229,11 @@ public class DbController {
                     // 获得文件名
                     File source = new File(SysInit.path + File.separator + "db" + File.separator + appcode +"/"+
                             destfilename);
-                    if (source.exists()) {
+                    if ( source.exists() && ext.toLowerCase().indexOf(".pdm")!=-1 ) {
+                        source.renameTo(new File(SysInit.path + File.separator + "db" + File.separator + appcode +"/"+
+                                DateUtils.getDBString(new Date())+".pdm"));
+                    }else
+                    {
                         source.delete();
                     }
                     imgFile.transferTo(source);
@@ -220,8 +255,16 @@ public class DbController {
     }
 
 
+    @RequestMapping(value = {"/unlock.do"}, method = RequestMethod.POST)
+    public void upladDb(String appId, HttpServletRequest request,HttpServletResponse response ) {
+        dbChangeService.unlockPdm(appId);
+        ResponseHelper.printOut(response, "");
+    }
 
-    @RequestMapping(value = {"/saveDbChange.do"}, method = RequestMethod.POST)
+
+
+
+        @RequestMapping(value = {"/saveDbChange.do"}, method = RequestMethod.POST)
     public void saveDbChange(String appId,String changelog,String db,String changeId,
                              HttpServletResponse response, HttpServletRequest request)
     {
@@ -357,6 +400,75 @@ public class DbController {
             ResponseHelper.printOut(response, result);
             return;
         }
+    }
+    @RequestMapping(value = {"/validateBatchDowlnload.do"}, method = RequestMethod.POST)
+    public void validateBatchDowlnload(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        String appId = request.getParameter("appId");
+        String begin = request.getParameter("begin");
+        String end = request.getParameter("end");
+        try {
+            List<TDbChange> list = dbChangeService.getDownLoadList(appId, begin, end);
+            if (list.size() == 0) {
+                throw new RuntimeException("没有找到相应的版本");
+            }
+            String versions = "";
+            for (TDbChange db : list) {
+                if (!db.geCheckStatus()) {
+                    versions += db.getVersion() + ",";
+                }
+            }
+            if (!StringUtils.isBlank(versions)) {
+                throw new RuntimeException("版本:" + versions + "未审批通过");
+            }
+
+            String result = ResponseHelper.covert2Json(true,"","");
+            ResponseHelper.printOut(response, result);
+            return;
+
+        }catch (Exception e)
+        {
+
+            logger.error("校验出错！", e);
+            String result = ResponseHelper.covert2Json(false, e.getMessage(), e.getMessage());
+            ResponseHelper.printOut(response, result);
+            return;
+        }
+
+
+    }
+
+    @RequestMapping(value = {"/batchDlownload.do"}, method = RequestMethod.GET)
+    public void batchDlownload(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        //application/octet-stream
+        String appId = request.getParameter("appId");
+        String begin = request.getParameter("begin");
+        String end = request.getParameter("end");
+        List<TDbChange> list = dbChangeService.getDownLoadList(appId,begin,end);
+        String appCode = "";
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;"
+                + " filename=" + new String((DateUtils.getDBString(new Date()).substring(0,8)+".zip").getBytes("UTF-8"), "ISO8859-1"));
+        ZipOutputStream out = new ZipOutputStream(response.getOutputStream());
+        for(TDbChange chabnge:list)
+        {
+            appCode = chabnge.getAppId().getAppCode();
+            String fileFullPath = SysInit.path + File.separator + "db" + File.separator + appCode +
+                    File.separator + chabnge.getScript();
+            out.putNextEntry(new ZipEntry(chabnge.getScript()));
+            FileInputStream input = null;
+            try {
+                input = new FileInputStream(fileFullPath);
+                IOUtils.copy(input,out);
+            }catch (Exception e)
+            {
+                logger.error("",e);
+                throw new RuntimeException("下载出错");
+            }finally {
+                IOUtils.closeQuietly(input);
+            }
+        }
+        out.close();
     }
 
 }

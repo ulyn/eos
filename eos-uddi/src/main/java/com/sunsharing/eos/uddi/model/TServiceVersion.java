@@ -21,7 +21,7 @@ public class TServiceVersion {
 
     List<TMethod> methods = new ArrayList<TMethod>();
 
-    @OneToMany(mappedBy="version",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="versionObj",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     public List<TMethod> getMethods() {
         return methods;

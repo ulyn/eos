@@ -17,6 +17,7 @@
 package com.sunsharing.eos.common.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.utils.VersionUtil;
@@ -166,21 +167,8 @@ public class ServiceRequest {
      * @return
      */
     public <T> T getParameter(String key,Class<T> clazz){
-        //todo  可能还有问题
         Object o = parameterMap.get(key);
-        if(o == null){
-            return null;
-        }else if(clazz.isInstance(o)){
-            return (T)o;
-        }else{
-            String transStr;
-            if(CompatibleTypeUtils.isBaseDataType(o.getClass())){
-                transStr = o.toString();
-            }else{
-                transStr = JSON.toJSONString(o);
-            }
-            return (T)CompatibleTypeUtils.compatibleTypeConvert(transStr,clazz);
-        }
+        return CompatibleTypeUtils.expectConvert(o,clazz);
     }
 
     public Map<String, Object> getParameterMap() {
@@ -342,17 +330,23 @@ public class ServiceRequest {
          * @return
          */
         public Builder setEosVersion(String eosVersion) {
-            this.eosVersion = eosVersion;
+            if(eosVersion != null){
+                this.eosVersion = eosVersion;
+            }
             return this;
         }
 
         public Builder setSerialization(String serialization) {
-            this.serialization = serialization;
+            if(serialization != null){
+                this.serialization = serialization;
+            }
             return this;
         }
 
         public Builder setTimeout(int timeout) {
-            this.timeout = timeout;
+            if(timeout > 0){
+                this.timeout = timeout;
+            }
             return this;
         }
 
@@ -377,7 +371,9 @@ public class ServiceRequest {
         }
 
         public Builder setTransporter(String transporter) {
-            this.transporter = transporter;
+            if(transporter != null){
+                this.transporter = transporter;
+            }
             return this;
         }
 

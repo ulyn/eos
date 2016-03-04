@@ -18,6 +18,7 @@ package com.sunsharing.eos.server;
 
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
+import com.sunsharing.eos.common.annotation.Version;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
@@ -113,13 +114,12 @@ public class ServerServiceContext extends AbstractServiceContext {
             config.setSerialization(ann.serialization());
             config.setTimeout(ann.timeout());
             config.setTransporter(ann.transporter());
-            config.setVersion(ann.version());
             config.setImpl(ann.impl());
             config.setServiceMethodList(getInterfaceMethodList(c));
 
             Object bean = createBean(c, config);
             if (bean != null) {
-                logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
+                logger.info("加载服务：" + config.getAppId() + "-" + config.getId());
                 String key = getServiceConfigKey(config.getAppId(), config.getId());
                 servicesMapByKeyClassName.put(c.getName(), bean);
                 servicesMapByKeyAppServiceId.put(key, bean);
@@ -148,6 +148,12 @@ public class ServerServiceContext extends AbstractServiceContext {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
         for (Method method : methods) {
+            if(!method.isAnnotationPresent(Version.class)){
+                logger.error(String.format("服务接口[%s]的方法[%s]上必须注解Version",
+                        interfaces.getName(),method.getName()));
+                System.exit(0);
+            }
+
             //取参数名
             Paranamer paranamer = new BytecodeReadingParanamer();
             String[] parameterNames = paranamer.lookupParameterNames(method, false);

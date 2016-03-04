@@ -34,6 +34,7 @@ public class MyFilter extends AbstractServiceFilter {
     @Override
     protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws ServiceFilterException, RpcException {
         System.out.println("MyFilter:" + req.getServiceId());
+        filterChain.doFilter(req,res);
     }
 }
 

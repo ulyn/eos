@@ -64,6 +64,7 @@ public class FastJsonObjectOutput implements com.sunsharing.eos.common.serialize
         JSONSerializer serializer = new JSONSerializer(out);
         serializer.config(SerializerFeature.WriteEnumUsingToString, true);
         serializer.config(SerializerFeature.WriteMapNullValue, true);
+        serializer.config(SerializerFeature.WriteClassName, true);
         serializer.write(obj);
         out.writeTo(writer);
         writer.println();

@@ -38,8 +38,6 @@ public @interface EosService {
 
     String id() default "";
 
-    String version();
-
     String proxy() default Constants.DEFAULT_PROXY;
 
     String serialization() default Constants.DEFAULT_SERIALIZATION;

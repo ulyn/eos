@@ -27,8 +27,8 @@ public class Constants {
     public static final String MOCK_VOID = "void";
 
     //正常
-    public static final byte STATUS_SUCCESS = 0;
+    public static final byte STATUS_SUCCESS = 1;
     //失败
-    public static final byte STATUS_ERROR = 1;
+    public static final byte STATUS_ERROR = 0;
 
 }

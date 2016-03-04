@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.common.rpc.protocol;
 
+import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.RpcResult;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.StringUtils;
@@ -40,7 +41,7 @@ public class ResponsePro extends BaseProtocol {
     /**
      * status 0 正常 1异常
      */
-    byte status = 0;
+    byte status = Constants.STATUS_SUCCESS;
 
     byte[] resultBytes;
 
@@ -70,6 +71,7 @@ public class ResponsePro extends BaseProtocol {
             buffer.writeBytes(StringUtils.intToBytes(resultBytes.length));
             buffer.writeBytes(resultBytes);
         }else{
+            // RpcResult一定有值，除非status是异常状态
             buffer.writeBytes(StringUtils.intToBytes(0));
         }
         return buffer;

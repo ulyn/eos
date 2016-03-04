@@ -20,6 +20,7 @@ import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.client.ServiceContext;
 import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.*;
+import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 
@@ -112,19 +113,13 @@ public class DynamicRpc{
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class<T> retType) throws RpcException {
         if (serviceResponse.hasException()) {
             Throwable t = serviceResponse.getException();
-            throw new RpcException(t.getMessage() , t);
-        }
-        if(void.class.equals(retType)){
-             return null;
+            if(t instanceof RpcException){
+                throw (RpcException)t;
+            }else
+                throw new RpcException(t.getMessage() , t);
         }
         Object value = serviceResponse.getValue();
-        if(value == null){
-            return null;
-        }else if(retType.isInstance(value)){
-            return (T)value;
-        }else{
-            throw new RpcException(String.format("期望类型%s与实际返回类型%s匹配有误！",retType,value.getClass()));
-        }
+        return CompatibleTypeUtils.expectConvert(value,retType);
     }
 }
 

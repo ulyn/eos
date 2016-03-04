@@ -163,10 +163,12 @@ public class ServiceResponse implements Serializable {
         serviceResponse.setEosVersion(responsePro.getEosVersion());
 
         RpcResult result = toResult(responsePro);
-        if(result.hasException()){
-            serviceResponse.writeError(result.getException());
-        }else{
-            serviceResponse.writeValue(result.getValue());
+        if(result != null){
+            if(result.hasException()){
+                serviceResponse.writeError(result.getException());
+            }else{
+                serviceResponse.writeValue(result.getValue());
+            }
         }
         return serviceResponse;
     }

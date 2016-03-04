@@ -46,7 +46,7 @@ public class ClientMain {
                 .Builder("ihome","mainService","testInt","1.0")
                 .setParameter("a",1)
                 .build();
-        int i = DynamicRpc.invoke(request,Integer.class);
+        int i = DynamicRpc.invoke(request,int.class);
         System.out.println("调用结果："+i);
     }
 }

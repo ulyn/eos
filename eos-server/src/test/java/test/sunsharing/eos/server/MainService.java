@@ -30,7 +30,7 @@ import com.sunsharing.eos.common.annotation.Version;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.0")
+@EosService
 public interface MainService {
 
     @Version(value = "1.0")

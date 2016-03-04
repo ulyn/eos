@@ -16,7 +16,10 @@
  */
 package com.sunsharing.eos.common.serialize.support.hessian;
 
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractSerializerFactory;
+import com.caucho.hessian.io.Deserializer;
+import com.caucho.hessian.io.HessianProtocolException;
+import com.caucho.hessian.io.Serializer;
 
 import java.math.BigDecimal;
 

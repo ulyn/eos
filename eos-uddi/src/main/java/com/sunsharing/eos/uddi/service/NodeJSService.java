@@ -27,14 +27,15 @@ import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.sys.WindowsExec;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.*;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <pre></pre>

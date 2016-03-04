@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.StringBuilder;
 
 /**
  * <strong>可替换参数变量的字符串类。</strong>参数的形式为：${参数}<p/>

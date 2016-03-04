@@ -16,7 +16,6 @@
  */
 package com.sunsharing.eos.manager.agent;
 
-import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.manager.agent.transporter.AbstractAgentServer;
 import com.sunsharing.eos.manager.agent.transporter.ServerFactory;
 

@@ -1,7 +1,7 @@
 <%@ page import="com.sunsharing.eos.client.ServiceContext" %>
 <%@ page import="com.sunsharing.eos.client.rpc.DynamicRpc" %>
-<%@ page import="java.util.List" %>
 <%@ page import="com.sunsharing.eos.clientexample.test.TestService" %>
+<%@ page import="java.util.List" %>
 <%--
   Created by IntelliJ IDEA.
   User: criss

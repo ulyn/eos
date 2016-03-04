@@ -1,6 +1,11 @@
 package com.sunsharing.eos.clientexample.test;
 
+import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * @(#)TestService
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
@@ -17,10 +22,6 @@ import com.sunsharing.eos.common.annotation.ParameterNames;
  *    修改原因：
  *————————————————————————————————
  */
-import com.sunsharing.eos.common.annotation.EosService;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * <pre></pre>

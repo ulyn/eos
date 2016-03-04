@@ -14,18 +14,15 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.filter;
+package com.sunsharing.eos.common;
 
-import com.alibaba.fastjson.JSON;
-import com.google.common.base.Preconditions;
-import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.rpc.RpcContextContainer;
-import com.sunsharing.eos.common.utils.VersionUtil;
 import com.sunsharing.eos.common.rpc.RpcContext;
+import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.serialize.SerializationFactory;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
+import com.sunsharing.eos.common.utils.VersionUtil;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import java.io.IOException;

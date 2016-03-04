@@ -20,12 +20,12 @@ import com.sunsharing.eos.common.rpc.RpcClient;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.MyChannel;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
 
 import java.net.InetSocketAddress;
 import java.util.Map;

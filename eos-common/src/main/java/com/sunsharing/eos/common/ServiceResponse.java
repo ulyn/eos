@@ -14,11 +14,9 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.common.filter;
+package com.sunsharing.eos.common;
 
 import com.sunsharing.component.utils.base.StringUtils;
-import com.sunsharing.eos.common.Constants;
-import com.sunsharing.eos.common.annotation.Version;
 import com.sunsharing.eos.common.rpc.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;

@@ -1,6 +1,5 @@
 package com.sunsharing.eos.uddi.service;
 
-import com.alibaba.fastjson.JSONArray;
 import com.sunsharing.eos.common.utils.StringUtils;
 
 import java.io.BufferedReader;

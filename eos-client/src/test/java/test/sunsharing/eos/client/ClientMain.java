@@ -18,7 +18,7 @@ package test.sunsharing.eos.client;
 
 import com.sunsharing.eos.client.EosClient;
 import com.sunsharing.eos.client.rpc.DynamicRpc;
-import com.sunsharing.eos.common.filter.ServiceRequest;
+import com.sunsharing.eos.common.ServiceRequest;
 import org.junit.Before;
 import org.junit.Test;
 

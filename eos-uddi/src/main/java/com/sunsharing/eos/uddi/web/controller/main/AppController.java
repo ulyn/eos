@@ -7,7 +7,6 @@ import com.sunsharing.eos.uddi.model.TApp;
 import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.MySqlExport;
 import com.sunsharing.eos.uddi.sys.SysInit;
-import com.sunsharing.eos.uddi.sys.SysProp;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,8 +19,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
 

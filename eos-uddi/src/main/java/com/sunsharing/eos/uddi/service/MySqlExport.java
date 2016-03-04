@@ -6,8 +6,6 @@ import com.sunsharing.eos.uddi.sys.ServiceLocator;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.*;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;

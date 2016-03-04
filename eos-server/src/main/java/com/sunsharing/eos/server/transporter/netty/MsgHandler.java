@@ -1,7 +1,7 @@
 package com.sunsharing.eos.server.transporter.netty;
 
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.HeartPro;

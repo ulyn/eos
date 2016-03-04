@@ -1,7 +1,7 @@
 package com.sunsharing.eos.clientexample.test;
-import com.sunsharing.eos.common.annotation.ParameterNames;
 
 import com.sunsharing.eos.common.annotation.EosService;
+import com.sunsharing.eos.common.annotation.ParameterNames;
 
 import java.util.Map;
 

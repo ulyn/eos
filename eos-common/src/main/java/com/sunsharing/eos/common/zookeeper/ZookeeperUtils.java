@@ -1,6 +1,5 @@
 package com.sunsharing.eos.common.zookeeper;
 
-import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;

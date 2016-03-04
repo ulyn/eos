@@ -16,8 +16,8 @@
  */
 package com.sunsharing.eos.common.rpc;
 
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 

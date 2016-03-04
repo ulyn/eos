@@ -128,11 +128,11 @@ public class ServiceLocation {
             {
                 serviceArray = new JSONArray();
             }
-            JSONObject methodMap = (JSONObject)serviceData.get("methodMap");
+            JSONObject methodVersion = (JSONObject)serviceData.get("methodVersion");
             JSONObject object = new JSONObject();
             object.put("servicePath",real);
             object.put("eosIds",eosIds);
-            object.put("methodMap",methodMap);
+            object.put("methodVersion",methodVersion);
             serviceArray.add(object);
             tmp.put(real, serviceArray);
         }
@@ -200,7 +200,7 @@ public class ServiceLocation {
             {
                 JSONObject jsonObject = (JSONObject)array.get(i);
                 String eosIdsTmp = (String)jsonObject.get("eosIds");
-                JSONObject methodMap = (JSONObject)jsonObject.get("methodMap");
+                JSONObject methodMap = (JSONObject)jsonObject.get("methodVersion");
                 String methodV=(String)methodMap.get(methodName);
                 if(methodV.equals(methodVersion))
                 {

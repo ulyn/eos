@@ -25,8 +25,7 @@ import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import com.sunsharing.eos.server.transporter.ServerFactory;
-import com.thoughtworks.paranamer.BytecodeReadingParanamer;
-import com.thoughtworks.paranamer.Paranamer;
+import com.thoughtworks.paranamer.*;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
@@ -147,16 +146,23 @@ public class ServerServiceContext extends AbstractServiceContext {
     private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
+        Paranamer adaptiveParanamer = new AdaptiveParanamer();
         for (Method method : methods) {
             if(!method.isAnnotationPresent(Version.class)){
                 logger.error(String.format("服务接口[%s]的方法[%s]上必须注解Version",
                         interfaces.getName(),method.getName()));
                 System.exit(0);
             }
-
-            //取参数名
-            Paranamer paranamer = new BytecodeReadingParanamer();
-            String[] parameterNames = paranamer.lookupParameterNames(method, false);
+            String[] parameterNames = null;
+            if(method.getParameterTypes() != null && method.getParameterTypes().length >0){
+                //取参数名
+                parameterNames = adaptiveParanamer.lookupParameterNames(method,false);
+                if(parameterNames == null || parameterNames.length <= 0){
+                    logger.error(String.format("服务接口类 %s - %s 编译期未加入Paranamer，无法获取参数名，系统无法启动！请重新编译打包~~",
+                            interfaces.getName(),method.getName()));
+                    System.exit(0);
+                }
+            }
 
             ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
             list.add(serviceMethod);

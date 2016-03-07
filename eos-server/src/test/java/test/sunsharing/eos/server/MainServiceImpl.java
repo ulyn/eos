@@ -16,6 +16,10 @@
  */
 package test.sunsharing.eos.server;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -28,9 +32,49 @@ package test.sunsharing.eos.server;
  * <br>
  */
 public class MainServiceImpl implements MainService {
+
+
     @Override
-    public int testInt() {
-        return -9;
+    public void testEmptyArgs() {
+        System.out.println("testEmptyArgs");
+    }
+
+    @Override
+    public int testInt(int i) {
+        return i;
+    }
+
+    @Override
+    public double testDouble(double d) {
+        return d;
+    }
+
+    @Override
+    public float testFloat(float f) {
+        return f;
+    }
+
+    @Override
+    public String testString(String s, String sw) {
+        return "from server : " + s + " sw:" + sw;
+    }
+
+    @Override
+    public Map testMap(Map m, String l2) {
+        Map map = new HashMap();
+        map.put("m",m);
+        map.put("l2",l2);
+        return map;
+    }
+
+    @Override
+    public List testListMap(List list) {
+        return list;
+    }
+
+    @Override
+    public void testVoid(String name) {
+        System.out.println("testVoid:"+name);
     }
 }
 

@@ -84,12 +84,12 @@ public class Service {
 
         String sv = getServiceVersion(methondVersion);
 
-        String sql = "from TServiceVersion where status='1' and appCode=? and service.serviceCode=? and version=?";
+        String sql = "from TServiceVersion where status='1' and appCode=? and service.serviceCode=? and serviceVersion=?";
         List<TServiceVersion> l2 = versionDao.find(sql, app.getAppCode(), infaceName, sv);
         if (l2.size() > 0) {
             throw new RuntimeException("该服务已经审批通过，不能再创建，请更改版本号");
         }
-        sql = "from TServiceVersion where  appCode=? and service.serviceCode=? and version=?";
+        sql = "from TServiceVersion where  appCode=? and service.serviceCode=? and serviceVersion=?";
         l2 = versionDao.find(sql, app.getAppCode(), infaceName, sv);
         TService service = null;
         TServiceVersion v = null;
@@ -246,7 +246,7 @@ public class Service {
     }
 
     public List<Object[]> seachmethod(String appId, String serviceId, String version) {
-        String sql = "select methodId,methodName,mockResult,params from TMethod where  version.appCode=? and version.service.serviceId=? and version.version=?";
+        String sql = "select methodId,methodName,mockResult,params,methodVersion from TMethod where  versionObj.appCode=? and versionObj.service.serviceId=? and versionObj.serviceVersion=?";
         TApp app = appDao.get(new Integer(appId));
         Query query = versionDao.createQuery(sql, app.getAppCode(), new Integer(serviceId), version);
         return query.list();

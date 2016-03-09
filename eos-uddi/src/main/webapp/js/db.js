@@ -1,4 +1,4 @@
-indexApp.controller('dblist', function($scope, $routeParams,$http) {
+indexApp.controller('dblist', function($scope, $routeParams,$http,$sce) {
     var appId = $routeParams.appId;
     $scope.appId = appId;
     $http.post('/loadApp.do?appId='+appId, {}).success(function(data){
@@ -21,28 +21,6 @@ indexApp.controller('dblist', function($scope, $routeParams,$http) {
         $scope.pdm = data;
     });
 
-    $http.post('/listDb.do', {}).success(function(data){
-
-        $scope.dbs = data;
-
-        for(var i=0;i<data.length;i++)
-        {
-            if(i%2==0)
-                data[i].rowclass = "odd";
-            else
-                data[i].rowclass = "even";
-
-            if(data[i].checkStatus)
-            {
-                data[i].checkColor = "green";
-            }else
-            {
-                data[i].checkColor = "red";
-            }
-        }
-
-    });
-
 
 
     $scope.toServiceList = function()
@@ -60,6 +38,45 @@ indexApp.controller('dblist', function($scope, $routeParams,$http) {
       location.href = "#dbAdd/"+appId+"/"+changeId;
     };
 
+    $scope.getList = function(status)
+    {
+        $http.post('/listDb.do?appId='+appId+"&status="+status, {}).success(function(data){
+
+            $scope.dbs = data;
+
+            for(var i=0;i<data.length;i++)
+            {
+                if(i%2==0)
+                    data[i].rowclass = "odd";
+                else
+                    data[i].rowclass = "even";
+
+                if(data[i].checkStatus)
+                {
+                    data[i].checkColor = "green";
+                }else
+                {
+                    data[i].checkColor = "red";
+                }
+                data[i].changeLog = $sce.trustAsHtml( data[i].changeLog);
+            }
+
+        });
+    };
+    $scope.getList("0");
+
+    $scope.unlock = function()
+    {
+        $http({
+            url: '/unlock.do',
+            method: "POST",
+            data: "appId="+appId,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data, status, headers, config) {
+            location.reload();
+        });
+    };
+
     $scope.downloadPdm = function()
     {
         location.href = "/downloadPdm.do?appId="+appId;
@@ -67,7 +84,27 @@ indexApp.controller('dblist', function($scope, $routeParams,$http) {
     $scope.downloadLockPdm = function()
     {
         location.href = "/downloadPdm.do?appId="+appId+"&lock="+1;
-        location.reload();
+        $scope.pdm.islock = true;
+        //location.reload();
+    }
+    $scope.downloadAllScript = function()
+    {
+        var begin = $("#begin").val();
+        var end = $("#end").val();
+        $http({
+            url: '/validateBatchDowlnload.do',
+            method: "POST",
+            data: "appId="+appId+"&begin="+begin+"&end="+end,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data, status, headers, config) {
+            if(!data.status)
+            {
+                alert(data.data);
+            }else
+            {
+                location.href = "/batchDlownload.do?"+"appId="+appId+"&begin="+begin+"&end="+end;
+            }
+        });
     }
 
 });
@@ -282,6 +319,7 @@ function changeFile(o) {
                     //alert(data.data);
                     alert("上传成功");
                     $("#"+fileId).next().val(data.data);
+                    $("#"+fileId).next().next().html(data.data);
                 }else
                 {
                     alert("上传失败:"+data.msg);
@@ -294,13 +332,22 @@ function changeFile(o) {
         }
     )
 }
-
 function initDialog() {
     $.fx.speeds._default = 400; // Adjust the dialog animation speed
+    $(".ui-dialog,.ui-widget").remove();
+    $(".dConf:gt(0)").remove();
     $(".dConf").dialog({
         autoOpen: false,
         show: "fadeIn",
         modal: true,
+        close : function() {
+            //location.reload();
+            console.info("desc");
+        },
+        open :function()
+        {
+            $("#checkcontent").val("");
+        },
         buttons: {
             "同意": function () {
                 if ($("#checkcontent").val() == "") {

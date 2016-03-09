@@ -67,12 +67,12 @@
                 <option value="">请选择模拟数据</option>
             </select>
 
-            <span class="label">[版本:{{version}}]{{desc}}</span>
+            <span class="label">[版本:{{methodVersion}}]{{desc}}</span>
             <a href="javascript:void(0)" class="version i_22_upload search_icon" ng-click="showOrHide()" title="Settings">
                 <div class="js-top top_tooltip left_direction" style="display:none">
                     <div>
                         <ul class="clearfix">
-                            <li class="label" ng-click="rollbackMock(v.version)" ng-repeat = "v in versions">{{v.version}}</li>
+                            <li class="label" ng-click="rollbackMock(v.version)" ng-repeat = "v in versions">{{v.versionId}}</li>
                         </ul>
                     </div>
                 </div>

@@ -103,11 +103,11 @@
                             <td class=" ">{{row.user}}</td>
                             <td class=" ">{{row.createTime}}</td>
                             <td class=" "><a class="{{v.class}}" style="margin-left: 5px"
-                                             href="#method/{{row.appId}}/{{row.serviceId}}/{{v.version}}"
-                                             ng-repeat="v in row.versions">{{v.version}}</a></td>
+                                             href="#method/{{row.appId}}/{{row.serviceId}}/{{v.serviceVersion}}"
+                                             ng-repeat="v in row.versions">{{v.versionId}}</a></td>
                             <td class=" "><a class="{{v.class}}" style="margin-left: 5px"
                                              href="#getjava/{{row.appId}}/{{v.versionId}}"
-                                             ng-repeat="v in row.versions">{{v.version}}</a></td>
+                                             ng-repeat="v in row.versions">{{v.versionId}}</a></td>
                             <td class=" "><a href="#delete/{{row.appId}}/{{row.serviceId}}">删除</a></td>
                         </tr>
                         </tbody>

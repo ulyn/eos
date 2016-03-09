@@ -1,13 +1,9 @@
 package com.sunsharing.eos.manager.main;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.manager.agent.ServiceServer;
 import com.sunsharing.eos.manager.sys.SysProp;
 import com.sunsharing.eos.manager.zookeeper.EosState;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 /**
  * Created by criss on 14-5-30.

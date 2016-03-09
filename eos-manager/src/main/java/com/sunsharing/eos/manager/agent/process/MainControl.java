@@ -16,14 +16,14 @@
  */
 package com.sunsharing.eos.manager.agent.process;
 
-import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.Constants;
+import com.sunsharing.eos.common.rpc.RpcResult;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.serialize.SerializationFactory;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * <pre></pre>
@@ -54,6 +54,15 @@ public class MainControl {
             processChain.doProcess(req, res, processChain);
         }catch (Exception e){
             logger.error("调用异常:" + e.getMessage(),e);
+            RpcResult result = new RpcResult(e);
+            try {
+                res.setStatus(Constants.STATUS_ERROR);
+                res.setResultBytes(
+                        SerializationFactory.serializeToBytes(result, res.getSerialization()));
+            } catch (IOException ioe) {
+                throw new RuntimeException("["+ res.getSerialization()
+                        +"]序列化RpcResult对象异常：" + e.getMessage(),e);
+            }
         }
     }
 }

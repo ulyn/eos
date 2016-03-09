@@ -18,8 +18,6 @@ package com.sunsharing.eos.common.serialize.support.hessian;
 
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.AbstractSerializer;
-import com.caucho.hessian.io.ObjectSerializer;
-import com.caucho.hessian.io.Serializer;
 
 import java.io.IOException;
 import java.math.BigDecimal;

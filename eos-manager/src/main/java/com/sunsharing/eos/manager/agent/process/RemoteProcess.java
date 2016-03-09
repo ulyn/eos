@@ -96,10 +96,13 @@ public class RemoteProcess implements Process {
             res.setResultBytes(responsePro.getResultBytes());
             processChain.doProcess(req, res, processChain);
         } catch (Throwable e) {
-            String str = String.format("Manager调用Server异常，%s:%s:%s:%s",
-                    req.getAppId(), req.getServiceId(), req.getMethod(), req.getMethodVersion());
-            logger.error(str, e);
-            throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION,str,e);
+            if(e instanceof RpcException){
+                throw (RpcException)e;
+            }else{
+                String str = String.format("Manager调用Server异常，%s:%s:%s:%s",
+                        req.getAppId(), req.getServiceId(), req.getMethod(), req.getMethodVersion());
+                throw new RpcException(RpcException.REFLECT_INVOKE_EXCEPTION,str,e);
+            }
         }
     }
 }

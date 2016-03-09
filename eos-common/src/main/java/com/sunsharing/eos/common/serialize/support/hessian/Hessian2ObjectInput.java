@@ -2,7 +2,7 @@ package com.sunsharing.eos.common.serialize.support.hessian;
 
 
 import com.caucho.hessian.io.Hessian2Input;
-import com.sunsharing.eos.common.serialize.*;
+import com.sunsharing.eos.common.serialize.ObjectInput;
 
 import java.io.IOException;
 import java.io.InputStream;

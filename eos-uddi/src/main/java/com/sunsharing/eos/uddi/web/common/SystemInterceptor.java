@@ -1,25 +1,21 @@
 package com.sunsharing.eos.uddi.web.common;
 
+import com.sunsharing.eos.uddi.model.TUser;
+import com.sunsharing.eos.uddi.web.exception.AuthException;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-
-import com.sunsharing.component.utils.base.StringUtils;
-import com.sunsharing.eos.uddi.model.TUser;
-import com.sunsharing.eos.uddi.web.exception.AuthException;
-import com.sunsharing.eos.uddi.web.exception.SMSException;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * <pre>

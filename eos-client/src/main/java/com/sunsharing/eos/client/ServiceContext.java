@@ -16,12 +16,7 @@
  */
 package com.sunsharing.eos.client;
 
-import com.sunsharing.eos.client.proxy.AbstractProxy;
-import com.sunsharing.eos.client.proxy.ProxyFactory;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
-import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.exception.ExceptionResolver;
-import org.apache.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

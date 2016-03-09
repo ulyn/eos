@@ -1,9 +1,5 @@
 package com.sunsharing.eos.clientexample.dao;
 
-import java.io.Serializable;
-import java.util.List;
-
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -14,6 +10,9 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <pre><b><font color="blue">SimpleHibernateDao</font></b></pre>

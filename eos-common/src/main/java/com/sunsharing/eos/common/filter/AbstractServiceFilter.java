@@ -16,9 +16,9 @@
  */
 package com.sunsharing.eos.common.filter;
 
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.rpc.RpcException;
-import com.sunsharing.eos.common.rpc.protocol.RequestPro;
-import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 
 import java.util.ArrayList;
 import java.util.List;

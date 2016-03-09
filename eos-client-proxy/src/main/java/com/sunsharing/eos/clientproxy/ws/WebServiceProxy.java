@@ -16,13 +16,8 @@
  */
 package com.sunsharing.eos.clientproxy.ws;
 
-import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.client.rpc.DynamicRpc;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
 
 /**
  * <pre></pre>

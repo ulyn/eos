@@ -1,6 +1,5 @@
 package com.sunsharing.eos.manager.zookeeper;
 
-import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -8,7 +7,10 @@ import com.sunsharing.eos.manager.sys.SysProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by criss on 14-2-4.

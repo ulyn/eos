@@ -16,9 +16,9 @@
  */
 package test.sunsharing.eos.server;
 
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.exception.ExceptionResolver;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
 
 /**
  * <pre></pre>

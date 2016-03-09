@@ -17,24 +17,24 @@
 package com.sunsharing.eos.server;
 
 import com.sunsharing.eos.common.annotation.EosService;
-import com.sunsharing.eos.common.annotation.ParameterNames;
+import com.sunsharing.eos.common.annotation.Version;
 import com.sunsharing.eos.common.config.AbstractServiceContext;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.config.ServiceMethod;
-import com.sunsharing.eos.common.exception.ExceptionResolver;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
 import com.sunsharing.eos.server.transporter.ServerFactory;
-import com.thoughtworks.paranamer.BytecodeReadingParanamer;
-import com.thoughtworks.paranamer.Paranamer;
+import com.thoughtworks.paranamer.*;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <pre></pre>
@@ -113,13 +113,12 @@ public class ServerServiceContext extends AbstractServiceContext {
             config.setSerialization(ann.serialization());
             config.setTimeout(ann.timeout());
             config.setTransporter(ann.transporter());
-            config.setVersion(ann.version());
             config.setImpl(ann.impl());
             config.setServiceMethodList(getInterfaceMethodList(c));
 
             Object bean = createBean(c, config);
             if (bean != null) {
-                logger.info("加载服务：" + config.getAppId() + "-" + config.getId() + "-" + config.getVersion());
+                logger.info("加载服务：" + config.getAppId() + "-" + config.getId());
                 String key = getServiceConfigKey(config.getAppId(), config.getId());
                 servicesMapByKeyClassName.put(c.getName(), bean);
                 servicesMapByKeyAppServiceId.put(key, bean);
@@ -147,10 +146,23 @@ public class ServerServiceContext extends AbstractServiceContext {
     private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
+        Paranamer adaptiveParanamer = new AdaptiveParanamer();
         for (Method method : methods) {
-            //取参数名
-            Paranamer paranamer = new BytecodeReadingParanamer();
-            String[] parameterNames = paranamer.lookupParameterNames(method, false);
+            if(!method.isAnnotationPresent(Version.class)){
+                logger.error(String.format("服务接口[%s]的方法[%s]上必须注解Version",
+                        interfaces.getName(),method.getName()));
+                System.exit(0);
+            }
+            String[] parameterNames = null;
+            if(method.getParameterTypes() != null && method.getParameterTypes().length >0){
+                //取参数名
+                parameterNames = adaptiveParanamer.lookupParameterNames(method,false);
+                if(parameterNames == null || parameterNames.length <= 0){
+                    logger.error(String.format("服务接口类 %s - %s 编译期未加入Paranamer，无法获取参数名，系统无法启动！请重新编译打包~~",
+                            interfaces.getName(),method.getName()));
+                    System.exit(0);
+                }
+            }
 
             ServiceMethod serviceMethod = new ServiceMethod(method, parameterNames);
             list.add(serviceMethod);

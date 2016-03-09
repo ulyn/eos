@@ -1,5 +1,7 @@
 package com.sunsharing.eos.common.utils;
 
+import com.google.common.base.Preconditions;
+
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -147,16 +149,29 @@ public class ClassHelper {
     private static final String INTERNAL_ARRAY_PREFIX = "[L";
 
     /**
-     * Map with primitive type name impl key and corresponding primitive type impl
-     * value, for example: "int" -> "int.class".
-     */
-    private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(16);
-
-    /**
-     * Map with primitive wrapper type impl key and corresponding primitive type
-     * impl value, for example: Integer.class -> int.class.
+     * Map with primitive wrapper type as key and corresponding primitive
+     * type as value, for example: Integer.class -> int.class.
      */
     private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new HashMap<Class<?>, Class<?>>(8);
+
+    /**
+     * Map with primitive type as key and corresponding wrapper
+     * type as value, for example: int.class -> Integer.class.
+     */
+    private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new HashMap<Class<?>, Class<?>>(8);
+
+    /**
+     * Map with primitive type name as key and corresponding primitive
+     * type as value, for example: "int" -> "int.class".
+     */
+    private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(32);
+
+    /**
+     * Map with common "java.lang" class name as key and corresponding Class as value.
+     * Primarily for efficient deserialization of remote invocations.
+     */
+    private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(32);
+
 
     static {
         primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
@@ -168,15 +183,79 @@ public class ClassHelper {
         primitiveWrapperTypeMap.put(Long.class, long.class);
         primitiveWrapperTypeMap.put(Short.class, short.class);
 
-        Set<Class<?>> primitiveTypeNames = new HashSet<Class<?>>(16);
-        primitiveTypeNames.addAll(primitiveWrapperTypeMap.values());
-        primitiveTypeNames.addAll(Arrays
-                .asList(new Class<?>[]{boolean[].class, byte[].class, char[].class, double[].class,
-                        float[].class, int[].class, long[].class, short[].class}));
-        for (Iterator<Class<?>> it = primitiveTypeNames.iterator(); it.hasNext(); ) {
-            Class<?> primitiveClass = (Class<?>) it.next();
-            primitiveTypeNameMap.put(primitiveClass.getName(), primitiveClass);
+        for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap.entrySet()) {
+            primitiveTypeToWrapperMap.put(entry.getValue(), entry.getKey());
+            registerCommonClasses(entry.getKey());
         }
+
+        Set<Class<?>> primitiveTypes = new HashSet<Class<?>>(32);
+        primitiveTypes.addAll(primitiveWrapperTypeMap.values());
+        primitiveTypes.addAll(Arrays.asList(
+                boolean[].class, byte[].class, char[].class, double[].class,
+                float[].class, int[].class, long[].class, short[].class));
+        primitiveTypes.add(void.class);
+        for (Class<?> primitiveType : primitiveTypes) {
+            primitiveTypeNameMap.put(primitiveType.getName(), primitiveType);
+        }
+
+        registerCommonClasses(Boolean[].class, Byte[].class, Character[].class, Double[].class,
+                Float[].class, Integer[].class, Long[].class, Short[].class);
+        registerCommonClasses(Number.class, Number[].class, String.class, String[].class,
+                Object.class, Object[].class, Class.class, Class[].class);
+        registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class,
+                Error.class, StackTraceElement.class, StackTraceElement[].class);
+    }
+
+
+    /**
+     * Register the given common classes with the ClassUtils cache.
+     */
+    private static void registerCommonClasses(Class<?>... commonClasses) {
+        for (Class<?> clazz : commonClasses) {
+            commonClassCache.put(clazz.getName(), clazz);
+        }
+    }
+
+    /**
+     * Check if the right-hand side type may be assigned to the left-hand side
+     * type, assuming setting by reflection. Considers primitive wrapper
+     * classes as assignable to the corresponding primitive types.
+     * @param lhsType the target type
+     * @param rhsType the value type that should be assigned to the target type
+     * @return if the target type is assignable from the value type
+     */
+    public static boolean isAssignable(Class<?> lhsType, Class<?> rhsType) {
+        Preconditions.checkNotNull(lhsType, "Left-hand side type must not be null");
+        Preconditions.checkNotNull(rhsType, "Right-hand side type must not be null");
+        if (lhsType.isAssignableFrom(rhsType)) {
+            return true;
+        }
+        if (lhsType.isPrimitive()) {
+            Class resolvedPrimitive = primitiveWrapperTypeMap.get(rhsType);
+            if (resolvedPrimitive != null && lhsType.equals(resolvedPrimitive)) {
+                return true;
+            }
+        }
+        else {
+            Class resolvedWrapper = primitiveTypeToWrapperMap.get(rhsType);
+            if (resolvedWrapper != null && lhsType.isAssignableFrom(resolvedWrapper)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if the given type is assignable from the given value,
+     * assuming setting by reflection. Considers primitive wrapper classes
+     * as assignable to the corresponding primitive types.
+     * @param type the target type
+     * @param value the value that should be assigned to the type
+     * @return if the type is assignable from the value
+     */
+    public static boolean isAssignableValue(Class<?> type, Object value) {
+        Preconditions.checkNotNull(type, "Type must not be null");
+        return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
     }
 
     public static String toShortString(Object obj) {

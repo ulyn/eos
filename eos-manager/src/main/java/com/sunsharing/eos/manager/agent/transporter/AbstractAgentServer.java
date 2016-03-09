@@ -17,7 +17,6 @@
 package com.sunsharing.eos.manager.agent.transporter;
 
 import com.sunsharing.eos.common.config.ServiceConfig;
-import com.sunsharing.eos.common.rpc.RpcServer;
 
 import java.util.HashMap;
 import java.util.Map;

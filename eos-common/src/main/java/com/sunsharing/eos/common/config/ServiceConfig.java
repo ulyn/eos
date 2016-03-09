@@ -34,7 +34,6 @@ import java.util.Map;
  */
 public class ServiceConfig {
     private String id = "";
-    private String version;
     private String proxy = Constants.DEFAULT_PROXY;
     private String serialization = Constants.DEFAULT_SERIALIZATION;
     private String transporter = Constants.DEFAULT_TRANSPORTER;
@@ -53,14 +52,6 @@ public class ServiceConfig {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public String getProxy() {

@@ -1,14 +1,13 @@
 package com.sunsharing.eos.clientproxy.web.exception;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.sunsharing.eos.clientproxy.web.common.BaseController;
-
 import com.sunsharing.eos.clientproxy.web.common.ResponseHelper;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class ExceptionResolver extends BaseController implements HandlerExceptionResolver {
     Logger log = Logger.getLogger(ExceptionResolver.class);

@@ -1,7 +1,10 @@
 package com.sunsharing.eos.uddi.db;
 
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipFile;
+import org.apache.tools.zip.ZipOutputStream;
+
 import java.io.*;
-import org.apache.tools.zip.*;
 import java.util.Enumeration;
 /**
  *功能:zip压缩、解压(支持中文文件名)

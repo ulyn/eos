@@ -1,6 +1,5 @@
 package com.sunsharing.eos.common.rpc.remoting.netty.channel;
 
-import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 

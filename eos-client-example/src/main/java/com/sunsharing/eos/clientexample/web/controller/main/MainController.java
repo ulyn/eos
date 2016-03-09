@@ -3,15 +3,13 @@ package com.sunsharing.eos.clientexample.web.controller.main;
 
 import com.sunsharing.eos.client.ServiceContext;
 import com.sunsharing.eos.clientexample.test.Test2;
+import com.sunsharing.eos.clientexample.web.common.BaseController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.sunsharing.eos.clientexample.web.common.BaseController;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
 @Controller
 public class MainController extends BaseController {

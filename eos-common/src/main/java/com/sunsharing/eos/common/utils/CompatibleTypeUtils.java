@@ -16,7 +16,10 @@
  */
 package com.sunsharing.eos.common.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.apache.commons.beanutils.ConvertUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -120,29 +123,65 @@ public class CompatibleTypeUtils {
         return value;
     }
 
+    public static <T> T expectConvert(Object value,Class<T> type){
+        return (T)ConvertUtils.convert(value,type);
+    }
+
     /**
      * 将对象转换为字符串
      *
      * @param o
      * @return
      */
-    public static String objectToString(Object o) {
-        if (o instanceof String) {
-            return (String) o;
-        } else {
-            return JSONObject.toJSONString(o);
+    public static String toMyString(Object o) {
+        if(o == null){
+            return null;
+        }else if(isBaseDataType(o.getClass())){
+            return o.toString();
+        }else {
+            return JSONObject.toJSONString(o
+                    ,SerializerFeature.WriteMapNullValue
+                    ,SerializerFeature.WriteClassName);
         }
     }
 
-//    /**
-//     * 将类型数组转换为eos支持的simpleName类型字符串的数组
-//     * 因为eos规定不允许方法重载，所以目前此方法暂时返回空，服务执行时候直接从缓存的方法取
-//     *
-//     * @param classes
-//     * @return
-//     */
-//    public static String[] getTypesStringArray(Class<?>[] classes) {
-//        return null;
-//    }
+
+    /**
+     * 尝试转换字符串为JSON对象
+     * 对于前端来讲，字符串返回的都尝试转换下JSON
+     * @param value
+     * @return
+     */
+    public static Object tryConvertStrToObject(Object value) {
+        if(value instanceof String){
+            try{
+                Object result = JSON.parse((String)value);
+                if(!JSON.class.isInstance(result)){
+                    return value;
+                }else{
+                    return result;
+                }
+            }catch (Exception e){
+                //转换失败就直接返回
+                return value;
+            }
+        }
+        return value;
+    }
+
+    public static void main(String[] args) {
+        Object value = 1;
+        System.out.println(expectConvert(value,int.class));
+        System.out.println(expectConvert(value,Integer.class));
+        System.out.println(expectConvert(value,String.class));
+        System.out.println(expectConvert(value,void.class));
+        System.out.println(expectConvert(value,Boolean.class));
+
+        System.out.println(tryConvertStrToObject("[]").getClass());
+        System.out.println(tryConvertStrToObject("{}").getClass());
+        System.out.println(tryConvertStrToObject("123").getClass());
+        System.out.println(tryConvertStrToObject("{123}").getClass());
+    }
+
 }
 

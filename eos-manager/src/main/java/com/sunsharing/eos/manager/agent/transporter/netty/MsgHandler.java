@@ -4,7 +4,8 @@ import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
 import com.sunsharing.eos.common.rpc.protocol.HeartPro;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
-import com.sunsharing.eos.common.rpc.remoting.netty.channel.*;
+import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerCache;
+import com.sunsharing.eos.common.utils.VersionUtil;
 import com.sunsharing.eos.manager.agent.process.MainControl;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.*;
@@ -50,6 +51,7 @@ public class MsgHandler extends SimpleChannelHandler {
                     ResponsePro responsePro = new ResponsePro();
                     responsePro.setSerialization(basePro.getSerialization());
                     responsePro.setMsgId(basePro.getMsgId());
+                    responsePro.setEosVersion(VersionUtil.getVersion());
 
                     MainControl mainControl = new MainControl();
                     mainControl.process(req, responsePro);

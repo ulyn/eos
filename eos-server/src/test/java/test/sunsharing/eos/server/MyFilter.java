@@ -16,7 +16,11 @@
  */
 package test.sunsharing.eos.server;
 
-import com.sunsharing.eos.common.filter.*;
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
+import com.sunsharing.eos.common.filter.AbstractServiceFilter;
+import com.sunsharing.eos.common.filter.FilterChain;
+import com.sunsharing.eos.common.filter.ServiceFilterException;
 import com.sunsharing.eos.common.rpc.RpcException;
 
 /**
@@ -34,6 +38,7 @@ public class MyFilter extends AbstractServiceFilter {
     @Override
     protected void doFilter(ServiceRequest req, ServiceResponse res, FilterChain filterChain) throws ServiceFilterException, RpcException {
         System.out.println("MyFilter:" + req.getServiceId());
+        filterChain.doFilter(req,res);
     }
 }
 

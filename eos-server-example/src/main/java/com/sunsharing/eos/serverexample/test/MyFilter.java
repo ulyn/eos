@@ -16,19 +16,8 @@
  */
 package com.sunsharing.eos.serverexample.test;
 
-import com.sunsharing.component.utils.crypto.Base64;
-import com.sunsharing.eos.client.rpc.ProxyFilter;
-import com.sunsharing.eos.common.filter.*;
 import com.sunsharing.eos.common.rpc.RpcException;
 import org.apache.log4j.Logger;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <pre></pre>

@@ -4,7 +4,6 @@ import com.sunsharing.component.resvalidate.config.ConfigContext;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.manager.agent.ServiceServer;
 import com.sunsharing.eos.manager.sys.SysProp;
-import com.sunsharing.eos.manager.zookeeper.EosMonitor;
 import com.sunsharing.eos.manager.zookeeper.EosState;
 
 import java.io.BufferedReader;

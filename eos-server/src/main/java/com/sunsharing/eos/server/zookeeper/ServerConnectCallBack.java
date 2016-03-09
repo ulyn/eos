@@ -13,7 +13,9 @@ import org.apache.zookeeper.WatchedEvent;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by criss on 14-1-27.

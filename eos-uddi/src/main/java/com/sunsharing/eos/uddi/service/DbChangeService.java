@@ -61,8 +61,8 @@ public class DbChangeService {
         {
             endVersion = "9999999999";
         }
-        String hql = "from TDbChange where  version>=? and version<=? order by version desc";
-        return dbChangeDao.find(hql,beginVersion,endVersion);
+        String hql = "from TDbChange where appId.appId=? and  version>=? and version<=? order by version desc";
+        return dbChangeDao.find(hql,new Integer(appId),beginVersion,endVersion);
     }
 
     public TDbPdm isNotMyLock(int appId,int userId)

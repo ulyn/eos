@@ -19,7 +19,6 @@ package test.sunsharing.eos.server;
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.Version;
 
-import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
 

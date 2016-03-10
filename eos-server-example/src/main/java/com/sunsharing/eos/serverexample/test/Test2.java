@@ -2,11 +2,12 @@ package com.sunsharing.eos.serverexample.test;
 
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
+import com.sunsharing.eos.common.annotation.Version;
 
 /**
  * Created by criss on 14-2-14.
  */
-@EosService(version = "1.0")
+@EosService
 public interface Test2 {
 
     /**
@@ -14,6 +15,6 @@ public interface Test2 {
      * @return ${hexin}
      * 何鑫
      */
-    @ParameterNames(value = {"abc"})
+    @Version(value = "1.0")
     String sayHello(String abc);
 }

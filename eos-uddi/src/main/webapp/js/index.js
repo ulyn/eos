@@ -597,6 +597,7 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
                     }
                     $scope.mockResult = result;
                     $scope.selectStatus = "";
+                    $scope.methodVersion = methods[i].methodVersion;
                     $scope.desc ="入参:("+methods[i].params+")";
                     window.setTimeout("$('#selectStatus').trigger('change')",200);
                     break;
@@ -619,6 +620,7 @@ indexApp.controller('method', function($scope, $routeParams,$http) {
                 selectStatus.desc = "";
             }
             selectDesc = selectStatus.desc;
+
             $scope.desc =selectStatus.desc+"入参:("+$scope.selectValue.params+")";
             var content = selectStatus.content;
 

@@ -63,6 +63,7 @@ public class AppService {
         TApp app = new TApp();
         app.setAppCode(app_en);
         app.setAppName(app_cn);
+        app.setDbs(dbs);
         app.setCreatTime(DateUtils.getDBString(new Date()));
 
 

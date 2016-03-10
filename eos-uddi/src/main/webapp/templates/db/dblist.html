@@ -29,7 +29,8 @@
             <h4 class="widget_header_title wwIcon i_16_data">DataTables</h4> &nbsp;&nbsp;
             <div class="submitIt simple_buttons" ng-if="pdm.exist && !pdm.isLock" ng-click="downloadLockPdm()" >锁定并下载PDM</div>&nbsp;
             <span class="submitIt simple_buttons" ng-if="pdm.exist && pdm.isLock" >已被{{pdm.lockUserName}}锁定</span>
-            <div class="submitIt simple_buttons" ng-if="pdm.exist" ng-click="downloadPdm()" >下载PDM</div>&nbsp;
+            <div class="submitIt simple_buttons" ng-if="pdm.exist" ng-click="downloadPdm()" >下载查看PDM</div>&nbsp;
+            <div class="submitIt simple_buttons" ng-if="pdm.exist && pdm.isLock && pdm.manage" ng-click="unlock()" >解锁</div>&nbsp;
 
         </div>
 
@@ -38,9 +39,13 @@
                 <div class="dtTop">
                     <div class="dtFilter">
                         <div class="dataTables_filter" id="DataTables_Table_0_filter">
-                            <label>版本:&nbsp;<span style="color: red">红色:未审批通过</span>&nbsp;
-                                <span style="color: green">绿色:审批通过</span>&nbsp;
+                            <label>
+                                <a href="javascript:void(0)" ng-click="getList(0)">&nbsp;<span style="">全部</span>&nbsp;</a>
+                                <a href="javascript:void(0)" ng-click="getList(2)">&nbsp;<span style="color: red">红色:未审批通过</span>&nbsp;</a>
+                                <a href="javascript:void(0)" ng-click="getList(1)"><span style="color: green">绿色:审批通过</span>&nbsp;</a>
                             </label>
+                            <input class="simple_field" id="begin" style="width: 100px"/>&nbsp;-&nbsp;<input id="end" class="simple_field" style="width: 100px"/>&nbsp;
+                            <input type="button" class="submitIt simple_buttons" ng-click="downloadAllScript()" value="下载脚本"/>
                         </div>
                     </div>
                 </div>
@@ -81,11 +86,11 @@
                         <tr class="{{row.rowclass}}" ng-repeat="row in dbs">
                             <td class=" " style="color:{{row.checkColor}}">{{row.version}}</td>
                             <td class=" ">{{row.userName}}</td>
-                            <td class=" ">{{row.changeLog}}</td>
+                            <td class=" " ng-bind-html="row.changeLog"></td>
                             <td class=" ">{{row.pubishTime}}</td>
                             <td class=" ">
                                 <a href="#dbAdd/{{appId}}/{{row.id}}">修改</a>&nbsp;
-                                <a href="downloadDb.do?name=script&changeId={{row.id}}">脚本</a>
+                                <a href="downloadDb.do?name=script&changeId={{row.id}}">下载脚本</a>
                             </td>
                         </tr>
                         </tbody>

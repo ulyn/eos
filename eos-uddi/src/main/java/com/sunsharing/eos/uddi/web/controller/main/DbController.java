@@ -181,9 +181,16 @@ public class DbController {
             app = appService.loadApp(appId);
             TUser user = (TUser)request.getSession().getAttribute("user");
             TDbPdm pdm = dbChangeService.isNotMyLock(app.getAppId(), user.getUserId());
+            if(!StringUtils.isBlank(changeId)) {
+                TDbChange change = dbChangeService.loadDbchange(changeId);
+                if (change.geCheckStatus()) {
+                    throw new RuntimeException("记录已经已经审批通过,不让修改");
+                }
+            }
+
             if(pdm != null)
             {
-                throw new RuntimeException("pdm已经被"+pdm.getLockUserId().getUserName()+"锁定");
+                throw new RuntimeException("记录已经被"+pdm.getLockUserId().getUserName()+"锁定");
             }
             String appcode = app.getAppCode();
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

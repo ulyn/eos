@@ -42,7 +42,7 @@ public class InterfaceServcie {
             {
                 int start = lines[i].trim().indexOf("=");
                 int end = lines[i].trim().indexOf(")");
-                String v = line.substring(start,end).trim();
+                String v = line.substring(start+1,end).trim();
                 if(v.startsWith("\""))
                 {
                     v = v.substring(1,v.length()-1);
@@ -67,7 +67,7 @@ public class InterfaceServcie {
                             }
                         }
                         String functionName = functionLine.substring(m,startIndex);
-                        result.put(functionName,v.trim());
+                        result.put(functionName.trim(),v.trim());
                         break;
                     }
                 }
@@ -118,7 +118,12 @@ public class InterfaceServcie {
             if(lines[i].trim().startsWith("@EosService"))
             {
                 String line = lines[i].trim();
-                String value = line.substring(12,line.length()-1);
+                String value = "";
+                if(line.indexOf("(")==-1) {
+                    line += "()";
+                }
+                value = line.substring(12, line.length() - 1);
+
                 value = value.replaceAll(",","\n");
                 value = value.replaceAll("\"","");
                 Properties t = new Properties();
@@ -140,9 +145,9 @@ public class InterfaceServcie {
                 {
                     result = result.substring(0,result.length()-1);
                 }
-                int i1 = lines[i].indexOf("@EosService(");
-                int i2 = lines[i].indexOf(")");
-                lines[i] = lines[i].substring(0,i1+12)+result+lines[i].substring(i2);
+                int i1 = line.indexOf("@EosService(");
+                int i2 = line.indexOf(")");
+                lines[i] = line.substring(0,i1+12)+result+line.substring(i2);
                 break;
             }
         }
@@ -414,6 +419,10 @@ public class InterfaceServcie {
             {
                 continue;
             }
+            if(lines[i].trim().startsWith("@Version"))
+            {
+                continue;
+            }
 
             if(newfunction)
             {
@@ -486,6 +495,10 @@ public class InterfaceServcie {
         boolean start = false;
         for(int i=0;i<lines.length;i++)
         {
+            if(lines[i].trim().startsWith("@Version"))
+            {
+                continue;
+            }
             if(start && !lines[i].trim().startsWith("public interface"))
             {
                 if(!lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*") &&

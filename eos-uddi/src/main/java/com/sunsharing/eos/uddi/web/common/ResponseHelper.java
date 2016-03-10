@@ -84,7 +84,7 @@ public class ResponseHelper {
      */
     public static void printOut(HttpServletResponse response, String content) {
         response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
+        //response.setContentType("application/json");
         PrintWriter writer = null;
         try {
             writer = response.getWriter();

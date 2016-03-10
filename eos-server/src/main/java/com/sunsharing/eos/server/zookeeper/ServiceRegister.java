@@ -106,6 +106,7 @@ public class ServiceRegister {
         try {
             utils.createNodeNowatch(PathConstant.SERVICE_STATE_APPS + "/" + appId, "", CreateMode.PERSISTENT);
             utils.createEleSerNode(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, json,comparableData);
+            logger.info("成功注册服务方:"+servicePath+":"+json);
         }catch (Exception e)
         {
             logger.error("注册服务失败",e);

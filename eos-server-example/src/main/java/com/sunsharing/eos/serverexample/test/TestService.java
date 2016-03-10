@@ -18,6 +18,7 @@ package com.sunsharing.eos.serverexample.test;
 
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.annotation.ParameterNames;
+import com.sunsharing.eos.common.annotation.Version;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.4")
+@EosService
 public interface TestService {
 
     /**
@@ -45,7 +46,7 @@ public interface TestService {
      * ${error} 如果i==-1返回-1
      * -1
      */
-    @ParameterNames(value = {"i"})
+    @Version(value = "1.0")
     int testInt(int i);
 
     /**
@@ -57,7 +58,7 @@ public interface TestService {
      * ${error} 如果d=-1异常返回
      * -1.0
      */
-    @ParameterNames(value = {"d"})
+    @Version(value = "1.0")
     double testDouble(double d);
 
     /**
@@ -69,7 +70,7 @@ public interface TestService {
      * ${error} 如果f=-1异常返回
      * -1.0
      */
-    @ParameterNames(value = {"f"})
+    @Version(value = "1.0")
     float testFloat(float f);
 
     /**
@@ -81,7 +82,7 @@ public interface TestService {
      * ${error} 如果s="-1"异常返
      * -1
      */
-    @ParameterNames(value = {"s","sw"})
+    @Version(value = "1.0")
     String testString(String s, String sw);
 
     /**
@@ -93,7 +94,7 @@ public interface TestService {
      * ${error} 入参不包含test参数
      * {"error":"error1","error1":"error2"}
      */
-    @ParameterNames(value = {"m","l2"})
+    @Version(value = "1.0")
     Map testMap(
             Map m,
             String l2
@@ -106,7 +107,7 @@ public interface TestService {
      * @return ${success} 所有都返回
      * [{"test":"test1","test2":"test3","test3":"test4"}]
      */
-    @ParameterNames(value = {"list"})
+    @Version(value = "1.0")
     List testListMap(List list);
 
     /**
@@ -114,6 +115,6 @@ public interface TestService {
      *
      * @param name 没有入参
      */
-    @ParameterNames(value = {"name"})
+    @Version(value = "1.0")
     void testVoid(String name);
 }

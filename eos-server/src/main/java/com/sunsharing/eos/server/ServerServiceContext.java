@@ -158,7 +158,8 @@ public class ServerServiceContext extends AbstractServiceContext {
                 //取参数名
                 parameterNames = adaptiveParanamer.lookupParameterNames(method,false);
                 if(parameterNames == null || parameterNames.length <= 0){
-                    logger.error(String.format("服务接口类 %s - %s 编译期未加入Paranamer，无法获取参数名，系统无法启动！请重新编译打包~~",
+                    logger.error(String.format("服务接口类 %s - %s 编译期未加入Paranamer，无法获取参数名，系统无法启动！" +
+                                    "请在pom.xml中添加paranamer-maven-plugin插件重新编译打包~~",
                             interfaces.getName(),method.getName()));
                     System.exit(0);
                 }

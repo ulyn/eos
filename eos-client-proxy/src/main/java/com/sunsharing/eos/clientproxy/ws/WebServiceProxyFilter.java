@@ -17,8 +17,8 @@
 package com.sunsharing.eos.clientproxy.ws;
 
 import com.sunsharing.eos.client.rpc.ProxyFilter;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 
 /**
  * <pre></pre>

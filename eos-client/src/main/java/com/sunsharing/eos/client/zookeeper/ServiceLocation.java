@@ -187,6 +187,11 @@ public class ServiceLocation {
                 ips.add(obj);
             }
         }else {
+            String configAppId = EosClientProp.app_id;
+            if(configAppId.indexOf(appId)==-1)
+            {
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "请在eos-client文件中appId的配置增加："+appId+"应用");
+            }
             String servicePath = appId + serviceId;
             JSONArray array = serviceMap.get(servicePath);
             if(array == null)
@@ -196,6 +201,7 @@ public class ServiceLocation {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "找不到appId:"+appId+",serviceId:"+serviceId+"注册信息");
             }
             Set<String> eosIds = new HashSet<String>();
+            String otherVersion = "";
             for(int i=0;i<array.size();i++)
             {
                 JSONObject jsonObject = (JSONObject)array.get(i);
@@ -211,14 +217,19 @@ public class ServiceLocation {
                     }
                 }else
                 {
-                    logger.error("找到不同版本服务，appId:" + appId + ",serviceId:" + serviceId + ",函数名:" + methodName +
-                            ",服务器版本:" + methodV + ",调用版本:" + methodVersion + ",eosId:" + eosIdsTmp);
+                    otherVersion = "找到不同版本服务【" + appId + "】【" + serviceId + "】【" + methodName +
+                            "】,服务器版本:" + methodV + ",调用版本:" + methodVersion + ",eosId:" + eosIdsTmp;
+                    logger.error(otherVersion);
                 }
             }
             if(eosIds.size()==0)
             {
-                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "找不到appId:"+appId+",serviceId:"+serviceId+"," +
-                        "methodName:"+methodName+",methodVersion:"+methodVersion+",注册的EOSID");
+                if(!StringUtils.isBlank(otherVersion))
+                {
+                    throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, otherVersion);
+                }
+                throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "找不到【"+appId+"】【"+serviceId+"】【" +
+                        ""+methodName+"】【"+methodVersion+"】注册的EOS，请检查服务方是否启动");
             }
 
 

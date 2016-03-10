@@ -6,7 +6,7 @@ import com.sunsharing.eos.common.annotation.ParameterNames;
 /**
  * Created by criss on 14-2-14.
  */
-@EosService(version = "1.0", appId = "test", id = "test2")
+@EosService( appId = "test", id = "test2")
 public interface Test2 {
 
     /**

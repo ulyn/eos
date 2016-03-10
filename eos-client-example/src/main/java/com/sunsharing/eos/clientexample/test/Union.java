@@ -15,7 +15,7 @@ import java.util.Map;
  * 2.detail函数企业登记日期改成DJRQ
  *
  */
-@EosService(version="1.4",appId="ceshi",id="union")
+@EosService(appId="ceshi",id="union")
 public interface Union {
 
     /**

@@ -2,6 +2,7 @@ package com.sunsharing.eos.client.mock;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -128,9 +129,9 @@ public class MockUtils {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+method+version,false))
         {
-            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false),"UTF-8");
+            String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+method+version,false),"UTF-8");
             logger.info("obj:"+obj);
-            return (JSONArray)(JSONObject.parseObject(obj).get(method));
+            return JSONArray.parseArray(obj);
         }
         return null;
     }

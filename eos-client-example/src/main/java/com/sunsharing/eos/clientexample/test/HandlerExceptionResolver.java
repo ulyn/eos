@@ -16,9 +16,9 @@
  */
 package com.sunsharing.eos.clientexample.test;
 
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.exception.ExceptionResolver;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
 import org.apache.log4j.Logger;
 
 /**

@@ -2,6 +2,7 @@ package com.sunsharing.eos.common.rpc.remoting.netty;
 
 import com.sunsharing.eos.common.ServiceRequest;
 import com.sunsharing.eos.common.ServiceResponse;
+import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.ClientCache;
@@ -23,7 +24,7 @@ public class LongNettyClient extends NettyClient {
         LongChannel longChannel = ClientCache.getChannel(this, ip, port + "");
         if(!longChannel.channelWriteAble())
         {
-            throw new RuntimeException("连接服务方：IP:"+ip+",port:"+port+",出现异常，无法写，请检查Server是否启动，" +
+            throw new RpcException("连接服务方：IP:"+ip+",port:"+port+",出现异常，无法写，请检查Server是否启动，" +
                     "或者localIP配错");
         }
         ResponsePro responsePro = getResult(request, longChannel, request.getTimeout());

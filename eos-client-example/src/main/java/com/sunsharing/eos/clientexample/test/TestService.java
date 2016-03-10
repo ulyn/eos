@@ -34,7 +34,7 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@EosService(version = "1.4", appId = "test", id = "testService")
+@EosService( appId = "test", id = "testService")
 public interface TestService {
 
     /**

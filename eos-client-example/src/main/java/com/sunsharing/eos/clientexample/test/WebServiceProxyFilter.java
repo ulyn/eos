@@ -18,9 +18,9 @@ package com.sunsharing.eos.clientexample.test;
 
 import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.client.rpc.ProxyFilter;
+import com.sunsharing.eos.common.ServiceRequest;
+import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.filter.ServiceFilterException;
-import com.sunsharing.eos.common.filter.ServiceRequest;
-import com.sunsharing.eos.common.filter.ServiceResponse;
 
 /**
  * <pre></pre>

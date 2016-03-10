@@ -34,7 +34,7 @@ jQuery.eosRemote = function (opts) {
     }
 
     var option = jQuery.extend({}, jQuery.eosRemoteSetup, opts);
-    var vars = "eos_app_id="+option.appId+"&eos_service_id=" + option.serviceId
+    var vars = "eos_appid="+option.appId+"&eos_service_id=" + option.serviceId
         + "&eos_method_name=" + option.method + "&eos_version=" + option.version + "&eos_mock=" + option.mock;
     if (option.url.indexOf("?") != -1) {
         option.url = option.url + "&" + vars;

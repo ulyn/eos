@@ -37,6 +37,15 @@ public class MockUtils {
         try {
             JSONArray array = getTestCode(appId, serviceId,
                     methodVersion,method);
+            if(array==null)
+            {
+                String error = "服务接口" + appId + "-"
+                        + serviceId + "-"
+                        + method + "-"
+                        + methodVersion + "没有审批通过";
+                logger.error(error);
+                throw new RpcException(RpcException.MOCK_EXCEPTION, error);
+            }
             if (array != null) {
                 //先走入参匹配
                 for (int i = 0; i < array.size(); i++) {
@@ -117,7 +126,7 @@ public class MockUtils {
         logger.info("method:"+method);
 
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false))
+        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId+method+version,false))
         {
             String obj = new String(utils.getData(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false),"UTF-8");
             logger.info("obj:"+obj);

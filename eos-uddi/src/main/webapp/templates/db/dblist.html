@@ -27,8 +27,8 @@
     <div class="g_12">
         <div class="widget_header wwOptions">
             <h4 class="widget_header_title wwIcon i_16_data">DataTables</h4> &nbsp;&nbsp;
-            <div class="submitIt simple_buttons" ng-if="pdm.exist && !pdm.isLock" ng-click="downloadLockPdm()" >锁定并下载PDM</div>&nbsp;
-            <span class="submitIt simple_buttons" ng-if="pdm.exist && pdm.isLock" >已被{{pdm.lockUserName}}锁定</span>
+            <div class="submitIt simple_buttons" id="a1" ng-if="pdm.exist && !pdm.isLock" ng-click="downloadLockPdm()" >锁定并下载PDM</div>&nbsp;
+            <span class="submitIt simple_buttons" id="a2" ng-if="pdm.exist && pdm.isLock" >已被{{pdm.lockUserName}}锁定</span>
             <div class="submitIt simple_buttons" ng-if="pdm.exist" ng-click="downloadPdm()" >下载查看PDM</div>&nbsp;
             <div class="submitIt simple_buttons" ng-if="pdm.exist && pdm.isLock && pdm.manage" ng-click="unlock()" >解锁</div>&nbsp;
 

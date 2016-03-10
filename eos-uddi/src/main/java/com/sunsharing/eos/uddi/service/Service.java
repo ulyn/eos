@@ -208,7 +208,7 @@ public class Service {
         String source = "";
         for(String m:methodList)
         {
-            source+=m+methodVersion.get(source);
+            source+=m+methodVersion.get(m);
         }
         return Md5.MD5(source);
     }
@@ -343,7 +343,7 @@ public class Service {
 
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
+        //utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
         List<TMethod> methods = version.getMethods();
         for (TMethod me : methods) {
             String arr = "";
@@ -353,7 +353,7 @@ public class Service {
                 arr = me.getMockResult();
             }
             JSONArray array = JSONArray.parseArray(arr);
-            utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+me.getMethodVersion(),array.toJSONString() ,
+            utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+me.getMethodName()+me.getMethodVersion(),array.toJSONString() ,
                     CreateMode.PERSISTENT);
         }
 
@@ -544,10 +544,11 @@ public class Service {
         try
         {
             out = new FileOutputStream(path);
-            for(int j=0;j<result.length;j++)
-            {
-                out.write(result[j].getBytes("UTF-8"));
-                out.write("\n".getBytes("UTF-8"));
+            if(result!=null) {
+                for (int j = 0; j < result.length; j++) {
+                    out.write(result[j].getBytes("UTF-8"));
+                    out.write("\n".getBytes("UTF-8"));
+                }
             }
 
         }catch (Exception e)
@@ -602,7 +603,7 @@ public class Service {
 
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
         utils.createNode(PathConstant.ACL, "", CreateMode.PERSISTENT);
-        utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
+        //utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId),"" , CreateMode.PERSISTENT);
 
         for (TMethod me : methods) {
             String arr = "";
@@ -612,7 +613,7 @@ public class Service {
                 arr = me.getMockResult();
             }
             JSONArray obj = JSONArray.parseArray(arr);
-            utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+"/"+ver,obj.toJSONString() ,
+            utils.createNode(PathConstant.ACL + "/" + (appCode + serviceId)+me.getMethodName()+method.getMethodVersion(),obj.toJSONString() ,
                     CreateMode.PERSISTENT);
         }
     }

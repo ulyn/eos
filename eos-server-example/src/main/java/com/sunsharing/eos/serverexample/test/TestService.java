@@ -115,6 +115,6 @@ public interface TestService {
      *
      * @param name 没有入参
      */
-    @Version(value = "1.0")
+    @Version(value = "2.0")
     void testVoid(String name);
 }

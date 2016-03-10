@@ -83,9 +83,11 @@ indexApp.controller('dblist', function($scope, $routeParams,$http,$sce) {
     }
     $scope.downloadLockPdm = function()
     {
+       // $scope.pdm.islock = true;
+        window.setTimeout("location.reload();",1000);
         location.href = "/downloadPdm.do?appId="+appId+"&lock="+1;
-        $scope.pdm.islock = true;
-        //location.reload();
+
+
     }
     $scope.downloadAllScript = function()
     {

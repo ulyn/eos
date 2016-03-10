@@ -305,13 +305,7 @@ public class InterfaceServcie {
                     int index = line.indexOf("*");
                     blankNum = lines[i].indexOf("*");
                     line = line.substring(index+1).trim();
-                    if(line.startsWith("@") &&
-                            !line.startsWith("@ParameterNames"))
-                    {
-                        mockBeginLine = 0;
-                        mockEndLine=0;
-                    }else if(line.trim().startsWith("${") || line.trim().startsWith("/") ||
-                            line.trim().equals(""))
+                    if(lines[i].indexOf("@return")!=-1)
                     {
                         if(mockBeginLine == 0)
                         {
@@ -341,7 +335,7 @@ public class InterfaceServcie {
                         functions.append(lines[i]);
                     }
                     String str = functions.toString();
-                    str = str.replaceAll("@ParameterNames\\(.*?\\)","");
+                    str = str.replaceAll("@Version\\(.*?\\)","");
                     functions = new StringBuffer();
                     System.out.println(str);
                     int startIndex = str.indexOf("(");
@@ -369,12 +363,14 @@ public class InterfaceServcie {
                                 mocks[k] = " "+mocks[k];
                             }
                         }
-                        String[] mocks2 = new String[mocks.length+1];
-                        System.arraycopy(mocks,0,mocks2,0,mocks.length);
+                        String[] mocks2 = new String[mocks.length+2];
+                        mocks2[0] = "* @return";
+                        System.arraycopy(mocks,0,mocks2,1,mocks.length);
                         mocks2[mocks2.length-1] = "*/";
                         for(int j=0;j<blankNum;j++)
                         {
                             mocks2[mocks2.length-1] = " "+mocks2[mocks2.length-1];
+                            mocks2[0] = " "+mocks2[0];
                         }
 
                         String [] newStr1 = Arrays.copyOfRange(lines, 0, mockBeginLine);
@@ -504,7 +500,7 @@ public class InterfaceServcie {
                 if(!lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*") &&
                         !lines[i].trim().startsWith("{") && !lines[i].trim().startsWith("}"))
                 {
-                    if(lines[i].indexOf(" void ")==-1)
+                    if(lines[i].trim().indexOf("void ")==-1)
                     {
                         continue;
                     }
@@ -515,6 +511,7 @@ public class InterfaceServcie {
                     {
                         if(line.charAt(j)==' ')
                         {
+                            start2 = j;
                             allFunction.add(line.substring(start2,index).trim());
                             break;
                         }

@@ -70,7 +70,7 @@
                 <div class="line_grid">
                     <div class="g_6">
                         <input class="submitIt simple_buttons" ng-if="!checkStatus" ng-click="savechange()" value="Add" type="button">
-                        <input class="submitIt simple_buttons" ng-click="commit()" ng-if="changeId!='' && checkUser" value="审批" type="button">
+                        <input class="submitIt simple_buttons" ng-click="commit()" ng-if="changeId!='' && checkUser && !checkStatus" value="审批" type="button">
                         <div class="dialog dConf" title="Do you agree?"><span class="label lwParagraph">
                             <textarea id="checkcontent" class="simple_field"></textarea>
                         </span></div>

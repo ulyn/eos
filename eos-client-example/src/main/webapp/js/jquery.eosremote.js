@@ -6,14 +6,15 @@
  * To change this template use File | Settings | File Templates.
  */
 jQuery.eosRemoteSetup = {
-    "dataType": "json", //jsonp,json,默认是json,当涉及跨域使用jsonp
+    "dataType": "json",
     "url": "/remote",
+    "appId": "",
     "serviceId": "",
     "method": "",
+    "version": "",
     "mock": "",
     "data": null,
     "async": true,
-    "jsonp": "eos_jsonp_callback", //当dataType是jsonp时候此参数生效，不要更改它
     "beforeSend": function (XHR) {
     },
     "success": function (data, textStatus) {
@@ -33,7 +34,8 @@ jQuery.eosRemote = function (opts) {
     }
 
     var option = jQuery.extend({}, jQuery.eosRemoteSetup, opts);
-    var vars = "eos_service_id=" + option.serviceId + "&eos_method_name=" + option.method + "&eos_mock=" + option.mock;
+    var vars = "eos_app_id="+option.appId+"&eos_service_id=" + option.serviceId
+        + "&eos_method_name=" + option.method + "&eos_version=" + option.version + "&eos_mock=" + option.mock;
     if (option.url.indexOf("?") != -1) {
         option.url = option.url + "&" + vars;
     } else {
@@ -54,7 +56,6 @@ jQuery.eosRemote = function (opts) {
         dataType: option.dataType,
         data: params,
         async: option.async,
-        jsonp: option.jsonp,
         beforeSend: option.beforeSend,
         success: function (data, status) {
             if (data.status) {

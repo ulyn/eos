@@ -232,6 +232,8 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
                 return;
             }
         }
+        changelog = encodeURIComponent(changelog);
+        console.info(changelog);
         $http({
             url: '/saveDbChange.do',
             method: "POST",

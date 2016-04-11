@@ -278,6 +278,7 @@ public class DbController {
     {
         try {
             TUser user = (TUser) request.getSession().getAttribute("user");
+            changelog = request.getParameter("changelog");
             TDbPdm pdm = dbChangeService.isNotMyLock(new Integer(appId), user.getUserId());
             if (pdm != null) {
                 String result = ResponseHelper.covert2Json(false, "pdm已经被" + pdm.getLockUserId().

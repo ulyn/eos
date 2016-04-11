@@ -53,7 +53,8 @@ public class MockUtils {
                     JSONObject jo = array.getJSONObject(i);
                     String status = jo.getString("status");
                     if(status.indexOf("${")!=-1) {
-                        //走原来的模式
+                        //替换，如果${}没有前后的'"自动加上。
+
                         try {
                             DynamicString ds = new DynamicString(status);
                             status = ds.convert(params);

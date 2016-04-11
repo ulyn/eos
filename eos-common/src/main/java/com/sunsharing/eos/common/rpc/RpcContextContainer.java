@@ -16,6 +16,10 @@
  */
 package com.sunsharing.eos.common.rpc;
 
+import com.sunsharing.eos.common.serialize.Serialization;
+
+import java.io.Serializable;
+
 /**
  * <pre></pre>
  * <br>----------------------------------------------------------------------
@@ -32,7 +36,23 @@ public class RpcContextContainer {
     private static ThreadLocal<RpcContext> rpcContextLocal = new ThreadLocal<RpcContext>();
 
     public static RpcContext getRpcContext() {
-        return rpcContextLocal.get();
+        RpcContext context = rpcContextLocal.get();
+        if(context == null)
+        {
+            context = new RpcContext();
+            setRpcContext(context);
+        }
+        return context;
+    }
+
+    public void set(String key,Serializable object)
+    {
+        getRpcContext().setAttribute(key,object);
+    }
+
+    public Serializable get(String key)
+    {
+        return (Serializable)getRpcContext().getAttribute(key);
     }
 
     public static RpcContext setRpcContext(String userAgent,String remoteAddr) {

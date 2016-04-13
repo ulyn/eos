@@ -45,12 +45,12 @@ public class RpcContextContainer {
         return context;
     }
 
-    public void set(String key,Serializable object)
+    public static void set(String key,Serializable object)
     {
         getRpcContext().setAttribute(key,object);
     }
 
-    public Serializable get(String key)
+    public static Serializable get(String key)
     {
         return (Serializable)getRpcContext().getAttribute(key);
     }

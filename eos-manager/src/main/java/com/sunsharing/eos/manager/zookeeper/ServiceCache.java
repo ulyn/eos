@@ -145,34 +145,14 @@ public class ServiceCache {
      * @return
      * @throws Exception
      */
-    public boolean getACL(String appId,String serviceId,String version) throws Exception
+    public boolean getACL(String appId,String serviceId,String method,String version) throws Exception
     {
         //是否授权
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        if(utils.isExists(PathConstant.ACL+"/"+appId+serviceId,false))
+        String path = PathConstant.ACL+"/"+appId+serviceId+method+version;
+        if(utils.isExists(path,false))
         {
-            if(!utils.isExists(PathConstant.ACL+"/"+appId+serviceId+"/"+version,false))
-            {
-                return false;
-            }else
-            {
-                List<String> childer = utils.getChildren(PathConstant.ACL+"/"+appId+serviceId,false);
-                String max = "";
-                for(String str:childer)
-                {
-                    if(str.compareTo(max)>0)
-                    {
-                        max = str;
-                    }
-                }
-                if(max.equals(version))
-                {
-                    return true;
-                }else
-                {
-                    throw new RuntimeException("服务方更新提醒:"+serviceId+"最新版本为:"+max+",你的版本为:"+version+",请更新");
-                }
-            }
+            return true;
 
         }else
         {

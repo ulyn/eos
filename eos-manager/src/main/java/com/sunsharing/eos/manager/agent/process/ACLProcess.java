@@ -42,7 +42,7 @@ public class ACLProcess implements Process {
     public void doProcess(RequestPro req, ResponsePro res, ProcessChain processChain)  throws RpcException{
         if (SysProp.eosMode.equals(Constants.EOS_MODE_DEV)) {
             try {
-                boolean acl = ServiceCache.getInstance().getACL(req.getAppId(), req.getServiceId(), req.getMethodVersion());
+                boolean acl = ServiceCache.getInstance().getACL(req.getAppId(), req.getServiceId(),req.getMethod() ,req.getMethodVersion());
                 if (acl) {
                     processChain.doProcess(req, res, processChain);
                 } else {

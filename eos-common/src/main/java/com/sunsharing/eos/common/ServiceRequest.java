@@ -300,7 +300,7 @@ public class ServiceRequest {
         //userAgent,表明是java调用的还是前端js调用
         private String userAgent = "java_eos_client";
         //额外参数map
-        private Map<String, Object> attributeMap = new HashMap<String, Object>();
+        private Map<String, Object> attributeMap = null;
 
         private String transporter = Constants.DEFAULT_TRANSPORTER;
 
@@ -398,7 +398,11 @@ public class ServiceRequest {
         }
 
         public ServiceRequest build() {
-            setRpcContextAttr();
+            if(attributeMap == null){
+                //server中创建该对象的时候，是从RequestPro对象中创建回来的，创建的过程中事先设置了attributeMap，所以不会为空
+                //而clinet创建该对象，一般不会去设置该值，设置了的话，则直接使用，不从上下文取设
+                setRpcContextAttr();
+            }
             return new ServiceRequest(this);
         }
     }

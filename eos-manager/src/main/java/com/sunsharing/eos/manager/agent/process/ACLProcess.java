@@ -60,7 +60,7 @@ public class ACLProcess implements Process {
                 if (e.getMessage().startsWith("服务方更新提醒")) {
                     error = e.getMessage();
                 }
-                throw new RpcException(RpcException.FORBIDDEN_EXCEPTION,error);
+                throw new RpcException(RpcException.FORBIDDEN_EXCEPTION,e.getMessage());
             }
         } else {
             processChain.doProcess(req, res, processChain);

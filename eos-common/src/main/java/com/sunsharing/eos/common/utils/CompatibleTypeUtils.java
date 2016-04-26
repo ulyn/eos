@@ -20,12 +20,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.AbstractConverter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * <pre></pre>
@@ -39,6 +40,7 @@ import java.util.Date;
  * <br>
  */
 public class CompatibleTypeUtils {
+
     private CompatibleTypeUtils() {
     }
 
@@ -124,7 +126,23 @@ public class CompatibleTypeUtils {
     }
 
     public static <T> T expectConvert(Object value,Class<T> type){
-        return (T)ConvertUtils.convert(value,type);
+        if(type == void.class){
+            return null;
+        }
+        Object target = ConvertUtils.convert(value,type);
+        if(target == null){
+            return null;
+        }
+        if(type.isAssignableFrom(target.getClass())){
+            return (T)target;
+        }
+        //未能转换，尝试继续转换。
+        if(value instanceof String){
+            return (T)compatibleTypeConvert((String)value,type);
+        }else{
+            return (T)compatibleTypeConvert(
+                    JSON.toJSONString(value,SerializerFeature.WriteMapNullValue),type);
+        }
     }
 
     /**
@@ -171,17 +189,43 @@ public class CompatibleTypeUtils {
 
     public static void main(String[] args) {
         Object value = 1;
-        System.out.println(expectConvert(value,int.class));
-        System.out.println(expectConvert(value,Integer.class));
-        System.out.println(expectConvert(value,String.class));
-        System.out.println(expectConvert(value,void.class));
-        System.out.println(expectConvert(value,Boolean.class));
+        print(expectConvert(value, int.class));
+        print(expectConvert(value, Integer.class));
+        print(expectConvert(value, String.class));
+        print(expectConvert(value, void.class));
+        print(expectConvert(value, Boolean.class));
+        print(expectConvert("{\"test\":\"\"}", Map.class));
+        print(expectConvert("{\"test\":\"\"}", TreeMap.class));
+        print(expectConvert("[{\"test\":\"\"}]", List.class));
+        print(expectConvert(new User(), Map.class));
+        print(expectConvert(new HashMap(){{put("name","张三");}}, User.class));
+        User user = expectConvert("{\"name\":\"张三\"}", User.class);
+        System.out.println("user ::::: " + user.getName());
 
-        System.out.println(tryConvertStrToObject("[]").getClass());
-        System.out.println(tryConvertStrToObject("{}").getClass());
-        System.out.println(tryConvertStrToObject("123").getClass());
-        System.out.println(tryConvertStrToObject("{123}").getClass());
+        print(tryConvertStrToObject("[]").getClass());
+        print(tryConvertStrToObject("{}").getClass());
+        print(tryConvertStrToObject("123").getClass());
+        print(tryConvertStrToObject("{123}").getClass());
     }
 
+    private static void print(Object o) {
+        if(o == null){
+            System.out.println(null + "::" + o);
+            return;
+        }
+        System.out.println(o.getClass() + "::" + o);
+    }
+
+    private static class User {
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 }
 

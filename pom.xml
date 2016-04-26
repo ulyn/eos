@@ -7,7 +7,7 @@
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.2</version>
+    <version>3.0.4</version>
     <modules>
         <module>eos-common</module>
         <module>eos-manager</module>

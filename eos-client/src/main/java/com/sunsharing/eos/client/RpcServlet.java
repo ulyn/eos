@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +143,31 @@ public class RpcServlet extends HttpServlet {
         resp.setDateHeader("Expires", -1);
         resp.setContentType("application/json;charset=UTF-8");
         if(!StringUtils.isBlank(accessControlAllowOrigin)){
-            resp.setHeader("Access-Control-Allow-Origin",accessControlAllowOrigin);
+            if("*".equals(accessControlAllowOrigin)){
+                String url = req.getHeader("referer");
+                if(!StringUtils.isBlank(url)) {
+                    URL u = new URL(url);
+                    String ip = u.getHost();
+                    int port = u.getPort();
+                    resp.addHeader(
+                            "Access-Control-Allow-Origin", u.getProtocol() + "://" + ip + ":" + port
+                    );
+                }else
+                {
+                    resp.addHeader(
+                            "Access-Control-Allow-Origin","*"
+                    );
+                }
+            }else{
+                resp.setHeader("Access-Control-Allow-Origin",accessControlAllowOrigin);
+            }
+            resp.addHeader(
+                    "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, If-Modified-Since"
+            );
+            resp.addHeader(
+                    "Access-Control-Allow-Credentials", "true" // qwest.get(url, null, { withCredentials: true }); //允许跨域设置cookie
+            );
+
         }
         outputStream.write(content.getBytes("UTF-8"));
     }

@@ -1,5 +1,6 @@
 package com.sunsharing.eos.client.mock;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.client.sys.EosClientProp;
@@ -10,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -52,17 +54,33 @@ public class MockUtils {
                 for (int i = 0; i < array.size(); i++) {
                     JSONObject jo = array.getJSONObject(i);
                     String status = jo.getString("status");
-                    if(status.indexOf("${")!=-1) {
+                    if(status.indexOf("&&") != -1 ||
+                            status.indexOf("==") != -1 ||
+                            status.indexOf("||") != -1) {
                         //替换，如果${}没有前后的'"自动加上。
 
-                        try {
-                            DynamicString ds = new DynamicString(status);
-                            status = ds.convert(params);
-                        }catch (Exception e)
+//                        try {
+//                            DynamicString ds = new DynamicString(status);
+//                            status = ds.convert(params);
+//                        }catch (Exception e)
+//                        {
+//                            logger.error("模拟参数转换参数报错，参数信息："+status,e);
+//                            throw new RuntimeException("模拟参数转换参数报错，参数信息："+status);
+//                        }
+                        String vars = "";
+                        for(Iterator iter = params.keySet().iterator();
+                                iter.hasNext();)
                         {
-                            logger.error("模拟参数转换参数报错，参数信息："+status,e);
-                            throw new RuntimeException("模拟参数转换参数报错，参数信息："+status);
+                            String param = (String)iter.next();
+                            String value = (String)params.get(param);
+                            if(!(value.startsWith("{") || value.startsWith("[") ))
+                            {
+                                value = "\""+value+"\"";
+                            }
+                            vars+=" var "+param+"="+value+"; ";
                         }
+                        status = vars +status;
+
                     }
                     try {
                         if (status.indexOf("&&") != -1 || status.indexOf("==") != -1 || status.indexOf("||") != -1) {
@@ -136,5 +154,20 @@ public class MockUtils {
         }
         return null;
     }
-
+    public static void main(String[]a) throws Exception
+    {
+        String abc = JSON.toJSONString("{\"abc\":\"hehe\"}");
+        //System.out.println(abc);
+        String script = "var abc=\"1234\";  " +
+                "var r=\"0.9524143421435998\"; " +
+                " var eos_appid=\"ceshi\";  " +
+                "var eos_method_name=\"sayHello\";  var eos_version=\"1.0\";  " +
+                "var eos_mock=\"error\";  var eos_service_id=\"test2\" ; abc=='123'";
+        Object o = MockUtils.evalStr(script);
+        if (o == null) {
+            // "";
+        } else {
+            System.out.println(o.toString());
+        }
+    }
 }

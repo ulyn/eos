@@ -1,0 +1,126 @@
+
+<style>
+    /* Copyright 2014 Evernote Corporation. All rights reserved. */
+    .en-markup-crop-options {
+        top: 18px !important;
+        left: 50% !important;
+        margin-left: -100px !important;
+        width: 200px !important;
+        border: 2px rgba(255,255,255,.38) solid !important;
+        border-radius: 4px !important;
+    }
+
+    .en-markup-crop-options div div:first-of-type {
+        margin-left: 0px !important;
+    }
+    body {
+        font-family: "Open Sans", sans-serif;
+        line-height: 1.25;
+    }
+    table {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        margin: 10;
+        padding: 0;
+        width: 100%;
+    }
+    table caption {
+        font-size: 1.5em;
+        margin: .25em 0 .75em;
+    }
+    table tr {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: .35em;
+    }
+    table th,
+    table td {
+        padding: .625em;
+        text-align: center;
+    }
+    table th {
+        font-size: .85em;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+    table td img {
+        text-align: center;
+    }
+    @media screen and (max-width: 600px) {
+        table {
+            border: 0;
+        }
+        table caption {
+            font-size: 1.3em;
+        }
+        table thead {
+            display: none;
+        }
+        table tr {
+            border-bottom: 3px solid #ddd;
+            display: block;
+            margin-bottom: .625em;
+        }
+        table td {
+            border-bottom: 1px solid #ddd;
+            display: block;
+            font-size: .8em;
+            text-align: right;
+        }
+        table td:before {
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        table td:last-child {
+            border-bottom: 0;
+        }
+    }
+</style>
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">配置管理</h3>
+
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="submitIt simple_buttons" ng-click="toRunlist()">运行管理</div>
+        <div class="submitIt simple_buttons" ng-click="toAppConfig()">应用配置</div>
+        <div class="submitIt simple_buttons" ng-click="toCommon()">通用配置</div>
+    </div>
+    <div class="g_12 separator"><span></span></div>
+    <div class="g_12">
+        <table ng-repeat="row in data" style="margin-top: 10px">
+            <caption><div style="position: relative"><span  style="cursor: pointer">{{row.groupName}}</span>
+            </div></caption>
+            <thead>
+            <tr>
+                <th scope="col">代码</th>
+                <th scope="col" style="width: 150px">描述</th>
+                <th scope="col">值</th>
+                <th scope="col" style="width: 150px">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="config in row.configs">
+                <td scope="row" style="color:{{config.commit_color}}" data-label="Account">{{config.CON_KEY}}</td>
+                <td data-label="Due Date" style="color:{{config.rel_color}}">{{config.CON_DESC}}</td>
+                <td data-label="Amount" style="color:{{config.rel_color}}">{{config.DEFAULT_VALUE}}</td>
+                <td data-label="Period" style="position: relative"><span  ng-click="clickMe($event.target)" style="color:#fa6b01;cursor: pointer">操作</span>
+                    &nbsp;&nbsp;<span style="color:{{config.rel_color}}">{{config.att_label}}</span>
+                    <div class="top_tooltip" style="left:20px;width: 90px">
+                        <div>
+                            <ul class="user_options">
+                                <li class="i_16_wysiwyg" ng-if="config.att_label!='只读'"><a class="iframe" href="templates/config/editRunval.html?configId={{config.CONFIG_ID}}&runId={{runId}}"></a></li>
+                            </ul>
+                        </div>
+                    </div></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

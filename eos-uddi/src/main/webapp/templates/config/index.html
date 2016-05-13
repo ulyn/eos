@@ -1,0 +1,145 @@
+
+<style>
+    /* Copyright 2014 Evernote Corporation. All rights reserved. */
+    .en-markup-crop-options {
+        top: 18px !important;
+        left: 50% !important;
+        margin-left: -100px !important;
+        width: 200px !important;
+        border: 2px rgba(255,255,255,.38) solid !important;
+        border-radius: 4px !important;
+    }
+
+    .en-markup-crop-options div div:first-of-type {
+        margin-left: 0px !important;
+    }
+    body {
+        font-family: "Open Sans", sans-serif;
+        line-height: 1.25;
+    }
+    table {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        margin: 10;
+        padding: 0;
+        width: 100%;
+    }
+    table caption {
+        font-size: 1.5em;
+        margin: .25em 0 .75em;
+    }
+    table tr {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: .35em;
+    }
+    table th,
+    table td {
+        padding: .625em;
+        text-align: center;
+    }
+    table th {
+        font-size: .85em;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+    table td img {
+        text-align: center;
+    }
+    @media screen and (max-width: 600px) {
+        table {
+            border: 0;
+        }
+        table caption {
+            font-size: 1.3em;
+        }
+        table thead {
+            display: none;
+        }
+        table tr {
+            border-bottom: 3px solid #ddd;
+            display: block;
+            margin-bottom: .625em;
+        }
+        table td {
+            border-bottom: 1px solid #ddd;
+            display: block;
+            font-size: .8em;
+            text-align: right;
+        }
+        table td:before {
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        table td:last-child {
+            border-bottom: 0;
+        }
+    }
+</style>
+<div class="grid_wrapper">
+
+    <div class="g_6 contents_header">
+        <h3 class="i_16_dashboard tab_label">配置管理</h3>
+
+        <div><span class="label">General Informations and Resume</span></div>
+    </div>
+
+    <div class="g_6 contents_options">
+        <div class="submitIt simple_buttons" ng-click="toRunlist()">运行管理</div>
+        <div class="submitIt simple_buttons" ng-click="toAppConfig()">应用配置</div>
+        <div class="submitIt simple_buttons" ng-click="toCommon()">通用配置</div>
+    </div>
+    <div class="g_12" ng-if="!isCommon">
+        <span ng-repeat="row in childAppList"><a ng-if="!row.selected"  href="#config/{{appId}}/{{row.CHILD_APP_ID}}">{{row.CHILD_APP_NAME}}</a><a ng-if="row.selected" style="color:red" href="#config/{{appId}}/{{row.CHILD_APP_ID}}">【{{row.CHILD_APP_NAME}}】</a>&nbsp;</span>
+    </div>
+    <div class="g_12 separator"><span></span></div>
+    <div class="g_12" ng-if="!isCommon">
+        <a  href="templates/config/relConfig.html?childAppId={{childAppId}}&appId={{appId}}" class="iframe commonRel" >引用通用配置</a>
+    </div>
+    <div class="g_12" style="margin-bottom: 20px">
+                <table ng-repeat="row in data" style="margin-top: 10px">
+                    <caption><div style="position: relative"><span  style="cursor: pointer" ng-click="clickMe($event.target)">{{row.groupName}}</span>
+                        <div class="top_tooltip" style="left:350px;width: 140px">
+                            <div>
+                                <ul class="user_options">
+                                    <li class="i_16_add"><a class="iframe addGroup" href="templates/config/addGroup.html?isCommon=1&appId={{appId}}&childAppId={{childAppId}}"></a></li>
+                                    <li class="i_16_tasks"><a class="iframe addConfig" href="templates/config/addConfig.html?groupId={{row.groupId}}&appId={{appId}}&childAppId={{childAppId}}"></a></li>
+                                    <li ng-if="isCommon" class="i_16_options"><a class="iframe commonRel" href="templates/config/relConfig.html?groupId={{row.groupId}}"></a></li>
+                                    <li class="i_16_wysiwyg"><a class="iframe addGroup" href="templates/config/addGroup.html?isCommon=1&appId={{appId}}&childAppId={{childAppId}}&groupId={{row.groupId}}"></a></li>
+                                    <li class="i_16_close"><a class="iframe" ng-click="deleteGroup(row.groupId)" href="javascript:void(0)" title="删除"></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div></caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">代码</th>
+                        <th scope="col" style="width: 150px">描述</th>
+                        <th scope="col">默认值</th>
+                        <th scope="col" style="width: 150px">属性</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="config in row.configs">
+                        <td scope="row" style="color:{{config.commit_color}}" data-label="Account">{{config.CON_KEY}}</td>
+                        <td data-label="Due Date" style="color:{{config.rel_color}}">{{config.CON_DESC}}</td>
+                        <td data-label="Amount" style="color:{{config.rel_color}}">{{config.DEFAULT_VALUE}}</td>
+                        <td data-label="Period" style="position: relative"><span  ng-click="clickMe($event.target)" style="color:#fa6b01;cursor: pointer">操作</span>
+                            &nbsp;&nbsp;<span style="color:{{config.rel_color}}">{{config.att_label}}</span>
+                            <div class="top_tooltip" style="left:20px;width: 90px">
+                            <div>
+                                <ul class="user_options">
+                                    <li class="i_16_wysiwyg" ng-if="!config.IS_REL"><a class="iframe addConfig" href="templates/config/addConfig.html?configId={{config.CONFIG_ID}}&groupId={{config.GROUP_ID}}&appId={{appId}}&childAppId={{childAppId}}" title="修改"></a></li>
+                                    <li class="i_16_checkbox" ng-if="!config.IS_REL"><a ng-click="commit(config.CONFIG_ID)" href="javascript:void(0)" title="审批通过"></a></li>
+                                    <li class="i_16_close" ><a ng-click="deleteConfig(config.CONFIG_ID)" href="javascript:void(0)" title="删除"></a></li>
+                                </ul>
+                            </div>
+                        </div></td>
+                    </tr>
+                    </tbody>
+                </table>
+    </div>
+
+</div>

@@ -9,7 +9,12 @@
     <mapping class="com.sunsharing.eos.uddi.model.TDbChange"/>
     <mapping class="com.sunsharing.eos.uddi.model.TDbPdm"/>
       <mapping class="com.sunsharing.eos.uddi.model.TDbChecklist"/>
-      <!-- DB schema will be updated if needed -->
+    <mapping class="com.sunsharing.eos.uddi.model.TConfig"/>
+    <mapping class="com.sunsharing.eos.uddi.model.TConfigGroup"/>
+    <mapping class="com.sunsharing.eos.uddi.model.TConfigRun"/>
+    <mapping class="com.sunsharing.eos.uddi.model.TConfigRunVal"/>
+    <mapping class="com.sunsharing.eos.uddi.model.TConfigChildApp"/>
+    <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>
 </hibernate-configuration>

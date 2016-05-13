@@ -63,7 +63,21 @@ indexApp.config(['$routeProvider',
                 templateUrl: 'templates/service/blank.html'
                 //template:'criss',
                 //controller: 'userEdit'
-            }).when('/dblist/:appId',{
+            }).when('/config/:appId/:childAppId',{
+                templateUrl: 'templates/config/index.html',
+                //template:'criss',
+                controller: 'config'
+            }).when('/runlist/:appId/:childAppId',{
+                templateUrl: 'templates/config/runlist.html',
+                //template:'criss',
+                controller: 'runlist'
+            }).when('/runval/:appId/:childAppId/:runId',{
+                templateUrl: 'templates/config/runval.html',
+                //template:'criss',
+                controller: 'runval'
+            })
+
+            .when('/dblist/:appId',{
                 templateUrl: 'templates/db/dblist.html',
                 controller: 'dblist'
             }).when('/dbAdd/:appId/:changeId',{
@@ -72,6 +86,8 @@ indexApp.config(['$routeProvider',
             });
 //            .otherwise({redirectTo: '/servicelist'});
     }]);
+
+
 
 
 indexApp.controller('showApp', function($scope,$routeParams,$http) {
@@ -377,6 +393,11 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
     $scope.toDbUrl = function()
     {
         location.href = "#dblist/"+appId;
+    }
+
+    $scope.toConfig = function()
+    {
+        location.href = "#config/"+appId+"/COMMON";
     }
 
     $scope.addService = function()

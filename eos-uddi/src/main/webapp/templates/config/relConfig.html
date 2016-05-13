@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOS</title>
+    <!--[if lt IE 9]>
+    <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="/Javascript/Flot/excanvas.js"></script>
+    <![endif]-->
+    <!-- The Fonts -->
+    <link href="/CSS/fonts.css" rel="stylesheet">
+    <!-- The Main CSS File -->
+    <link rel="stylesheet" href="/CSS/style.css">
+    <!-- jQuery -->
+    <script src="/Javascript/jQuery/jquery-1.7.2.min.js"></script>
+    <!-- Flot -->
+    <script src="/Javascript/Flot/jquery.flot.js"></script>
+    <script src="/Javascript/Flot/jquery.flot.resize.js"></script>
+    <script src="/Javascript/Flot/jquery.flot.pie.js"></script>
+    <!-- DataTables -->
+    <script src="/Javascript/DataTables/jquery.dataTables.min.js"></script>
+    <!-- ColResizable -->
+    <script src="/Javascript/ColResizable/colResizable-1.3.js"></script>
+    <!-- jQuryUI -->
+    <script src="/Javascript/jQueryUI/jquery-ui-1.8.21.min.js"></script>
+    <!-- Uniform -->
+    <script src="/Javascript/Uniform/jquery.uniform.js"></script>
+    <!-- Tipsy -->
+    <script src="/Javascript/Tipsy/jquery.tipsy.js"></script>
+    <!-- Elastic -->
+    <script src="/Javascript/Elastic/jquery.elastic.js"></script>
+    <!-- ColorPicker -->
+    <script src="/Javascript/ColorPicker/colorpicker.js"></script>
+    <!-- SuperTextarea -->
+    <script src="/Javascript/SuperTextarea/jquery.supertextarea.min.js"></script>
+    <!-- UISpinner -->
+    <script src="/Javascript/UISpinner/ui.spinner.js"></script>
+    <!-- MaskedInput -->
+    <script src="/Javascript/MaskedInput/jquery.maskedinput-1.3.js"></script>
+    <!-- ClEditor -->
+    <script src="/Javascript/ClEditor/jquery.cleditor.js"></script>
+    <!-- Full Calendar -->
+    <script src="/Javascript/FullCalendar/fullcalendar.js"></script>
+    <!-- Color Box -->
+    <script src="/Javascript/ColorBox/jquery.colorbox.js"></script>
+    <!-- Kanrisha Script -->
+    <script src="/Javascript/kanrisha.js"></script>
+    <script src="/Javascript/angular-1.2.10/angular.min.js"></script>
+    <script src="/Javascript/angular-1.2.10/angular-resource.min.js"></script>
+    <script src="/Javascript/angular-1.2.10/angular-route.min.js"></script>
+
+
+    <link rel="stylesheet" href="/zTree_v3-master/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="/zTree_v3-master/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+
+</head>
+<body>
+<div class="login" style="width: 100%;margin:0px;"  >
+    <div class="widget_header">
+        <h4 class="widget_header_title wwIcon i_16_login">引用配置</h4>
+    </div>
+    <div class="widget_contents lgNoPadding">
+        <form action="/login.do" method="POST" class="ng-pristine ng-valid">
+            <div class="line_grid">
+                <ul id="treeDemo" class="ztree"></ul>
+                <div class="clear"></div>
+            </div>
+            <div class="line_grid">
+                <div class="g_6"><input id="saveBtn" class="submitIt simple_buttons"  value="保存" type="button">
+                </div>
+                <div class="clear"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return "";
+    }
+    var setting = {
+        check: {
+            enable: true
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "ID",
+                pIdKey: "PID",
+                rootPId: "0"
+            }
+        }
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: "/relbasic.do?groupId="+GetQueryString("groupId"),
+        data: {},
+        success: function(data){
+            if(data.status)
+            {
+                var zNodes = data.data;
+                var zTree = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+                zTree.setting.check.chkboxType = { "Y":"ps", "N":"ps" };
+            }else{
+                alert("获取列表失败");
+            }
+        },
+        dataType: "json"
+    });
+
+    $("#saveBtn").click(function(){
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        var nodes = treeObj.getCheckedNodes(true);
+        if(nodes.length==0)
+        {
+            alert("请选择");
+            return;
+        }
+        console.info(nodes);
+        var arr = [];
+        if(GetQueryString("groupId")!="")
+        {
+            for(var i=0;i<nodes.length;i++)
+            {
+                if(nodes[i].TYPE == "CONFIG")
+                {
+                    arr[arr.length] = nodes[i].ID;
+                }
+            }
+        }
+        if(GetQueryString("groupId")==""){
+            for(var i=0;i<nodes.length;i++)
+            {
+                    arr[arr.length] = nodes[i].ID+","+nodes[i].TYPE+","+nodes[i].PID;
+            }
+        }
+
+        if(GetQueryString("groupId")!="") {
+            $.ajax({
+                type: 'POST',
+                url: "/saveRelBasic.do",
+                data: {groupId: GetQueryString("groupId"), rels: arr.join(",")},
+                success: function (data) {
+                    if (data.status) {
+                        alert("保存成功");
+                        parent.location.reload();
+                    } else {
+                        alert(data.msg);
+                    }
+                },
+                dataType: "json"
+            });
+        }else{
+            $.ajax({
+                type: 'POST',
+                url: "/saveAppRel.do",
+                data: {appId: GetQueryString("appId"),childAppId:GetQueryString("childAppId") ,rels: arr.join(",")},
+                success: function (data) {
+                    if (data.status) {
+                        alert("保存成功");
+                        parent.location.reload();
+                    } else {
+                        alert(data.msg);
+                    }
+                },
+                dataType: "json"
+            });
+        }
+
+
+    });
+
+
+
+</script>
+</body>
+</html>

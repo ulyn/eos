@@ -11,12 +11,12 @@
 <script>
     $(document).ready(function () {
         $.eosRemote({
-            serviceId: "testService",
+            serviceId: "test2",
             appId:"ceshi",
             version:"1.0",
             mock: "error",
-            method: "testInt",
-            data: {"i":"4"},
+            method: "sayHello",
+            data: {"abc":"123"},
             success: function (data) {
                 console.info(data);
                 alert("返回结果:" + data);

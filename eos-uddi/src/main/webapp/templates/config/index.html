@@ -93,6 +93,8 @@
     </div>
     <div class="g_12" ng-if="!isCommon">
         <span ng-repeat="row in childAppList"><a ng-if="!row.selected"  href="#config/{{appId}}/{{row.CHILD_APP_ID}}">{{row.CHILD_APP_NAME}}</a><a ng-if="row.selected" style="color:red" href="#config/{{appId}}/{{row.CHILD_APP_ID}}">【{{row.CHILD_APP_NAME}}】</a>&nbsp;</span>
+        <a href="exportConfig.do?appId={{appId}}">导出</a>
+        <a class="iframe commonRel" href="templates/config/import.html" >导入</a>
     </div>
     <div class="g_12 separator"><span></span></div>
     <div class="g_12" ng-if="!isCommon">

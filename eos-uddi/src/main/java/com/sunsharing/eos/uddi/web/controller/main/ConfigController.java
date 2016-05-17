@@ -1,5 +1,6 @@
 package com.sunsharing.eos.uddi.web.controller.main;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.StringUtils;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -857,6 +860,209 @@ public class ConfigController {
         ResponseHelper.printOut(response, true, "", result);
 
     }
+
+    @RequestMapping(value="/exportConfig.do",method= RequestMethod.GET)
+    public void export(Model model,HttpServletRequest request,HttpServletResponse response)
+            throws Exception
+    {
+        //app
+        String appId = request.getParameter("appId");
+        String sql = "select * from T_APP where APP_ID="+appId;
+        List list = jdbc.queryForList(sql);
+        Map app = (Map)list.get(0);
+        //childApp
+        sql = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId;
+        List childApps = jdbc.queryForList(sql);
+        //T_CONFIG_GROUP
+        sql = "select * from T_CONFIG_GROUP where (APP_ID = "+appId+" or  IS_COMMON = 1)";
+        List groups = jdbc.queryForList(sql);
+        //T_CONFIG
+        sql = "select * from T_CONFIG where (APP_ID = "+appId+" or  IS_BASIC = 1)";
+        List configs= jdbc.queryForList(sql);
+
+        Map rst = new HashMap();
+        rst.put("app",app);
+        rst.put("childApp",childApps);
+        rst.put("group",groups);
+        rst.put("config",configs);
+
+        String str = JSON.toJSONString(rst);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;"
+                + " filename="+new String(("config.txt").getBytes("UTF-8"), "ISO8859-1"));
+        response.getOutputStream().write(str.getBytes("UTF-8"));
+    }
+
+    @RequestMapping(value="/importConfig.do",method= RequestMethod.POST)
+    public void importConfig(Model model,HttpServletRequest request,
+                             HttpServletResponse response)throws Exception
+    {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        // 获得文件
+        MultipartFile imgFile  =  multipartRequest.getFile("file");
+        byte[] bytes = imgFile.getBytes();
+        String str = new String(bytes,"UTF-8");
+        Map strMap = JSON.parseObject(str,Map.class);
+        Map app = (Map)strMap.get("app");
+        //处理APP
+        Integer appId = (Integer)app.get("APP_ID");
+        String appName = tranSqlVal((String)app.get("APP_NAME"));
+        String appCode = tranSqlVal((String)app.get("APP_CODE"));
+        String createTime = tranSqlVal((String)app.get("CREATE_TIME"));
+        String dbs = tranSqlVal((String)app.get("DBS"));
+
+        String sql = "select count(*) from T_APP where APP_ID="+appId;
+        int size=jdbc.queryForInt(sql);
+        if(size == 0)
+        {
+            sql = "insert into T_APP set APP_ID= "+appId+",APP_NAME="+appName+",APP_CODE="+appCode+
+                    ",DBS="+dbs+",CREATE_TIME="+createTime;
+        }else
+        {
+            sql = "update T_APP set APP_NAME="+appName+",APP_CODE="+appCode+
+                    ",DBS="+dbs+",CREATE_TIME="+createTime+" where APP_ID = "+appId;
+        }
+        jdbc.execute(sql);
+        updateAuto("T_APP","APP_ID");
+
+        //childApp
+        List<Map> childApp = (List)strMap.get("childApp");
+        for(Map map:childApp)
+        {
+            Integer childAppId = (Integer)map.get("CHILD_APP_ID");
+            Integer _appId = (Integer)map.get("APP_ID");
+            String childAppName = tranSqlVal((String)map.get("CHILD_APP_NAME"));
+            sql = "select count(*) from T_CONFIG_CHILD_APP where CHILD_APP_ID="+childAppId;
+            size=jdbc.queryForInt(sql);
+            if(size == 0)
+            {
+                sql = "insert into T_CONFIG_CHILD_APP set  CHILD_APP_ID = "+childAppId +
+                ",CHILD_APP_NAME="+childAppName+
+                ",APP_ID="+_appId;
+            }else
+            {
+                sql = "update  T_CONFIG_CHILD_APP set  "+
+                        "CHILD_APP_NAME="+childAppName+
+                        ",APP_ID="+_appId+" where CHILD_APP_ID = "+childAppId;
+            }
+            jdbc.execute(sql);
+        }
+        updateAuto("T_CONFIG_CHILD_APP","CHILD_APP_ID");
+
+        //T_CONFIG_GROUP
+        List<Map> group = (List)strMap.get("group");
+        for(Map map:group)
+        {
+            Integer groupId = (Integer)map.get("GROUP_ID");
+            Integer _appId = (Integer)map.get("APP_ID");
+            Integer childAppId = (Integer)map.get("CHILD_APP_ID");
+            String groupName = tranSqlVal((String)map.get("GROUP_NAME"));
+            String isCommon = tranSqlVal((String)map.get("IS_COMMON"));
+            String del = tranSqlVal((String)map.get("_DEL"));
+            sql = "select count(*) from T_CONFIG_GROUP where GROUP_ID="+groupId;
+            size=jdbc.queryForInt(sql);
+            if(size == 0)
+            {
+                sql = "insert into T_CONFIG_GROUP set "+
+                        "GROUP_ID="+groupId+","+
+                        "APP_ID="+_appId+","+
+                        "CHILD_APP_ID="+childAppId+","+
+                        "GROUP_NAME="+groupName+","+
+                        "IS_COMMON="+isCommon+","+
+                        "_DEL="+del;
+            }else
+            {
+                sql = "update T_CONFIG_GROUP set "+
+                        "APP_ID="+_appId+","+
+                        "CHILD_APP_ID="+childAppId+","+
+                        "GROUP_NAME="+groupName+","+
+                        "IS_COMMON="+isCommon+","+
+                        "_DEL="+del+" where GROUP_ID = "+groupId;
+            }
+            jdbc.execute(sql);
+        }
+        updateAuto("T_CONFIG_GROUP","GROUP_ID");
+
+        //T_CONFIG
+        List<Map> configs = (List)strMap.get("config");
+        for(Map map :configs)
+        {
+            Integer configId = (Integer)map.get("CONFIG_ID");
+            Integer _appId = (Integer)map.get("APP_ID");
+            Integer childAppId = (Integer)map.get("CHLID_APP_ID");
+            Integer groupId = (Integer)map.get("GROUP_ID");
+            String conKey = tranSqlVal((String)map.get("CON_KEY"));
+            String isBasic = tranSqlVal((String)map.get("IS_BASIC"));
+            Integer relConfigId = ((Integer)map.get("REL_CONFIG_ID"));
+            String defaultValue = tranSqlVal((String)map.get("DEFAULT_VALUE"));
+            String isCommit = tranSqlVal((String)map.get("IS_COMMIT"));
+            String att = tranSqlVal((String)map.get("ATT"));
+            String conDesc = tranSqlVal((String)map.get("CON_DESC"));
+            String del = tranSqlVal((String)map.get("_DEL"));
+
+            sql = "select count(*) from T_CONFIG where CONFIG_ID="+configId;
+            size=jdbc.queryForInt(sql);
+            if(size == 0)
+            {
+                sql = "insert into T_CONFIG set "+
+                        "CONFIG_ID="+configId+","+
+                        "APP_ID="+_appId+","+
+                        "CHLID_APP_ID="+childAppId+","+
+                        "GROUP_ID="+groupId+","+
+                        "CON_KEY="+conKey+","+
+                        "IS_BASIC="+isBasic+","+
+                        "REL_CONFIG_ID="+relConfigId+","+
+                        "DEFAULT_VALUE="+defaultValue+","+
+                        "IS_COMMIT="+isCommit+","+
+                        "ATT="+att+","+
+                        "CON_DESC="+conDesc+","+
+                        "_DEL="+del;
+            }else
+            {
+                sql = "update  T_CONFIG set "+
+                        "APP_ID="+_appId+","+
+                        "CHLID_APP_ID="+childAppId+","+
+                        "GROUP_ID="+groupId+","+
+                        "CON_KEY="+conKey+","+
+                        "IS_BASIC="+isBasic+","+
+                        "REL_CONFIG_ID="+relConfigId+","+
+                        "IS_COMMIT="+isCommit+","+
+                        "ATT="+att+","+
+                        "CON_DESC="+conDesc+","+
+                        "_DEL="+del +" where CONFIG_ID = "+configId;
+            }
+            jdbc.execute(sql);
+        }
+        updateAuto("T_CONFIG","CONFIG_ID");
+
+        ResponseHelper.printOut(response, true, "", "");
+
+    }
+
+    private String tranSqlVal(Object o)
+    {
+        if(o == null)
+        {
+            return "NULL";
+        }
+        if(o instanceof Integer)
+        {
+            return o.toString();
+        }
+
+        return "'"+ o.toString() +"'";
+
+    }
+
+    private void updateAuto(String table,String key)
+    {
+        String sql = "select MAX("+key+") from "+table;
+        int max = jdbc.queryForInt(sql);
+        sql = "alter table "+table+" AUTO_INCREMENT="+(max+1);
+        jdbc.execute(sql);
+    }
+
 
 
 

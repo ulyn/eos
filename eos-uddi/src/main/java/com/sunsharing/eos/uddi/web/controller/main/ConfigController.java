@@ -306,7 +306,7 @@ public class ConfigController {
             String key = (String)row.get("CON_KEY");
             Integer rel = (Integer)row.get("REL_CONFIG_ID");
             row.put("IS_REL",false);
-            if(StringUtils.isBlank(key) && rel!=null && rel!=0)
+            if(rel!=null && rel!=0)
             {
                 String sql2 = "select t1.GROUP_ID,t1.GROUP_NAME," +
                         "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
@@ -454,7 +454,9 @@ public class ConfigController {
         for(String rel:relsArr)
         {
             if(!relsArray.contains(new Integer(rel))) {
+                TConfig relConfig = configService.loadConfig(rel);
                 TConfig config = new TConfig();
+                config.setKey(relConfig.getKey());
                 config.setIsBasic("1");
                 config.setGroupId(new Integer(groupId));
                 config.setIsCommit("0");
@@ -529,6 +531,7 @@ public class ConfigController {
                 TConfig config2 = configService.findSql(hql);
                 if( config2==null ) {
                     config.setRelConfigId(rconfig.getConfigId());
+                    config.setKey(rconfig.getKey());
                     config.setAppId(new Integer(appId));
                     config.setChlidAppId(new Integer(childAppId));
                     config.setIsCommit(rconfig.getIsCommit());
@@ -536,6 +539,7 @@ public class ConfigController {
                 }else
                 {
                     config2.set_delete("0");
+                    config2.setKey(rconfig.getKey());
                     config2.setIsCommit(rconfig.getIsCommit());
                     configService.saveConfig(config2);
                 }

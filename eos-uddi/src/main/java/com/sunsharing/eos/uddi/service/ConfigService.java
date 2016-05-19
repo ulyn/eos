@@ -79,7 +79,8 @@ public class ConfigService {
             sql = "from TConfig where key='"+key+"' and chlidAppId="+childAppId+" and _DEL = '0'";
         }else
         {
-            sql = "from TConfig where key='"+key+"' and IS_BASIC = '1' and REL_CONFIG_ID = '0' and _DEL='0' " ;
+            return false;
+            //sql = "from TConfig where key='"+key+"' and IS_BASIC = '1' and REL_CONFIG_ID = '0' and _DEL='0' " ;
         }
         List list = configDao.find(sql);
         if(list.size()>0)

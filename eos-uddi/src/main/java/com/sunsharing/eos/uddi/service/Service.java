@@ -387,33 +387,49 @@ public class Service {
     Logger logger = Logger.getLogger(Service.class);
 
     public void addTestCode(String methodId,
-                            String status,String desc,String content)
+                            String status,String desc,String content,String source_status)
     {
         TMethod method = methodDao.get(new Integer(methodId));
         JSONArray array = JSONArray.parseArray(method.getMockResult());
         JSONObject obj = null;
 
-        for(int i=0;i<array.size();i++)
+        if(!StringUtils.isBlank(source_status))
         {
-            String  sta = array.getJSONObject(i).getString("status");
-            if(sta.equals(status))
-            {
-                obj = array.getJSONObject(i);
-                if(StringUtils.isBlank(desc)) {
-                    desc = array.getJSONObject(i).getString("desc");
+            //更新
+            for (int i = 0; i < array.size(); i++) {
+                String sta = array.getJSONObject(i).getString("status");
+                if (sta.equals(source_status)) {
+                    obj = array.getJSONObject(i);
+                    obj.put("status",status);
+                    if (StringUtils.isBlank(desc)) {
+                        desc = array.getJSONObject(i).getString("desc");
+                    }
+                    obj.put("desc",desc);
+                    break;
                 }
-                obj.put("desc",desc);
-                obj.put("content",content);
-
-                break;
             }
-        }
-        if(obj==null){
-            obj = new JSONObject();
-            obj.put("status",status);
-            obj.put("desc",desc);
-            obj.put("content",content);
-            array.add(obj);
+            //return;
+        }else {
+            for (int i = 0; i < array.size(); i++) {
+                String sta = array.getJSONObject(i).getString("status");
+                if (sta.equals(status)) {
+                    obj = array.getJSONObject(i);
+                    if (StringUtils.isBlank(desc)) {
+                        desc = array.getJSONObject(i).getString("desc");
+                    }
+                    obj.put("desc", desc);
+                    obj.put("content", content);
+
+                    break;
+                }
+            }
+            if (obj == null) {
+                obj = new JSONObject();
+                obj.put("status", status);
+                obj.put("desc", desc);
+                obj.put("content", content);
+                array.add(obj);
+            }
         }
 
 

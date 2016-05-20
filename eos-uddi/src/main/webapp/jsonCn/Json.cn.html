@@ -55,8 +55,12 @@
             <a href="javascript:void(0)" class="tip minus" title="" data-placement="bottom" data-original-title="删除">
                 <i class="fa fa-minus"></i>
             </a>
+            <a href="javascript:void(0)" class="tip edit" title="" data-placement="bottom" data-original-title="修改">
+                <i class="fa fa-tag"></i>
+            </a>
+
             <span><input id="status" readonly="readonly" class="simple_field" name="desc" style="width: 380px" id="desc" type="text" /></span>
-            <span class="modal-title" >可以使用JS表达式</span>
+            <span class="modal-title" ></span>
         </div>
         <div id="json-target" contenteditable="true"
              style="height:400px;padding:20px;border-right:solid 1px #ddd;border-bottom:solid 1px #ddd;
@@ -84,6 +88,7 @@
                         <div class="form-group">
                             <label for="js-desc">模拟数据描述</label>
                             <input type="text" class="form-control" id="js-desc" placeholder="模拟数据描述">
+                            <input type="hidden" class="form-control" id="source_status">
                         </div>
                         <div class="form-group">
                             <label for="js-status">模拟数据匹配表达式</label>
@@ -264,6 +269,28 @@
     $('.add').click(function(){
         $("#js-desc").val("");
         $("#js-status").val("");
+        $("#source_status").val("");
+        $("#myModal").modal("show");
+
+    });
+
+    $('.edit').click(function(){
+        var status = $("#status").val();
+        if(status == "")
+        {
+            alert("请选择模拟数据");
+            return;
+        }
+        var desc = parent.$("#selectStatus").find("option:selected").text();
+        if(desc == "请选择")
+        {
+            desc = "";
+        }
+
+        $("#source_status").val(status);
+
+        $("#js-desc").val(desc);
+        $("#js-status").val(status);
         $("#myModal").modal("show");
 
     });
@@ -304,9 +331,20 @@
         }
         var desc = $("#js-desc").val();
         var status = $("#js-status").val();
+        var source_status = $("#source_status").val();
+        if(desc == "")
+        {
+            alert("请填写描述");
+            return;
+        }
+        if(status == "")
+        {
+            alert("表达式不能为空");
+            return;
+        }
 
         $.post("../addTestCode.do", { "desc": desc,"status":status,
-                    "method_id":methodId,"content":"" },
+                    "method_id":methodId,"content":"","source_status":source_status},
                 function(data){
                     alert("保存成功");
                     parent.location.reload();

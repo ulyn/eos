@@ -287,7 +287,8 @@ public class ServiceController {
         String status = request.getParameter("status");
         String desc = request.getParameter("desc");
         String content = request.getParameter("content");
-        service.addTestCode(methodId,status,desc,content);
+        String source_status = request.getParameter("source_status");
+        service.addTestCode(methodId,status,desc,content,source_status);
 
         String[] mock = service.getMock(methodId);
         service.save2JavaFile(methodId,mock);

@@ -77,7 +77,7 @@ public class RpcServlet extends HttpServlet {
 
         accessControlAllowOrigin = config.getInitParameter("Access-Control-Allow-Origin");
 
-        EosClient.start();
+//        EosClient.start();
     }
 
     @Override

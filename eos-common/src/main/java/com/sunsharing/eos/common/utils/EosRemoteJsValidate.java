@@ -16,7 +16,9 @@
  */
 package com.sunsharing.eos.common.utils;
 
-import com.sunsharing.component.utils.file.FileUtil;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 
 /**
  * <pre></pre>
@@ -32,7 +34,7 @@ import com.sunsharing.component.utils.file.FileUtil;
 public class EosRemoteJsValidate {
 
     public static void main(String[] args) throws Exception {
-        String js = FileUtil.readTxt(args[0], "utf-8");
+        String js = FileUtils.readFileToString(new File(args[0]), "utf-8");
         int i = js.indexOf("eosRemoteSetup");
         int j = js.indexOf("serviceId");
         js = js.substring(i, j);

@@ -16,10 +16,21 @@
  */
 package com.sunsharing.eos.server.sys;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
 import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
+import com.sunsharing.component.resvalidate.config.loader.Converter;
+import com.sunsharing.component.resvalidate.config.loader.ConverterMethod;
+import com.sunsharing.component.resvalidate.config.loader.Reader;
+import com.sunsharing.component.resvalidate.config.loader.ReaderMethod;
+import com.sunsharing.component.resvalidate.exception.LoadConfigException;
+import com.sunsharing.eos.common.config.loader.DefaultPropReaderConverter;
+import com.sunsharing.eos.common.config.loader.PropReaderConverter;
+import org.apache.log4j.Logger;
+
+import java.util.List;
 
 /**
  * <pre></pre>
@@ -33,8 +44,10 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@Configuration(value = "eos-server.properties")
-public class EosServerProp {
+@Configuration(value = "")
+public class EosServerProp{
+    private static final Logger logger = Logger.getLogger(EosServerProp.class);
+
     @ParamField(name = "app_id")
     public static String appId;
 
@@ -55,5 +68,26 @@ public class EosServerProp {
     @NumValidate
     public static int nettyServerPort = 5555;
 
+    public final static String DEFAULT_CONFIG_FILE = "eos-server.properties";
+    private final PropReaderConverter propReaderConverter;
+
+    public EosServerProp() {
+        this.propReaderConverter = new DefaultPropReaderConverter(DEFAULT_CONFIG_FILE);
+    }
+
+    public EosServerProp(PropReaderConverter propReaderConverter) {
+        this.propReaderConverter = propReaderConverter;
+    }
+
+    @ReaderMethod
+    public List<String> loadConfigText(Object refBean, String[] values) throws LoadConfigException {
+        logger.info("加载转换器为：" + this.propReaderConverter.getClass().getName());
+        return this.propReaderConverter.loadConfigText(refBean,values);
+    }
+
+    @ConverterMethod
+    public JSONObject toJson(String text) {
+        return this.propReaderConverter.toJson(text);
+    }
 }
 

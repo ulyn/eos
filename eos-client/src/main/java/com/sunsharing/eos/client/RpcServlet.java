@@ -134,8 +134,7 @@ public class RpcServlet extends HttpServlet {
         }
 
         String content =  JSON.toJSONString(rtnMap
-                , SerializerFeature.WriteMapNullValue
-                , SerializerFeature.WriteClassName);
+                , SerializerFeature.WriteMapNullValue);
 
         OutputStream outputStream = getOutputStream(resp);
         resp.setHeader("Pragma", "no-cache");

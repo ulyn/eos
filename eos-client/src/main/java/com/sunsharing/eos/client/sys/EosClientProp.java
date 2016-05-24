@@ -16,13 +16,20 @@
  */
 package com.sunsharing.eos.client.sys;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
+import com.sunsharing.component.resvalidate.config.loader.ConverterMethod;
+import com.sunsharing.component.resvalidate.config.loader.ReaderMethod;
+import com.sunsharing.component.resvalidate.exception.LoadConfigException;
+import com.sunsharing.eos.common.config.loader.DefaultPropReaderConverter;
+import com.sunsharing.eos.common.config.loader.PropReaderConverter;
 import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,10 +44,10 @@ import java.util.Map;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-@Configuration(value = "eos-client.properties")
+@Configuration(value = "")
 public class EosClientProp {
 
-    static Logger logger = Logger.getLogger(EosClientProp.class);
+    private final static Logger logger = Logger.getLogger(EosClientProp.class);
 
     @ParamField(name = "zookeeper_ip", required = false)
     public static String zookeeperIp = "";
@@ -100,6 +107,29 @@ public class EosClientProp {
                 return "";
             }
         }
+    }
+
+    public final static String DEFAULT_CONFIG_FILE = "eos-client.properties";
+
+    private final PropReaderConverter propReaderConverter;
+
+    public EosClientProp() {
+        this.propReaderConverter = new DefaultPropReaderConverter(DEFAULT_CONFIG_FILE);
+    }
+
+    public EosClientProp(PropReaderConverter propReaderConverter) {
+        this.propReaderConverter = propReaderConverter;
+    }
+
+    @ReaderMethod
+    public List<String> loadConfigText(Object refBean, String[] values) throws LoadConfigException {
+        logger.info("加载转换器为：" + this.propReaderConverter.getClass().getName());
+        return this.propReaderConverter.loadConfigText(refBean,values);
+    }
+
+    @ConverterMethod
+    public JSONObject toJson(String text) {
+        return this.propReaderConverter.toJson(text);
     }
 }
 

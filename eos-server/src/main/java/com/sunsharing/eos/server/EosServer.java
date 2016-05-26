@@ -17,8 +17,7 @@
 package com.sunsharing.eos.server;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
-import com.sunsharing.eos.common.config.loader.DefaultPropReaderConverter;
-import com.sunsharing.eos.common.config.loader.PropReaderConverter;
+import com.sunsharing.component.resvalidate.config.loader.prop.AbstractProp;
 import com.sunsharing.eos.server.sys.EosServerProp;
 import com.sunsharing.eos.server.zookeeper.ServiceRegister;
 import org.springframework.context.ApplicationContext;
@@ -46,9 +45,8 @@ public class EosServer {
         start(null, packagePath);
     }
 
-    public synchronized static void start(String packagePath,
-                                          PropReaderConverter propReaderConverter) {
-        start(null, packagePath,propReaderConverter);
+    public synchronized static void start(String packagePath,AbstractProp abstractProp) {
+        start(null, packagePath,abstractProp);
     }
 
     /**
@@ -70,13 +68,9 @@ public class EosServer {
     public synchronized static void start(
             ApplicationContext ctx,
             String packagePath,
-            PropReaderConverter propReaderConverter) {
+            AbstractProp abstractProp) {
         if (!inited) {
-            if(propReaderConverter == null){
-                ConfigContext.instancesBean(new EosServerProp());
-            }else{
-                ConfigContext.instancesBean(new EosServerProp(propReaderConverter));
-            }
+            ConfigContext.instancesBean(EosServerProp.class,abstractProp);
 
             ServerServiceContext.getInstance().initPackagePath(ctx, packagePath);
             ServerServiceContext.getInstance().initConfig();

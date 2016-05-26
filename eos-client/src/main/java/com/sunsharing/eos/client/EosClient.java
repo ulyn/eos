@@ -17,9 +17,9 @@
 package com.sunsharing.eos.client;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.component.resvalidate.config.loader.prop.AbstractProp;
 import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
-import com.sunsharing.eos.common.config.loader.PropReaderConverter;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 
 /**
@@ -41,14 +41,9 @@ public class EosClient {
      * 初始化eos系统
      *
      */
-    public synchronized static void start(
-            PropReaderConverter propReaderConverter) {
+    public synchronized static void start(AbstractProp abstractProp) {
         if (!inited) {
-            if(propReaderConverter == null){
-                ConfigContext.instancesBean(new EosClientProp());
-            }else{
-                ConfigContext.instancesBean(new EosClientProp(propReaderConverter));
-            }
+            ConfigContext.instancesBean(EosClientProp.class,abstractProp);
 
             ServiceContext.getInstance().initConfig();
 
@@ -78,14 +73,11 @@ public class EosClient {
     }
     /**
      * 同步初始化eos系统
-     * @param propReaderConverter 初始配置读取转换器
+     * @param abstractProp 初始配置读取
      */
-    public synchronized static void synStart(PropReaderConverter propReaderConverter) {
-        if(propReaderConverter == null){
-            ConfigContext.instancesBean(new EosClientProp());
-        }else{
-            ConfigContext.instancesBean(new EosClientProp(propReaderConverter));
-        }
+    public synchronized static void synStart(AbstractProp abstractProp) {
+        ConfigContext.instancesBean(EosClientProp.class,abstractProp);
+
         ServiceContext.getInstance().initConfig();
         ServiceLocation.getInstance().synConnect();
     }

@@ -16,17 +16,12 @@
  */
 package test.sunsharing.eos.server;
 
-import com.sunsharing.eos.common.config.loader.DefaultPropReaderConverter;
-import com.sunsharing.eos.common.config.loader.HttpPropReaderConverter;
-import com.sunsharing.eos.common.config.loader.MapPropReaderConverter;
 import com.sunsharing.eos.server.EosServer;
-import com.sunsharing.eos.server.sys.EosServerProp;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 /**
  * <pre></pre>
@@ -44,7 +39,7 @@ public class ServerMain {
     @Before
     public void startServer() {
 //        EosServer.start("test.sunsharing.eos.server",new MapPropReaderConverter(new HashMap<String, Object>()));
-        EosServer.start("test.sunsharing.eos.server",new DefaultPropReaderConverter(EosServerProp.DEFAULT_CONFIG_FILE));
+        EosServer.start("test.sunsharing.eos.server");
 //        EosServer.start("test.sunsharing.eos.server",
 //                new HttpPropReaderConverter("http://192.168.0.235:8100/getConfig.do?appCode=test&runCode=test-client"));
         //命令循环

@@ -123,6 +123,13 @@ public class ConfigService {
 
     }
 
+
+    public TConfigRun loadRun(String runId)
+    {
+        TConfigRun run = runDao.get(new Integer(runId));
+        return run;
+    }
+
     public void saveRun(TConfigRun run)
     {
         runDao.save(run);

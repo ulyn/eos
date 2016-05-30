@@ -189,6 +189,7 @@ indexApp.controller('runval', function($scope, $routeParams,$http) {
         $scope.data = data.data.configlist;
         $scope.childAppId = data.data.childAppId;
         $scope.runId = data.data.runId;
+        $scope.runKey = data.data.runKey;
     });
 
     $scope.clickMe = function(target)

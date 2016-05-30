@@ -360,7 +360,7 @@
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <connectors>
                         <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>8098</port>
+                            <port>8100</port>
                         </connector>
                     </connectors>
                     <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>

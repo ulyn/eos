@@ -29,8 +29,8 @@ public class MonitorController {
     }
 
     @RequestMapping(value="/getServices.do",method= RequestMethod.POST)
-    public void getServices(String eosId,Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {
-        List<Map> m = service.getServices(eosId);
+    public void getServices(String appId,Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {
+        List<Map> m = service.getServices(appId);
         ResponseHelper.printOut(response, true, "", m);
     }
 

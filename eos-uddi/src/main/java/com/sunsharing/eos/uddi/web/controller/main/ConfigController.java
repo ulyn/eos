@@ -97,6 +97,9 @@ public class ConfigController {
         ResponseHelper.printOut(response, true, "", config);
     }
 
+
+
+
     /**
      * 保存分组
      * @param model
@@ -156,6 +159,10 @@ public class ConfigController {
 
         TConfig config = new TConfig();
         config.setIsBasic("1");
+        if(!StringUtils.isBlank(defaultValue))
+        {
+            defaultValue = defaultValue.trim();
+        }
         config.setDefaultValue(defaultValue);
         config.setConDesc(conDesc);
         config.setKey(key);
@@ -273,7 +280,7 @@ public class ConfigController {
                     "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
                     "t2.CONFIG_ID,t2.REL_CONFIG_ID,t2._DEL from T_CONFIG_GROUP  t1 " +
                     "left join T_CONFIG t2 on t1.GROUP_ID = t2.GROUP_ID  " +
-                    "where  t1._DEL='0' and  t1.CHILD_APP_ID = "+childAppId;
+                    "where  t1._DEL='0' and  t1.CHILD_APP_ID = "+childAppId+" order by t1.GROUP_ID";
         }
 
         List<Map<String, Object>> list = jdbc.queryForList(sql);
@@ -318,6 +325,11 @@ public class ConfigController {
                 {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
+                    if(!StringUtils.isBlank((String)row.get("DEFAULT_VALUE")))
+                    {
+                        row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
+                    }
+
                     row = row2;
                     key = (String)row.get("CON_KEY");
                     row.put("IS_REL",true);
@@ -405,8 +417,9 @@ public class ConfigController {
     public void relbasic(Model model,HttpServletRequest request,HttpServletResponse response)
     {
         String groupId = request.getParameter("groupId");
+        String childAppId = request.getParameter("childAppId");
         boolean includeRel = false;
-        if(StringUtils.isBlank(groupId))
+        if(!StringUtils.isBlank(childAppId))
         {
             includeRel = true;
         }
@@ -478,28 +491,34 @@ public class ConfigController {
         String childAppId = request.getParameter("childAppId");
         String rels = request.getParameter("rels");
         String appId = request.getParameter("appId");
+        String groupId = request.getParameter("groupId");
+        String[] relArr = rels.split(",");
         //先处理分组
-        String [] relArr = rels.split(",");
-        for(int i=0;i<relArr.length;i+=3)
-        {
-            String id = relArr[i];
-            String type = relArr[i+1];
-            String pid = relArr[i+2];
-            if(type.equals("GROUP"))
-            {
-                TConfigGroup group = configService.loadGroup(id);
-                String name = group.getGroupName();
-                String sql = "select * from T_CONFIG_GROUP where CHILD_APP_ID = "+childAppId+" and GROUP_NAME='"+name+"'";
-                List list = jdbc.queryForList(sql);
-                if(list.size()==0)
-                {
-                    TConfigGroup group1 = new TConfigGroup();
-                    group1.set_delete("0");
-                    group1.setAppId(new Integer(appId));
-                    group1.setChildAppId(new Integer(childAppId));
-                    group1.setGroupName(name);
-                    group1.setIsCommon("0");
-                    configService.saveGroup(group1);
+        if(StringUtils.isBlank(groupId)) {
+
+            for (int i = 0; i < relArr.length; i += 3) {
+                String id = relArr[i];
+                String type = relArr[i + 1];
+                String pid = relArr[i + 2];
+                if (type.equals("GROUP")) {
+                    TConfigGroup group = configService.loadGroup(id);
+                    String name = group.getGroupName();
+                    String sql = "select * from T_CONFIG_GROUP where CHILD_APP_ID = " + childAppId + " and GROUP_NAME='" + name + "'";
+                    List<Map<String, Object>> list = jdbc.queryForList(sql);
+                    if (list.size() == 0) {
+                        TConfigGroup group1 = new TConfigGroup();
+                        group1.set_delete("0");
+                        group1.setAppId(new Integer(appId));
+                        group1.setChildAppId(new Integer(childAppId));
+                        group1.setGroupName(name);
+                        group1.setIsCommon("0");
+                        configService.saveGroup(group1);
+                    }else
+                    {
+                        TConfigGroup group1 = configService.loadGroup((list.get(0).get("GROUP_ID")).toString());
+                        group1.set_delete("0");
+                        configService.saveGroup(group1);
+                    }
                 }
             }
         }
@@ -508,6 +527,10 @@ public class ConfigController {
             String id = relArr[i];
             String type = relArr[i+1];
             String pid = relArr[i+2];
+            if(!StringUtils.isBlank(groupId))
+            {
+                pid = groupId;
+            }
             if(type.equals("CONFIG"))
             {
                 TConfigGroup group = configService.loadGroup(pid);
@@ -539,6 +562,14 @@ public class ConfigController {
                 }else
                 {
                     config2.set_delete("0");
+                    if(!StringUtils.isBlank(groupId))
+                    {
+                        config2.setGroupId(new Integer(groupId));
+                    }else
+                    {
+                        config2.setGroupId(gId);
+                    }
+
                     config2.setKey(rconfig.getKey());
                     config2.setIsCommit(rconfig.getIsCommit());
                     configService.saveConfig(config2);
@@ -604,7 +635,7 @@ public class ConfigController {
     {
         String childAppId = request.getParameter("childAppId");
         String appId = request.getParameter("appId");
-        String runKey = request.getParameter("runKey");
+        String runKey = request.getParameter("runKey").trim();
         String xtcs = request.getParameter("xtcs");
 
         String sql = "select count(*) from T_CONFIG_RUN where APP_ID = "+appId+" " +
@@ -638,13 +669,15 @@ public class ConfigController {
         String childAppId = request.getParameter("childAppId");
         String runId = request.getParameter("runId");
 
+        TConfigRun run = configService.loadRun(runId);
+
         String sql = "select t3.GROUP_ID,t3.GROUP_NAME," +
                 "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
                 "t2.CONFIG_ID,t2.REL_CONFIG_ID,t2._DEL from " +
                 "T_CONFIG t2,T_CONFIG_GROUP t3 " +
                 "where t2.GROUP_ID=t3.GROUP_ID and  t2._DEL='0' " +
                 "and t2.IS_COMMIT = '1'  " +
-                "and t2.CHLID_APP_ID = "+childAppId;
+                "and t2.CHLID_APP_ID = "+childAppId+" order by t3.GROUP_ID";
 
         List<Map<String, Object>> list = jdbc.queryForList(sql);
 
@@ -684,6 +717,10 @@ public class ConfigController {
                 {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
+                    if(!StringUtils.isBlank((String)row.get("DEFAULT_VALUE")))
+                    {
+                        row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
+                    }
                     row = row2;
                     key = (String)row.get("CON_KEY");
                     row.put("IS_REL",true);
@@ -703,12 +740,13 @@ public class ConfigController {
             {
                 JSONArray array = jsonObject.getJSONArray("configs");
                 String iscommit = (String)row.get("IS_COMMIT");
-                if("1".equals(iscommit))
+                String defaultValue = (String)row.get("DEFAULT_VALUE");
+                if(StringUtils.isBlank(defaultValue))
                 {
-                    row.put("commit_color","green");
+                    row.put("commit_color","blue");
                 }else
                 {
-                    row.put("commit_color","red");
+                    row.put("commit_color","green");
                 }
                 String att = (String)row.get("ATT");
                 if(!StringUtils.isBlank(att))
@@ -737,6 +775,7 @@ public class ConfigController {
         Map rst = new HashMap();
         rst.put("configlist",result);
         rst.put("runId",runId);
+        rst.put("runKey",run.getRunKey());
         ResponseHelper.printOut(response, true, "", rst);
 
     }
@@ -753,7 +792,7 @@ public class ConfigController {
     {
         String runId = request.getParameter("runId");
         String configId = request.getParameter("configId");
-        String val = request.getParameter("val");
+        String val = request.getParameter("val").trim();
         configService.saveRunVal(runId,configId,val);
         ResponseHelper.printOut(response, true, "", "");
     }
@@ -788,11 +827,19 @@ public class ConfigController {
     {
         String appKey = request.getParameter("appCode");
         String runKey = request.getParameter("runCode");
+        String par = request.getParameter("par");
+        if(!StringUtils.isBlank(par))
+        {
+            appKey = par.split(",")[0];
+            runKey = par.split(",")[1];
+        }
+
+
         String sql = "select * from T_APP where APP_CODE = '"+appKey+"'";
         List<Map<String, Object>> list = jdbc.queryForList(sql);
         if(list.size()==0)
         {
-            ResponseHelper.printOut(response, true, appKey+"不存在", "");
+            ResponseHelper.printOut(response, false, appKey+"不存在", "");
             return;
         }
         Integer appId = (Integer)list.get(0).get("APP_ID");
@@ -802,7 +849,7 @@ public class ConfigController {
         list = jdbc.queryForList(sql);
         if(list.size()==0)
         {
-            ResponseHelper.printOut(response, true, runKey+"不存在", "");
+            ResponseHelper.printOut(response, false, runKey+"不存在", "");
             return;
         }
         Integer runId = (Integer)list.get(0).get("RUN_ID");
@@ -839,6 +886,10 @@ public class ConfigController {
                 {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
+                    if(!StringUtils.isBlank((String)row.get("DEFAULT_VALUE")))
+                    {
+                        row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
+                    }
                     row = row2;
                     key = (String)row.get("CON_KEY");
                     row.put("IS_REL",true);
@@ -1067,6 +1118,19 @@ public class ConfigController {
         jdbc.execute(sql);
     }
 
+
+    @RequestMapping(value="/setDefaultValue.do",method= RequestMethod.POST)
+    public void setDefaultValue(Model model,HttpServletRequest request,
+                             HttpServletResponse response)throws Exception
+    {
+        String configId = request.getParameter("configId");
+        String defaultValue = request.getParameter("default_value").trim();
+
+        String sql = "update T_CONFIG set DEFAULT_VALUE = '"+defaultValue+"' " +
+                "where CONFIG_ID = "+configId;
+        jdbc.execute(sql);
+        ResponseHelper.printOut(response, true, "", "");
+    }
 
 
 

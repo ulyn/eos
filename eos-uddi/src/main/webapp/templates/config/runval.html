@@ -81,7 +81,7 @@
 <div class="grid_wrapper">
 
     <div class="g_6 contents_header">
-        <h3 class="i_16_dashboard tab_label">配置管理</h3>
+        <h3 class="i_16_dashboard tab_label"><a href="javascript:void(0)"  style="display:inline-block" ng-click="toRunlist()">运行管理</a>->编辑({{runKey}})</h3>
 
         <div><span class="label">General Informations and Resume</span></div>
     </div>
@@ -93,7 +93,7 @@
     </div>
     <div class="g_12 separator"><span></span></div>
     <div class="g_12">
-        <table ng-repeat="row in data" style="margin-top: 10px">
+        <table ng-repeat="row in data" style="margin-top: 10px;margin-bottom:20px">
             <caption><div style="position: relative"><span  style="cursor: pointer">{{row.groupName}}</span>
             </div></caption>
             <thead>

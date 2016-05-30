@@ -1,7 +1,7 @@
 <div class="grid_wrapper">
 
     <div class="g_6 contents_header">
-        <h3 class="i_16_dashboard tab_label">配置管理</h3>
+        <h3 class="i_16_dashboard tab_label">运行管理</h3>
         <div><span class="label">General Informations and Resume</span></div>
     </div>
 
@@ -35,7 +35,7 @@
                     <td class="sorting_1">{{row.BSWZ}}</td>
                     <td class=" ">
                         <a class="simple_buttons" href="#runval/{{appId}}/{{childAppId}}/{{row.RUN_ID}}"><div>编辑</div></a>
-                        <a class="simple_buttons" target="_blank" href="getConfig.do?appCode={{appCode}}&runCode={{row.RUN_KEY}}"><div>接口</div></a>
+                        <a class="simple_buttons" target="_blank" href="getConfig.do?par={{appCode}},{{row.RUN_KEY}}"><div>接口</div></a>
                     </td>
                 </tr>
                 </tbody></table></div>

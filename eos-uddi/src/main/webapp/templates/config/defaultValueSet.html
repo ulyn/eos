@@ -51,21 +51,19 @@
     <script src="/Javascript/angular-1.2.10/angular-resource.min.js"></script>
     <script src="/Javascript/angular-1.2.10/angular-route.min.js"></script>
 
-
-    <link rel="stylesheet" href="/zTree_v3-master/css/zTreeStyle/zTreeStyle.css" type="text/css">
-    <script type="text/javascript" src="/zTree_v3-master/js/jquery.ztree.core.js"></script>
-    <script type="text/javascript" src="/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
-
 </head>
 <body>
 <div class="login" style="width: 100%;margin:0px;"  >
     <div class="widget_header">
-        <h4 class="widget_header_title wwIcon i_16_login">引用配置</h4>
+        <h4 class="widget_header_title wwIcon i_16_login">更改默认值</h4>
     </div>
     <div class="widget_contents lgNoPadding">
         <form action="/login.do" method="POST" class="ng-pristine ng-valid">
             <div class="line_grid">
-                <ul id="treeDemo" class="ztree"></ul>
+                <div class="g_2 g_2M"><span class="label">默认值</span></div>
+                <div class="g_10 g_10M">
+                    <input class="simple_field tooltip" id="label" name="label" type="text" placeholder="label"
+                           original-title=""></div>
                 <div class="clear"></div>
             </div>
             <div class="line_grid">
@@ -77,109 +75,39 @@
     </div>
 </div>
 <script>
+
     function GetQueryString(name)
     {
         var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
         if(r!=null)return  unescape(r[2]); return "";
     }
-    var setting = {
-        check: {
-            enable: true
-        },
-        data: {
-            simpleData: {
-                enable: true,
-                idKey: "ID",
-                pIdKey: "PID",
-                rootPId: "0"
-            }
-        }
-    };
 
-    var childAppId = GetQueryString("childAppId");
-    var appId = GetQueryString("appId");
-
-    $.ajax({
-        type: 'POST',
-        url: "/relbasic.do?groupId="+GetQueryString("groupId")+"&childAppId="+childAppId,
-        data: {},
-        success: function(data){
-            if(data.status)
-            {
-                var zNodes = data.data;
-                var zTree = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-                zTree.setting.check.chkboxType = { "Y":"ps", "N":"ps" };
-            }else{
-                alert("获取列表失败");
-            }
-        },
-        dataType: "json"
-    });
 
     $("#saveBtn").click(function(){
-        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-        var nodes = treeObj.getCheckedNodes(true);
-        if(nodes.length==0)
+        var label = $("#label").val();
+        if(label=="")
         {
-            alert("请选择");
+            alert("请输入名称");
             return;
         }
-        console.info(nodes);
-        var arr = [];
-        if(GetQueryString("childAppId")=="")
-        {
-            for(var i=0;i<nodes.length;i++)
-            {
-                if(nodes[i].TYPE == "CONFIG")
+        $.ajax({
+            type: 'POST',
+            url: "/setDefaultValue.do",
+            data: {configId:GetQueryString("configId"),default_value:label},
+            success: function(data){
+                if(data.status)
                 {
-                    arr[arr.length] = nodes[i].ID;
+                    alert("保存成功");
+                    parent.location.reload();
+
+                }else{
+                    alert("保存失败");
                 }
-            }
-        }
-        if(GetQueryString("childAppId")!=""){
-            for(var i=0;i<nodes.length;i++)
-            {
-                    arr[arr.length] = nodes[i].ID+","+nodes[i].TYPE+","+nodes[i].PID;
-            }
-        }
-
-        if(GetQueryString("childAppId")=="") {
-            $.ajax({
-                type: 'POST',
-                url: "/saveRelBasic.do",
-                data: {groupId: GetQueryString("groupId"), rels: arr.join(",")},
-                success: function (data) {
-                    if (data.status) {
-                        alert("保存成功");
-                        parent.location.reload();
-                    } else {
-                        alert(data.msg);
-                    }
-                },
-                dataType: "json"
-            });
-        }else{
-            $.ajax({
-                type: 'POST',
-                url: "/saveAppRel.do",
-                data: {appId: GetQueryString("appId"),childAppId:GetQueryString("childAppId") ,rels: arr.join(",")},
-                success: function (data) {
-                    if (data.status) {
-                        alert("保存成功");
-                        parent.location.reload();
-                    } else {
-                        alert(data.msg);
-                    }
-                },
-                dataType: "json"
-            });
-        }
-
-
+            },
+            dataType: "json"
+        });
     });
-
-
 
 </script>
 </body>

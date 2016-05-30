@@ -51,7 +51,7 @@ indexApp.config(['$routeProvider',
                 templateUrl: 'templates/monitor/monitor.html',
                 //template:'criss',
                 controller: 'monitor'
-            }).when('/monitorservice/:eosId',{
+            }).when('/monitorservice/:appId',{
                 templateUrl: 'templates/monitor/service.html',
                 //template:'criss',
                 controller: 'monitorservice'
@@ -180,7 +180,7 @@ indexApp.controller('import', function($scope,$routeParams,$http) {
 
 
 indexApp.controller('appAdd', function($scope, $routeParams,$http) {
-
+//
 
 
     $scope.saveApp = function(){
@@ -280,17 +280,56 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
 
 
 indexApp.controller('appController', function($scope, $http,$rootScope) {
-
+    //config runlist runval
+    var href = location.href;
+    var configIndex = -1;
+    var len = 0;
+    var appId = "";
+    if(href.indexOf("/config/")!=-1)
+    {
+        configIndex = href.indexOf("/config/");
+        len = 8;
+    }
+    if(href.indexOf("/runlist/")!=-1)
+    {
+        configIndex = href.indexOf("/runlist/");
+        len = 9;
+    }
+    if(href.indexOf("/runval/")!=-1)
+    {
+        configIndex = href.indexOf("/runval/");
+        len = 8;
+    }
+    if(configIndex!=-1)
+    {
+        var sub = href.substring(configIndex+len);
+        var subIndex = sub.indexOf("/");
+        appId =  sub.substring(0,subIndex);
+    }
+    console.info("appId:"+appId);
     $scope.init=function()
     {
         $http.post('/getUser.do', {}).success(function(data){
             if(data.status)
             {
                 console.info(data.data);
+
+                //obj.put("selectcss","active_tab");
+
                 var d = data.data;
                 $rootScope.loginUser = d.userName;
-
-            $scope.user = d;
+                if(appId!="") {
+                    var apps = d.userApps;
+                    for (var i = 0; i < apps.length; i++) {
+                        if(apps[i].app.appId == appId)
+                        {
+                            apps[i].selectcss = "active_tab";
+                        }else{
+                            apps[i].selectcss = "";
+                        }
+                    }
+                }
+                $scope.user = d;
             }else
             {
                 alert(data.msg);
@@ -953,21 +992,21 @@ indexApp.controller('monitor', function($scope, $routeParams,$http) {
 
     $scope.click = function(i)
     {
-        location.href="#monitorservice/"+($scope.eoss[i].eosId);
+        if($scope.eoss[i].type == "app") {
+            location.href = "#monitorservice/" + ($scope.eoss[i].name);
+        }
     }
-
-
 });
 
 
 indexApp.controller('monitorservice', function($scope, $routeParams,$http) {
 
-    var eosId = $routeParams.eosId;
+    var appId = $routeParams.appId;
 
     $http({
         url: '/getServices.do',
         method: "POST",
-        data: "eosId="+eosId,
+        data: "appId="+appId,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).success(function (data, status, headers, config) {
         if(data.status)

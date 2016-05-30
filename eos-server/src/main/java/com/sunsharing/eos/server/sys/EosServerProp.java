@@ -20,6 +20,7 @@ import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
 import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
+import org.apache.log4j.Logger;
 
 /**
  * <pre></pre>
@@ -34,7 +35,9 @@ import com.sunsharing.component.resvalidate.config.annotation.validate.NumValida
  * <br>
  */
 @Configuration(value = "eos-server.properties")
-public class EosServerProp {
+public class EosServerProp{
+    private static final Logger logger = Logger.getLogger(EosServerProp.class);
+
     @ParamField(name = "app_id")
     public static String appId;
 

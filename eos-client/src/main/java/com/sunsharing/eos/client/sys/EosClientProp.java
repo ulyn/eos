@@ -40,7 +40,7 @@ import java.util.Map;
 @Configuration(value = "eos-client.properties")
 public class EosClientProp {
 
-    static Logger logger = Logger.getLogger(EosClientProp.class);
+    private final static Logger logger = Logger.getLogger(EosClientProp.class);
 
     @ParamField(name = "zookeeper_ip", required = false)
     public static String zookeeperIp = "";
@@ -101,5 +101,6 @@ public class EosClientProp {
             }
         }
     }
+
 }
 

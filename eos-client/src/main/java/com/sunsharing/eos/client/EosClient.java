@@ -17,6 +17,7 @@
 package com.sunsharing.eos.client;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.component.resvalidate.config.loader.prop.AbstractProp;
 import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
@@ -40,9 +41,10 @@ public class EosClient {
      * 初始化eos系统
      *
      */
-    public synchronized static void start() {
+    public synchronized static void start(AbstractProp abstractProp) {
         if (!inited) {
-            ConfigContext.instancesBean(EosClientProp.class);
+            ConfigContext.instancesBean(EosClientProp.class,abstractProp);
+
             ServiceContext.getInstance().initConfig();
 
             new Thread() {
@@ -54,13 +56,28 @@ public class EosClient {
             inited = true;
         }
     }
+    /**
+     * 初始化eos系统
+     *
+     */
+    public synchronized static void start() {
+        start(null);
+    }
 
     /**
      * 同步初始化eos系统
      *
      */
-    public synchronized static void synStart() {
-        ConfigContext.instancesBean(EosClientProp.class);
+    public synchronized static void synStart(){
+        synStart(null);
+    }
+    /**
+     * 同步初始化eos系统
+     * @param abstractProp 初始配置读取
+     */
+    public synchronized static void synStart(AbstractProp abstractProp) {
+        ConfigContext.instancesBean(EosClientProp.class,abstractProp);
+
         ServiceContext.getInstance().initConfig();
         ServiceLocation.getInstance().synConnect();
     }

@@ -17,6 +17,7 @@
 package com.sunsharing.eos.server;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
+import com.sunsharing.component.resvalidate.config.loader.prop.AbstractProp;
 import com.sunsharing.eos.server.sys.EosServerProp;
 import com.sunsharing.eos.server.zookeeper.ServiceRegister;
 import org.springframework.context.ApplicationContext;
@@ -44,6 +45,10 @@ public class EosServer {
         start(null, packagePath);
     }
 
+    public synchronized static void start(String packagePath,AbstractProp abstractProp) {
+        start(null, packagePath,abstractProp);
+    }
+
     /**
      * 初始化eos系统,使用spring
      *
@@ -51,8 +56,22 @@ public class EosServer {
      * @param packagePath
      */
     public synchronized static void start(ApplicationContext ctx, String packagePath) {
+        start(null, packagePath,null);
+    }
+
+    /**
+     * 初始化eos系统,使用spring
+     *
+     * @param ctx
+     * @param packagePath
+     */
+    public synchronized static void start(
+            ApplicationContext ctx,
+            String packagePath,
+            AbstractProp abstractProp) {
         if (!inited) {
-            ConfigContext.instancesBean(EosServerProp.class);
+            ConfigContext.instancesBean(EosServerProp.class,abstractProp);
+
             ServerServiceContext.getInstance().initPackagePath(ctx, packagePath);
             ServerServiceContext.getInstance().initConfig();
             ServerServiceContext.getInstance().initService();

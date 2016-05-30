@@ -38,7 +38,10 @@ public class ServerMain {
 
     @Before
     public void startServer() {
+//        EosServer.start("test.sunsharing.eos.server",new MapPropReaderConverter(new HashMap<String, Object>()));
         EosServer.start("test.sunsharing.eos.server");
+//        EosServer.start("test.sunsharing.eos.server",
+//                new HttpPropReaderConverter("http://192.168.0.235:8100/getConfig.do?appCode=test&runCode=test-client"));
         //命令循环
         while (true) {
             BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));

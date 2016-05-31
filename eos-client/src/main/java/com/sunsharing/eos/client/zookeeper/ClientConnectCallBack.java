@@ -35,7 +35,7 @@ public class ClientConnectCallBack implements ZookeeperCallBack {
         try
         {
             logger.info("登录成功了开始调用回调");
-            String appIds = EosClientProp.app_id;
+            String appIds = EosClientProp.listen_apps;
             if(StringUtils.isBlank(appIds))
             {
                 throw new RuntimeException("E3的配置文件必须增加app_id");

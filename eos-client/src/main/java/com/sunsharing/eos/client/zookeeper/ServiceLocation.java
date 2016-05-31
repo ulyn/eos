@@ -187,7 +187,7 @@ public class ServiceLocation {
                 ips.add(obj);
             }
         }else {
-            String configAppId = EosClientProp.app_id;
+            String configAppId = EosClientProp.listen_apps;
             if(configAppId.indexOf(appId)==-1)
             {
                 throw new RpcException(RpcException.SERVICE_NO_FOUND_EXCEPTION, "请在eos-client文件中appId的配置增加："+appId+"应用");

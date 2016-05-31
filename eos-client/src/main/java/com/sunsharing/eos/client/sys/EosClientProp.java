@@ -59,8 +59,8 @@ public class EosClientProp {
     @ParamField(name = "eos_filter", required = false)
     public static String eosFilter = "";
 
-    @ParamField(name = "app_id", required = false)
-    public static String app_id = "";
+    @ParamField(name = "listen_apps", required = false)
+    public static String listen_apps = "";
 
 
     static Map<String, String> debugServerIpMap = null;

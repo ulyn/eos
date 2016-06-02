@@ -149,6 +149,8 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
         location.href = "/export.do?apps="+selectApp;
     }
 
+    window.setTimeout("$(\".iframe\").fancybox();",1000);
+
     $scope.commitAllCommit = function(){
         $http({
             url: '/commitAllCommit.do',

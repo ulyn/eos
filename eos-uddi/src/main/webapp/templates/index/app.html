@@ -6,9 +6,8 @@
 </div>
 
 <div class="g_6 contents_options">
-    <div class="simple_buttons">
-        <div class="bwIcon i_16_help" ng-click="addApp()">添加</div>
-    </div>
+        <a class="simple_buttons iframe" href="templates/config/import.html"><div>导入配置</div></a>
+        <a class="simple_buttons" href="javascript:void(0)"  ng-click="addApp()"><div>添加</div></a>
 </div>
 
 <div class="g_12 separator"><span></span></div>
@@ -36,7 +35,9 @@
                     <td class="sorting_1">{{row.appCode}}</td>
                     <td class=" ">{{row.appName}}</td>
                     <td class=" ">{{row.creatTime}}</td>
-                    <td class=" "><a class="simple_buttons" href="#updateAdd/{{row.appId}}"><div>编辑</div></a></td>
+                    <td class=" "><a class="simple_buttons" href="#updateAdd/{{row.appId}}"><div>编辑</div></a>
+                        <a class="simple_buttons" href="exportConfig.do?appId={{row.appId}}"><div>导出配置</div></a>
+                    </td>
                 </tr>
                 </tbody></table></div>
                 <div class="dtBottom">
@@ -46,7 +47,7 @@
 
     <div class="g_12">
         <div class="line_grid">
-            <div class="g_12">
+            <div class="g_12" style="display: none">
                 <input class="submitIt simple_buttons" ng-click="export()" value="导出" type="button">
                 <input class="submitIt simple_buttons" ng-click="import()" value="导入" type="button">
                 <input class="submitIt simple_buttons" ng-click="commitAllCommit()" value="注册服务" type="button">

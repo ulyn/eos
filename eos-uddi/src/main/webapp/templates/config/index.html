@@ -81,8 +81,8 @@
 <div class="grid_wrapper">
 
     <div class="g_6 contents_header">
-        <h3 ng-if="!isCommon" class="i_16_dashboard tab_label">应用配置</h3>
-        <h3 ng-if="isCommon" class="i_16_dashboard tab_label">通用配置</h3>
+        <h3 ng-if="!isCommon" class="i_16_dashboard tab_label">配置管理->应用配置</h3>
+        <h3 ng-if="isCommon" class="i_16_dashboard tab_label">配置管理->通用配置</h3>
 
         <div><span class="label">General Informations and Resume</span></div>
     </div>
@@ -94,8 +94,6 @@
     </div>
     <div class="g_12" ng-if="!isCommon">
         <span ng-repeat="row in childAppList"><a ng-if="!row.selected"  href="#config/{{appId}}/{{row.CHILD_APP_ID}}">{{row.CHILD_APP_NAME}}</a><a ng-if="row.selected" style="color:red" href="#config/{{appId}}/{{row.CHILD_APP_ID}}">【{{row.CHILD_APP_NAME}}】</a>&nbsp;</span>
-        <a href="exportConfig.do?appId={{appId}}">导出</a>
-        <a class="iframe commonRel" href="templates/config/import.html" >导入</a>
     </div>
     <div class="g_12 separator"><span></span></div>
     <div class="g_12" ng-if="!isCommon">

@@ -273,7 +273,7 @@ public class ConfigController {
                 "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
                 "t2.CONFIG_ID,t2.REL_CONFIG_ID,t2._DEL from T_CONFIG_GROUP  t1 " +
                 "left join T_CONFIG t2 on t1.GROUP_ID = t2.GROUP_ID  " +
-                "where t1.IS_COMMON = 1 and t1._DEL='0'  ";
+                "where t1.IS_COMMON = 1 and t1._DEL='0'  order by t1.GROUP_ID ";
         if(!isCommon)
         {
             sql = "select t1.GROUP_ID,t1.GROUP_NAME," +

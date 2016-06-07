@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.service.ConfigService;
+import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -599,7 +602,8 @@ public class ConfigController {
 
 
         String sql = "select * from T_CONFIG_RUN where CHILD_APP_ID = "+childAppId;
-        List list = jdbc.queryForList(sql);
+        List<Map<String, Object>> list = jdbc.queryForList(sql);
+
         Map rst = new HashMap();
         rst.put("list",list);
         rst.put("childAppId",childAppId);
@@ -615,6 +619,31 @@ public class ConfigController {
             appCode = (String)list5.get(0).get("APP_CODE");
         }
 
+        for(Map m:list)
+        {
+            File dir = new File(SysInit.path + File.separator + "config" + File.separator + appCode);
+            File[] listFile = dir.listFiles();
+            List backs =new ArrayList();
+            if(listFile!=null && listFile.length!=0)
+            {
+                for(File f:listFile)
+                {
+                    String fileName = f.getName();
+                    int begin = fileName.indexOf("_");
+                    int end = fileName.indexOf(".");
+                    String runId = fileName.substring(0,begin);
+                    if(runId.equals((Integer)m.get("RUN_ID")+""))
+                    {
+                        String svn = fileName.substring(begin+1,end);
+                        backs.add(svn);
+                    }
+
+                }
+            }
+            m.put("backs",backs);
+        }
+
+
         for(Map m :list2)
         {
             if(m.get("CHILD_APP_ID").toString().equals(childAppId))
@@ -624,6 +653,7 @@ public class ConfigController {
             {
                 m.put("selected",false);
             }
+
         }
         rst.put("childApps",list2);
         rst.put("appCode",appCode);
@@ -1130,6 +1160,93 @@ public class ConfigController {
                 "where CONFIG_ID = "+configId;
         jdbc.execute(sql);
         ResponseHelper.printOut(response, true, "", "");
+    }
+
+    @RequestMapping(value="/back.do",method= RequestMethod.POST)
+    public void backSvn(Model model,HttpServletRequest request,
+                                HttpServletResponse response)throws Exception
+    {
+        String appKey = request.getParameter("appCode");
+        String runKey = request.getParameter("runCode");
+        String svn = request.getParameter("svn");
+        String runId = request.getParameter("runId");
+
+        String host = new URL(request.getRequestURL().toString()).getHost();
+        int port = new URL(request.getRequestURL().toString()).getPort();
+        String contextPath = request.getContextPath();
+        String content = com.sunsharing.component.utils.net.HttpUtils.doGet("http://"+host+":"+port+"/"+contextPath+"/getConfig.do?appCode="+appKey+
+        "&runCode="+runKey,new HashMap());
+
+        File path = new File(SysInit.path + File.separator + "config" + File.separator + appKey);
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+
+        File f = new File(SysInit.path + File.separator + "config" + File.separator + appKey+File.separator+"" +
+                runId+"_"+svn+".txt");
+
+        FileOutputStream out = null;
+        try
+        {
+            out = new FileOutputStream(f);
+            out.write(content.getBytes("UTF-8"));
+        } catch (Exception e){
+            throw e;
+        }
+        finally {
+            out.close();
+        }
+        ResponseHelper.printOut(response, true, "", "");
+    }
+
+    @RequestMapping(value="/getBackInfo.do",method= RequestMethod.GET)
+    public void getBackInfo(Model model,HttpServletRequest request,
+                        HttpServletResponse response)throws Exception
+    {
+        String par = request.getParameter("par");
+        String [] pars = par.split(",");
+        String appKey = pars[0]; //request.getParameter("appCode");
+        String runId = pars[1];//request.getParameter("runId");
+        String svn = pars[2];//request.getParameter("svn");
+
+        File f = new File(SysInit.path + File.separator + "config" + File.separator + appKey+File.separator+"" +
+                runId+"_"+svn+".txt");
+
+        FileInputStream inputStream = null;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try
+        {
+            inputStream = new FileInputStream(f);
+            byte [] buffer = new byte[1000];
+
+            int len = 0;
+            while((len = inputStream.read(buffer))!=-1)
+            {
+                out.write(buffer,0,len);
+            }
+        } catch (Exception e){
+            throw e;
+        }
+        finally {
+            inputStream.close();
+        }
+        response.setCharacterEncoding("UTF-8");
+        //response.setContentType("application/json");
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+            // response.setContentLength(responseContent.length());
+            writer.write(new String(out.toByteArray(),"UTF-8"));
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+
     }
 
 

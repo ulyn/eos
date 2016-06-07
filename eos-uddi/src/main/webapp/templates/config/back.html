@@ -50,20 +50,19 @@
     <script src="/Javascript/angular-1.2.10/angular.min.js"></script>
     <script src="/Javascript/angular-1.2.10/angular-resource.min.js"></script>
     <script src="/Javascript/angular-1.2.10/angular-route.min.js"></script>
-    <script src="/Javascript/ajaxfileupload.js"></script>
 
 </head>
 <body>
 <div class="login" style="width: 100%;margin:0px;"  >
     <div class="widget_header">
-        <h4 class="widget_header_title wwIcon i_16_login">导入<font color="red">请一定要在【配置管理】【运行管理】先备份归档，以便后续可以恢复</font></h4>
+        <h4 class="widget_header_title wwIcon i_16_login">归档备份</h4>
     </div>
     <div class="widget_contents lgNoPadding">
         <form action="/login.do" method="POST" class="ng-pristine ng-valid">
             <div class="line_grid">
-                <div class="g_2 g_2M"><span class="label">导入文件</span></div>
+                <div class="g_2 g_2M"><span class="label">SVN版本号</span></div>
                 <div class="g_10 g_10M">
-                    <input class="simple_field tooltip" id="file" name="file" type="file" placeholder="label"
+                    <input class="simple_field tooltip" id="label" name="label" type="text" placeholder="label"
                            original-title=""></div>
                 <div class="clear"></div>
             </div>
@@ -76,35 +75,42 @@
     </div>
 </div>
 <script>
-$("#saveBtn").click(function(){
-    $.ajaxFileUpload
-    (
-            {
-                url: '/importConfig.do', //用于文件上传的服务器端请求地址
-                secureuri: false, //是否需要安全协议，一般设置为false
-                fileElementId: "file", //文件上传域的ID
-                dataType: 'json', //返回值类型 一般设置为json
-                success: function (data, status)  //服务器成功响应处理函数
+
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return "";
+    }
+    var runId = GetQueryString("runId");
+    var appCode = GetQueryString("appCode");
+    var runCode = GetQueryString("runCode");
+
+    $("#saveBtn").click(function(){
+        var svn = $("#label").val();
+        if(label=="")
+        {
+            alert("请输入名称");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: "/back.do",
+            data: {appCode:appCode,runCode:runCode,svn:svn,runId:runId},
+            success: function(data){
+                if(data.status)
                 {
-                    console.info(data);
-                    var status = data.status;
-                    if(status)
-                    {
-                        //alert(data.data);
-                        alert("上传成功");
-                        parent.location.reload();
-                    }else
-                    {
-                        alert("上传失败:"+data.msg);
-                    }
-                },
-                error: function (data, status, e)//服务器响应失败处理函数
-                {
-                    alert(e);
+                    alert("保存成功");
+                    parent.location.reload();
+
+                }else{
+                    alert("保存失败");
                 }
-            }
-    )
-});
+            },
+            dataType: "json"
+        });
+    });
+
 </script>
 </body>
 </html>

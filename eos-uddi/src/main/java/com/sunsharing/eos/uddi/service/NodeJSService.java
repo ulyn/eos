@@ -19,7 +19,6 @@ package com.sunsharing.eos.uddi.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sunsharing.component.utils.file.FileUtil;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.model.*;
@@ -186,7 +185,7 @@ public class NodeJSService {
                 "  },\n" +
                 "  \"license\": \"ISC\"\n" +
                 "}\n";
-        FileUtil.createFile(path + File.separator + "package.json", content, "utf-8");
+       // FileUtil.createFile(path + File.separator + "package.json", content, "utf-8");
     }
 
     /**
@@ -202,7 +201,7 @@ public class NodeJSService {
             //TODO 去除服务版本号
             //jo.put(service.getServiceCode(), service.getVersions().get(0).getVersion());
         }
-        FileUtil.createFile(path + File.separator + "services.version", JSON.toJSONString(jo, true), "utf-8");
+      //  FileUtil.createFile(path + File.separator + "services.version", JSON.toJSONString(jo, true), "utf-8");
     }
 
     private List getChangeServices(String path, List<TService> services) throws IOException {
@@ -263,7 +262,7 @@ public class NodeJSService {
             //TODO 去除服务版本号
             //sb.append("+ " + service.getServiceCode() + "-" + service.getVersions().get(0).getVersion() + "-" + service.getServiceName() + "\n");
         }
-        FileUtil.createFile(path + File.separator + "README.md", sb.toString(), "utf-8");
+       // FileUtil.createFile(path + File.separator + "README.md", sb.toString(), "utf-8");
     }
 
     private void createJs(List<TService> services, String path) throws Exception {
@@ -309,7 +308,7 @@ public class NodeJSService {
         }
         sb.append("    }\n" +
                 "}");
-        FileUtil.createFile(path + File.separator + "index.js", sb.toString(), "utf-8");
+       // FileUtil.createFile(path + File.separator + "index.js", sb.toString(), "utf-8");
     }
 
     private void createServiceJs(TService service, String path) throws Exception {
@@ -371,7 +370,7 @@ public class NodeJSService {
         }
         sb.append("    return " + service.getServiceCode() + ";\n" +
                 "}");
-        FileUtil.createFile(file, sb.toString(), "utf-8");
+       // FileUtil.createFile(file, sb.toString(), "utf-8");
     }
 
     private void createMockConfigFile(String path, List<TService> services) throws Exception {
@@ -441,7 +440,7 @@ public class NodeJSService {
         sb.deleteCharAt(sb.lastIndexOf(","));
         sb.append("    }\n" +
                 "}");
-        FileUtil.createFile(path + File.separator + "config_mock.js", sb.toString(), "utf-8");
+       // FileUtil.createFile(path + File.separator + "config_mock.js", sb.toString(), "utf-8");
     }
 
     private String createSsfeDir(TApp app, String v, List<TService> services, List changeServices) throws Exception {
@@ -492,7 +491,7 @@ public class NodeJSService {
                 "  },\n" +
                 "  \"license\": \"ISC\"\n" +
                 "}\n";
-        FileUtil.createFile(path + File.separator + "package.json", content, "utf-8");
+       // FileUtil.createFile(path + File.separator + "package.json", content, "utf-8");
     }
 
     private void createSsfeServiceJs(List<TService> services, String path) throws Exception {
@@ -573,7 +572,7 @@ public class NodeJSService {
                 "    }\n" +
                 "\n" +
                 "})(EosRemote);");
-        FileUtil.createFile(file, sb.toString(), "utf-8");
+       // FileUtil.createFile(file, sb.toString(), "utf-8");
     }
 }
 

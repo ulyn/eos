@@ -365,7 +365,7 @@ public class DbController {
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename=" + new String(fileName.getBytes("UTF-8"), "ISO8859-1"));
+                + " filename=" + new String((change.getDb()+"_"+change.getScript()).getBytes("UTF-8"), "ISO8859-1"));
         FileInputStream input = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -464,7 +464,7 @@ public class DbController {
             appCode = chabnge.getAppId().getAppCode();
             String fileFullPath = SysInit.path + File.separator + "db" + File.separator + appCode +
                     File.separator + chabnge.getScript();
-            out.putNextEntry(new ZipEntry(chabnge.getScript()));
+            out.putNextEntry(new ZipEntry(chabnge.getDb()+"_"+chabnge.getScript()));
             FileInputStream input = null;
             try {
                 input = new FileInputStream(fileFullPath);

@@ -6,7 +6,6 @@
 </div>
 
 <div class="g_6 contents_options">
-        <a class="simple_buttons iframe" href="templates/config/import.html"><div>导入配置</div></a>
         <a class="simple_buttons" href="javascript:void(0)"  ng-click="addApp()"><div>添加</div></a>
 </div>
 
@@ -21,22 +20,21 @@
             <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid"><div class="dtTop"><div class="dtShowPer"><div id="DataTables_Table_0_length" class="dataTables_length"><label>Show entries <div class="selector" id="uniform-undefined"><span>10</span><select size="1" name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" style="opacity: 0;"><option value="10" selected="selected">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div></label></div></div><div class="dtFilter"><div class="dataTables_filter" id="DataTables_Table_0_filter"><label>Search: <input type="text" aria-controls="DataTables_Table_0" class="simple_field" style="width: auto; margin-left: 15px;"></label></div></div></div><div class="dtTables"><table class="datatable tables dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                 <thead>
                 <tr role="row">
-                    <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 40px;">选择</th>
                     <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 149px;">应用ID</th>
-                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 249px;">应用名称</th>
-                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="width: 215px;">创建时间</th>
-                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="width: 215px;">操作</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 150px;">应用名称</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="width: 150px;">创建时间</th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending" style="">操作</th>
                 </tr>
                 </thead>
 
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr class="{{row.rowclass}}" ng-repeat="row in applist">
-                    <td><input type="checkbox" name="selectApp" value="{{row.appId}}" /> </td>
                     <td class="sorting_1">{{row.appCode}}</td>
                     <td class=" ">{{row.appName}}</td>
                     <td class=" ">{{row.creatTime}}</td>
                     <td class=" "><a class="simple_buttons" href="#updateAdd/{{row.appId}}"><div>编辑</div></a>
                         <a class="simple_buttons" href="exportConfig.do?appId={{row.appId}}"><div>导出配置</div></a>
+                        <a class="simple_buttons iframe" href="templates/config/import.html?appId={{row.appId}}"><div>导入配置</div></a>
                     </td>
                 </tr>
                 </tbody></table></div>

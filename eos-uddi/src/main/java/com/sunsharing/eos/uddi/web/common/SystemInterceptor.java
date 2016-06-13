@@ -58,7 +58,8 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
         String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
         //判断拦截的请求路径 uri.indexOf("background") != -1
         if(!uri.equals(path+"/")&&!uri.equals(path)){
-            String[] noFilters = new String[] { "login.do","sign_up","saveUser","getUser","getConfig.do","getBackInfo.do"};
+            String[] noFilters = new String[] { "login.do","sign_up","saveUser","getUser","getConfig.do","getBackInfo.do"
+            ,"back.do"};
             boolean beFilter = true;
             for (String s : noFilters) {
                 if (uri.indexOf(s) != -1) {

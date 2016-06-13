@@ -56,10 +56,10 @@
 <body>
 <div class="login" style="width: 100%;margin:0px;"  >
     <div class="widget_header">
-        <h4 class="widget_header_title wwIcon i_16_login">导入<font color="red">请一定要在【配置管理】【运行管理】先备份归档，以便后续可以恢复</font></h4>
+        <h4 class="widget_header_title wwIcon i_16_login">导入</h4>
     </div>
     <div class="widget_contents lgNoPadding">
-        <form action="/login.do" method="POST" class="ng-pristine ng-valid">
+        <form id="form" action="/login.do" method="POST" class="ng-pristine ng-valid">
             <div class="line_grid">
                 <div class="g_2 g_2M"><span class="label">导入文件</span></div>
                 <div class="g_10 g_10M">
@@ -67,6 +67,8 @@
                            original-title=""></div>
                 <div class="clear"></div>
             </div>
+
+
             <div class="line_grid">
                 <div class="g_6"><input id="saveBtn" class="submitIt simple_buttons"  value="保存" type="button">
                 </div>
@@ -76,7 +78,47 @@
     </div>
 </div>
 <script>
+
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return "";
+    }
+    var appId = GetQueryString("appId");
+
+    $.post("/listRun.do",{appId:appId},function(result){
+        //$("span").html(result);
+        //childApps
+        var childApp = result.data.childApps;
+        var html = "";
+        console.info(result);
+        for(var i=0;i<childApp.length;i++)
+        {
+            var child = childApp[i];
+            html += "<div class=\"line_grid\">\n" +
+                    "   <div class=\"g_2 g_2M\"><span class=\"label\">"+child["CHILD_APP_NAME"]+"SVN版本：</span></div>\n" +
+                    "   <div class=\"g_10 g_10M\">\n" +
+                    "   <input class=\"simple_field tooltip\" name=\""+child["CHILD_APP_ID"]+"\" type=\"text\" placeholder=\"label\"\n" +
+                    "             original-title=\"\"></div>\n" +
+                    "   <div class=\"clear\"></div>\n" +
+                    "</div>";
+        }
+        //console.info($("#form").children().first().html());
+        $("#form").children().first().after(html);
+    },"json");
+
+
 $("#saveBtn").click(function(){
+
+    var arr = $("#form").serializeArray();
+    var d = new Object();
+    for(var i=0;i<arr.length;i++)
+    {
+        d[arr[i].name] = arr[i].value;
+    }
+    d["appId"] = appId;
+    console.info(d);
     $.ajaxFileUpload
     (
             {
@@ -84,6 +126,7 @@ $("#saveBtn").click(function(){
                 secureuri: false, //是否需要安全协议，一般设置为false
                 fileElementId: "file", //文件上传域的ID
                 dataType: 'json', //返回值类型 一般设置为json
+                data:d,
                 success: function (data, status)  //服务器成功响应处理函数
                 {
                     console.info(data);

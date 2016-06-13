@@ -3,6 +3,7 @@ package com.sunsharing.eos.uddi.web.controller.main;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.service.ConfigService;
@@ -21,10 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by criss on 16/5/5.
@@ -655,6 +653,7 @@ public class ConfigController {
             }
 
         }
+
         rst.put("childApps",list2);
         rst.put("appCode",appCode);
         ResponseHelper.printOut(response, true, "", rst);
@@ -975,7 +974,7 @@ public class ConfigController {
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename="+new String(("config.txt").getBytes("UTF-8"), "ISO8859-1"));
+                + " filename="+new String((app.get("APP_CODE")+DateUtils.getDBString(new Date())+".txt").getBytes("UTF-8"), "ISO8859-1"));
         response.getOutputStream().write(str.getBytes("UTF-8"));
     }
 
@@ -996,6 +995,48 @@ public class ConfigController {
         String appCode = tranSqlVal((String)app.get("APP_CODE"));
         String createTime = tranSqlVal((String)app.get("CREATE_TIME"));
         String dbs = tranSqlVal((String)app.get("DBS"));
+
+        String objAppId = multipartRequest.getParameter("appId");
+        if(!objAppId.equals(appId+""))
+        {
+            throw new RuntimeException("导入文件跟你选择不是同一个应用");
+        }
+        //处理备份
+        String backSql = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId;
+        List<Map<String, Object>> childAppList = jdbc.queryForList(backSql);
+        for(Map child:childAppList)
+        {
+            String childAppId = child.get("CHILD_APP_ID").toString();
+            String oldSVN = (String)child.get("SVN");
+            if(StringUtils.isBlank(oldSVN))
+            {
+                oldSVN = DateUtils.getDBString(new Date());
+            }
+
+            //String appCode = request.getParameter("appCode");
+            backSql = "select * from T_CONFIG_RUN where CHILD_APP_ID = "+childAppId;
+            List<Map<String, Object>> runs = jdbc.queryForList(backSql);
+            for(Map run:runs)
+            {
+                String runCode = (String)run.get("RUN_KEY");
+                String runId = run.get("RUN_ID").toString();
+                String host = new URL(request.getRequestURL().toString()).getHost();
+                int port = new URL(request.getRequestURL().toString()).getPort();
+                String contextPath = request.getContextPath();
+
+                Map data = new HashMap();
+                data.put("svn",oldSVN);
+                data.put("appCode",(String)app.get("APP_CODE"));
+                data.put("runCode",runCode);
+                data.put("runId",runId);
+                com.sunsharing.component.utils.net.HttpUtils.doPost("http://"+host+":"+port+"/"+contextPath+"/back.do",data,5000,5000);
+            }
+            String curSVN = multipartRequest.getParameter(childAppId);
+
+            String sql = "update T_CONFIG_CHILD_APP set SVN='"+curSVN+"' where CHILD_APP_ID = "+childAppId;
+            jdbc.execute(sql);
+        }
+
 
         String sql = "select count(*) from T_APP where APP_ID="+appId;
         int size=jdbc.queryForInt(sql);

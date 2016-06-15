@@ -997,10 +997,26 @@ public class ConfigController {
         String dbs = tranSqlVal((String)app.get("DBS"));
 
         String objAppId = multipartRequest.getParameter("appId");
-        if(!objAppId.equals(appId+""))
+        if(StringUtils.isBlank(objAppId))
         {
-            throw new RuntimeException("导入文件跟你选择不是同一个应用");
+            int num = jdbc.queryForInt("select count(*) from T_APP where APP_ID="+appId);
+            if(num>0)
+            {
+                //throw new RuntimeException("已经存在该应用，请从列表中选择导入");
+                ResponseHelper.printOut(response, false, "已经存在该应用，请从列表中选择导入", "");
+                return;
+            }
+        }else
+        {
+            if(!objAppId.equals(appId+""))
+            {
+                ResponseHelper.printOut(response, false, "导入文件跟你选择不是同一个应用", "");
+                return;
+                //throw new RuntimeException("导入文件跟你选择不是同一个应用");
+            }
         }
+
+
         //处理备份
         String backSql = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId;
         List<Map<String, Object>> childAppList = jdbc.queryForList(backSql);
@@ -1288,6 +1304,12 @@ public class ConfigController {
             }
         }
 
+    }
+
+    public static void main(String[]a)
+    {
+        Object result = JSON.parse((String)" {}");
+        System.out.println(result.getClass());
     }
 
 

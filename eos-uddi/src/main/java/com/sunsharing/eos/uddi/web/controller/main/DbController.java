@@ -349,12 +349,15 @@ public class DbController {
         TDbChange change = dbChangeService.loadDbchange(changeId);
         String appCode = change.getAppId().getAppCode();
         String fileName = "";
+        String downloadName = "";
         if(name.equals("pdm"))
         {
             fileName = appCode+".pdm";
+            downloadName = fileName;
         }else
         {
             fileName = change.getScript();
+            downloadName = change.getDb()+"_"+change.getScript();
         }
 
         if(!StringUtils.isBlank(lock))
@@ -365,7 +368,7 @@ public class DbController {
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename=" + new String((change.getDb()+"_"+change.getScript()).getBytes("UTF-8"), "ISO8859-1"));
+                + " filename=" + new String(downloadName.getBytes("UTF-8"), "ISO8859-1"));
         FileInputStream input = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -459,12 +462,15 @@ public class DbController {
         response.setHeader("Content-Disposition", "attachment;"
                 + " filename=" + new String((DateUtils.getDBString(new Date()).substring(0,8)+".zip").getBytes("UTF-8"), "ISO8859-1"));
         ZipOutputStream out = new ZipOutputStream(response.getOutputStream());
+        out.setEncoding("GBK");
         for(TDbChange chabnge:list)
         {
             appCode = chabnge.getAppId().getAppCode();
             String fileFullPath = SysInit.path + File.separator + "db" + File.separator + appCode +
                     File.separator + chabnge.getScript();
-            out.putNextEntry(new ZipEntry(chabnge.getDb()+"_"+chabnge.getScript()));
+            String string = chabnge.getDb()+"_"+chabnge.getScript();
+            string = string.replaceAll("(\\s[\u4E00-\u9FA5]+)|([\u4E00-\u9FA5]+\\s)", "");
+            out.putNextEntry(new ZipEntry(string));
             FileInputStream input = null;
             try {
                 input = new FileInputStream(fileFullPath);

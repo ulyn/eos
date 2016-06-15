@@ -158,11 +158,8 @@ public class MockUtils {
     {
         String abc = JSON.toJSONString("{\"abc\":\"hehe\"}");
         //System.out.println(abc);
-        String script = "var abc=\"1234\";  " +
-                "var r=\"0.9524143421435998\"; " +
-                " var eos_appid=\"ceshi\";  " +
-                "var eos_method_name=\"sayHello\";  var eos_version=\"1.0\";  " +
-                "var eos_mock=\"error\";  var eos_service_id=\"test2\" ; abc=='123'";
+        String script = " var eos_appid=\"test\";  var eos_method_name=\"getAppGroup\";  var favMenuFlag=\"1\";  var eos_service_id=\"userAppMenus\";  " +
+                "var eos_mock=\"two\";  var eos_version=\"1.1\"; favMenuFlag == 1";
         Object o = MockUtils.evalStr(script);
         if (o == null) {
             // "";

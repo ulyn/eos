@@ -136,7 +136,15 @@ public class ServiceLocation {
             serviceArray.add(object);
             tmp.put(real, serviceArray);
         }
-        serviceMap.clear();
+        for(Iterator iter = serviceMap.keySet().iterator();iter.hasNext();)
+        {
+            String key = (String)iter.next();
+            if(key.startsWith(appId))
+            {
+                iter.remove();
+            }
+        }
+        //serviceMap.clear();
         serviceMap.putAll(tmp);
     }
 

@@ -17,8 +17,19 @@ public class TUser {
     private String role;
     private String creatTime;
     private String eamil;
+    private String isTest;
 
     private TApp defaultApp;
+
+    @Basic
+    @Column(name = "IS_TEST")
+    public String getIsTest() {
+        return isTest;
+    }
+
+    public void setIsTest(String isTest) {
+        this.isTest = isTest;
+    }
 
     @Basic
     @Column(name = "CREATE_TIME")
@@ -29,6 +40,8 @@ public class TUser {
     public void setCreatTime(String creatTime) {
         this.creatTime = creatTime;
     }
+
+
 
     @Basic
     @Column(name = "EMAIL")

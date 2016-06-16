@@ -69,6 +69,7 @@ indexApp.controller('config', function($scope, $routeParams,$http) {
         $scope.isCommon = data.data.isCommon;
         $scope.childAppList = data.data.childApps;
         $scope.childAppId = data.data.childAppId;
+        $scope.user = data.data.user;
     });
 
     $scope.deleteGroup = function(groupId)

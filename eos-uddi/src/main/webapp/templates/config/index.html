@@ -78,6 +78,7 @@
         }
     }
 </style>
+
 <div class="grid_wrapper">
 
     <div class="g_6 contents_header">
@@ -97,14 +98,14 @@
     </div>
     <div class="g_12 separator"><span></span></div>
     <div class="g_12" ng-if="!isCommon">
-        <a  href="templates/config/relConfig.html?childAppId={{childAppId}}&appId={{appId}}" class="iframe commonRel" >引用通用配置</a>
+        <a ng-if="user.isTest!='1'"  href="templates/config/relConfig.html?childAppId={{childAppId}}&appId={{appId}}" class="iframe commonRel" >引用通用配置</a>
     </div>
     <div class="g_12" style="margin-bottom: 20px">
                 <table ng-repeat="row in data" style="margin-top: 10px;margin-bottom:20px">
                     <caption><div style="position: relative"><span  style="cursor: pointer" ng-click="clickMe($event.target)">{{row.groupName}}</span>
                         <div class="top_tooltip" style="left:350px;width: 140px">
                             <div>
-                                <ul class="user_options">
+                                <ul class="user_options" ng-if="user.isTest!='1'">
                                     <li class="i_16_add"><a class="iframe addGroup" href="templates/config/addGroup.html?isCommon=1&appId={{appId}}&childAppId={{childAppId}}"></a></li>
                                     <li class="i_16_tasks"><a class="iframe addConfig" href="templates/config/addConfig.html?groupId={{row.groupId}}&appId={{appId}}&childAppId={{childAppId}}"></a></li>
                                     <li  class="i_16_options"><a class="iframe commonRel" href="templates/config/relConfig.html?groupId={{row.groupId}}&childAppId={{childAppId}}&appId={{appId}}"></a></li>
@@ -132,10 +133,11 @@
                             <div class="top_tooltip" style="left:20px;width: 90px">
                             <div>
                                 <ul class="user_options">
-                                    <li class="i_16_wysiwyg" ng-if="!config.IS_REL"><a class="iframe addConfig" href="templates/config/addConfig.html?configId={{config.CONFIG_ID}}&groupId={{config.GROUP_ID}}&appId={{appId}}&childAppId={{childAppId}}" title="修改"></a></li>
-                                    <li class="i_16_wysiwyg" ng-if="config.IS_REL && config.att_label=='可覆盖'"><a class="iframe addConfig" href="templates/config/defaultValueSet.html?configId={{config.CONFIG_ID}}" title="修改"></a></li>
-                                    <li class="i_16_checkbox" ng-if="!config.IS_REL"><a ng-click="commit(config.CONFIG_ID)" href="javascript:void(0)" title="审批通过"></a></li>
-                                    <li class="i_16_close" ><a ng-click="deleteConfig(config.CONFIG_ID)" href="javascript:void(0)" title="删除"></a></li>
+                                    <li class="i_16_wysiwyg" ng-if="!config.IS_REL && user.isTest!='1'"><a class="iframe addConfig" href="templates/config/addConfig.html?configId={{config.CONFIG_ID}}&groupId={{config.GROUP_ID}}&appId={{appId}}&childAppId={{childAppId}}" title="修改"></a></li>
+                                    <li class="i_16_wysiwyg" ng-if="config.IS_REL && config.att_label=='可覆盖' && user.isTest!='1'"><a class="iframe addConfig" href="templates/config/defaultValueSet.html?configId={{config.CONFIG_ID}}" title="修改"></a></li>
+                                    <li class="i_16_wysiwyg" ng-if="user.isTest=='1'"><a class="iframe addConfig" href="templates/config/defaultValueSet.html?configId={{config.CONFIG_ID}}" title="修改"></a></li>
+                                    <li class="i_16_checkbox" ng-if="!config.IS_REL && user.isTest!='1'"><a ng-click="commit(config.CONFIG_ID)" href="javascript:void(0)" title="审批通过"></a></li>
+                                    <li class="i_16_close" ng-if="user.isTest!='1'"><a  ng-click="deleteConfig(config.CONFIG_ID)" href="javascript:void(0)" title="删除"></a></li>
                                 </ul>
                             </div>
                         </div></td>

@@ -65,10 +65,11 @@ public class UserService {
         return userDao.get(new Integer(id));
     }
 
-    public void updateUser(String id,String role,String apps)
+    public void updateUser(String id,String role,String apps,String isTest)
     {
         TUser user = loadUser(id);
         user.setRole(role);
+        user.setIsTest(isTest);
 
         user.getUserApps().clear();
 

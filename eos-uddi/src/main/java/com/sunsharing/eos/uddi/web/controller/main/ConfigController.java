@@ -194,6 +194,9 @@ public class ConfigController {
     @RequestMapping(value="/listBasic.do",method= RequestMethod.POST)
     public void listBasic(Model model,HttpServletRequest request,HttpServletResponse response)
             throws Exception {
+
+        TUser user  = (TUser)request.getSession().getAttribute("user");
+
         String appId = request.getParameter("appId");
         String childAppId = request.getParameter("childAppId");
         if("COMMON".equals(childAppId))
@@ -377,6 +380,7 @@ public class ConfigController {
         rst.put("configlist",result);
         rst.put("isCommon",isCommon);
         rst.put("childAppId",childAppId);
+        rst.put("user",user);
         if(!isCommon)
         {
             String sql2 = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId + "";

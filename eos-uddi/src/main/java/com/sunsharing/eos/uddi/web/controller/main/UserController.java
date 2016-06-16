@@ -200,9 +200,9 @@ public class UserController {
     }
 
     @RequestMapping(value="/updateUser.do",method= RequestMethod.POST)
-    public void updateUser(String id,String role,String apps,Model model,HttpServletRequest request,HttpServletResponse response)
+    public void updateUser(String id,String role,String apps,String isTest,Model model,HttpServletRequest request,HttpServletResponse response)
     {
-        service.updateUser(id,role,apps);
+        service.updateUser(id,role,apps,isTest);
         ResponseHelper.printOut(response,true,"","");
     }
 

@@ -861,6 +861,16 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
                 {
                     document.getElementById("sjz").checked = true;
                 }
+
+                if(data.data.isTest == '0')
+                {
+                    document.getElementById("yf").checked = true;
+                }
+                if(data.data.isTest == '1')
+                {
+                    document.getElementById("yw").checked = true;
+                }
+
                 $scope.role = arr;
                 $scope.user = data.data;
                 var selectApp = data.data.userApps;
@@ -897,6 +907,16 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
             }
         }
 
+        var tests = document.getElementsByName("isTest");
+        var isTest = "";
+        for(var i=0;i<tests.length;i++)
+        {
+            if(tests[i].checked)
+            {
+                isTest = tests[i].value;
+            }
+        }
+
         var app = "";
         var apps = document.getElementsByName("app");
         for(var i=0;i<apps.length;i++)
@@ -915,7 +935,7 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
         $http({
             url: '/updateUser.do',
             method: "POST",
-            data: "id="+id+"&role="+role+"&apps="+app,
+            data: "id="+id+"&role="+role+"&apps="+app+"&isTest="+isTest,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
 

@@ -86,7 +86,7 @@ public class MockUtils {
                         if (status.indexOf("&&") != -1 || status.indexOf("==") != -1 || status.indexOf("||") != -1) {
                             if ("true".equals(evalStr(status))) {
                                 String content = jo.getString("content");
-                                return content;
+                                return chineseReplace(content);
                             }
                         }
                     }catch (Exception e)
@@ -104,7 +104,7 @@ public class MockUtils {
                     //走原来的模式
                     if (mockName.equals(jo.getString("status"))) {
                         String content = jo.getString("content");
-                        return content;
+                        return chineseReplace(content);
                     }
                 }
 
@@ -154,17 +154,26 @@ public class MockUtils {
         }
         return null;
     }
+
+    public String chineseReplace(String content)
+    {
+        return content.replaceAll("，",",").replaceAll("“","\"").replaceAll("：",":");
+    }
+
     public static void main(String[]a) throws Exception
     {
-        String abc = JSON.toJSONString("{\"abc\":\"hehe\"}");
-        //System.out.println(abc);
-        String script = " var eos_appid=\"test\";  var eos_method_name=\"getAppGroup\";  var favMenuFlag=\"1\";  var eos_service_id=\"userAppMenus\";  " +
-                "var eos_mock=\"two\";  var eos_version=\"1.1\"; favMenuFlag == 1";
-        Object o = MockUtils.evalStr(script);
-        if (o == null) {
-            // "";
-        } else {
-            System.out.println(o.toString());
-        }
+//        String abc = JSON.toJSONString("{\"abc\":\"hehe\"}");
+//        //System.out.println(abc);
+//        String script = " var eos_appid=\"test\";  var eos_method_name=\"getAppGroup\";  var favMenuFlag=\"1\";  var eos_service_id=\"userAppMenus\";  " +
+//                "var eos_mock=\"two\";  var eos_version=\"1.1\"; favMenuFlag == 1";
+//        Object o = MockUtils.evalStr(script);
+//        if (o == null) {
+//            // "";
+//        } else {
+//            System.out.println(o.toString());
+//        }
+
+
+        System.out.println("{“：，,}".replaceAll("，", ",").replaceAll("“","\""));
     }
 }

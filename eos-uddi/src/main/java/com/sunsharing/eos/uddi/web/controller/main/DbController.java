@@ -3,6 +3,8 @@ package com.sunsharing.eos.uddi.web.controller.main;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.component.resvalidate.util.Encoding;
+import com.sunsharing.component.resvalidate.util.SinoDetect;
 import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.component.utils.base.StringUtils;
 import com.sunsharing.eos.uddi.model.*;
@@ -10,6 +12,7 @@ import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.DbChangeService;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.zip.ZipEntry;
@@ -245,6 +248,21 @@ public class DbController {
                         source.delete();
                     }
                     imgFile.transferTo(source);
+
+                    if(source.getName().indexOf("sql")!=-1)
+                    {
+                        int code = SinoDetect.getInstance().detectEncoding(source);
+                        if(code != Encoding.UTF8 && code !=Encoding.UTF8S && code !=Encoding.UTF8T)
+                        {
+
+                            throw new RuntimeException("不能传非UTF-8编码的SQL脚本");
+                        }
+                        byte[] head = FileUtils.readFileToByteArray(source);
+                        if(head[0]==-17 && head[1]==-69 && head[2] ==-65)
+                        {
+                            throw new RuntimeException("不能传UTF-8带BOM编码的SQL脚本");
+                        }
+                    }
 
                     String result = ResponseHelper.covert2Json(true, "", destfilename);
                     //result = "<script>parent.uploadDbSuccess(" + result + ",'" + app.getAppId() + "')</script>";
@@ -485,5 +503,31 @@ public class DbController {
         }
         out.close();
     }
+
+    @RequestMapping(value = {"/getScript.do"}, method = RequestMethod.POST)
+    public void getJava(String changeId,
+                        HttpServletResponse response, HttpServletRequest request) throws Exception {
+        TDbChange change = dbChangeService.loadDbchange(changeId);
+        String appCode = change.getAppId().getAppCode();
+        String fileName = SysInit.path + File.separator + "db" + File.separator + appCode +
+                File.separator + change.getScript();
+        int code = SinoDetect.getInstance().detectEncoding(new File(fileName));
+        String encode = "";
+        if(code == Encoding.UTF8 || code ==Encoding.UTF8S || code ==Encoding.UTF8T)
+        {
+            encode = "UTF-8";
+        }
+        if(code == Encoding.GB2312 || code == Encoding.GBK || code == Encoding.GB18030)
+        {
+            encode = "GBK";
+        }
+
+        String result = FileUtils.readFileToString(new File(fileName),encode);
+        result = result.replaceAll("<", "&lt;");
+        result = result.replaceAll(">", "&gt;");
+        result = result.replaceAll("\n", "<br />");
+        ResponseHelper.printOut(response, true, "", result);
+    }
+
 
 }

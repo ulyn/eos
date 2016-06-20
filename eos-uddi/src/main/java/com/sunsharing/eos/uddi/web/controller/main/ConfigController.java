@@ -1310,11 +1310,6 @@ public class ConfigController {
 
     }
 
-    public static void main(String[]a)
-    {
-        Object result = JSON.parse((String)" {}");
-        System.out.println(result.getClass());
-    }
 
 
 

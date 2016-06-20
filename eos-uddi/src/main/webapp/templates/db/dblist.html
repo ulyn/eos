@@ -77,11 +77,6 @@
                             <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
                                 rowspan="1" colspan="1" aria-sort="ascending"
                                 aria-label="Rendering engine: activate to sort column descending" style="width: 100px;">
-                                发布时间
-                            </th>
-                            <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
-                                rowspan="1" colspan="1" aria-sort="ascending"
-                                aria-label="Rendering engine: activate to sort column descending" style="width: 100px;">
                                 操作
                             </th>
                         </tr>
@@ -93,10 +88,10 @@
                             <td class=" " style="color:{{row.checkColor}}">{{row.db}}</td>
                             <td class=" ">{{row.userName}}</td>
                             <td class=" " ng-bind-html="row.changeLog"></td>
-                            <td class=" ">{{row.pubishTime}}</td>
                             <td class=" ">
                                 <a href="#dbAdd/{{appId}}/{{row.id}}">修改</a>&nbsp;
                                 <a href="downloadDb.do?name=script&changeId={{row.id}}">下载脚本</a>
+                                <a href="#viewDbScript/{{appId}}/{{row.id}}">预览</a>
                             </td>
                         </tr>
                         </tbody>

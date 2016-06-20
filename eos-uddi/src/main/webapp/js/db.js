@@ -266,6 +266,40 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
 
 });
 
+
+indexApp.controller('viewDbScript', function($scope, $routeParams,$http) {
+    var changeId=$routeParams.changeId;
+    var appId=$routeParams.appId;
+
+    $http({
+        url: '/getScript.do',
+        method: "POST",
+        data: "changeId="+changeId,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function (data, status, headers, config) {
+        if(data.status)
+        {
+            //$scope.java = data.data;
+            document.getElementById("content").innerHTML = data.data;
+            hljs.tabReplace = '    ';
+            hljs.initHighlightingOnLoad();
+
+        }else
+        {
+            alert(data.msg);
+        }
+
+    }).error(function (data, status, headers, config) {
+
+    });
+
+    $scope.returnlist = function()
+    {
+        location.href = "#dblist/"+appId;
+    }
+
+});
+
 //function uploadDbSuccess(result)
 //{
 //    if(result.status==false)

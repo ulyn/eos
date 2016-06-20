@@ -83,6 +83,9 @@ indexApp.config(['$routeProvider',
             }).when('/dbAdd/:appId/:changeId',{
                 templateUrl: 'templates/db/dbAdd.html',
                 controller: 'dbAdd'
+            }).when('/viewDbScript/:appId/:changeId',{
+                templateUrl: 'templates/db/scriptview.html',
+                controller: 'viewDbScript'
             });
 //            .otherwise({redirectTo: '/servicelist'});
     }]);

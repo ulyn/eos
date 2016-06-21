@@ -99,7 +99,7 @@
             html += "<div class=\"line_grid\">\n" +
                     "   <div class=\"g_2 g_2M\"><span class=\"label\">"+child["CHILD_APP_NAME"]+"SVN版本：</span></div>\n" +
                     "   <div class=\"g_10 g_10M\">\n" +
-                    "   <input class=\"simple_field tooltip\" name=\""+child["CHILD_APP_ID"]+"\" type=\"text\" placeholder=\"label\"\n" +
+                    "   <input class=\"simple_field tooltip js-svn\" name=\""+child["CHILD_APP_ID"]+"\" type=\"text\" placeholder=\"label\"\n" +
                     "             original-title=\"\"></div>\n" +
                     "   <div class=\"clear\"></div>\n" +
                     "</div>";
@@ -118,6 +118,20 @@ $("#saveBtn").click(function(){
         d[arr[i].name] = arr[i].value;
     }
     d["appId"] = appId;
+    var v = true;
+    $(".js-svn").each(function (){
+        if($(this).val()=="")
+        {
+            alert("版本不能为空");
+            v = false;
+            return false;
+        }
+    });
+    if(!v)
+    {
+        return;
+    }
+
     console.info(d);
     $.ajaxFileUpload
     (

@@ -88,9 +88,9 @@
 
     $("#saveBtn").click(function(){
         var svn = $("#label").val();
-        if(label=="")
+        if(svn == "")
         {
-            alert("请输入名称");
+            alert("请输入SVN版本号");
             return;
         }
         $.ajax({

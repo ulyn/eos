@@ -216,7 +216,7 @@ public class ServiceLocation {
                 String eosIdsTmp = (String)jsonObject.get("eosIds");
                 JSONObject methodMap = (JSONObject)jsonObject.get("methodVersion");
                 String methodV=(String)methodMap.get(methodName);
-                if(methodV.equals(methodVersion))
+                if(methodVersion.equals(methodV))
                 {
                     String[] arr = eosIdsTmp.split(",");
                     for(int j=0;j<arr.length;j++)

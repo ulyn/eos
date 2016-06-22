@@ -1,5 +1,6 @@
 package com.sunsharing.eos.uddi.web.controller.main;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.component.utils.base.StringUtils;
@@ -209,7 +210,7 @@ public class ServiceController {
             Object[] obj = (Object[]) method.get(i);
             m.put("methodId", obj[0].toString());
             m.put("methodName", obj[1].toString());
-            m.put("mockResult", JSONArray.parseArray(obj[2].toString()));
+            m.put("mockResult", JSONArray.parseArray(sortMock(obj[2].toString())));
             if(obj[3]!=null) {
                 m.put("params", obj[3].toString());
             }else {
@@ -223,6 +224,27 @@ public class ServiceController {
         rs.put("list",result);
         String result2 = ResponseHelper.covert2Json(true, "", rs);
         ResponseHelper.printOut(response, result2);
+    }
+
+    private String sortMock(String result)
+    {
+        List<Map> list = JSON.parseObject(result, List.class);
+        Collections.sort(list, new Comparator<Map>() {
+            public int compare(Map t1, Map t2) {
+                String desc1 = (String)t1.get("desc");
+                String desc2 = (String)t2.get("desc");
+                if(com.sunsharing.eos.common.utils.StringUtils.isBlank(desc1))
+                {
+                    desc1 = (String)t1.get("status");
+                }
+                if(com.sunsharing.eos.common.utils.StringUtils.isBlank(desc2))
+                {
+                    desc2 = (String)t2.get("status");
+                }
+                return desc1.compareTo(desc2);
+            }
+        });
+        return JSON.toJSONString(list);
     }
 
     @RequestMapping(value = {"/rollbackMock.do"}, method = RequestMethod.POST)

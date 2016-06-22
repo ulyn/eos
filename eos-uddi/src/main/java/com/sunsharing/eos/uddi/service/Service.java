@@ -449,7 +449,26 @@ public class Service {
     {
         List<String> mock = new ArrayList<String>();
         TMethod method = methodDao.get(new Integer(methodId));
-        JSONArray array = JSONArray.parseArray(method.getMockResult());
+        JSONArray array = null;
+
+        List<Map> list = JSON.parseObject(method.getMockResult(),List.class);
+        Collections.sort(list, new Comparator<Map>() {
+            public int compare(Map t1, Map t2) {
+                String desc1 = (String)t1.get("desc");
+                String desc2 = (String)t2.get("desc");
+                if(StringUtils.isBlank(desc1))
+                {
+                    desc1 = (String)t1.get("status");
+                }
+                if(StringUtils.isBlank(desc2))
+                {
+                    desc2 = (String)t2.get("status");
+                }
+                return desc1.compareTo(desc2);
+            }
+        });
+
+        array = JSONArray.parseArray(JSON.toJSONString(list));
         for(int i=0;i<array.size();i++)
         {
             JSONObject jsonObject = array.getJSONObject(i);

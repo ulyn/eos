@@ -93,6 +93,12 @@
             alert("请输入SVN版本号");
             return;
         }
+        if(isNaN(svn))
+        {
+            alert("只允许输入数字！");
+            return false;
+        }
+
         $.ajax({
             type: 'POST',
             url: "/back.do",
@@ -110,6 +116,19 @@
             dataType: "json"
         });
     });
+
+    function checknumber(String) {
+        var Letters = "1234567890";
+        var i;
+        var c;
+        for( i = 0; i < Letters.length; i ++ )   {   //Letters.length() ->>>>取字符长度
+            c = Letters.charAt( i );
+            if (Letters.indexOf( c ) ==-1)   { //在"Letters"中找不到"c"   见下面的此函数的返回值
+                return true;
+            }
+        }
+        return false;
+    }
 
 </script>
 </body>

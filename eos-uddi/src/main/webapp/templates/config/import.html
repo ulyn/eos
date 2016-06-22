@@ -117,6 +117,7 @@ $("#saveBtn").click(function(){
     {
         d[arr[i].name] = arr[i].value;
     }
+
     d["appId"] = appId;
     var v = true;
     $(".js-svn").each(function (){
@@ -124,6 +125,18 @@ $("#saveBtn").click(function(){
         {
             alert("版本不能为空");
             v = false;
+            return false;
+        }
+    });
+    if(!v)
+    {
+        return;
+    }
+    v = true;
+    $(".js-svn").each(function (){
+        var value = $(this).val();
+        if(isNaN(value)) {
+            alert("只允许输入数字！");
             return false;
         }
     });
@@ -162,6 +175,19 @@ $("#saveBtn").click(function(){
             }
     )
 });
+
+    function checknumber(str) {
+        var Letters = "1234567890";
+        var i;
+        var c;
+        for( i = 0; i < Letters.length; i ++ )   {   //Letters.length() ->>>>取字符长度
+            c = Letters.charAt( i );
+            if (Letters.indexOf( c ) ==-1)   { //在"Letters"中找不到"c"   见下面的此函数的返回值
+                return true;
+            }
+        }
+        return false;
+    }
 </script>
 </body>
 </html>

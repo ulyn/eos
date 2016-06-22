@@ -625,10 +625,37 @@ public class ConfigController {
         {
             File dir = new File(SysInit.path + File.separator + "config" + File.separator + appCode);
             File[] listFile = dir.listFiles();
+            List<File> litFileList = new ArrayList();
+
+
             List backs =new ArrayList();
             if(listFile!=null && listFile.length!=0)
             {
                 for(File f:listFile)
+                {
+                    litFileList.add(f);
+                }
+                try {
+                    Collections.sort(litFileList, new Comparator() {
+                        public int compare(Object o, Object t1) {
+                            File f1 = (File)o;
+                            File f2 = (File)t1;
+                            if(f1.lastModified() > f2.lastModified())
+                            {
+                                return -1;
+                            }else if(f1.lastModified() < f2.lastModified())
+                            {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                    });
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                for(File f:litFileList)
                 {
                     String fileName = f.getName();
                     int begin = fileName.indexOf("_");
@@ -642,6 +669,7 @@ public class ConfigController {
 
                 }
             }
+
             m.put("backs",backs);
         }
 
@@ -1030,7 +1058,7 @@ public class ConfigController {
             String oldSVN = (String)child.get("SVN");
             if(StringUtils.isBlank(oldSVN))
             {
-                oldSVN = DateUtils.getDBString(new Date());
+                oldSVN = "0";
             }
 
             //String appCode = request.getParameter("appCode");

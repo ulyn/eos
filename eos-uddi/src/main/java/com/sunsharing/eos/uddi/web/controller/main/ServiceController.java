@@ -417,6 +417,9 @@ public class ServiceController {
     @RequestMapping(value = "/downloadApiPackage.do")
     public void downloadApiPackage(HttpServletResponse response, String appId, String type) throws Exception {
         String vstr = creatorService.lastVersion(appId);
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;"
+                + " filename=" + new String((appId + "-" + vstr + ".zip").getBytes("UTF-8"), "ISO8859-1"));
         creatorService.writeServicesZip(appId, vstr, CreatorType.valueOf(type),response.getOutputStream());
     }
 }

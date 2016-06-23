@@ -125,7 +125,7 @@ public class DynamicJavaCreator implements ICreator {
                 outType = outType.substring(outType.lastIndexOf(" "));
             }
             sb.append("        return DynamicRpc.invoke(builder.build(), " + outType + ".class);\n" +
-                    "    }");
+                    "    }\n");
         }
 
         sb.append(        "\n" +

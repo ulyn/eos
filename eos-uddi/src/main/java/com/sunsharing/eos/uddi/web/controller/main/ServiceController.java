@@ -137,7 +137,7 @@ public class ServiceController {
                         service.addAppCode(appcode, lines);
                         Map functionMap = new HashMap();
                         //去掉注解，不增加注解
-                        service.addParams(lines,functionMap);
+                        service.getMethodParame(lines,functionMap);
                         for (int i = 0; i < lines.length; i++) {
                             //System.out.println(lines[i]);
                         }

@@ -153,7 +153,7 @@ public class InterfaceServcie {
         }
     }
     //添加入参的注解
-    public String[] addParams(String[] lines,Map params) throws Exception
+    public void getMethodParame(String[] lines,Map params) throws Exception
     {
         boolean start = false;
         boolean functionstart = false;
@@ -175,7 +175,8 @@ public class InterfaceServcie {
                 }
                 //开始处理
                 if(functionstart==false && !StringUtils.isBlank(lines[i].trim()) &&
-                        !lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*"))
+                        !lines[i].trim().startsWith("/*") && !lines[i].trim().startsWith("*")
+                        && !lines[i].trim().startsWith("@Version"))
                 {
                     functionstart = true;
                     functions.append(lines[i]);
@@ -204,31 +205,47 @@ public class InterfaceServcie {
                     }
                     String functionName = str.substring(m,startIndex);
 
+                    //获取返回变量
+                    int t = str.indexOf(functionName);
+                    String tmp = str.substring(0,t).trim();
+                    String [] arr = tmp.split(" ");
+                    String returnPar = "";
+                    for(int o=arr.length-1;o>=0;o--)
+                    {
+                        if(!StringUtils.isBlank(arr[o]))
+                        {
+                            returnPar = arr[o];
+                            break;
+                        }
+                    }
+
 
                     int endIndex = str.indexOf(")");
                     String pars = str.substring(startIndex+1,endIndex);
-                    String result = "";
-                    String [] arr = pars.split(",");
-                    for(int j=0;j<arr.length;j++)
-                    {
-                        String tmp[] = arr[j].split(" ");
-                        List lll = new ArrayList();
-                        for(int k=0;k<tmp.length;k++)
-                        {
-                            if(!StringUtils.isBlank(tmp[k]))
-                            {
-                                lll.add(tmp[k]);
-                            }
-                        }
-                        if(lll.size()==2)
-                        result+="\""+lll.get(1)+"\",";
-                    }
-                    if(!StringUtils.isBlank(result))
-                    {
-                        result = result.substring(0,result.length()-1);
-                    }
+                    String result = pars;
+//                    String [] arr = pars.split(",");
+//                    for(int j=0;j<arr.length;j++)
+//                    {
+//                        String tmp[] = arr[j].split(" ");
+//                        List lll = new ArrayList();
+//                        for(int k=0;k<tmp.length;k++)
+//                        {
+//                            if(!StringUtils.isBlank(tmp[k]))
+//                            {
+//                                lll.add(tmp[k]);
+//                            }
+//                        }
+//                        if(lll.size()==2)
+//                        result+="\""+lll.get(1)+"\",";
+//                    }
+//                    if(!StringUtils.isBlank(result))
+//                    {
+//                        result = result.substring(0,result.length()-1);
+//                    }
                     parMap.put("result",result);
-                    params.put(functionName.trim(), StringUtils.isBlank(result) ? "" : result.replaceAll("\"", ""));
+                    params.put(functionName.trim(),
+                            StringUtils.isBlank(result) ? "" :
+                            result.replaceAll("\"", "")+"|"+returnPar);
                     funs.add(parMap);
                     //params.add(params);
                     parMap = new HashMap();
@@ -267,7 +284,7 @@ public class InterfaceServcie {
 
         kkk.add(++index,"import com.sunsharing.eos.common.annotation.ParameterNames;");
 
-        return kkk.toArray(new String[]{});
+        //return kkk.toArray(new String[]{});
 
     }
 

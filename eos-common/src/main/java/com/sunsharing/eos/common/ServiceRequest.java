@@ -156,6 +156,10 @@ public class ServiceRequest {
         this.attributeMap.put(key,attr);
     }
 
+    public void setDebugServerIp(String debugServerIp) {
+        this.debugServerIp = debugServerIp;
+    }
+
     /**
      * 取得 <T> 类型的参数
      * @param key

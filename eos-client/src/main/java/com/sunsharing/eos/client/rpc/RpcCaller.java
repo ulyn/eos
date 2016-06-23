@@ -17,6 +17,7 @@
 package com.sunsharing.eos.client.rpc;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.eos.client.sys.EosClientProp;
 import com.sunsharing.eos.client.zookeeper.ServiceLocation;
 import com.sunsharing.eos.common.ServiceRequest;
 import com.sunsharing.eos.common.ServiceResponse;
@@ -25,6 +26,7 @@ import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.ServiceFilterException;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
+import com.sunsharing.eos.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -65,6 +67,12 @@ public class RpcCaller extends AbstractServiceFilter {
             logger.debug(String.format("request %s-%s-%s-%s target eos %s:%s",
                     serviceRequest.getAppId(), serviceRequest.getServiceId(),
                     serviceRequest.getMethod(),serviceRequest.getMethodVersion(), ip, port));
+
+            if(StringUtils.isBlank(serviceRequest.getDebugServerIp())){
+                //client的debugServerIp是外部无传入，配置取得。
+                serviceRequest.setDebugServerIp(EosClientProp.getDebugServerIp(serviceRequest.getAppId()));
+            }
+
             ServiceResponse response = RpcClientFactory.create(serviceRequest.getTransporter())
                     .doRpc(serviceRequest, ip, port);
             serviceResponse.copyForm(response);

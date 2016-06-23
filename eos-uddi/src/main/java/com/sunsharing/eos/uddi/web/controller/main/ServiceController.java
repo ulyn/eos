@@ -12,6 +12,8 @@ import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.InterfaceServcie;
 import com.sunsharing.eos.uddi.service.NodeJSService;
 import com.sunsharing.eos.uddi.service.Service;
+import com.sunsharing.eos.uddi.service.creator.CreatorService;
+import com.sunsharing.eos.uddi.service.creator.CreatorType;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
 import org.apache.log4j.Logger;
@@ -40,6 +42,8 @@ public class ServiceController {
     Service service;
     @Autowired
     NodeJSService nodeJSService;
+    @Autowired
+    CreatorService creatorService;
 
     @RequestMapping(value = "/servicelist.do", method = RequestMethod.POST)
     public void servicelist(String appId, String module, Model model, HttpServletRequest request, HttpServletResponse response)
@@ -408,5 +412,11 @@ public class ServiceController {
             logger.error("发布失败", e);
             ResponseHelper.printOut(response, false, e.getMessage(), "");
         }
+    }
+
+    @RequestMapping(value = "/downloadApiPackage.do")
+    public void downloadApiPackage(HttpServletResponse response, String appId, String type) throws Exception {
+        String vstr = creatorService.lastVersion(appId);
+        creatorService.writeServicesZip(appId, vstr, CreatorType.valueOf(type),response.getOutputStream());
     }
 }

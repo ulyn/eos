@@ -462,6 +462,10 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
 //        });
         location.href = '/downloadjar.do?appId='+appId;
     }
+    $scope.downloadApiPackage = function(type)
+    {
+        location.href = '/downloadApiPackage.do?appId='+appId + "&type="+type;
+    }
     $scope.publish = function () {
         $http({
             url: '/getNpmVersion.do?appId=' + appId,

@@ -71,7 +71,7 @@ public class DynamicJavaCreator implements ICreator {
 
         sb.append(importSb).append("\n");
 
-        sb.append("public class "+ toClassName(app.getAppCode()) +" {\n" +
+        sb.append("public class "+ serviceCode2ClassName(app.getAppCode()) +" {\n" +
                 "\n" +
                 "    private final static String appId = \""+ app.getAppCode() +"\";\n" +
                 "    private final static String serviceId = \""+ service.getServiceCode() +"\";\n" +
@@ -135,10 +135,6 @@ public class DynamicJavaCreator implements ICreator {
 
 
         FileUtils.writeStringToFile(new File(file), sb.toString(), "utf-8");
-    }
-
-    private String toClassName(String appCode) {
-        return appCode.substring(0,1).toUpperCase() + appCode.substring(1);
     }
 
     private void resolveImports(TServiceVersion serviceVersion, StringBuilder importSb) {

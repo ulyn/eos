@@ -244,7 +244,7 @@ public class InterfaceServcie {
 //                    }
                     parMap.put("result",result);
                     params.put(functionName.trim(),
-                            StringUtils.isBlank(result) ? "" :
+                            StringUtils.isBlank(result) ? "|"+returnPar :
                             result.replaceAll("\"", "")+"|"+returnPar);
                     funs.add(parMap);
                     //params.add(params);

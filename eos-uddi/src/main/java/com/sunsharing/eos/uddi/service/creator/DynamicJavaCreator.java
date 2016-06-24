@@ -73,8 +73,8 @@ public class DynamicJavaCreator implements ICreator {
 
         sb.append("public class AppUserBinder {\n" +
                 "\n" +
-                "    private final String appId = \""+ app.getAppCode() +"\";\n" +
-                "    private final String serviceId = \""+ service.getServiceCode() +"\";\n" +
+                "    private final static String appId = \""+ app.getAppCode() +"\";\n" +
+                "    private final static String serviceId = \""+ service.getServiceCode() +"\";\n" +
                 "\n");
         for (TMethod method : serviceVersion.getMethods()) {
             if (!StringUtils.isBlank(method.getMockResult())) {
@@ -103,7 +103,7 @@ public class DynamicJavaCreator implements ICreator {
             String paramsStr = method.getParams();
             ParamsResolver.InOutParameter inOutParameter = ParamsResolver.toInOutParams(paramsStr);
 
-            sb.append("    public "+ inOutParameter.getOutType() +" "+ methodName +"(");
+            sb.append("    public static "+ inOutParameter.getOutType() +" "+ methodName +"(");
 
             for(int i=0;i< inOutParameter.getInParameters().size();i++){
                 if(i!=0){

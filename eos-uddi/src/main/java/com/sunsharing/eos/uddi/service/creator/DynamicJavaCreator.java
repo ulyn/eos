@@ -55,13 +55,14 @@ public class DynamicJavaCreator implements ICreator {
 
     private void createServiceFile(TService service, TApp app, String path) throws Exception {
         String className = serviceCode2ClassName(service.getServiceCode());
-        String file = path + "/" + className + ".java";
+        String file = path + "/com/sunsharing/"+ service.getAppCode() +"/service/" + className + ".java";
         TServiceVersion serviceVersion = service.getVersions().get(0);
         StringBuilder sb = new StringBuilder("/** \n");
         sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
         sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersionId() + " \n*/\n");
 
         StringBuilder importSb = new StringBuilder();
+        importSb.append("import com.sunsharing."+ service.getAppCode() +".service;\n");
         importSb.append("import com.sunsharing.eos.client.rpc.DynamicRpc;\n");
         importSb.append("import com.sunsharing.eos.client.sys.EosClientProp;\n");
         importSb.append("import com.sunsharing.eos.common.ServiceRequest;\n");

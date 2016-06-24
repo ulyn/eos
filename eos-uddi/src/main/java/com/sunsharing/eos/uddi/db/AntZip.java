@@ -55,7 +55,13 @@ public class AntZip{
 
         try{
             this.zipOut = new ZipOutputStream(new BufferedOutputStream(out));
-            handleDir(zipDir , this.zipOut);
+            String basePath = zipDir.getPath().replaceAll("\\\\","/");
+            if(zipDir.isDirectory()){
+                if(!basePath.endsWith("/")){
+                    basePath += "/";
+                }
+            }
+            handleDir(zipDir , this.zipOut,basePath);
             this.zipOut.close();
         }catch(IOException ioe){
             ioe.printStackTrace();
@@ -63,7 +69,7 @@ public class AntZip{
     }
 
     //由doZip调用,递归完成目录文件读取
-    private void handleDir(File dir , ZipOutputStream zipOut)throws IOException{
+    private void handleDir(File dir , ZipOutputStream zipOut,String base)throws IOException{
         FileInputStream fileIn;
         File[] files;
 
@@ -71,11 +77,11 @@ public class AntZip{
 
         if(files.length == 0){//如果目录为空,则单独创建之.
             //ZipEntry的isDirectory()方法中,目录以"/"结尾.
-            String tmp = dir.toString();
-            int index = dir.toString().replaceAll("\\\\","/").indexOf("zip/");
+            String tmp = dir.toString().replaceAll("\\\\","/");
+            int index = tmp.indexOf(base);
             if(index!=-1)
             {
-                tmp = tmp.substring(index+37);
+                tmp = tmp.substring(index+base.length());
             }
             this.zipOut.putNextEntry(new ZipEntry(tmp + "/"));
             this.zipOut.closeEntry();
@@ -85,15 +91,15 @@ public class AntZip{
                 //System.out.println(fileName);
 
                 if(fileName.isDirectory()){
-                    handleDir(fileName , this.zipOut);
+                    handleDir(fileName , this.zipOut,base);
                 }
                 else{
                     fileIn = new FileInputStream(fileName);
-                    String tmp = fileName.toString().toString();
-                    int index = fileName.toString().toString().replaceAll("\\\\","/").indexOf("zip/");
+                    String tmp = fileName.toString().replaceAll("\\\\", "/");
+                    int index = tmp.indexOf(base);
                     if(index!=-1)
                     {
-                        tmp = tmp.substring(index+37);
+                        tmp = tmp.substring(index+base.length());
                     }
                     this.zipOut.putNextEntry(new ZipEntry(tmp));
 

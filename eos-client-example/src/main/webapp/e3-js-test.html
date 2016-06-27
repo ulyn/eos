@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+<!--<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>-->
+<!--<script type="text/javascript" src="/js/json2.js"></script>-->
+<script type="text/javascript" src="/js/eos3.js"></script>
+<script>
+    Eos.rewriteUrl("remote");
+
+    Eos.register("test","dmService","getAllData","1.0");
+    Eos.register("test","dmService","getMultiLabelByKeyList","1.0");
+    function dmService(){}
+    dmService.prototype.getAllData = function(dmName,success,error,mock){
+        return Eos.newRequest({
+            appId:"test",
+            serviceId: "dmService",
+            method: "getAllData",
+            mock: Eos.utils.guessMock(success,error,mock),
+            data: {"dmName":dmName},
+            success: Eos.utils.guessSuccess(success,error,mock),
+            error: Eos.utils.guessError(success,error,mock)
+        });
+    }
+    dmService.prototype.getMultiLabelByKeyList = function(dmName,keys,success,error,mock){
+        return Eos.newRequest({
+            appId:"test",
+            serviceId: "dmService",
+            mock: Eos.utils.guessMock(success,error,mock),
+            method: "getMultiLabelByKeyList",
+            data: {"dmName":dmName,"keys":keys},
+            success: Eos.utils.guessSuccess(success,error,mock),
+            error: Eos.utils.guessError(success,error,mock)
+        });
+    }
+    Eos['dmService'] = new dmService();
+
+    //直接调用
+    Eos.newRequest({
+        appId:"test",
+        serviceId: "dmService",
+        method: "getAllData",
+        mock: "success",
+        data: {"dmName":"123"},
+        success: function (data) {
+            console.info("直接调用",data);
+//            alert("返回结果:" + data);
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+    //封装的方式调用
+    Eos.dmService.getAllData("BM_SEX",function(data){console.info("封装的方式调用",data);},"success");
+    //Promise方式调用
+    Promise.all([Eos.dmService.getAllData("BM_SEX","success"), Eos.dmService.getMultiLabelByKeyList("BM_SEX",["01","02"],"success")])
+            .then(function (result) {
+                console.log("ALL Promise",result);
+            });
+
+    Eos.dmService.getAllData("BM_SEX","success")
+            .then(function (result) {
+                console.info("Then getAllData",result);
+                return Eos.dmService.getMultiLabelByKeyList("BM_SEX",["01","02"],"success");
+            }).then(function (result){
+                console.info("Then getMultiLabelByKeyList",result);
+            });
+</script>
+</body>
+</html>

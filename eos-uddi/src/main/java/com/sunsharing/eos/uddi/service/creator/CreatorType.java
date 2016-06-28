@@ -28,6 +28,7 @@ package com.sunsharing.eos.uddi.service.creator;
  * <br>
  */
 public enum CreatorType {
+    JS(new JSCreator()),
     NodeJS(new NodeJSCreator()),
     ReduxJS(new ReduxJSCreator()),
     DynamicJava(new DynamicJavaCreator());

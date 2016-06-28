@@ -73,9 +73,9 @@ public class ReduxJSCreator implements ICreator {
                 String datastr = paramstr;
                 if(!StringUtils.isBlank(datastr)){
                     datastr = datastr.substring(0,datastr.length() - 1);
-                    paramstr += "mock";
+                    paramstr += " callId, mock";
                 }else{
-                    paramstr = "mock";
+                    paramstr = " callId, mock";
                 }
                  sb.append("export const "+ dispatchConstName +" =  methodConstName(serviceEos, '"+ method.getMethodName() +"');\n" +
                          "export function "+ method.getMethodName() +"("+ paramstr +") {\n" +
@@ -83,7 +83,7 @@ public class ReduxJSCreator implements ICreator {
                          "        method: '"+ method.getMethodName() +"',\n" +
                          "        version: '"+ method.getMethodVersion() +"',\n" +
                          "        data: { "+ datastr +" }\n" +
-                         "    }, mock);\n" +
+                         "    }, callId, mock);\n" +
                          "}\n\n");
             }
             FileUtils.writeStringToFile(new File(fileDir + "/" + service.getServiceCode() + ".jsx"), sb.toString(), "utf-8");

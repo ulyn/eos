@@ -1,22 +1,199 @@
 "use strict";
 (function (factory) {
-    if (typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like enviroments that support module.exports,
-        // like Node.
-        module.exports = factory();
-    } else if (typeof define === 'function' && define.amd) {
+    if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define("EosRequest",factory);
+        define("eos",factory);
     } else {
         // Browser globals
-        window.Eos = factory();
+        window.eos = factory();
     }
 }(function () {
-    var requestUrl = getContextPath("/static") + "/remote";
-    var methodCache = {};
+    //创建兼容低版本 promise
+    var Promise = window.Promise;
+    if(!Promise){
+        var PENDING = undefined, FULFILLED = 1, REJECTED = 2;
 
-    function log(){ console && console.log && console.log(arguments); }
+        var isFunction = function(obj){
+            return 'function' === typeof obj;
+        }
+        var isArray = function(obj) {
+            return Object.prototype.toString.call(obj) === "[object Array]";
+        }
+        var isThenable = function(obj){
+            return obj && typeof obj['then'] == 'function';
+        }
+
+        var transition = function(status,value){
+            var promise = this;
+            if(promise._status !== PENDING) return;
+            // 所以的执行都是异步调用，保证then是先执行的
+            setTimeout(function(){
+                promise._status = status;
+                publish.call(promise,value);
+            });
+        }
+        var publish = function(val){
+            var promise = this,
+                fn,
+                st = promise._status === FULFILLED,
+                queue = promise[st ? '_resolves' : '_rejects'];
+
+            while(fn = queue.shift()) {
+                val = fn.call(promise, val) || val;
+            }
+            promise[st ? '_value' : '_reason'] = val;
+            promise['_resolves'] = promise['_rejects'] = undefined;
+        }
+
+        Promise = function(resolver){
+            if (!isFunction(resolver))
+                throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+            if(!(this instanceof Promise)) return new Promise(resolver);
+
+            var promise = this;
+            promise._value;
+            promise._reason;
+            promise._status = PENDING;
+            promise._resolves = [];
+            promise._rejects = [];
+
+            var resolve = function(value){
+                transition.apply(promise,[FULFILLED].concat([value]));
+            }
+            var reject = function(reason){
+                transition.apply(promise,[REJECTED].concat([reason]));
+            }
+
+            resolver(resolve,reject);
+        }
+
+        Promise.prototype.then = function(onFulfilled,onRejected){
+            var promise = this;
+            // 每次返回一个promise，保证是可thenable的
+            return Promise(function(resolve,reject){
+                function callback(value){
+                    var ret = isFunction(onFulfilled) && onFulfilled(value) || value;
+                    if(isThenable(ret)){
+                        ret.then(function(value){
+                            resolve(value);
+                        },function(reason){
+                            reject(reason);
+                        });
+                    }else{
+                        resolve(ret);
+                    }
+                }
+                function errback(reason){
+                    reason = isFunction(onRejected) && onRejected(reason) || reason;
+                    reject(reason);
+                }
+                if(promise._status === PENDING){
+                    promise._resolves.push(callback);
+                    promise._rejects.push(errback);
+                }else if(promise._status === FULFILLED){ // 状态改变后的then操作，立刻执行
+                    callback(promise._value);
+                }else if(promise._status === REJECTED){
+                    errback(promise._reason);
+                }
+            });
+        }
+
+        Promise.prototype["catch"] = function(onRejected){
+            return this.then(undefined, onRejected)
+        }
+
+        Promise.prototype.delay = function(ms){
+            return this.then(function(val){
+                return Promise.delay(ms,val);
+            })
+        }
+
+        Promise.delay = function(ms,val){
+            return Promise(function(resolve,reject){
+                setTimeout(function(){
+                    resolve(val);
+                },ms);
+            })
+        }
+
+        Promise.resolve = function(arg){
+            return Promise(function(resolve,reject){
+                resolve(arg)
+            })
+        }
+
+        Promise.reject = function(arg){
+            return Promise(function(resolve,reject){
+                reject(arg)
+            })
+        }
+
+        Promise.all = function(promises){
+            if (!isArray(promises)) {
+                throw new TypeError('You must pass an array to all.');
+            }
+            return Promise(function(resolve,reject){
+                var i = 0,
+                    result = [],
+                    len = promises.length;
+
+                function resolver(index) {
+                    return function(value) {
+                        resolveAll(index, value);
+                    };
+                }
+
+                function rejecter(reason){
+                    reject(reason);
+                }
+
+                function resolveAll(index,value){
+                    result[index] = value;
+                    if(index == len - 1){
+                        resolve(result);
+                    }
+                }
+
+                for (; i < len; i++) {
+                    promises[i].then(resolver(i),rejecter);
+                }
+            });
+        }
+
+        Promise.race = function(promises){
+            if (!isArray(promises)) {
+                throw new TypeError('You must pass an array to race.');
+            }
+            return Promise(function(resolve,reject){
+                var i = 0,
+                    len = promises.length;
+
+                function resolver(value) {
+                    resolve(value);
+                }
+
+                function rejecter(reason){
+                    reject(reason);
+                }
+
+                for (; i < len; i++) {
+                    promises[i].then(resolver,rejecter);
+                }
+            });
+        }
+    }
+
+    function log(){
+        if(console && console.log){
+            switch (arguments.length){
+                case 1:console.log(arguments[0]);break;
+                case 2:console.log(arguments[0],arguments[1]); break;
+                case 3:console.log(arguments[0],arguments[1],arguments[2]);break;
+                case 4:console.log(arguments[0],arguments[1],arguments[2],arguments[3]);break;
+                case 5:console.log(arguments[0],arguments[1],arguments[2],arguments[3],arguments[4]); break;
+            }
+        }
+    }
     function noop(){}
     function ajax(opt) {
         return new Promise(function(resolve, reject){
@@ -136,13 +313,11 @@
                     return jsPath.substring(0,jsPath.indexOf(baseUrl));
                 }
             }
+            log("截取URL有误，baseUrl不正确，请确认已经重新设置eos remote url，如：eos.rewriteUrl('remote');");
             return "ERROR:BASEURL_UNKNOWN";
         }else{
             return "";
         }
-    }
-    function toMethodCacheKey(appId,serviceId,method){
-        return appId + "-" + serviceId + "-" + method;
     }
     function guessMock(success,error,mock){
         if(mock){
@@ -163,32 +338,11 @@
             return error;
         }else return null;
     }
-
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
     function eosPromise(opts){
-        //外部不让传版本，只能先调用register注册
-        var methodCacheKey = toMethodCacheKey(opts.appId,opts.serviceId,opts.method);
-        if(opts.version){
-            throw new Error("服务方法["+ methodCacheKey +"]版本号不允许外部传递，请使用用Eos.register注册");
-        }
-        opts.version = methodCache[methodCacheKey];
-        if(!opts.version){
-            throw new Error("请先使用用Eos.register注册["+ methodCacheKey +"]版本号");
-        }
-        var option = extend({
-            "dataType": "json",
-            "url": requestUrl,
-            "appId": "",
-            "serviceId": "",
-            "method": "",
-            "version": "",
-            "mock": "",
-            "data": null,
-            "async": true,
-            "beforeSend": null,
-            "complete": null,
-            "success": null,
-            "error":null
-        }, opts);
+        var option = extend({},instance.defaultSettings, opts);
         var vars = "eos_appid="+option.appId+"&eos_service_id=" + option.serviceId
             + "&eos_method_name=" + option.method + "&eos_version=" + option.version + "&eos_mock=" + option.mock;
         if (option.url.indexOf("?") != -1) {
@@ -221,33 +375,111 @@
         }
     }
 
-    function Eos(){
+
+    /**、
+     * 服务
+     * @param appId
+     * @param serviceId
+     * @constructor
+     */
+    function Service(appId,serviceId){
+        this.appId = appId;
+        this.serviceId = serviceId;
     }
-    //eos版本
-    Eos.prototype.version = 3;
-    Eos.prototype.rewriteUrl = function(url){
-        requestUrl = url
-    }
-    Eos.prototype.register = function(appId,serviceId,method,v){
-        var methodCacheKey = toMethodCacheKey(appId,serviceId,method);
-        if(methodCache[methodCacheKey]){
-            throw new Error("不允许重复注册["+ methodCacheKey +"]版本号");
+    Service.prototype.registerMethod = function(method,v,paramNames){
+        if(isArray(paramNames)){
+            var service = this;
+            if(service[method]){
+                throw new Error("服务方法已经注册，请不要重复注册：" + service.appId + "-" + service.serviceId + "-" + method);
+            }
+            service[method] = function(){
+                var data = {};
+                for(var i=0;i<paramNames.length;i++){
+                    data[paramNames[i]] = arguments[i];
+                }
+                var success = arguments[paramNames.length];
+                var error = arguments[paramNames.length + 1];
+                var mock = arguments[paramNames.length + 2];
+                return eosPromise({
+                    appId:service.appId,
+                    serviceId: service.serviceId,
+                    method: method,
+                    version: v,
+                    mock: guessMock(success,error,mock),
+                    data: data,
+                    success: guessSuccess(success,error,mock),
+                    error: guessError(success,error,mock)
+                });
+            }
+            return service;
+        }else{
+            throw new Error("注册方法错误，入参不正确！paramNames 必须为数组方式：" + paramNames);
         }
-        methodCache[methodCacheKey] = v;
     }
-    Eos.prototype.newRequest = function(opts){
-        return eosPromise(opts);
+
+    function Eos(){
+
     }
+    /**
+     * eos版本
+     */
+    Eos.prototype.version = 3;
+    /**
+     * 全局的服务基本参数
+     */
+    Eos.prototype.defaultSettings = {
+        "dataType": "json",
+        "url": getContextPath("/static") + "/remote",
+        "appId": "",
+        "serviceId": "",
+        "method": "",
+        "version": "",
+        "mock": "",
+        "data": null,
+        "async": true,
+        "beforeSend": null,
+        "complete": null,
+        "success": null,
+        "error":null
+    };
+    /**
+     * 重写eos接口调用的地址
+     * @param url
+     */
+    Eos.prototype.rewriteUrl = function(url){
+        this.defaultSettings.url = url
+    }
+    Eos.prototype.registerService = function(appId,serviceId){
+        if(this[appId]){
+            if(!this.hasOwnProperty(appId)){
+                var arr = [];
+                for(var key in this){
+                    if(!this.hasOwnProperty(appId)){
+                        arr.push(key);
+                    }
+                }
+                throw new Error("不允许使用关键字["+ arr.join(",") +"]作为应用id["+ appId +"]，请更换!");
+            }
+        }
+        var app = this[appId] = this[appId] || {};
+        if(app[serviceId]){
+            throw new Error("不允许重复注册服务["+ appId + "-" + serviceId +"]，请统一一处注册");
+        }
+        return app[serviceId] = new Service(appId,serviceId);
+    }
+
     Eos.prototype.utils = {
         getContextPath:getContextPath,
         extend:extend,
+        isArray:isArray,
         guessMock:guessMock,
         guessSuccess:guessSuccess,
         guessError:guessError
     };
+    Eos.prototype.Promise = Promise;
 
     // Browser globals
-    var instance = window.Eos = new Eos();
+    var instance = window.eos = new Eos();
     return instance;
 }));
 

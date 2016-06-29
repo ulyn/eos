@@ -22,15 +22,19 @@ import com.sunsharing.eos.uddi.model.TApp;
 import com.sunsharing.eos.uddi.model.TService;
 import com.sunsharing.eos.uddi.model.TServiceVersion;
 import com.sunsharing.eos.uddi.sys.SysInit;
+import org.apache.commons.io.FileUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre></pre>
@@ -50,12 +54,15 @@ public class CreatorService {
     JdbcTemplate jdbcTemplate;
     private SimpleHibernateDao<TService, Integer> serviceDao;//用户管理
     private SimpleHibernateDao<TApp, Integer> appDao;//用户管理
-
+    private SimpleHibernateDao<TServiceVersion, Integer> versionDao;//版本管理
+    @Resource
+    com.sunsharing.eos.uddi.service.Service service;
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory) {
         serviceDao = new SimpleHibernateDao<TService, Integer>(sessionFactory, TService.class);
         appDao = new SimpleHibernateDao<TApp, Integer>(sessionFactory, TApp.class);
+        versionDao = new SimpleHibernateDao<TServiceVersion, Integer>(sessionFactory, TServiceVersion.class);
     }
 
     public String lastVersion(String appId){
@@ -94,6 +101,36 @@ public class CreatorService {
         File file = createServices(appId,v,creatorType);
         AntZip zip = new AntZip();
         zip.doZip(file.getPath(),out);
+    }
+
+    public Map createService(String versionId,String type) throws Exception {
+        Map map = new HashMap();
+        File file;
+        String name;
+        //先简单处理。。。
+        if("DynamicJava".equals(type) || "JS".equals(type)){
+            TServiceVersion version = versionDao.get(new Integer(versionId));
+            String fileDir = SysInit.path + "/stub_service/" + version.getAppCode()
+                    + "/" + version.getVersionId();
+            File dir = new File(fileDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            if("DynamicJava".equals(type)){
+                file = new DynamicJavaCreator().createServiceFile(version.getService(),fileDir);
+            }else{
+                file = new JSCreator().createServiceFile(version.getService(),fileDir);
+            }
+            name = file.getName();
+        }else{
+            file = service.getJavaFile(versionId);
+            name = service.getName(versionId);
+            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+            name += ".java";
+        }
+        map.put("content",FileUtils.readFileToString(file,"utf-8"));
+        map.put("name",name);
+        return map;
     }
 }
 

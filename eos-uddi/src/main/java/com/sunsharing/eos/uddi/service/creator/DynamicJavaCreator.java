@@ -48,12 +48,12 @@ public class DynamicJavaCreator implements ICreator {
     @Override
     public File create(String fileDir,TApp app, String v, List<TService> services) throws Exception{
         for (TService service : services) {
-            createServiceFile(service, app, fileDir);
+            createServiceFile(service,  fileDir);
         }
         return new File(fileDir);
     }
 
-    private void createServiceFile(TService service, TApp app, String path) throws Exception {
+    public File createServiceFile(TService service,  String path) throws Exception {
         String className = serviceCode2ClassName(service.getServiceCode());
         String file = path + "/com/sunsharing/"+ service.getAppCode() +"/service/" + className + ".java";
         TServiceVersion serviceVersion = service.getVersions().get(0);
@@ -62,18 +62,17 @@ public class DynamicJavaCreator implements ICreator {
         sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersionId() + " \n*/\n");
 
         StringBuilder importSb = new StringBuilder();
-        importSb.append("import com.sunsharing."+ service.getAppCode() +".service;\n");
+        importSb.append("package com.sunsharing."+ service.getAppCode() +".service;\n\n");
         importSb.append("import com.sunsharing.eos.client.rpc.DynamicRpc;\n");
-        importSb.append("import com.sunsharing.eos.client.sys.EosClientProp;\n");
         importSb.append("import com.sunsharing.eos.common.ServiceRequest;\n");
 
         resolveImports(serviceVersion,importSb);
 
         sb.append(importSb).append("\n");
 
-        sb.append("public class "+ serviceCode2ClassName(app.getAppCode()) +" {\n" +
+        sb.append("public class "+ serviceCode2ClassName(service.getServiceCode()) +" {\n" +
                 "\n" +
-                "    private final static String appId = \""+ app.getAppCode() +"\";\n" +
+                "    private final static String appId = \""+ service.getAppCode() +"\";\n" +
                 "    private final static String serviceId = \""+ service.getServiceCode() +"\";\n" +
                 "\n");
         for (TMethod method : serviceVersion.getMethods()) {
@@ -133,8 +132,9 @@ public class DynamicJavaCreator implements ICreator {
                 "\n" +
                 "}");
 
-
-        FileUtils.writeStringToFile(new File(file), sb.toString(), "utf-8");
+        File javaFile = new File(file);
+        FileUtils.writeStringToFile(javaFile, sb.toString(), "utf-8");
+        return javaFile;
     }
 
     private void resolveImports(TServiceVersion serviceVersion, StringBuilder importSb) {

@@ -45,7 +45,7 @@ public class JSCreator implements ICreator {
     @Override
     public File create(String fileDir,TApp app, String v, List<TService> services) throws Exception{
         for (TService service : services) {
-            createServiceFile(service, app, fileDir);
+            createServiceFile(service, fileDir);
         }
         createAllServiceSingleFile(services, app, fileDir);
         return new File(fileDir);
@@ -100,7 +100,7 @@ public class JSCreator implements ICreator {
         FileUtils.writeStringToFile(new File(file), sb.toString(), "utf-8");
     }
 
-    private void createServiceFile(TService service, TApp app, String path) throws Exception {
+    public File createServiceFile(TService service,String path) throws Exception {
         String file = path + "/"+ service.getAppCode() +"/" + service.getServiceCode() + ".js";
         TServiceVersion serviceVersion = service.getVersions().get(0);
         StringBuilder sb = new StringBuilder("/** \n");
@@ -144,8 +144,9 @@ public class JSCreator implements ICreator {
                 "    return eos[APP_ID][SERVICE_ID];\n" +
                 "}));");
 
-
-        FileUtils.writeStringToFile(new File(file), sb.toString(), "utf-8");
+        File jsFile = new File(file);
+        FileUtils.writeStringToFile(jsFile, sb.toString(), "utf-8");
+        return jsFile;
     }
 
 }

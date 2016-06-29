@@ -290,7 +290,7 @@ public class Service {
         return version.getService().getServiceCode();
     }
 
-    public String getJava(String versionId) throws Exception {
+    public File getJavaFile(String versionId){
         TServiceVersion version = versionDao.get(new Integer(versionId));
         String version2 = version.getServiceVersion();
         String serviceCode = version.getService().getServiceCode();
@@ -298,12 +298,17 @@ public class Service {
 
         String destName = SysInit.path + File.separator + "interface" + File.separator +
                 appcode + File.separator + serviceCode + "_" + version2 + ".java";
+        return new File(destName);
+    }
+
+    public String getJava(String versionId) throws Exception {
+        File file = getJavaFile(versionId);
         StringBuffer sb = new StringBuffer();
 
         FileInputStream input = null;
         ByteArrayOutputStream arrOut = new ByteArrayOutputStream();
         try {
-            input = new FileInputStream(new File(destName));
+            input = new FileInputStream(file);
             byte[] arr = new byte[1024];
             int len = 0;
 

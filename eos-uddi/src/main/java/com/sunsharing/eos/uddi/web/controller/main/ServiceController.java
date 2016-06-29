@@ -16,6 +16,7 @@ import com.sunsharing.eos.uddi.service.creator.CreatorService;
 import com.sunsharing.eos.uddi.service.creator.CreatorType;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -345,16 +346,15 @@ public class ServiceController {
     public void downloadJava(String versionId,
                              HttpServletResponse response, HttpServletRequest request) throws Exception {
         //application/octet-stream
-        String java = service.getJava(versionId);
-        String name = service.getName(versionId);
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
-        name += ".java";
+        String type = request.getParameter("type");
+        Map map = creatorService.createService(versionId,type);
+
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename=" + new String(name.getBytes("UTF-8"), "ISO8859-1"));
+                + " filename=" + new String(MapUtils.getString(map,"name").getBytes("UTF-8"), "ISO8859-1"));
         OutputStream out = response.getOutputStream();
-        response.setHeader("Content-Length", java.getBytes("UTF-8").length + "");
-        response.getOutputStream().write(java.getBytes("UTF-8"));
+        response.setHeader("Content-Length", MapUtils.getString(map,"content").getBytes("UTF-8").length + "");
+        response.getOutputStream().write(MapUtils.getString(map,"content").getBytes("UTF-8"));
         out.close();
     }
 

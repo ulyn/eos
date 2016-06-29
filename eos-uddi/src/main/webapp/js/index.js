@@ -765,9 +765,9 @@ indexApp.controller('java', function($scope, $routeParams,$http) {
         location.href = "#servicelist/"+appId+"/0";
     }
 
-    $scope.downloadJava = function()
+    $scope.downloadJava = function(type)
     {
-        location.href = "download.do?versionId="+versionId;
+        location.href = "download.do?versionId="+versionId+"&type="+type;
     }
     $scope.test = function()
     {

@@ -16,10 +16,6 @@
  */
 package com.sunsharing.eos.uddi.service.creator;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.model.TApp;
 import com.sunsharing.eos.uddi.model.TMethod;
 import com.sunsharing.eos.uddi.model.TService;
@@ -63,7 +59,7 @@ public class JSCreator implements ICreator {
         sb.append("\"use strict\";\n" +
                 "(function (factory) {\n" +
                 "    if (typeof define === 'function' && define.amd) {\n" +
-                "        define(\"eos."+ service.getAppCode() +"."+ service.getServiceCode() +"\",[\"eos\"],factory);\n" +
+                "        define([\"eos\"],factory);\n" +
                 "    } else {\n" +
                 "        factory(eos);\n" +
                 "    }\n" +
@@ -73,24 +69,7 @@ public class JSCreator implements ICreator {
                 "\n" +
                 "    eos.registerService(APP_ID,SERVICE_ID)\n");
         for (TMethod method : serviceVersion.getMethods()) {
-            if (!StringUtils.isBlank(method.getMockResult())) {
-                //注释部分
-                JSONArray methodMockResult = JSON.parseArray(method.getMockResult());
-                if (methodMockResult.size() > 0) {
-                    sb.append("   /**\n");
-                    sb.append("    * @return\n");
-                    for (int i = 0, l = methodMockResult.size(); i < l; i++) {
-                        JSONObject jo = methodMockResult.getJSONObject(i);
-                        sb.append("    *  ${");
-                        sb.append(jo.getString("status"));
-                        sb.append("}  " + jo.getString("desc") + "\n");
-                        sb.append("    *     ");
-                        sb.append(jo.getString("content"));
-                        sb.append("\n");
-                    }
-                    sb.append("    */\n");
-                }
-            }
+
             String methodName = method.getMethodName();
             if (methodName.startsWith("void ")) {
                 methodName = methodName.replace("void ", "");
@@ -108,7 +87,7 @@ public class JSCreator implements ICreator {
                 }
                 sb.append("\""+ inParameter.getName() +"\"" );
             }
-            sb.append("])\n\n");
+            sb.append("])\n");
         }
         sb.append("\n" +
                 "    return eos[APP_ID][SERVICE_ID];\n" +

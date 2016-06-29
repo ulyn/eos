@@ -313,7 +313,7 @@
                     return jsPath.substring(0,jsPath.indexOf(baseUrl));
                 }
             }
-            log("截取URL有误，baseUrl不正确，请确认已经重新设置eos remote url，如：eos.rewriteUrl('remote');");
+            log("【温馨提示】截取上下文URL有误，baseUrl不正确，请确认已经重新设置eos remote url，如：eos.rewriteUrl('remote');");
             return "ERROR:BASEURL_UNKNOWN";
         }else{
             return "";
@@ -390,7 +390,7 @@
         if(isArray(paramNames)){
             var service = this;
             if(service[method]){
-                throw new Error("服务方法已经注册，请不要重复注册：" + service.appId + "-" + service.serviceId + "-" + method);
+                throw new Error("【eos】服务方法已经注册，请不要重复注册：" + service.appId + "-" + service.serviceId + "-" + method);
             }
             service[method] = function(){
                 var data = {};
@@ -413,7 +413,7 @@
             }
             return service;
         }else{
-            throw new Error("注册方法错误，入参不正确！paramNames 必须为数组方式：" + paramNames);
+            throw new Error("【eos】注册方法错误，入参不正确！paramNames 必须为数组方式：" + paramNames);
         }
     }
 
@@ -458,12 +458,12 @@
                         arr.push(key);
                     }
                 }
-                throw new Error("不允许使用关键字["+ arr.join(",") +"]作为应用id["+ appId +"]，请更换!");
+                throw new Error("【eos】不允许使用关键字["+ arr.join(",") +"]作为应用id["+ appId +"]，请更换!");
             }
         }
         var app = this[appId] = this[appId] || {};
         if(app[serviceId]){
-            throw new Error("不允许重复注册服务["+ appId + "-" + serviceId +"]，请统一一处注册");
+            throw new Error("【eos】不允许重复注册服务["+ appId + "-" + serviceId +"]，请统一一处注册");
         }
         return app[serviceId] = new Service(appId,serviceId);
     }

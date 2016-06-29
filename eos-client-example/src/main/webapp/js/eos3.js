@@ -234,13 +234,16 @@
                     }
                 };
             if(data){
-                var args = "";
+                var args = '';
                 if(typeof data == 'string'){
                     args = data;
                 }else if(typeof data == 'object'){
                     var argcount = 0;
                     for (var key in data) {
                         if (data.hasOwnProperty(key)) {
+                            if(data[key] == null){
+                                continue;
+                            }
                             if (argcount++) {
                                 args += '&';
                             }
@@ -292,7 +295,7 @@
         for (var index = 1; index < length; index++) {
             var source = arguments[index];
             for (var key in source){
-                if(source[key] !== undefined && source !== ''){
+                if(source[key] != null && source[key] !== ''){
                     obj[key] = source[key];
                 }
             }

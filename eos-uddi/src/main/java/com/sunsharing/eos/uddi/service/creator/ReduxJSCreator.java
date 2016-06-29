@@ -40,6 +40,9 @@ import java.util.List;
 public class ReduxJSCreator implements ICreator {
     @Override
     public File create(String fileDir,TApp app, String v, List<TService> services) throws Exception{
+        //加个顶层目录
+        fileDir = fileDir + "/" + getPackageName(app);
+
         createPackageJsonFile(app, v, fileDir);
         createReadme(app, v, fileDir, services);
         createAppJsx(app, fileDir);
@@ -51,8 +54,8 @@ public class ReduxJSCreator implements ICreator {
     }
 
     private void createServiceFile(String fileDir, List<TService> services) throws IOException {
-        StringBuilder sb = new StringBuilder();
         for(TService service : services){
+            StringBuilder sb = new StringBuilder();
             sb.append("import { methodConstName, getMethodDispatch } from 'zeus-eos-middleware';\n" +
                     "import { APP_ID } from './app';\n" +
                     "\n" +
@@ -110,7 +113,7 @@ public class ReduxJSCreator implements ICreator {
 
     private void createReadme(TApp app, String v, String fileDir, List<TService> services) throws IOException {
         String str = "# " + app.getAppName() + "\n" +
-                "zeus eos应用 提供给redux的action： " + app.getAppName() + " 应用   \n" +
+                "eos应用 提供给redux的action： " + app.getAppName() + " 应用   \n" +
                 "    \n" +
                 "# 使用\n" +
                 "\n" +
@@ -129,15 +132,19 @@ public class ReduxJSCreator implements ICreator {
 
     private void createPackageJsonFile(TApp app, String v, String fileDir) throws IOException {
         String str = "{\n" +
-                "  \"version\": \"" + v + "\",\n" +
-                "  \"description\": \"zeus eos应用 提供给redux的action：" + app.getAppName() + "\",\n" +
-                "  \"name\": \"zeus-eos-app-"+ app.getAppCode() +"\",\n" +
+                "  \"version\": \"0.0." + v + "\",\n" +
+                "  \"description\": \"eos应用 提供给redux的action：" + app.getAppName() + "\",\n" +
+                "  \"name\": \""+ getPackageName(app) +"\",\n" +
                 "  \"main\": \"index.jsx\",\n" +
                 "  \"dependencies\": [\n" +
                 "    \"zeus-eos-middleware\"\n" +
                 "  ]\n" +
                 "}";
         FileUtils.writeStringToFile(new File(fileDir + "/component.json"), str, "utf-8");
+    }
+
+    private String getPackageName(TApp app){
+        return "eos-app-"+ app.getAppCode();
     }
 }
 

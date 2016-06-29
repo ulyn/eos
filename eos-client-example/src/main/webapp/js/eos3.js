@@ -313,7 +313,7 @@
                     return jsPath.substring(0,jsPath.indexOf(baseUrl));
                 }
             }
-            log("【温馨提示】截取上下文URL有误，baseUrl不正确，请确认已经重新设置eos remote url，如：eos.rewriteUrl('remote');");
+            log("【eos温馨提示】截取上下文URL有误，baseUrl不正确，请确认已经重新设置eos remote url，如：eos.rewriteUrl('remote');");
             return "ERROR:BASEURL_UNKNOWN";
         }else{
             return "";

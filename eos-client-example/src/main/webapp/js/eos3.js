@@ -15,13 +15,13 @@
 
         var isFunction = function(obj){
             return 'function' === typeof obj;
-        }
+        };
         var isArray = function(obj) {
             return Object.prototype.toString.call(obj) === "[object Array]";
-        }
+        };
         var isThenable = function(obj){
             return obj && typeof obj['then'] == 'function';
-        }
+        };
 
         var transition = function(status,value){
             var promise = this;
@@ -31,7 +31,7 @@
                 promise._status = status;
                 publish.call(promise,value);
             });
-        }
+        };
         var publish = function(val){
             var promise = this,
                 fn,
@@ -43,7 +43,7 @@
             }
             promise[st ? '_value' : '_reason'] = val;
             promise['_resolves'] = promise['_rejects'] = undefined;
-        }
+        };
 
         Promise = function(resolver){
             if (!isFunction(resolver))
@@ -59,10 +59,10 @@
 
             var resolve = function(value){
                 transition.apply(promise,[FULFILLED].concat([value]));
-            }
+            };
             var reject = function(reason){
                 transition.apply(promise,[REJECTED].concat([reason]));
-            }
+            };
 
             resolver(resolve,reject);
         }
@@ -99,7 +99,7 @@
         }
 
         Promise.prototype["catch"] = function(onRejected){
-            return this.then(undefined, onRejected)
+            return this.then(undefined, onRejected);
         }
 
         Promise.prototype.delay = function(ms){
@@ -118,13 +118,13 @@
 
         Promise.resolve = function(arg){
             return Promise(function(resolve,reject){
-                resolve(arg)
+                resolve(arg);
             })
         }
 
         Promise.reject = function(arg){
             return Promise(function(resolve,reject){
-                reject(arg)
+                reject(arg);
             })
         }
 
@@ -346,8 +346,15 @@
     }
     function eosPromise(opts){
         var option = extend({},instance.defaultSettings, opts);
-        var vars = "eos_appid="+option.appId+"&eos_service_id=" + option.serviceId
-            + "&eos_method_name=" + option.method + "&eos_version=" + option.version + "&eos_mock=" + option.mock;
+        if(!option.url){
+            instance.rewriteUrl(getContextPath("/static") + "/remote");
+            option.url = instance.defaultSettings.url;
+        }
+        var vars = "eos_appid="+option.appId
+            + "&eos_service_id=" + option.serviceId
+            + "&eos_method_name=" + option.method
+            + "&eos_version=" + option.version
+            + "&eos_mock=" + (option.mock == null ? "" : option.mock);
         if (option.url.indexOf("?") != -1) {
             option.url = option.url + "&" + vars;
         } else {
@@ -432,7 +439,7 @@
      */
     Eos.prototype.defaultSettings = {
         "dataType": "json",
-        "url": getContextPath("/static") + "/remote",
+        "url": "",
         "appId": "",
         "serviceId": "",
         "method": "",

@@ -40,6 +40,7 @@ import java.util.List;
 public class ReduxJSCreator implements ICreator {
     @Override
     public File create(String fileDir,TApp app, String v, List<TService> services) throws Exception{
+        File file = new File(fileDir);
         //加个顶层目录
         fileDir = fileDir + "/" + getPackageName(app);
 
@@ -50,7 +51,7 @@ public class ReduxJSCreator implements ICreator {
 
         createServiceFile(fileDir, services);
 
-        return new File(fileDir);
+        return file;
     }
 
     private void createServiceFile(String fileDir, List<TService> services) throws IOException {

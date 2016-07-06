@@ -285,6 +285,7 @@
                 xhr.setRequestHeader('Content-type',
                     'application/x-www-form-urlencoded;');
             }
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.send(data);
             return xhr;
         });
@@ -316,8 +317,16 @@
                     return jsPath.substring(0,jsPath.indexOf(baseUrl));
                 }
             }
-            log("【eos温馨提示】截取上下文URL有误，baseUrl不正确，请确认已经重新设置eos remote url，如：eos.rewriteUrl('remote');");
-            return "ERROR:BASEURL_UNKNOWN";
+            var href = location.href;
+            var i = href.indexOf("/",href.indexOf("/",8) + 1);
+            var result = "";
+            if(i != -1){
+                result = href.substring(0,i);
+            }else{
+                result = href.substring(0,href.indexOf("/",8));
+            }
+            log("【eos温馨提示】截取上下文URL有误，baseUrl不正确，采用默认取值策略，值："+ result +"\n你也可以重新设置eos remote url，如：eos.rewriteUrl('remote');");
+            return result;
         }else{
             return "";
         }

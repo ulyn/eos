@@ -9,25 +9,29 @@
 <!--<script type="text/javascript" src="/js/json2.js"></script>-->
 <script type="text/javascript" src="/js/eos3.js"></script>
 <script type="text/javascript" src="/dmService.js"></script>
+<script type="text/javascript" src="/jmCount.js"></script>
 <script>
-    eos.rewriteUrl("remote");
-    //封装的方式调用
-    eos.test.dmService.getAllData("BM_SEX",function(data){console.info("封装的方式调用",data);},"success");
-    //Promise方式调用
-    eos.Promise.all([
-                eos.test.dmService.getAllData("BM_SEX","success"),
-                eos.test.dmService.getMultiLabelByKeyList("BM_SEX",["01","02"],"success")])
-            .then(function (result) {
-                console.log("ALL Promise",result);
-            });
-
-    eos.test.dmService.getAllData("BM_SEX","success")
-            .then(function (result) {
-                console.info("Then getAllData",result);
-                return eos.test.dmService.getMultiLabelByKeyList("BM_SEX",["01","02"],"success");
-            }).then(function (result){
-                console.info("Then getMultiLabelByKeyList",result);
-            });
+//    eos.rewriteUrl("remote");
+//    //封装的方式调用
+//    eos.test.dmService.getAllData("BM_SEX",function(data){console.info("封装的方式调用",data);},"success");
+//    //Promise方式调用
+//    eos.Promise.all([
+//                eos.test.dmService.getAllData("BM_SEX","success"),
+//                eos.test.dmService.getMultiLabelByKeyList("BM_SEX",["01","02"],"success")])
+//            .then(function (result) {
+//                console.log("ALL Promise",result);
+//            });
+//
+//    eos.test.dmService.getAllData("BM_SEX","success")
+//            .then(function (result) {
+//                console.info("Then getAllData",result);
+//                return eos.test.dmService.getMultiLabelByKeyList("BM_SEX",["01","02"],"success");
+//            }).then(function (result){
+//                console.info("Then getMultiLabelByKeyList",result);
+//            });
+    eos.defaultSettings.error = function(msg){console.info("错误",msg)};
+    eos.building.jmCount.basicCount(function(d){},"aaa");
+    eos.auth.dmService.refreshBM(function(d){});
 </script>
 </body>
 </html>

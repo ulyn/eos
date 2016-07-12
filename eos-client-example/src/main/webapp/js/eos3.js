@@ -204,33 +204,33 @@
                 dataType = opt.dataType,
                 beforeSend = opt.beforeSend || noop,
                 complete = opt.complete || noop,
-                success = function (data) {
+                success = function (data,xhr) {
                     if (data.status) {
-                        resolve(data.result);
+                        resolve(data.result,xhr);
                     } else {
                         //内部处理出错
-                        reject(data.result);
+                        reject(data.result,xhr);
                     }
                 },
-                error = function (XMLHttpRequest, textStatus, errorThrown) {
+                error = function (xhr, textStatus, errorThrown) {
                     if (console) {
-                        console.info("XMLHttpRequest:", XMLHttpRequest);
+                        console.info("XMLHttpRequest:", xhr);
                     }
                     if (textStatus == "parsererror") {
                         //解析异常，尝试eval转换
                         try {
                             eval("var eval_data=" + XMLHttpRequest.responseText);
                             if (eval_data.status) {
-                                resolve(eval_data.result, eval_data.status);
+                                resolve(eval_data.result,xhr);
                             } else {
                                 //内部处理出错
-                                reject(eval_data.result);
+                                reject(eval_data.result,xhr);
                             }
                         } catch (e) {
-                            reject("解析返回数据异常！");
+                            reject("解析返回数据异常！",xhr);
                         }
                     } else {
-                        reject(textStatus);
+                        reject("请求数据异常，stuats="+textStatus,xhr);
                     }
                 };
             if(data){
@@ -269,9 +269,9 @@
                     if (s >= 200 && s < 300) {
                         var txt = xhr.responseText;
                         if(dataType == 'json' && txt){
-                            success(JSON.parse(txt));
+                            success(JSON.parse(txt),xhr);
                         }else{
-                            success(txt);
+                            success(txt,xhr);
                         }
                     } else {
                         error(xhr,s);
@@ -332,6 +332,9 @@
         }
     }
     function guessMock(success,error,mock){
+        if(!instance.useMock){
+            return "";
+        }
         if(mock){
             return mock;
         }else if(success && typeof success == 'string'){
@@ -443,6 +446,8 @@
      * eos版本
      */
     Eos.prototype.version = 3;
+    /* 是否使用mock，研发阶段可以置为 true 取模拟数据 */
+    Eos.prototype.useMock = false;
     /**
      * 全局的服务基本参数
      */
@@ -459,7 +464,7 @@
         "beforeSend": null,
         "complete": null,
         "success": null,
-        "error":null
+        "error":function(msg,xhr){ console && console.error("调用服务异常:"+ msg,xhr); }
     };
     /**
      * 重写eos接口调用的地址

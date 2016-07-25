@@ -222,12 +222,12 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-server</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.6</version>
         </dependency>
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.6</version>
         </dependency>
     </dependencies>
     <distributionManagement>

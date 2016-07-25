@@ -34,6 +34,8 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
             //先注册服务
             List<ServiceConfig> serviceConfigs = ServerServiceContext.getInstance().getServiceConfigList();
 
+            int totalServiceSize = serviceConfigs.size();
+
             for (ServiceConfig config : serviceConfigs) {
                 if(StringUtils.isBlank(config.getAppId()))
                 {
@@ -50,6 +52,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                     obj.put("ip", EosServerProp.localIp);
                     obj.put("real_ip",getRealIp());
                     obj.put("eosIds", EosServerProp.eosId);
+                    obj.put("totalServiceSize",totalServiceSize);
                     //增加方法的版权
                     JSONObject methodMap = new JSONObject();
                     List<ServiceMethod> serviceMethodList =
@@ -74,7 +77,8 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                 }
             }
 
-            serviceRegister.registerEos(EosServerProp.eosId, EosServerProp.appId, EosServerProp.localIp, EosServerProp.nettyServerPort+"");
+            serviceRegister.registerEos(EosServerProp.eosId, EosServerProp.appId, EosServerProp.localIp, EosServerProp.nettyServerPort+"",
+                     totalServiceSize);
 
 
 //            utils.printNode("/");

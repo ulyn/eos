@@ -245,7 +245,7 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
-            <version>3.0.6</version>
+            <version>3.0.15</version>
         </dependency>
         <dependency>
             <groupId>com.sunsharing.eos</groupId>

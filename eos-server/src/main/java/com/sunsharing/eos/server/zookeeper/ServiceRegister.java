@@ -43,7 +43,7 @@ public class ServiceRegister {
 //     * 先注册EOS
 //     * @param eosIds
 //     */
-    public synchronized void registerEos(String eosIds,String appId,String localIp,String localPort) throws Exception
+    public synchronized void registerEos(String eosIds,String appId,String localIp,String localPort,int totalServiceSize) throws Exception
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
 
@@ -58,6 +58,7 @@ public class ServiceRegister {
                 JSONObject object = new JSONObject();
                 object.put("ip",localIp);
                 object.put("port",localPort);
+                object.put("totalServiceSize",totalServiceSize);
 
                 utils.createEleSerNode(PathConstant.SERVICE_STATE_EOS + "/" + eosId + "/" + appId, object.toJSONString(),comparableData);
             }catch (Exception e)

@@ -8,6 +8,7 @@ import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -109,46 +110,85 @@ public class ServiceLocation {
      */
     public synchronized void updateEosServices(String appId) throws Exception {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
-        List<String> onlineServices = utils.getChildren(PathConstant.SERVICE_STATE_APPS+"/"+appId,true);
-        Map tmp = new HashMap();
-        //处理online
-        for (String servicePath : onlineServices) {
-            byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS+"/"+appId+"/"+servicePath,false);
-            JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
-            String eosIds = (String)serviceData.get("eosIds");
 
-            int i = servicePath.lastIndexOf("_");
-            String real = servicePath.substring(0, i);
 
-            JSONArray serviceArray = null;
-            if(tmp.get(real)!=null)
-            {
-                serviceArray = (JSONArray)tmp.get(real);
-            }else
-            {
-                serviceArray = new JSONArray();
+        try {
+            boolean isFull = utils.isFull(appId);
+            if (!isFull) {
+                return;
             }
-            JSONObject methodVersion = (JSONObject)serviceData.get("methodVersion");
-            JSONObject object = new JSONObject();
-            object.put("servicePath",real);
-            object.put("eosIds",eosIds);
-            object.put("methodVersion",methodVersion);
-            serviceArray.add(object);
-            tmp.put(real, serviceArray);
-        }
-        for(Iterator iter = serviceMap.keySet().iterator();iter.hasNext();)
+        }catch (Exception e)
         {
-            String key = (String)iter.next();
-            if(key.startsWith(appId))
+            //兼容之前的版本
+            if(!e.getMessage().equals("服务注册的版本不兼容，请先升级服务EOS版本"))
             {
-                iter.remove();
+                throw e;
             }
         }
-        //serviceMap.clear();
-        serviceMap.putAll(tmp);
+
+            List<String> onlineServices = utils.getChildren(PathConstant.SERVICE_STATE_APPS + "/" + appId, true);
+            Map tmp = new HashMap();
+            //处理online
+            for (String servicePath : onlineServices) {
+                byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, false);
+                JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
+                String eosIds = (String) serviceData.get("eosIds");
+                String ip = (String) serviceData.get("ip");
+                String port =  serviceData.get("port").toString();
+
+                String eos = eosIds.split(",")[0];
+
+                int i = servicePath.lastIndexOf("_");
+                String real = servicePath.substring(0, i);
+
+                JSONArray serviceArray = null;
+                if (tmp.get(real) != null) {
+                    serviceArray = (JSONArray) tmp.get(real);
+                } else {
+                    serviceArray = new JSONArray();
+                }
+                JSONObject methodVersion = (JSONObject) serviceData.get("methodVersion");
+                JSONObject object = new JSONObject();
+                object.put("servicePath", real);
+                object.put("eosIds", eosIds);
+                object.put("methodVersion", methodVersion);
+                serviceArray.add(object);
+                tmp.put(real, serviceArray);
+            }
+            for (Iterator iter = serviceMap.keySet().iterator(); iter.hasNext(); ) {
+                String key = (String) iter.next();
+                if (key.startsWith(appId)) {
+                    iter.remove();
+                }
+            }
+            //serviceMap.clear();
+            serviceMap.putAll(tmp);
     }
 
+    private boolean isFull(String appId,String eosId,String ip,String port) throws Exception
+    {
+        ZookeeperUtils utils = ZookeeperUtils.getInstance();
+        List<String> onlineApps =
+                utils.getChildren(PathConstant.SERVICE_STATE_EOS + "/" + eosId, false);
+        for(String app:onlineApps)
+        {
+            if(app.startsWith(appId))
+            {
+                byte[] data = utils.getData(PathConstant.SERVICE_STATE_EOS + "/" + eosId+"/"+app,false);
+                JSONObject appData = JSONObject.parseObject(new String(data, "UTF-8"));
+                String ipTmp = appData.getString("ip");
+                String  portTmp = appData.getString("port");
+                if(ipTmp.equals(ip) && portTmp.equals(port))
+                {
+                    logger.info("eosId:"+eosId+",appId:"+appId+",ip:"+ip+",port:"+port+"已经完全上线");
+                    return true;
+                }
+            }
+        }
+        logger.info("appId:"+appId+",ip:"+ip+",port:"+port+"还没完全上线,重试");
+        return false;
 
+    }
 
 
     public synchronized void printCache() {

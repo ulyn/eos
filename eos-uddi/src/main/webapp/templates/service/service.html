@@ -71,15 +71,7 @@
                             </th>
                             <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
                                 rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending"
-                                style="width: 200px;">模块
-                            </th>
-                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
-                                rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending"
                                 style="width: 150px;">创建人
-                            </th>
-                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
-                                rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending"
-                                style="width: 215px;">创建时间
                             </th>
                             <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
                                 rowspan="1" colspan="1" aria-label="Platform: activate to sort column ascending"
@@ -100,13 +92,11 @@
                         <tr class="{{row.rowclass}}" ng-repeat="row in serviceList">
                             <td class="sorting_1" style="color: {{row.color}}">{{row.serviceCode}}</td>
                             <td class="sorting_1">{{row.serviceName}}</td>
-                            <td class=" ">{{row.module}}</td>
                             <td class=" ">{{row.user}}</td>
-                            <td class=" ">{{row.createTime}}</td>
-                            <td class=" "><a class="{{v.class}}" style="margin-left: 5px"
+                            <td style="word-break: break-word;" class=" "><a class="{{v.class}}" style="margin-left: 5px"
                                              href="#method/{{row.appId}}/{{row.serviceId}}/{{v.serviceVersion}}"
                                              ng-repeat="v in row.versions">{{v.versionId}}</a></td>
-                            <td class=" "><a class="{{v.class}}" style="margin-left: 5px"
+                            <td style="word-break: break-word;" class=" "><a class="{{v.class}}" style="margin-left: 5px"
                                              href="#getjava/{{row.appId}}/{{v.versionId}}"
                                              ng-repeat="v in row.versions">{{v.versionId}}</a></td>
                             <td class=" "><a href="#delete/{{row.appId}}/{{row.serviceId}}">删除</a></td>

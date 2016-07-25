@@ -252,7 +252,7 @@ public class DbController {
                     if(source.getName().indexOf("sql")!=-1)
                     {
                         int code = SinoDetect.getInstance().detectEncoding(source);
-                        if(code != Encoding.UTF8 && code !=Encoding.UTF8S && code !=Encoding.UTF8T)
+                        if(code != Encoding.UTF8 && code !=Encoding.UTF8S && code !=Encoding.UTF8T && code!=Encoding.ASCII)
                         {
 
                             throw new RuntimeException("不能传非UTF-8编码的SQL脚本");
@@ -527,6 +527,18 @@ public class DbController {
         result = result.replaceAll(">", "&gt;");
         result = result.replaceAll("\n", "<br />");
         ResponseHelper.printOut(response, true, "", result);
+    }
+
+    public static void main(String []a)throws Exception
+    {
+        File source = new File("/Users/criss/Downloads/WG_YW.sql");
+        int code = SinoDetect.getInstance().detectEncoding(source);
+        System.out.print(code);
+        if(code != Encoding.UTF8 && code !=Encoding.UTF8S && code !=Encoding.UTF8T)
+        {
+
+            throw new RuntimeException("不能传非UTF-8编码的SQL脚本");
+        }
     }
 
 

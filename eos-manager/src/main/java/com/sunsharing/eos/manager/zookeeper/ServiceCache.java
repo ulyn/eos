@@ -49,7 +49,22 @@ public class ServiceCache {
             }
             for(String app:apps)
             {
-                List<String> services =  utils.getChildren(PathConstant.SERVICE_STATE_APPS+"/"+app,false);
+                try {
+                    boolean isFull = utils.isFull(app);
+                    if (!isFull) {
+                        logger.info("不更新");
+                        return;
+                    }
+                }catch (Exception e)
+                {
+                    //兼容之前的版本
+                    if(!e.getMessage().equals("服务注册的版本不兼容，请先升级服务EOS版本"))
+                    {
+                        throw e;
+                    }
+                }
+
+                List<String> services =  utils.getChildren(PathConstant.SERVICE_STATE_APPS + "/" + app, false);
                 for(String path:services)
                 {
 

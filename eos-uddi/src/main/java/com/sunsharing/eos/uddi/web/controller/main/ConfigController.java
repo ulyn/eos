@@ -323,7 +323,7 @@ public class ConfigController {
                         "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
                         "t2.CONFIG_ID,t2.REL_CONFIG_ID from T_CONFIG_GROUP  t1 " +
                         "left join T_CONFIG t2 on t1.GROUP_ID = t2.GROUP_ID  " +
-                        "where  t1._DEL='0' and (t2._DEL='0' or t2._DEL is NULL ) " +" AND CONFIG_ID="+rel;
+                        "where  t1._DEL='0' and (t2._DEL='0' or t2._DEL is NULL ) " +" AND CONFIG_ID="+rel+" order by t2.CONFIG_ID";
                 List<Map<String, Object>> list2 = jdbc.queryForList(sql2);
                 if(list2.size()>0)
                 {
@@ -892,7 +892,9 @@ public class ConfigController {
         if(!StringUtils.isBlank(par))
         {
             appKey = par.split(",")[0];
-            runKey = par.split(",")[1];
+            if(par.indexOf(",")!=-1) {
+                runKey = par.split(",")[1];
+            }
         }
 
 
@@ -905,16 +907,31 @@ public class ConfigController {
         }
         Integer appId = (Integer)list.get(0).get("APP_ID");
 
-        sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = "+appId+" " +
-                "and RUN_KEY='"+runKey+"'";
-        list = jdbc.queryForList(sql);
-        if(list.size()==0)
+        Integer childAppId = 0;
+        Integer runId =0;
+        if(!StringUtils.isBlank(runKey)) {
+            sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = " + appId + " " +
+                    "and RUN_KEY='" + runKey + "'";
+
+
+            list = jdbc.queryForList(sql);
+            if (list.size() == 0) {
+                ResponseHelper.printOut(response, false, runKey + "不存在", "");
+                return;
+            }
+            runId = (Integer) list.get(0).get("RUN_ID");
+            childAppId = (Integer) list.get(0).get("CHILD_APP_ID");
+        }else
         {
-            ResponseHelper.printOut(response, false, runKey+"不存在", "");
-            return;
+            sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = " + appId;
+            list = jdbc.queryForList(sql);
+            if (list.size() == 0) {
+                ResponseHelper.printOut(response, false, runKey + "不存在", "");
+                return;
+            }
+            runId = (Integer) list.get(0).get("RUN_ID");
+            childAppId = (Integer) list.get(0).get("CHILD_APP_ID");
         }
-        Integer runId = (Integer)list.get(0).get("RUN_ID");
-        Integer childAppId = (Integer)list.get(0).get("CHILD_APP_ID");
 
         sql = "select t3.GROUP_ID,t3.GROUP_NAME," +
                 "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
@@ -1026,7 +1043,7 @@ public class ConfigController {
         String appName = tranSqlVal((String)app.get("APP_NAME"));
         String appCode = tranSqlVal((String)app.get("APP_CODE"));
         String createTime = tranSqlVal((String)app.get("CREATE_TIME"));
-        String dbs = tranSqlVal((String)app.get("DBS"));
+        String dbs = tranSqlVal((String) app.get("DBS"));
 
         String objAppId = multipartRequest.getParameter("appId");
         if(StringUtils.isBlank(objAppId))

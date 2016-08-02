@@ -128,7 +128,7 @@
                     <tr ng-repeat="config in row.configs">
                         <td scope="row" style="color:{{config.commit_color}}" data-label="Account">{{config.CON_KEY}}</td>
                         <td data-label="Due Date" style="color:{{config.rel_color}}">{{config.CON_DESC}}</td>
-                        <td data-label="Amount" style="color:{{config.rel_color}}">{{config.DEFAULT_VALUE}}</td>
+                        <td data-label="Amount" id="{{config.CONFIG_ID}}_default_value" style="color:{{config.rel_color}}">{{config.DEFAULT_VALUE}}</td>
                         <td data-label="Period" style="position: relative"><span  ng-click="clickMe($event.target)" style="color:#fa6b01;cursor: pointer">操作</span>
                             &nbsp;&nbsp;<span style="color:{{config.rel_color}}">{{config.att_label}}</span>
                             <div class="top_tooltip" style="left:20px;width: 90px">
@@ -136,7 +136,7 @@
                                 <ul class="user_options">
                                     <li class="i_16_wysiwyg" ng-if="!config.IS_REL && user.isTest!='1'"><a class="iframe addConfig" href="templates/config/addConfig.html?configId={{config.CONFIG_ID}}&groupId={{config.GROUP_ID}}&appId={{appId}}&childAppId={{childAppId}}" title="修改"></a></li>
                                     <li class="i_16_wysiwyg" ng-if="config.IS_REL && config.att_label=='可覆盖' && user.isTest!='1'"><a class="iframe addConfig" href="templates/config/defaultValueSet.html?configId={{config.CONFIG_ID}}" title="修改"></a></li>
-                                    <li class="i_16_wysiwyg" ng-if="user.isTest=='1'"><a class="iframe addConfig" href="templates/config/defaultValueSet.html?configId={{config.CONFIG_ID}}" title="修改"></a></li>
+                                    <li class="i_16_wysiwyg" ng-if="(!config.IS_REL || config.IS_REL && config.att_label=='可覆盖') && user.isTest=='1'"><a class="iframe addConfig" href="templates/config/defaultValueSet.html?configId={{config.CONFIG_ID}}" title="修改"></a></li>
                                     <li class="i_16_checkbox" ng-if="!config.IS_REL && user.isTest!='1'"><a ng-click="commit(config.CONFIG_ID)" href="javascript:void(0)" title="审批通过"></a></li>
                                     <li class="i_16_close" ng-if="user.isTest!='1'"><a  ng-click="deleteConfig(config.CONFIG_ID)" href="javascript:void(0)" title="删除"></a></li>
                                 </ul>

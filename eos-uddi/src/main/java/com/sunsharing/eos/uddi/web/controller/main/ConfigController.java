@@ -329,7 +329,8 @@ public class ConfigController {
                 {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
-                    if(!StringUtils.isBlank((String)row.get("DEFAULT_VALUE")))
+                    //如果是只读，覆盖默认值
+                    if("1".equals(row.get("ATT")))
                     {
                         row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
                     }
@@ -778,7 +779,8 @@ public class ConfigController {
                 {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
-                    if(!StringUtils.isBlank((String)row.get("DEFAULT_VALUE")))
+                    //如果是只读，覆盖默认值
+                    if("1".equals(row.get("ATT")))
                     {
                         row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
                     }

@@ -112,8 +112,9 @@
                 if(data.status)
                 {
                     alert("保存成功");
-                    parent.location.reload();
-
+                    //parent.location.reload();
+                    parent.$("#"+GetQueryString("configId")+"_default_value").html(label);
+                    parent.$.fancybox.close();
                 }else{
                     alert("保存失败");
                 }

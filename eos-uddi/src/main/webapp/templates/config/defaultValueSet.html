@@ -83,6 +83,18 @@
         if(r!=null)return  unescape(r[2]); return "";
     }
 
+    $.ajax({
+        type: 'POST',
+        url: "/getRunVal.do",
+        data: {configId:GetQueryString("configId"),runId:0},
+        success: function(data){
+            if(data.status)
+            {
+                $("#label").val(data.data);
+            }
+        },
+        dataType: "json"
+    });
 
     $("#saveBtn").click(function(){
         var label = $("#label").val();
@@ -99,8 +111,10 @@
                 if(data.status)
                 {
                     alert("保存成功");
-                    parent.location.reload();
-
+                    //parent.location.reload();
+                    //console.info($("#"+GetQueryString("configId")+"_default_value"));
+                    parent.$("#"+GetQueryString("configId")+"_default_value").html(label);
+                    parent.$.fancybox.close();
                 }else{
                     alert("保存失败");
                 }

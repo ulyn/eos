@@ -9,6 +9,7 @@ import com.sunsharing.eos.uddi.model.*;
 import com.sunsharing.eos.uddi.service.ConfigService;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -282,7 +283,7 @@ public class ConfigController {
         {
             sql = "select t1.GROUP_ID,t1.GROUP_NAME," +
                     "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
-                    "t2.CONFIG_ID,t2.REL_CONFIG_ID,t2._DEL from T_CONFIG_GROUP  t1 " +
+                    "t2.CONFIG_ID,t2.REL_CONFIG_ID,t2._DEL,t2.ATT from T_CONFIG_GROUP  t1 " +
                     "left join T_CONFIG t2 on t1.GROUP_ID = t2.GROUP_ID  " +
                     "where  t1._DEL='0' and  t1.CHILD_APP_ID = "+childAppId+" order by t1.GROUP_ID";
         }
@@ -330,9 +331,10 @@ public class ConfigController {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
                     //如果是只读，覆盖默认值
-                    if("1".equals(row.get("ATT")))
+                    if(!"1".equals(row2.get("ATT")) &&
+                            !StringUtils.isBlank((String) row.get("DEFAULT_VALUE")))
                     {
-                        row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
+                        row2.put("DEFAULT_VALUE",(String) row.get("DEFAULT_VALUE"));
                     }
 
                     row = row2;
@@ -780,9 +782,10 @@ public class ConfigController {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
                     //如果是只读，覆盖默认值
-                    if("1".equals(row.get("ATT")))
+                    if(!"1".equals(row2.get("ATT")) &&
+                            !StringUtils.isBlank((String) row.get("DEFAULT_VALUE")))
                     {
-                        row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
+                        row2.put("DEFAULT_VALUE",(String) row.get("DEFAULT_VALUE"));
                     }
                     row = row2;
                     key = (String)row.get("CON_KEY");
@@ -880,7 +883,17 @@ public class ConfigController {
         Integer rel = config.getRelConfigId();
         if(rel!=null && rel!=0)
         {
-            config = configService.loadConfig(rel+"");
+            TConfig relConfig = configService.loadConfig(rel+"");
+            //只读
+            if("1".equals(relConfig.getAtt()))
+            {
+                return relConfig.getDefaultValue();
+            }
+            if(StringUtils.isBlank(config.getDefaultValue()))
+            {
+                return relConfig.getDefaultValue();
+            }
+
         }
         return config.getDefaultValue();
     }
@@ -948,8 +961,6 @@ public class ConfigController {
         List result = new ArrayList();
         for(Map row:list)
         {
-
-
             String key = (String)row.get("CON_KEY");
             Integer rel = (Integer)row.get("REL_CONFIG_ID");
             row.put("IS_REL",false);
@@ -966,9 +977,13 @@ public class ConfigController {
                 {
                     Map row2 = list2.get(0);
                     row2.put("CONFIG_ID",row.get("CONFIG_ID"));
-                    if(!StringUtils.isBlank((String)row.get("DEFAULT_VALUE")))
+                    if("0".equals(row2.get("IS_COMMIT")))
                     {
-                        row2.put("DEFAULT_VALUE",row.get("DEFAULT_VALUE"));
+                        continue;
+                    }
+                    if(!"1".equals(row2.get("ATT")) && !StringUtils.isBlank((String) row.get("DEFAULT_VALUE")))
+                    {
+                        row2.put("DEFAULT_VALUE",(String) row.get("DEFAULT_VALUE"));
                     }
                     row = row2;
                     key = (String)row.get("CON_KEY");
@@ -1043,8 +1058,8 @@ public class ConfigController {
         //处理APP
         Integer appId = (Integer)app.get("APP_ID");
         String appName = tranSqlVal((String)app.get("APP_NAME"));
-        String appCode = tranSqlVal((String)app.get("APP_CODE"));
-        String createTime = tranSqlVal((String)app.get("CREATE_TIME"));
+        String appCode = tranSqlVal((String) app.get("APP_CODE"));
+        String createTime = tranSqlVal((String) app.get("CREATE_TIME"));
         String dbs = tranSqlVal((String) app.get("DBS"));
 
         String objAppId = multipartRequest.getParameter("appId");
@@ -1244,7 +1259,7 @@ public class ConfigController {
             return o.toString();
         }
 
-        return "'"+ o.toString() +"'";
+        return "'"+ o.toString().replaceAll("'","\\\\'") +"'";
 
     }
 
@@ -1355,6 +1370,11 @@ public class ConfigController {
             }
         }
 
+    }
+
+    public static void main(String[]a)
+    {
+        System.out.println("agc='"+"'".toString().replaceAll("'","\\\\'")+"'");
     }
 
 

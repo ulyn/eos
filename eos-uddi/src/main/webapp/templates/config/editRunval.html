@@ -99,11 +99,17 @@
 
     $("#saveBtn").click(function(){
         var label = $("#label").val();
-        if(label=="")
+//        if(label=="")
+//        {
+//            alert("请输入名称");
+//            return;
+//        }
+        if(label.indexOf("'")!=-1)
         {
-            alert("请输入名称");
+            alert("系统不支持单引号");
             return;
         }
+
         $.ajax({
             type: 'POST',
             url: "/saveRunVal.do",

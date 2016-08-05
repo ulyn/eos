@@ -150,6 +150,12 @@
             return;
         }
 
+        if(defaultValue.indexOf("'")!=-1)
+        {
+            alert("系统不支持单引号");
+            return;
+        }
+
         $.ajax({
             type: 'POST',
             url: "/saveBasicConfig.do",

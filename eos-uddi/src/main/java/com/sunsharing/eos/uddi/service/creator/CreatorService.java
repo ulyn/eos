@@ -16,6 +16,8 @@
  */
 package com.sunsharing.eos.uddi.service.creator;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
 import com.sunsharing.eos.uddi.db.AntZip;
 import com.sunsharing.eos.uddi.model.TApp;
@@ -31,10 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <pre></pre>
@@ -80,10 +79,27 @@ public class CreatorService {
         List<TService> servicesTemp = serviceDao.find("from TService where appId=?", new Integer(appId));
         List<TService> services = new ArrayList<TService>();
         for (TService service : servicesTemp) {
-            List<TServiceVersion> list = service.getVersions();
+            TService serviceCopy = JSON.parseObject(JSONObject.toJSONString(service),TService.class);
+            List<TServiceVersion> list = serviceCopy.getVersions();
+            //防止版本排序被修改了，自己再排序一次做兼容
+            Collections.sort(list,new Comparator<TServiceVersion>() {
+                @Override
+                public int compare(TServiceVersion o1, TServiceVersion o2) {
+                    if(o1.getVersionId() < o2.getVersionId()){
+                        return 1;
+                    }else if(o1.getVersionId() > o2.getVersionId()){
+                        return -1;
+                    }else{
+                        return 0;
+                    }
+                }
+            });
             for(TServiceVersion serviceVersion : list){
                 if (serviceVersion.getStatus().equals("1")) {
-                    services.add(service);
+                    List<TServiceVersion> serviceVersions = new ArrayList<TServiceVersion>();
+                    serviceVersions.add(serviceVersion);
+                    serviceCopy.setVersions(serviceVersions);
+                    services.add(serviceCopy);
                     break;
                 }
             }

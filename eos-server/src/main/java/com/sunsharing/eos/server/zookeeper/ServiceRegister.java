@@ -1,11 +1,16 @@
 package com.sunsharing.eos.server.zookeeper;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.server.sys.EosServerProp;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
+
+import java.util.List;
 
 /**
  * Created by criss on 14-1-28.
@@ -87,27 +92,35 @@ public class ServiceRegister {
     /**
      *
      * @param appId 用逗号分隔的EOSID
-     * @param json 必须要有的字段包括如下：
      *  JSONObject obj = new JSONObject();
      *  obj.put("appId",appId);
      *  obj.put("serviceId",serviceId);
      *  obj.put("version", version);
      *
      */
-    public synchronized boolean registerService(String eosIds,String appId,String json)
+    public synchronized boolean registerServices(String appId,List<JSONObject> jsons)
     {
         ZookeeperUtils utils = ZookeeperUtils.getInstance();
 
-        String[] ids = eosIds.split(",");
-        JSONObject obj = JSONObject.parseObject(json);
-        String servicePath = obj.getString(PathConstant.APPID_KEY)+
-                obj.getString(PathConstant.SERVICE_ID_KEY)+"_";
+        String node = EosServerProp.localIp+":"+EosServerProp.nettyServerPort;
 
         //处理APP节点
         try {
             utils.createNodeNowatch(PathConstant.SERVICE_STATE_APPS + "/" + appId, "", CreateMode.PERSISTENT);
-            utils.createEleSerNode(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, json,comparableData);
-            logger.info("成功注册服务方:"+servicePath+":"+json);
+            while(true)
+            {
+                boolean exist = utils.isExists(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + node,false);
+                if(!exist)
+                {
+                    break;
+                }else
+                {
+                    logger.info(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + node+"存在，请等待30秒");
+                    Thread.sleep(1000);
+                }
+            }
+            utils.createNode(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + node, JSONArray.toJSONString(jsons), CreateMode.EPHEMERAL);
+            logger.info("成功注册服务方->"+JSONArray.toJSONString(jsons, SerializerFeature.PrettyFormat));
         }catch (Exception e)
         {
             logger.error("注册服务失败",e);

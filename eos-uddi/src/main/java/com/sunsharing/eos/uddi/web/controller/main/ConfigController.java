@@ -185,6 +185,8 @@ public class ConfigController {
         ResponseHelper.printOut(response, true, "", "");
     }
 
+
+
     /**
      * 列出分组
      * @param model
@@ -214,59 +216,58 @@ public class ConfigController {
             childAppId = "";
         }
 
-        if(isCommon) {
-            String groupSizeSQL = "select count(*) from T_CONFIG_GROUP where IS_COMMON = 1";
-            int size = jdbc.queryForInt(groupSizeSQL);
-            if (size == 0) {
-                TConfigGroup group = new TConfigGroup();
-                //group.setAppId(new Integer(appId));
-                group.setGroupName("默认");
-                group.setIsCommon("1");
-                configService.saveGroup(group);
-            }
-        }else
-        {
-            //处理分应用
-            String childAppSize = "select count(*) from T_CONFIG_CHILD_APP where APP_ID="+appId;
-            int size = jdbc.queryForInt(childAppSize);
-            if (size == 0) {
-                TConfigChildApp childApp = new TConfigChildApp();
-                childApp.setAppId(new Integer(appId));
-                childApp.setChildAppName("客户端");
-                configService.saveConfigChildApp(childApp);
+        synchronized (ConfigController.class) {
 
-                TConfigGroup group = new TConfigGroup();
-                //group.setAppId(new Integer(appId));
-                group.setAppId(new Integer(appId));
-                group.setChildAppId(childApp.getChildAppId());
-                group.setGroupName("默认");
-                group.setIsCommon("0");
-                configService.saveGroup(group);
+            if (isCommon) {
+                String groupSizeSQL = "select count(*) from T_CONFIG_GROUP where IS_COMMON = 1";
+                int size = jdbc.queryForInt(groupSizeSQL);
+                if (size == 0) {
+                    TConfigGroup group = new TConfigGroup();
+                    //group.setAppId(new Integer(appId));
+                    group.setGroupName("默认");
+                    group.setIsCommon("1");
+                    configService.saveGroup(group);
+                }
+            } else {
+                //处理分应用
+                String childAppSize = "select count(*) from T_CONFIG_CHILD_APP where APP_ID=" + appId;
+                int size = jdbc.queryForInt(childAppSize);
+                if (size == 0) {
+                    TConfigChildApp childApp = new TConfigChildApp();
+                    childApp.setAppId(new Integer(appId));
+                    childApp.setChildAppName("客户端");
+                    configService.saveConfigChildApp(childApp);
+
+                    TConfigGroup group = new TConfigGroup();
+                    //group.setAppId(new Integer(appId));
+                    group.setAppId(new Integer(appId));
+                    group.setChildAppId(childApp.getChildAppId());
+                    group.setGroupName("默认");
+                    group.setIsCommon("0");
+                    configService.saveGroup(group);
 
 
-                TConfigChildApp childApp2 = new TConfigChildApp();
-                childApp2.setAppId(new Integer(appId));
-                childApp2.setChildAppName("服务端");
-                configService.saveConfigChildApp(childApp2);
+                    TConfigChildApp childApp2 = new TConfigChildApp();
+                    childApp2.setAppId(new Integer(appId));
+                    childApp2.setChildAppName("服务端");
+                    configService.saveConfigChildApp(childApp2);
 
-                TConfigGroup group2 = new TConfigGroup();
-                //group.setAppId(new Integer(appId));
-                group2.setAppId(new Integer(appId));
-                group2.setChildAppId(childApp2.getChildAppId());
-                group2.setGroupName("默认");
-                group2.setIsCommon("0");
-                configService.saveGroup(group2);
+                    TConfigGroup group2 = new TConfigGroup();
+                    //group.setAppId(new Integer(appId));
+                    group2.setAppId(new Integer(appId));
+                    group2.setChildAppId(childApp2.getChildAppId());
+                    group2.setGroupName("默认");
+                    group2.setIsCommon("0");
+                    configService.saveGroup(group2);
 
-                childAppId = "" + (childApp.getChildAppId());
-            }else
-            {
-                if(StringUtils.isBlank(childAppId))
-                {
-                    String sql2 = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId + " limit 1";
-                    List<Map<String, Object>> list = jdbc.queryForList(sql2);
-                    if(list.size()>0)
-                    {
-                        childAppId = list.get(0).get("CHILD_APP_ID").toString();
+                    childAppId = "" + (childApp.getChildAppId());
+                } else {
+                    if (StringUtils.isBlank(childAppId)) {
+                        String sql2 = "select * from T_CONFIG_CHILD_APP where APP_ID=" + appId + " limit 1";
+                        List<Map<String, Object>> list = jdbc.queryForList(sql2);
+                        if (list.size() > 0) {
+                            childAppId = list.get(0).get("CHILD_APP_ID").toString();
+                        }
                     }
                 }
             }

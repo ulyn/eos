@@ -36,6 +36,8 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 
             int totalServiceSize = serviceConfigs.size();
 
+
+            List<JSONObject> services = new ArrayList<JSONObject>();
             for (ServiceConfig config : serviceConfigs) {
                 if(StringUtils.isBlank(config.getAppId()))
                 {
@@ -73,9 +75,11 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 
                     obj.put("methodVersion",methodMap);
 
-                    serviceRegister.registerService(EosServerProp.eosId, EosServerProp.appId, obj.toJSONString());
+                    //serviceRegister.registerService(EosServerProp.eosId, EosServerProp.appId, obj.toJSONString());
+                    services.add(obj);
                 }
             }
+            serviceRegister.registerServices(EosServerProp.appId,services);
 
             serviceRegister.registerEos(EosServerProp.eosId, EosServerProp.appId, EosServerProp.localIp, EosServerProp.nettyServerPort+"",
                      totalServiceSize);

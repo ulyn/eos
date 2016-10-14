@@ -59,6 +59,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public float testFloat(float f) {
+        System.out.println(f);
         if (f == -1) {
             return -1.0f;
         }

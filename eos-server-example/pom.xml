@@ -222,12 +222,12 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-server</artifactId>
-            <version>3.0.6</version>
+            <version>3.1.2</version>
         </dependency>
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
-            <version>3.0.6</version>
+            <version>3.1.2</version>
         </dependency>
     </dependencies>
     <distributionManagement>
@@ -261,7 +261,7 @@
                     <scanIntervalSeconds>0</scanIntervalSeconds>
                     <connectors>
                         <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>9599</port>
+                            <port>19599</port>
                         </connector>
                     </connectors>
                     <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>

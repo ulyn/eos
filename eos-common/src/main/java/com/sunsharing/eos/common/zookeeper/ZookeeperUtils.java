@@ -284,7 +284,6 @@ public class ZookeeperUtils {
     }
 
     /**
-
      * Default watcher
 
      * Reconnect zookeeperwhen session expired.
@@ -342,57 +341,106 @@ public class ZookeeperUtils {
         List<String> onlineServices = null;
 
         while(true) {
-            if(continueTimes >10)
-            {
-                logger.error("appId:"+appId+"注册服务完整性校验有问题，不更新服务...");
-                return false;
-            }
-
-            onlineServices = utils.getChildren(PathConstant.SERVICE_STATE_APPS + "/" + appId, true);
-            //校验完整性
             Map dataMap = new HashMap();
             Map ipPortServiceNum = new HashMap();
             Map realServiceNum = new HashMap();
-            for (String servicePath : onlineServices) {
-                byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, false);
-                JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
-                String ip = (String) serviceData.get("ip");
-                String port = serviceData.get("port").toString();
-                if (serviceData.get("totalServiceSize") == null) {
-                    logger.error("appId:"+appId+"服务注册的版本不兼容，请先升级服务EOS版本3.1.0");
-                    throw new RuntimeException("服务注册的版本不兼容，请先升级服务EOS版本");
-                }
-                int totalServiceSize = serviceData.getInteger("totalServiceSize");
-                ipPortServiceNum.put(ip + port, totalServiceSize);
+            try {
+                onlineServices = utils.getChildren(PathConstant.SERVICE_STATE_APPS + "/" + appId, true);
+                //校验完整性
 
-                if (realServiceNum.get(ip + port) == null) {
-                    realServiceNum.put(ip + port, new Integer(0));
-                }
-                Integer real = (Integer) realServiceNum.get(ip + port);
-                real++;
-                realServiceNum.put(ip + port, real);
-                dataMap.put(servicePath, serviceData);
-            }
+                for (String servicePath : onlineServices) {
+                    byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, false);
+                    JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
+                    String ip = (String) serviceData.get("ip");
+                    String port = serviceData.get("port").toString();
+                    if (serviceData.get("totalServiceSize") == null) {
+                        logger.error("appId:" + appId + "服务注册的版本不兼容，请先升级服务EOS版本3.1.0");
+                        return true;
+                        //throw new RuntimeException("服务注册的版本不兼容，请先升级服务EOS版本");
+                    }
+                    int totalServiceSize = serviceData.getInteger("totalServiceSize");
+                    ipPortServiceNum.put(ip + port, totalServiceSize);
 
-            for(Iterator ipport = ipPortServiceNum.keySet().iterator();ipport.hasNext();)
+                    if (realServiceNum.get(ip + port) == null) {
+                        realServiceNum.put(ip + port, new Integer(0));
+                    }
+                    Integer real = (Integer) realServiceNum.get(ip + port);
+                    real++;
+                    realServiceNum.put(ip + port, real);
+                    dataMap.put(servicePath, serviceData);
+                }
+            }catch (Exception e)
             {
-                String tmp = (String)ipport.next();
-                Integer serviceNum = (Integer)ipPortServiceNum.get(tmp);
-                Integer real = (Integer)realServiceNum.get(tmp);
-                if(serviceNum == real )
-                {
-                    logger.info("appId:"+appId+":"+tmp+":加载服务个数为"+real+",和真实一致");
-                }else
-                {
-                    logger.info("appId:"+appId+":"+tmp+":加载服务个数为"+real+",和服务注册为"+serviceNum+"不一致");
-                    Thread.sleep(1000);
-                    continueTimes++;
-                    continue;
-                }
+                logger.info("加载APP出错了,ZooKeeper连接有点问题,重试...");
+                Thread.sleep(1000);
+                continue;
             }
-            break;
+
+            int rst = isAllAppRight(appId,ipPortServiceNum,realServiceNum);
+            if(rst == 1)
+            {
+                //全部正常
+                break;
+            }else{
+                Thread.sleep(1000);
+                continueTimes++;
+            }
+
+            if(continueTimes >10)
+            {
+                if(rst == 2)
+                {
+                    logger.error("appId:"+appId+"注册服务完整性校验部分不完整，...");
+                    return true;
+                }else {
+                    logger.error("appId:"+appId+"注册服务完整性校验有问题，不更新服务...");
+                }
+                return false;
+            }
+
         }
         return true;
+    }
+
+    /**
+     * 判断是否所有App返回
+     * @return
+     * 1 所有都正常
+     * 2 部分正常
+     * 3 异常
+     *
+     */
+    private int isAllAppRight(String appId,Map ipPortServiceNum,Map realServiceNum)
+    {
+        int match = 0;
+        int notMatch = 0;
+        for(Iterator ipport = ipPortServiceNum.keySet().iterator();ipport.hasNext();)
+        {
+            String tmp = (String)ipport.next();
+            Integer serviceNum = (Integer)ipPortServiceNum.get(tmp);
+            Integer real = (Integer)realServiceNum.get(tmp);
+            if(serviceNum == real )
+            {
+                logger.info(tmp+":appId:"+appId+":"+tmp+":加载服务个数为"+real+",和真实一致");
+                match++;
+            }else
+            {
+                logger.info(tmp+":appId:"+appId+":"+tmp+":加载服务个数为"+real+",和服务注册为"+serviceNum+"不一致");
+                notMatch++;
+            }
+        }
+        if(match>0 && notMatch==0)
+        {
+            return 1;
+        }else if(notMatch>0 && match==0)
+        {
+            return 3;
+        }else if(match>0 && notMatch>=0)
+        {
+            return 2;
+        }else {
+            return 1;
+        }
     }
 
 

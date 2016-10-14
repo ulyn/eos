@@ -28,12 +28,12 @@
 //                }
 //            });
 //        }
-    List map = DynamicRpc.create("jedi", "complaint", "1.0")
-            .setMock("success")
-            .doInvoke(List.class, "getComplaintHistory");
-    response.getWriter().println("dong tai diao yong:" + map);
-    TestService test = ServiceContext.getBean(TestService.class);
-    response.getWriter().println(test.testString("1", "1"));
+//    List map = DynamicRpc.create("jedi", "complaint", "1.0")
+//            .setMock("success")
+//            .doInvoke(List.class, "getComplaintHistory");
+//    response.getWriter().println("dong tai diao yong:" + map);
+//    TestService test = ServiceContext.getBean(TestService.class);
+//    response.getWriter().println(test.testString("1", "1"));
 //        try
 //        {
 //        Test2 test = ServiceContext.getBean(Test2.class);

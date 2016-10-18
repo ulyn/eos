@@ -261,6 +261,16 @@
             }
             var xhr = window.XMLHttpRequest ? new XMLHttpRequest()
                 : new ActiveXObject('Microsoft.XMLHTTP');
+            var crossDomain = false;
+            if(url.indexOf("http://") == 0 || url.indexOf("https://") == 0 ){
+                var urlAnchor = document.createElement('a');
+                //如果没有设置请求地址，则取当前页面地址
+                urlAnchor.href = url;
+                // cleans up URL for .href (IE only), see https://github.com/madrobby/zepto/pull/1049
+                urlAnchor.href = urlAnchor.href;
+                //通过ip  协议 端口来判断跨域  location.host = host:port
+                crossDomain = (location.protocol + '//' + location.host) !== (urlAnchor.protocol + '//' + urlAnchor.host);
+            }
             //执行before
             beforeSend(xhr);
             xhr.onreadystatechange = function() {
@@ -285,8 +295,11 @@
                 xhr.setRequestHeader('Content-type',
                     'application/x-www-form-urlencoded;');
             }
-            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.send(data);
+            if(crossDomain){
+                xhr.withCredentials = true;
+            }else{
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            }            xhr.send(data);
             return xhr;
         });
     }

@@ -458,7 +458,7 @@
     /**
      * eos版本
      */
-    Eos.prototype.version = 3;
+    Eos.prototype.version = "3.0.0";
     /* 是否使用mock，研发阶段可以置为 true 取模拟数据 */
     Eos.prototype.useMock = false;
     /**

@@ -195,7 +195,7 @@
         }
     }
     function noop(){}
-    function ajax(opt) {
+    function ajax(opt,context) {
         return new Promise(function(resolve, reject){
             var url = opt.url || "";
             var async = opt.async !== false,
@@ -272,7 +272,7 @@
                 crossDomain = (location.protocol + '//' + location.host) !== (urlAnchor.protocol + '//' + urlAnchor.host);
             }
             //执行before
-            beforeSend(xhr);
+            beforeSend(xhr,context);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     var s = xhr.status;
@@ -402,7 +402,7 @@
             async: option.async,
             beforeSend: option.beforeSend,
             complete: option.complete
-        });
+        },option);
         if(option.success){
             promise.then(option.success,option.error);
         }else{

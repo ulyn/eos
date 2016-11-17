@@ -279,7 +279,14 @@
                     if (s >= 200 && s < 300) {
                         var txt = xhr.responseText;
                         if(dataType == 'json' && txt){
-                            success(JSON.parse(txt),xhr);
+                            var tmp;
+                            try{
+                                tmp = JSON.parse(txt);
+                            }catch (e){
+                                txt = txt.replace(/(\\|\\"|\n|\r|\t)/g, "\\$1");//fastjson返回的json没有转译特殊字符
+                                tmp = JSON.parse(txt);
+                            }
+                            success(tmp,xhr);
                         }else{
                             success(txt,xhr);
                         }

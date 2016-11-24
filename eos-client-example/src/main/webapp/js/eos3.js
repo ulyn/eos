@@ -283,8 +283,13 @@
                             try{
                                 tmp = JSON.parse(txt);
                             }catch (e){
-                                txt = txt.replace(/(\\|\\"|\n|\r|\t)/g, "\\$1");//fastjson返回的json没有转译特殊字符
-                                tmp = JSON.parse(txt);
+                                try{
+                                    tmp = (new Function("return " + txt))();
+                                }catch(e2){
+                                    error(xhr,999,"解析数据异常！");
+                                    return;
+                                }
+//                                txt = txt.replace(/(\\|\\"|\n|\r|\t)/g, "\\$1");//fastjson返回的json没有转译特殊字符
                             }
                             success(tmp,xhr);
                         }else{

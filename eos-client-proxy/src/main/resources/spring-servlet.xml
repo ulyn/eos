@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -11,14 +19,14 @@
     <context:component-scan base-package="com.sunsharing.eos.clientproxy.web"/>
 
     <!--拦截器-->
-    <bean
-            class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-        <property name="interceptors">
-            <list>
-                <ref bean="systemInterceptor"/>
-            </list>
-        </property>
-    </bean>
+    <!--<bean-->
+    <!--class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">-->
+    <!--<property name="interceptors">-->
+    <!--<list>-->
+    <!--<ref bean="systemInterceptor"/>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--</bean>-->
 
     <!-- 声明viewResolver -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

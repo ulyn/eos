@@ -115,14 +115,14 @@
         <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
 
-    <error-page>
-        <error-code>404</error-code>
-        <location>/errors/404.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/errors/500.jsp</location>
-    </error-page>
+    <!--<error-page>-->
+        <!--<error-code>404</error-code>-->
+        <!--<location>/errors/404.jsp</location>-->
+    <!--</error-page>-->
+    <!--<error-page>-->
+        <!--<error-code>500</error-code>-->
+        <!--<location>/errors/500.jsp</location>-->
+    <!--</error-page>-->
     <servlet>
         <servlet-name>AxisServlet</servlet-name>
         <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>

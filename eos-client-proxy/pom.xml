@@ -26,6 +26,11 @@
     <dependencies>
         <dependency>
             <groupId>com.sunsharing.component</groupId>
+            <artifactId>resvalidate</artifactId>
+            <version>1.2.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

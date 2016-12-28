@@ -45,7 +45,7 @@ public class EosClient {
         if (!inited) {
             ConfigContext.instancesBean(EosClientProp.class,abstractProp);
 
-            ServiceContext.getInstance().initConfig();
+            ServiceContext.getInstance().initConfig("EosClientContext.xml");
 
             new Thread() {
                 public void run() {
@@ -78,7 +78,7 @@ public class EosClient {
     public synchronized static void synStart(AbstractProp abstractProp) {
         ConfigContext.instancesBean(EosClientProp.class,abstractProp);
 
-        ServiceContext.getInstance().initConfig();
+        ServiceContext.getInstance().initConfig("EosClientContext.xml");
         ServiceLocation.getInstance().synConnect();
     }
 

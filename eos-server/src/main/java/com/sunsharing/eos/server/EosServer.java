@@ -73,7 +73,7 @@ public class EosServer {
             ConfigContext.instancesBean(EosServerProp.class,abstractProp);
 
             ServerServiceContext.getInstance().initPackagePath(ctx, packagePath);
-            ServerServiceContext.getInstance().initConfig();
+            ServerServiceContext.getInstance().initConfig("EosServerContext.xml");
             ServerServiceContext.getInstance().initService();
             new Thread() {
                 public void run() {

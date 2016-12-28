@@ -21,7 +21,6 @@ import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.config.ServiceConfig;
 import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.FilterChain;
-import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.server.ServerServiceContext;
@@ -83,7 +82,8 @@ public abstract class AbstractServer implements RpcServer {
         RpcContextContainer.setRpcContext(request.createRpcContext());
         response = new ServiceResponse(request);
         try {
-            FilterChain filterChain = FilterManager.createFilterChain(EosServerProp.appId, request.getServiceId());
+            FilterChain filterChain = ServerServiceContext.getInstance().getFilterManager()
+                    .createFilterChain(EosServerProp.appId, request.getServiceId());
             filterChain.addFilter(serviceInvoker);
             filterChain.doFilter(request, response);
         } catch (Exception e) {

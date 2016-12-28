@@ -147,7 +147,16 @@ public class ServiceLocation {
             }
 
         }
-        serviceMap.clear();
+
+        for(Iterator iter = serviceMap.keySet().iterator();iter.hasNext();)
+        {
+            String key = (String)iter.next();
+            if(key.startsWith(appId))
+            {
+                iter.remove();
+            }
+        }
+        //serviceMap.clear();
         serviceMap.putAll(tmp);
 
 

@@ -7,7 +7,7 @@
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.1</version>
+    <version>3.2.2</version>
     <modules>
         <module>eos-common</module>
         <module>eos-manager</module>
@@ -24,9 +24,9 @@
         <junit_version>4.10</junit_version>
         <log4j_version>1.2.16</log4j_version>
         <zookeeper_version>3.4.5</zookeeper_version>
-        <resvalidate_version>1.2.4</resvalidate_version>
+        <resvalidate_version>1.2.8</resvalidate_version>
         <utils_version>2.0.1</utils_version>
-        <springframework_version>3.0.2.RELEASE</springframework_version>
+        <springframework_version>3.0.5.RELEASE</springframework_version>
     </properties>
     <distributionManagement>
         <repository>

@@ -3,6 +3,7 @@ package com.sunsharing.eos.clientproxy.web.controller.main;
 
 import com.sunsharing.component.utils.web.ResponseUtils;
 import com.sunsharing.eos.client.rpc.DynamicRpc;
+import com.sunsharing.eos.clientproxy.ServiceRequestProxyProcessor;
 import com.sunsharing.eos.clientproxy.web.common.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +24,7 @@ public class MainController extends BaseController {
      */
     @RequestMapping(value = "/service.do")
     public void service(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String str = DynamicRpc.invoke(request.getParameter("serviceReqBase64Str"));
+        String str = ServiceRequestProxyProcessor.invoke(request.getParameter("serviceReqBase64Str"));
         ResponseUtils.renderText(response,str);
     }
 }

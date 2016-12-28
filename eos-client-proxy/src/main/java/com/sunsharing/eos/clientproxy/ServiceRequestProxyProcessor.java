@@ -1,11 +1,11 @@
 /**
- * @(#)WebService
+ * @(#)ServiceRequestProxyProcessor
  * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
  *
- *<br> Copyright:  Copyright (c) 2014
+ *<br> Copyright:  Copyright (c) 2016
  *<br> Company:厦门畅享信息技术有限公司
  *<br> @author ulyn
- *<br> 14-12-12 下午5:44
+ *<br> 16-12-28 上午11:58
  *<br> @version 1.0
  *————————————————————————————————
  *修改记录
@@ -14,12 +14,10 @@
  *    修改原因：
  *————————————————————————————————
  */
-package com.sunsharing.eos.clientproxy.ws;
+package com.sunsharing.eos.clientproxy;
 
 import com.sunsharing.eos.client.rpc.DynamicRpc;
-import com.sunsharing.eos.clientproxy.ServiceRequestProxyProcessor;
 import com.sunsharing.eos.common.utils.VersionUtil;
-import org.apache.log4j.Logger;
 
 /**
  * <pre></pre>
@@ -32,15 +30,15 @@ import org.apache.log4j.Logger;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class WebServiceProxy {
-    private Logger logger = Logger.getLogger(WebServiceProxy.class);
+public class ServiceRequestProxyProcessor {
 
-    /**
-     * @param serviceReqBase64Str ServiceRequest对象的base64字符串
-     * @return
-     */
-    public String invoke(String serviceReqBase64Str){
-        return ServiceRequestProxyProcessor.invoke(serviceReqBase64Str);
+    public static String invoke(String serviceReqBase64Str){
+        if("test".equals(serviceReqBase64Str)){
+            // 针对测试，返回
+            return "success eos" + VersionUtil.getVersion();
+        }
+        return DynamicRpc.invoke(serviceReqBase64Str);
     }
+
 }
 

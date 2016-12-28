@@ -23,7 +23,7 @@ public class HeartPro extends BaseProtocol {
         if (buffer.readableBytes() < 1) {
             return null;
         }
-        HeartPro heartPro = new HeartPro();
+        HeartPro heartPro = this;
         heartPro.action = buffer.readByte();
         return heartPro;
     }

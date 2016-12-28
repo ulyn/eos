@@ -80,7 +80,7 @@ public class ResponsePro extends BaseProtocol {
         }
         buffer.markReaderIndex();
 
-        ResponsePro pro = new ResponsePro();
+        ResponsePro pro = this;
         setHeader(pro, buffer);
         pro.setStatus(buffer.readByte());
         int bodyLength = buffer.readInt();

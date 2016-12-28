@@ -164,7 +164,7 @@ public class RequestPro extends BaseProtocol {
         }
         buffer.markReaderIndex();
 
-        RequestPro pro = new RequestPro();
+        RequestPro pro = this;
         setHeader(pro, buffer);
 
         pro.appId = readString(32, buffer);

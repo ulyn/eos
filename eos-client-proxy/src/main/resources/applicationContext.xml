@@ -16,7 +16,14 @@
     <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 
-
+    <!--配置接入统一配置-->
+    <!--<bean id="propertyConfigurer" class="com.sunsharing.component.resvalidate.config.ext.SpringHttpConfig"
+          init-method="init" lazy-init="false">
+        <property name="classes">
+            <list>
+            </list>
+        </property>
+    </bean>-->
     <!-- ========================= 数据源的配置 ========================= -->
 
     <!-- 数据源配置,主要用于开发测试环境 -->

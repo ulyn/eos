@@ -195,7 +195,7 @@
         }
     }
     function noop(){}
-    function ajax(opt) {
+    function ajax(opt,context) {
         return new Promise(function(resolve, reject){
             var url = opt.url || "";
             var async = opt.async !== false,
@@ -261,15 +261,37 @@
             }
             var xhr = window.XMLHttpRequest ? new XMLHttpRequest()
                 : new ActiveXObject('Microsoft.XMLHTTP');
+            var crossDomain = false;
+            if(url.indexOf("http://") == 0 || url.indexOf("https://") == 0 ){
+                var urlAnchor = document.createElement('a');
+                //如果没有设置请求地址，则取当前页面地址
+                urlAnchor.href = url;
+                // cleans up URL for .href (IE only), see https://github.com/madrobby/zepto/pull/1049
+                urlAnchor.href = urlAnchor.href;
+                //通过ip  协议 端口来判断跨域  location.host = host:port
+                crossDomain = (location.protocol + '//' + location.host) !== (urlAnchor.protocol + '//' + urlAnchor.host);
+            }
             //执行before
-            beforeSend(xhr);
+            beforeSend(xhr,context);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     var s = xhr.status;
                     if (s >= 200 && s < 300) {
                         var txt = xhr.responseText;
                         if(dataType == 'json' && txt){
-                            success(JSON.parse(txt),xhr);
+                            var tmp;
+                            try{
+                                tmp = JSON.parse(txt);
+                            }catch (e){
+                                try{
+                                    tmp = (new Function("return " + txt))();
+                                }catch(e2){
+                                    error(xhr,999,"解析数据异常！");
+                                    return;
+                                }
+//                                txt = txt.replace(/(\\|\\"|\n|\r|\t)/g, "\\$1");//fastjson返回的json没有转译特殊字符
+                            }
+                            success(tmp,xhr);
                         }else{
                             success(txt,xhr);
                         }
@@ -285,8 +307,11 @@
                 xhr.setRequestHeader('Content-type',
                     'application/x-www-form-urlencoded;');
             }
-            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.send(data);
+            if(crossDomain){
+                xhr.withCredentials = true;
+            }else{
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            }            xhr.send(data);
             return xhr;
         });
     }
@@ -389,7 +414,7 @@
             async: option.async,
             beforeSend: option.beforeSend,
             complete: option.complete
-        });
+        },option);
         if(option.success){
             promise.then(option.success,option.error);
         }else{
@@ -445,7 +470,7 @@
     /**
      * eos版本
      */
-    Eos.prototype.version = 3;
+    Eos.prototype.version = "3.0.0";
     /* 是否使用mock，研发阶段可以置为 true 取模拟数据 */
     Eos.prototype.useMock = false;
     /**

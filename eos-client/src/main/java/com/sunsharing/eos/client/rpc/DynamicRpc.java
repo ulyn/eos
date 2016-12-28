@@ -69,7 +69,7 @@ public class DynamicRpc{
 
     public static void invoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
         FilterChain filterChain =
-                FilterManager.createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
+                ServiceContext.getInstance().getFilterManager().createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
         RpcCaller caller = new RpcCaller();
         filterChain.addFilter(caller);
         try {

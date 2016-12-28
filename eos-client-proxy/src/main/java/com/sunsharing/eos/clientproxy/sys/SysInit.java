@@ -1,5 +1,7 @@
 package com.sunsharing.eos.clientproxy.sys;
 
+import com.sunsharing.component.resvalidate.config.ext.SpringHttpConfig;
+import com.sunsharing.component.resvalidate.config.ext.SpringProp;
 import com.sunsharing.eos.client.EosClient;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -43,7 +45,13 @@ public class SysInit extends HttpServlet {
         SysParam.setSysPath(sysPath);
 //		SysParam.init();
 
-        EosClient.start();
+        if(SpringHttpConfig.getJson().isEmpty()){
+            //没有spring配置，没有走统一加载。
+            EosClient.start();
+        }else{
+            EosClient.start(new SpringProp());
+        }
+
         logger.info("初始化其它参数结束...");
     }
 

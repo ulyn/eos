@@ -33,16 +33,16 @@ import java.util.List;
  * <br>
  */
 public class FilterManager {
-    private static Logger logger = Logger.getLogger(FilterManager.class);
-    private static List<AbstractServiceFilter> filters = new ArrayList<AbstractServiceFilter>();
+    private Logger logger = Logger.getLogger(FilterManager.class);
+    private List<AbstractServiceFilter> filters = new ArrayList<AbstractServiceFilter>();
 
-    public static FilterChain createFilterChain(String appId, String serviceId) {
+    public FilterChain createFilterChain(String appId, String serviceId) {
         List<AbstractServiceFilter> filters = matchFilters(appId, serviceId);
         FilterChain filterChain = new FilterChain(filters);
         return filterChain;
     }
 
-    public static void registerFilter(String filterClassName, List<String> pathPatterns, List<String> excludePaths) {
+    public void registerFilter(String filterClassName, List<String> pathPatterns, List<String> excludePaths) {
         try {
             AbstractServiceFilter filter = (AbstractServiceFilter) Class.forName(filterClassName).newInstance();
             filter.setExcludePaths(excludePaths);
@@ -53,7 +53,7 @@ public class FilterManager {
         }
     }
 
-    public static void registerFilter(AbstractServiceFilter filter) {
+    public void registerFilter(AbstractServiceFilter filter) {
         filters.add(filter);
         logger.info(String.format("注册过滤器：%s", filter.getClass().getName()));
     }
@@ -65,7 +65,7 @@ public class FilterManager {
      * @param serviceId
      * @return
      */
-    private static List<AbstractServiceFilter> matchFilters(String appId, String serviceId) {
+    private List<AbstractServiceFilter> matchFilters(String appId, String serviceId) {
         List<AbstractServiceFilter> filterList = new ArrayList<AbstractServiceFilter>();
         for (int i = 0, l = filters.size(); i < l; i++) {
             AbstractServiceFilter filter = filters.get(i);

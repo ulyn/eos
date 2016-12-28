@@ -17,7 +17,6 @@
 package com.sunsharing.eos.client;
 
 import com.sunsharing.eos.common.config.AbstractServiceContext;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * <pre></pre>
@@ -48,7 +47,7 @@ public class ServiceContext extends AbstractServiceContext {
      */
     public static <T> T getBean(Class<T> clazz) {
         //todo 支持类方式调用
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
 }

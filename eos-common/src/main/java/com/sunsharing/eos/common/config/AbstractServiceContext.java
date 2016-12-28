@@ -17,6 +17,7 @@
 package com.sunsharing.eos.common.config;
 
 import com.sunsharing.eos.common.exception.ExceptionResolver;
+import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.utils.ClassHelper;
 import com.sunsharing.eos.common.utils.StringUtils;
@@ -70,11 +71,15 @@ public abstract class AbstractServiceContext {
 
     //全局异常处理器
     private ExceptionResolver exceptionResolver = null;
+    private FilterManager filterManager = new FilterManager();
 
     public ExceptionResolver getExceptionResolver() {
         return exceptionResolver;
     }
 
+    public FilterManager getFilterManager() {
+        return filterManager;
+    }
 
     /**
      * 取得服务配置map的key
@@ -96,8 +101,7 @@ public abstract class AbstractServiceContext {
     /**
      * 初始化
      */
-    public void initConfig() {
-        String xmlConfigFileName = "EosServiceConfig.xml";
+    public void initConfig(String xmlConfigFileName) {
         //key为接口name
         Map xmlMap = loadXmlServiceConfig(xmlConfigFileName);
         Map beansMap = (Map) xmlMap.get("beansMap");
@@ -107,7 +111,7 @@ public abstract class AbstractServiceContext {
             List<String> pathPatterns = (List<String>) filter.get("pathPatterns");
             List<String> excludePaths = (List<String>) filter.get("excludePaths");
             String filterClassName = (String) filter.get("class");
-            FilterManager.registerFilter(filterClassName, pathPatterns, excludePaths);
+            getFilterManager().registerFilter(filterClassName, pathPatterns, excludePaths);
         }
         //注册全局异常处理器
         String exceptionResolverClassName = (String) xmlMap.get("exceptionResolver");
@@ -132,6 +136,11 @@ public abstract class AbstractServiceContext {
 
         Map<String, ServiceConfig> configMap = new HashMap<String, ServiceConfig>();
         InputStream is = ClassHelper.getClassLoader(ServiceConfig.class).getResourceAsStream(fileName);
+        if(is == null){
+            logger.info("没有找到eos服务的xml["+ fileName +"]配置,尝试取默认文件EosServiceConfig.xml");
+            //兼容eos2的
+            is = ClassHelper.getClassLoader(ServiceConfig.class).getResourceAsStream("EosServiceConfig.xml");
+        }
         if (is == null) {
             logger.info("没有找到eos服务的xml配置...");
             Map beansMap = new HashMap();

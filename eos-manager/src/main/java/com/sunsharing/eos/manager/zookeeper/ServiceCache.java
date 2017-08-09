@@ -2,11 +2,14 @@ package com.sunsharing.eos.manager.zookeeper;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperUtils;
 import com.sunsharing.eos.manager.sys.SysProp;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +48,6 @@ public class ServiceCache {
             for(String path:list)
             {
                 String p = new String(utils.getData(PathConstant.SERVICE_STATE+"/"+ SysProp.eosId+"/"+path,false),"UTF-8");
-                logger.info("更新service:"+p);
                 JSONObject jsonObject = JSONObject.parseObject(p);
                 String appId = jsonObject.getString(PathConstant.APPID_KEY);
                 String serviceId = jsonObject.getString(PathConstant.SERVICE_ID_KEY);
@@ -62,8 +64,40 @@ public class ServiceCache {
                 obj.add(jsonObject);
                 serviceTmpMap.put(appId+serviceId+version,obj);
             }
-            serviceMap.clear();
-            serviceMap.putAll(serviceTmpMap);
+            //不清除
+            //serviceMap.clear();  将serviceTmpMap合并到serviceMap中
+            for(Iterator iter = serviceTmpMap.keySet().iterator();iter.hasNext();)
+            {
+                String serviceLocationTmp = (String)iter.next();
+                if(serviceMap.get(serviceLocationTmp) == null)
+                {
+                    serviceMap.put(serviceLocationTmp,serviceTmpMap.get(serviceLocationTmp));
+                }else
+                {
+                    JSONArray array = (JSONArray)serviceMap.get(serviceLocationTmp);
+                    Map realServiceMap = new HashMap();
+                    for(int i=0;i<array.size();i++)
+                    {
+                        JSONObject obj = (JSONObject)array.get(i);
+                        realServiceMap.put(obj.get("ip").toString()+obj.get("port").toString(),"BB");
+                    }
+
+                    JSONArray onlineArray = serviceTmpMap.get(serviceLocationTmp);
+                    for(int i=0;i<onlineArray.size();i++)
+                    {
+                        JSONObject obj = (JSONObject)onlineArray.get(i);
+                        String key = obj.get("ip").toString()+obj.get("port").toString();
+                        if(!realServiceMap.containsKey(key))
+                        {
+                            array.add(obj);
+                        }
+                    }
+
+                }
+
+            }
+            logger.info("更新服务后:"+JSONObject.toJSONString(serviceMap, SerializerFeature.PrettyFormat));
+            //serviceMap.putAll(serviceTmpMap);
         }catch (Exception e)
         {
             logger.error("获取"+SysProp.eosId+"节点信息失败",e);

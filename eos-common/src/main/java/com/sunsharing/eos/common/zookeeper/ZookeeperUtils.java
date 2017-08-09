@@ -1,12 +1,11 @@
 package com.sunsharing.eos.common.zookeeper;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -311,6 +310,73 @@ public class ZookeeperUtils {
         }
 
     }
+
+//    public  boolean isFull(String appId) throws Exception
+//    {
+//        int continueTimes = 0;
+//        List<String> onlineServices = null;
+//
+//        while(true) {
+//            if(continueTimes >10)
+//            {
+//                logger.error("appId:"+appId+"注册服务完整性校验有问题，不更新服务...");
+//                return false;
+//            }
+//            Map dataMap = new HashMap();
+//            Map ipPortServiceNum = new HashMap();
+//            Map realServiceNum = new HashMap();
+//            try {
+//                onlineServices = utils.getChildren(PathConstant.SERVICE_STATE_APPS + "/" + appId, true);
+//                //校验完整性
+//
+//                for (String servicePath : onlineServices) {
+//                    byte[] data = utils.getData(PathConstant.SERVICE_STATE_APPS + "/" + appId + "/" + servicePath, false);
+//                    JSONObject serviceData = JSONObject.parseObject(new String(data, "UTF-8"));
+//                    String ip = (String) serviceData.get("ip");
+//                    String port = serviceData.get("port").toString();
+//                    if (serviceData.get("totalServiceSize") == null) {
+//                        logger.error("appId:" + appId + "服务注册的版本不兼容，请先升级服务EOS版本3.1.0");
+//                        return true;
+//                        //throw new RuntimeException("服务注册的版本不兼容，请先升级服务EOS版本");
+//                    }
+//                    int totalServiceSize = serviceData.getInteger("totalServiceSize");
+//                    ipPortServiceNum.put(ip + port, totalServiceSize);
+//
+//                    if (realServiceNum.get(ip + port) == null) {
+//                        realServiceNum.put(ip + port, new Integer(0));
+//                    }
+//                    Integer real = (Integer) realServiceNum.get(ip + port);
+//                    real++;
+//                    realServiceNum.put(ip + port, real);
+//                    dataMap.put(servicePath, serviceData);
+//                }
+//            }catch (Exception e)
+//            {
+//                logger.info("加载APP出错了,ZooKeeper连接有点问题,重试...");
+//                Thread.sleep(1000);
+//                continue;
+//            }
+//
+//            for(Iterator ipport = ipPortServiceNum.keySet().iterator();ipport.hasNext();)
+//            {
+//                String tmp = (String)ipport.next();
+//                Integer serviceNum = (Integer)ipPortServiceNum.get(tmp);
+//                Integer real = (Integer)realServiceNum.get(tmp);
+//                if(serviceNum == real )
+//                {
+//                    logger.info("appId:"+appId+":"+tmp+":加载服务个数为"+real+",和真实一致");
+//                }else
+//                {
+//                    logger.info("appId:"+appId+":"+tmp+":加载服务个数为"+real+",和服务注册为"+serviceNum+"不一致");
+//                    Thread.sleep(1000);
+//                    continueTimes++;
+//                    continue;
+//                }
+//            }
+//            break;
+//        }
+//        return true;
+//    }
 
 
 }

@@ -36,6 +36,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 
             List<ServiceConfig> serviceConfigs = ServiceContext.getServiceConfigList();
 
+            int totalServiceSize = serviceConfigs.size();
             for (ServiceConfig config : serviceConfigs) {
                 if(StringUtils.isBlank(config.getAppId()))
                 {
@@ -50,6 +51,7 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                     obj.put("port", SysProp.nettyServerPort);
                     obj.put("ip", SysProp.localIp);
                     obj.put("real_ip",getRealIp());
+                    obj.put("totalServiceSize",totalServiceSize);
                     serviceRegister.registerService(SysProp.eosId, obj.toJSONString());
                 }
             }

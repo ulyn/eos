@@ -2,6 +2,7 @@ package com.sunsharing.eos.client.zookeeper;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sunsharing.eos.client.sys.SysProp;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.zookeeper.PathConstant;
@@ -138,12 +139,14 @@ public class ServiceLocation {
                 service.put(online, "AA");
             }
         }
-        for (String ser : new ArrayList<String>(service.keySet()) ) {
-            if (!realOnline.contains(ser)) {
-                logger.info("Service:" + ser + "下线");
-                service.remove(ser);
-            }
-        }
+//        for (String ser : new ArrayList<String>(service.keySet()) ) {
+//            if (!realOnline.contains(ser)) {
+//                logger.info("Service:" + ser + "下线");
+//                //service.remove(ser);
+//            }
+//        }
+        logger.info("加载完后服务："+JSONObject.toJSONString(service, SerializerFeature.PrettyFormat));
+
     }
 
 

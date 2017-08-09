@@ -1,18 +1,9 @@
-/**
- * @(#)NodeJSService
- * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
- *
- *<br> Copyright:  Copyright (c) 2014
- *<br> Company:厦门畅享信息技术有限公司
- *<br> @author ulyn
- *<br> 14-9-10 下午6:48
- *<br> @version 1.0
- *————————————————————————————————
- *修改记录
- *    修改者：
- *    修改时间：
- *    修改原因：
- *————————————————————————————————
+/*
+ * Copyright (c) 2017. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 package com.sunsharing.eos.uddi.service;
 
@@ -118,12 +109,13 @@ public class NodeJSService {
                 throw new RuntimeException("服务版本没有变化，不需要重复发布服务！");
             }
             String path = createDir(app, v, services, changeServices);
+            //生成前端js版本
+            String ssfePath = createSsfeDir(app, v, services, changeServices);
+
             String result = new WindowsExec().run("cnpm publish " + path);
             if (result.indexOf("ERR") != -1) {
                 throw new RuntimeException("发布服务失败：" + result);
             }
-            //生成前端js版本
-            String ssfePath = createSsfeDir(app, v, services, changeServices);
             result = result + "\n" + new WindowsExec().run("cnpm publish " + ssfePath);
             if (result.indexOf("ERR") != -1) {
                 throw new RuntimeException("发布服务失败：" + result);

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>eos-parent</artifactId>
         <groupId>com.sunsharing.component</groupId>
-        <version>2.2.7</version>
+        <version>2.2.8</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +23,7 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-common</artifactId>
-            <version>2.2.7</version>
+            <version>2.2.8</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,18 +1,9 @@
-/**
- * @(#)RpcServlet
- * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
- *
- *<br> Copyright:  Copyright (c) 2014
- *<br> Company:厦门畅享信息技术有限公司
- *<br> @author ulyn
- *<br> 14-2-6 下午10:29
- *<br> @version 1.0
- *————————————————————————————————
- *修改记录
- *    修改者：
- *    修改时间：
- *    修改原因：
- *————————————————————————————————
+/*
+ * Copyright (c) 2017. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 package com.sunsharing.eos.client;
 
@@ -52,6 +43,7 @@ import java.util.*;
 public class RpcServlet extends HttpServlet {
     Logger logger = Logger.getLogger(RpcServlet.class);
     SysParamVar sysParamVar = null;
+    String dev = "false";
 
     public RpcServlet() {
         super();
@@ -62,6 +54,7 @@ public class RpcServlet extends HttpServlet {
         super.init(config);
         logger.info("eos framework init RpcServlet....");
         String sysParamVarClass = config.getInitParameter("sysParamVar");
+        dev = config.getInitParameter("dev");
         if (StringUtils.isBlank(sysParamVarClass)) {
             logger.warn("RpcServlet 没有配置SysParamVar的实现类，系统不支持变量入参");
         } else {
@@ -189,7 +182,7 @@ public class RpcServlet extends HttpServlet {
 
         String jsonp = req.getParameter("eos_jsonp_callback");
         String content = CompatibleTypeUtils.objectToString(rtnMap);
-        if (!StringUtils.isBlank(jsonp)) {
+        if (!StringUtils.isBlank(jsonp) && "true".equals(dev)) {   //配置为dev模式，才允许jsonp
             content = jsonp + "(" + content + ")";
         }
         printOutContent(resp, content);

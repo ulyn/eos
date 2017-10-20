@@ -16,6 +16,7 @@
  */
 package com.sunsharing.eos.client.rpc;
 
+import com.alibaba.fastjson.JSON;
 import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.client.ServiceContext;
 import com.sunsharing.eos.common.ServiceRequest;
@@ -27,6 +28,7 @@ import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 /**
  * <pre></pre>
@@ -46,6 +48,26 @@ public class DynamicRpc{
         invoke(request,void.class);
     }
 
+    /**
+     * 执行调用
+     *
+     * @param retType
+     * @param <T>
+     * @return
+     * @throws com.sunsharing.eos.common.rpc.RpcException
+     */
+    public static <T> T invoke(ServiceRequest request,Type retType) throws RpcException {
+        ServiceResponse serviceResponse = new ServiceResponse(request);
+
+        invoke(request, serviceResponse);
+        try {
+            return getResult(request, serviceResponse, retType);
+        } catch (RpcException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new RpcException(e.getMessage(), e);
+        }
+    }
     /**
      * 执行调用
      *
@@ -113,6 +135,21 @@ public class DynamicRpc{
      * @throws Throwable
      */
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class<T> retType) throws RpcException {
+        checkException(serviceResponse);
+        Object value = serviceResponse.getValue();
+        return CompatibleTypeUtils.expectConvert(value,retType);
+    }
+    protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Type retType) throws RpcException {
+        checkException(serviceResponse);
+        Object value = serviceResponse.getValue();
+        if(value instanceof String){
+            return JSON.parseObject((String)value, retType);
+        }else{
+            return JSON.parseObject(JSON.toJSONString(value), retType);
+        }
+    }
+
+    private static void checkException(ServiceResponse serviceResponse) {
         if (serviceResponse.hasException()) {
             Throwable t = serviceResponse.getException();
             if(t instanceof RpcException){
@@ -120,8 +157,6 @@ public class DynamicRpc{
             }else
                 throw new RpcException(t.getMessage() , t);
         }
-        Object value = serviceResponse.getValue();
-        return CompatibleTypeUtils.expectConvert(value,retType);
     }
 }
 

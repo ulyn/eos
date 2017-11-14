@@ -141,7 +141,6 @@ public class DynamicJavaCreator implements ICreator {
         //不解析了 简单导入
         importSb.append("import java.util.*;\n");
         importSb.append("import com.alibaba.fastjson.*;\n");
-        importSb.append("import java.sql.*;\n");
     }
 
     private String serviceCode2ClassName(String serviceCode) {

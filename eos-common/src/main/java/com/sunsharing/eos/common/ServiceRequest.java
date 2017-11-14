@@ -16,9 +16,6 @@
  */
 package com.sunsharing.eos.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sunsharing.eos.common.rpc.RpcContext;
 import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.protocol.BaseProtocol;
@@ -30,8 +27,6 @@ import org.jboss.netty.buffer.ChannelBuffers;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -175,21 +170,6 @@ public class ServiceRequest {
     public <T> T getParameter(String key,Class<T> clazz){
         Object o = parameterMap.get(key);
         return CompatibleTypeUtils.expectConvert(o,clazz);
-    }
-    /**
-     * 取得 <T> 类型的参数
-     * @param key
-     * @param parameterizedType
-     * @param <T>
-     * @return
-     */
-    public <T> T getParameter(String key,ParameterizedType parameterizedType){
-        Object value = parameterMap.get(key);
-        if(value instanceof String){
-            return JSON.parseObject((String)value, parameterizedType);
-        }else{
-            return JSON.parseObject(JSON.toJSONString(value), parameterizedType);
-        }
     }
 
     public Map<String, Object> getParameterMap() {

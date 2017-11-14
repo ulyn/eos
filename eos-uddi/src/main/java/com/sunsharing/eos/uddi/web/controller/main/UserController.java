@@ -93,7 +93,7 @@ public class UserController {
             JSONObject app = obj.getJSONObject("app");
             app.put("url","servicelist/"+app.getString("appId")+"/0");
         }
-        if(user.getRole().equals("3"))
+        if(user.getRole().equals("3") || user.getRole().equals("4"))
         {
             array.clear();
             //管理员
@@ -104,28 +104,29 @@ public class UserController {
             for(int i=0;i<arr.size();i++)
             {
                 JSONObject obj = (JSONObject)arr.get(i);
-                obj.put("url","servicelist/"+obj.getString("appId")+"/0");
+                obj.put("url","dblist/"+obj.getString("appId")+"");
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("app",obj);
                 array.add(jsonObject);
             }
+            if(user.getRole().equals("3")) {
+                JSONObject jsonObject = new JSONObject();
+                JSONObject app = new JSONObject();
+                app.put("appName", "应用管理");
+                app.put("appCode", "APP");
+                app.put("url", "applist");
+                jsonObject.put("app", app);
 
-            JSONObject jsonObject = new JSONObject();
-            JSONObject app = new JSONObject();
-            app.put("appName","应用管理");
-            app.put("appCode","APP");
-            app.put("url","applist");
-            jsonObject.put("app",app);
+                JSONObject jsonObject2 = new JSONObject();
+                JSONObject app2 = new JSONObject();
+                app2.put("appName", "用户管理");
+                app2.put("appCode", "USER");
+                app2.put("url", "userlist");
+                jsonObject2.put("app", app2);
 
-            JSONObject jsonObject2 = new JSONObject();
-            JSONObject app2 = new JSONObject();
-            app2.put("appName","用户管理");
-            app2.put("appCode","USER");
-            app2.put("url","userlist");
-            jsonObject2.put("app",app2);
-
-            array.add(jsonObject);
-            array.add(jsonObject2);
+                array.add(jsonObject);
+                array.add(jsonObject2);
+            }
         }
 
         JSONObject jsonObject = new JSONObject();

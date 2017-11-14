@@ -34,18 +34,38 @@
                     </div>
                 </div>
                 <div class="line_grid">
+                    <div class="g_3"><span class="label">模块</span></div>
+                    <div class="g_9">
+                        <span ng-repeat="row in modulesArr">
+                            <input type="radio" name="module" id="module" value="{{row}}" ng-model="module" class="simple_form" /><span class="label">{{row}}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="line_grid">
+                    <div class="g_3"><span class="label">脚本类型</span></div>
+                    <div class="g_9">
+                        <span ng-repeat="row in dbTypeArr">
+                            <input type="radio" name="dbType" id="dbType" value="{{row.id}}" ng-model="dbType" class="simple_form" /><span class="label">{{row.label}}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="line_grid">
                     <div class="g_3"><span class="label">PDM图上传</span>&nbsp;
                         <div ng-if="!add" ng-click="downloadPdm()" class="simple_buttons">
                             <div>下载</div>
                         </div>
                     </div>
                     <div class="g_9">
-                        <div class="uploader" id="uniform-undefined2">
+                        <div class="uploader" id="uniform-undefined2" style="cursor: pointer">
+                            <span class="action"></span>
                             <input type="file" id="file1" name="file1" onchange="changeFile(this)"
                                    class="simple_form" size="36.4" style="opacity: 0;">
                             <input type="hidden" id="pdm" name="pdm" />
-                            <span class="filename">No file selected</span>
-                            <span class="action"></span>
+                            <span class="filename" ng-if="add" >No file selected</span>
+                            <span class="filename" ng-if="!add" >{{pdmFileName}}</span>
+
                         </div>
                     </div>
                 </div>
@@ -56,12 +76,13 @@
                         </div>
                     </div>
                     <div class="g_9">
-                        <div class="uploader" id="uniform-undefined">
+                        <div class="uploader" id="uniform-undefined" style="cursor: pointer">
+                            <span class="action"></span>
                             <input type="file" id="file2" name="file2" onchange="changeFile(this)"
                                    class="simple_form" size="36.4" style="opacity: 0;" />
                             <input type="hidden" id="sql" name="sql" />
-                            <span class="filename">No file selected</span>
-                            <span class="action"></span>
+                            <span class="filename" ng-if="add" >No file selected</span>
+                            <span class="filename" ng-if="!add" >{{scriptFileName}}</span>
                         </div>
                     </div>
                 </div>

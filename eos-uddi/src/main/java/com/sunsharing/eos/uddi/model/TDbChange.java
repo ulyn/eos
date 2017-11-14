@@ -19,6 +19,8 @@ public class TDbChange {
     private String pubishTime;
     private String db;
     private String script;
+    private String module;
+    private String dbType;
 
     private List<TDbChecklist> dbChecklistList =
             new ArrayList<TDbChecklist>();
@@ -104,7 +106,25 @@ public class TDbChange {
         this.script = script;
     }
 
+    @Basic
+    @Column(name = "MODULE")
+    public String getModule() {
+        return module;
+    }
 
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    @Basic
+    @Column(name = "DB_TYPE")
+    public String getDbType() {
+        return dbType;
+    }
+
+    public void setDbType(String dbType) {
+        this.dbType = dbType;
+    }
 
     @OneToMany(mappedBy="change")
     @OrderBy(value="checkTime desc")

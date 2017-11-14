@@ -34,14 +34,15 @@
             <div class="line_grid">
                 <div class="g_3"><span class="label">模块组成</span></div>
                 <div class="g_9">
-                    <input ng-model="module" class="simple_field" name="app_modules" id="app_modules" type="text" placeholder="填写中文，多个模块用逗号分隔">
+                    <input ng-model="module" class="simple_field" name="module" id="module" type="text"
+                           placeholder="多个模块用半角逗号分隔，例如：用户管理,应用管理">
                 </div>
             </div>
             <div class="line_grid">
                 <div class="g_3"><span class="label">数据库</span></div>
                 <div class="g_9">
                     <input ng-model="dbs" class="simple_field"
-                          name="dbs" id="dbs" type="text" placeholder="填写中文，多个库用逗号分隔">
+                          name="dbs" id="dbs" type="text" placeholder="多个库用半角逗号分隔，例如：代码库(WG_DM),资源库(WG_ZY)">
                 </div>
             </div>
             <input type="hidden" id="appId" name="appId" ng-model="appId" />

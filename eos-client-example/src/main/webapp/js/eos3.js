@@ -1,12 +1,8 @@
 "use strict";
 (function (factory) {
-    if(typeof exports === 'object' && typeof module === 'object'){
-        module.exports = factory();
-    }else if(typeof define === 'function' && define.amd){
+    if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(["eos"],factory);
-    }else if(typeof exports === 'object'){
-        exports["eos"] = factory();
+        define("eos",factory);
     } else {
         // Browser globals
         window.eos = factory();

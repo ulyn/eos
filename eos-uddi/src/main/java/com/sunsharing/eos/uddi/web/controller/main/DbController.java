@@ -149,6 +149,9 @@ public class DbController {
         result.put("changeLog",change.getChangeLog());
         result.put("db",change.getDb());
         result.put("checkStatus",change.geCheckStatus());
+        result.put("module",change.getModule());
+        result.put("script",change.getScript());
+        result.put("dbType",change.getDbType());
 
         for(TDbChecklist check : checklist)
         {
@@ -291,7 +294,7 @@ public class DbController {
 
 
         @RequestMapping(value = {"/saveDbChange.do"}, method = RequestMethod.POST)
-    public void saveDbChange(String appId,String changelog,String db,String changeId,
+    public void saveDbChange(String appId,String changelog,String db,String changeId,String module,String dbType,
                              HttpServletResponse response, HttpServletRequest request)
     {
         try {
@@ -305,7 +308,7 @@ public class DbController {
                 ResponseHelper.printOut(response, result);
                 return;
             }
-            dbChangeService.saveChange(appId, changelog, db, user.getUserId(),changeId);
+            dbChangeService.saveChange(appId, changelog, db, user.getUserId(),changeId,module,dbType);
             String result = ResponseHelper.covert2Json(true, "", "");
             //result = "<script>parent.uploadDbSuccess(" + result + ")</script>";
             ResponseHelper.printOut(response, result);
@@ -375,7 +378,8 @@ public class DbController {
         }else
         {
             fileName = change.getScript();
-            downloadName = change.getDb()+"_"+change.getScript();
+            downloadName = change.getDb()+"."+change.getVersion().substring(0,8)+"_"+
+                    change.getVersion().substring(8)+"_"+change.getModule()+"_"+change.getDbType()+".sql";
         }
 
         if(!StringUtils.isBlank(lock))

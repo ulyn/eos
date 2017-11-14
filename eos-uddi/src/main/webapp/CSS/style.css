@@ -1566,7 +1566,7 @@
 
 	.dtTables {
 		clear: both;
-		overflow: auto;
+		overflow: hidden;
 	}
 
 	.dtShowPer {
@@ -1685,7 +1685,7 @@
 	}
 
 	.checker .checked {
-		background: url("../Images/Icons/16/i_16_checked.png") no-repeat center center scroll transparent;
+		background: url("../Images/Icons/16/i_16_checked.png") no-repeat center -15px scroll transparent;
 	}
 
 	.radio .checked {
@@ -2172,7 +2172,7 @@
 	.uploader input , .uploader .action{
 		display: inline-block;
 		width: 100%;
-		height: 28px;
+		height: 26px;
 		position: absolute;
 		top: 0;
 		right: 0;
@@ -2180,7 +2180,7 @@
 
 	.uploader .action {
 		width: 26px;
-		background: url("../Images/Icons/16/i_16_add.png") no-repeat scroll center center transparent;
+		background: url("../Images/Icons/16/i_16_add.png") no-repeat scroll center 8px transparent;
 	}
 
 	.ui-spinner-input {

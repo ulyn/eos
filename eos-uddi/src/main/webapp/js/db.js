@@ -59,6 +59,12 @@ indexApp.controller('dblist', function($scope, $routeParams,$http,$sce) {
                     data[i].checkColor = "red";
                 }
                 data[i].changeLog = $sce.trustAsHtml( data[i].changeLog);
+
+                var version = data[i].version;
+                var db = data[i].db;
+                data[i].scriptName = db+"."+version.substr(0,8)+"_"+version.substr(8)+"_"+data[i].module+"_"+data[i].dbType+".sql";
+
+
             }
 
         });
@@ -143,8 +149,13 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
                     data.dbChecklistList[i].checkContent = $sce.trustAsHtml(content);
                 }
             }
+            $scope.module = data.module;
+            $scope.dbType = data.dbType;
             $scope.checkList = data.dbChecklistList;
             $scope.checkStatus = data.checkStatus;
+            $scope.scriptFileName = data.script;
+
+
 
             $scope.downloadPdm = function()
             {
@@ -190,8 +201,19 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
         {
             var app = data.data;
             var dbs = app.dbs;
+            var modules = app.modules;
             var dbsArr = dbs.split(",");
+            var modulesArr = []
+            modules.forEach(function(item){
+                modulesArr.push(item.moduleName);
+            })
+
+            $scope.pdmFileName = app.appCode+".pdm";
+
+
+
             $scope.dbs = dbsArr;
+            $scope.modulesArr = modulesArr;
             $scope.appCode = app.appCode;
         }else
         {
@@ -219,9 +241,36 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
         }
         if(db == "")
         {
-            alert("请填写所属库");
+            alert("请选择所属库");
             return;
         }
+        var module = "";
+        $("input[name='module']").each(
+            function(){
+                if($(this).get(0).checked){
+                    module = $(this).get(0).getAttribute("value");
+                }
+            });
+        if(module=="")
+        {
+            alert("请选择模块");
+            return;
+        }
+
+        var dbType = "";
+        $("input[name='dbType']").each(
+            function(){
+                if($(this).get(0).checked){
+                    dbType = $(this).get(0).getAttribute("value");
+                }
+            });
+        if(dbType=="")
+        {
+            alert("请选择脚本类型");
+            return;
+        }
+
+
         if(changeId == "") {
             if ($("#pdm").val() == "") {
                 alert("请上传PDM图");
@@ -232,12 +281,14 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
                 return;
             }
         }
+
+
         changelog = encodeURIComponent(changelog);
         console.info(changelog);
         $http({
             url: '/saveDbChange.do',
             method: "POST",
-            data: "appId="+appId+"&db="+db+"&changelog="+changelog+"&changeId="+changeId,
+            data: "appId="+appId+"&db="+db+"&changelog="+changelog+"&changeId="+changeId+"&module="+module+"&dbType="+dbType,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
 
@@ -255,10 +306,18 @@ indexApp.controller('dbAdd', function($scope, $routeParams,$http,$sce) {
     };
 
 
-
     $scope.commit = function(){
         $(".dConf").dialog( "open" );
     }
+
+    $scope.dbTypeArr = [
+        {"id":"SP","label":"过程"},
+        {"id":"TRG","label":"触发器"},
+        {"id":"T","label":"表"},
+        {"id":"T_SJCL","label":"表数据处理"},
+        {"id":"VW","label":"视图"},
+        {"id":"F","label":"函数"}
+        ];
 
     window.setTimeout("initDialog();",200);
 
@@ -280,6 +339,10 @@ indexApp.controller('viewDbScript', function($scope, $routeParams,$http) {
         if(data.status)
         {
             //$scope.java = data.data;
+            data.data = data.data.replace(/delete/g,"<font color='red'>delete</font>")
+            data.data = data.data.replace(/DELETE/g,"<font color='red'>DELETE</font>")
+            data.data = data.data.replace(/drop/g,"<font color='red'>drop</font>")
+            data.data = data.data.replace(/DROP/g,"<font color='red'>DROP</font>")
             document.getElementById("content").innerHTML = data.data;
             hljs.tabReplace = '    ';
             hljs.initHighlightingOnLoad();

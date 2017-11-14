@@ -32,8 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,17 +92,11 @@ public class ServiceInvoker extends AbstractServiceFilter {
                 String[] parameterNames = serviceMethod.getParameterNames();
                 Object[] args = null;
                 if(parameterNames != null){
-                    Type[] parameterTypes = m.getGenericParameterTypes();
+                    Class<?>[] parameterTypes = m.getParameterTypes();
                     args = new Object[parameterTypes.length];
                     for(int i=0,l= args.length;i<l;i++){
                         String parameterName = parameterNames[i];
-                        Type paramType = parameterTypes[i];
-                        if(paramType instanceof ParameterizedType){
-//                            Type[]genericTypes = ((ParameterizedType)paramType).getActualTypeArguments();
-                            args[i] = req.getParameter(parameterName, (ParameterizedType)paramType);
-                        }else {
-                            args[i] = req.getParameter(parameterName, (Class) paramType);
-                        }
+                        args[i] = req.getParameter(parameterName,parameterTypes[i]);
                     }
                 }
                 Object o = m.invoke(obj, args);

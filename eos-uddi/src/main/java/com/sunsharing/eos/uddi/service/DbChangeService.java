@@ -100,7 +100,7 @@ public class DbChangeService {
     }
 
     public void saveChange(String appId,String changelog,
-                           String db,int userId,String changeId)
+                           String db,int userId,String changeId,String module,String dbType)
     {
         TApp app = appDao.get(new Integer(appId));
         TUser user = userDao.get(new Integer(userId));
@@ -131,7 +131,10 @@ public class DbChangeService {
         change.setChangeLog(changelog);
         change.setDb(db);
         change.setUser(user);
+        change.setModule(module);
         change.setPubishTime(DateUtils.getDBString(new Date()));
+        change.setDbType(dbType);
+
         if(StringUtils.isBlank(changeId)) {
             change.setScript(getVersion(appId) + ".sql");
             change.setVersion(getVersion(appId));

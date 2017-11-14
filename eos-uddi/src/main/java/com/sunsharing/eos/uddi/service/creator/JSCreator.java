@@ -58,15 +58,11 @@ public class JSCreator implements ICreator {
         sb.append("* " + app.getCreatTime() + " \n*/\n");
         sb.append("\"use strict\";\n" +
                 "(function (factory) {\n" +
-                "   if(typeof exports === 'object' && typeof module === 'object'){\n" +
-                "       module.exports = factory(require(\"eos\"));\n" +
-                "   }else if(typeof define === 'function' && define.amd){\n" +
-                "       define([\"eos\"],factory);\n" +
-                "   }else if(typeof exports === 'object'){\n" +
-                "       exports[\"" + app.getAppCode() + "\"] = factory(require(\"eos\"));\n" +
-                "   } else {\n" +
-                "       factory(eos);\n" +
-                "   }" +
+                "    if (typeof define === 'function' && define.amd) {\n" +
+                "        define([\"eos\"],factory);\n" +
+                "    } else {\n" +
+                "        factory(eos);\n" +
+                "    }\n" +
                 "}(function (eos) {\n");
         sb.append("\n" +
                 "    var APP_ID = \""+ app.getAppCode() +"\";\n" +
@@ -110,17 +106,14 @@ public class JSCreator implements ICreator {
         StringBuilder sb = new StringBuilder("/** \n");
         sb.append("* " + service.getModule() + " - " + service.getServiceName() + " \n");
         sb.append("* " + service.getServiceCode() + " - " + serviceVersion.getVersionId() + " \n*/\n");
+
         sb.append("\"use strict\";\n" +
                 "(function (factory) {\n" +
-                "   if(typeof exports === 'object' && typeof module === 'object'){\n" +
-                "       module.exports = factory(require(\"eos\"));\n" +
-                "   }else if(typeof define === 'function' && define.amd){\n" +
-                "       define([\"eos\"],factory);\n" +
-                "   }else if(typeof exports === 'object'){\n" +
-                "       exports[\"" + service.getAppCode() + service.getServiceCode() + "\"] = factory(require(\"eos\"));\n" +
-                "   } else {\n" +
-                "       factory(eos);\n" +
-                "   }" +
+                "    if (typeof define === 'function' && define.amd) {\n" +
+                "        define([\"eos\"],factory);\n" +
+                "    } else {\n" +
+                "        factory(eos);\n" +
+                "    }\n" +
                 "}(function (eos) {\n" +
                 "\n" +
                 "    var APP_ID = \""+ service.getAppCode() +"\",SERVICE_ID = \""+ service.getServiceCode() +"\";\n" +

@@ -56,13 +56,8 @@
                         <tr role="row">
                             <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
                                 rowspan="1" colspan="1" aria-sort="ascending"
-                                aria-label="Rendering engine: activate to sort column descending" style="width: 100px;">
+                                aria-label="Rendering engine: activate to sort column descending" style="width: 150px;">
                                 版本
-                            </th>
-                            <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
-                                rowspan="1" colspan="1" aria-sort="ascending"
-                                aria-label="Rendering engine: activate to sort column descending" style="width: 100px;">
-                                所属库
                             </th>
                             <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
                                 rowspan="1" colspan="1" aria-sort="ascending"
@@ -84,8 +79,7 @@
 
                         <tbody role="alert" aria-live="polite" aria-relevant="all">
                         <tr class="{{row.rowclass}}" ng-repeat="row in dbs">
-                            <td class=" " style="color:{{row.checkColor}}">{{row.version}}</td>
-                            <td class=" " style="color:{{row.checkColor}}">{{row.db}}</td>
+                            <td class=" " style="color:{{row.checkColor}}">{{row.scriptName}}</td>
                             <td class=" ">{{row.userName}}</td>
                             <td class=" " ng-bind-html="row.changeLog"></td>
                             <td class=" ">

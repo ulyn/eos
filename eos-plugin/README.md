@@ -1,5 +1,6 @@
 # Eos服务一键发布 使用说明
 
+[eos-plugin 1.0.1 下载](eos-eos-plugin.zip)
 ## 1.插件安装配置
 ### 1.1 插件安装
 

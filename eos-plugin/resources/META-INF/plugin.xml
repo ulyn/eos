@@ -1,0 +1,62 @@
+<!--
+  ~ @(#) plugin.xml
+  ~ 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
+  ~
+  ~ <br> Copyright:  Copyright (c) 2017
+  ~ <br> Company:厦门畅享信息技术有限公司
+  ~ <br> @author ningyp
+  ~ <br> 2017-12-15 16:00:35
+  ~ <br> @version 1.0
+  ~ ————————————————————————————————
+  ~    修改记录
+  ~    修改者：
+  ~    修改时间：
+  ~    修改原因：
+  ~ ————————————————————————————————
+  -->
+
+<idea-plugin>
+    <id>com.sunsharing.idea_plugin.eos</id>
+    <name>EOS 一键发布服务</name>
+    <version>1.0.1</version>
+    <vendor email="ningyp@sunsharing.com.cn" url="http://www.sunsharing.com.cn">sunsharing</vendor>
+
+    <description><![CDATA[
+      EOS 一键发布服务 idea 插件.<br>
+     <!-- <em>most HTML tags may be used</em>-->
+    ]]></description>
+
+    <change-notes><![CDATA[
+      初始化版本发布.<br>
+    <!--  <em>most HTML tags may be used</em>-->
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="145.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <projectConfigurable groupId="tools" instance="com.sunsharing.idea_plugin.configurator.ConfigurableGUI"/>
+
+        <applicationService serviceInterface="com.sunsharing.idea_plugin.configurator.ApplicationConfig"
+                            serviceImplementation="com.sunsharing.idea_plugin.configurator.ApplicationConfig"/>
+        <projectService serviceInterface="com.sunsharing.idea_plugin.configurator.ProjectConfig"
+                        serviceImplementation="com.sunsharing.idea_plugin.configurator.ProjectConfig"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="EosPublishFormAction" class="com.sunsharing.idea_plugin.EosPublishFormAction"
+                text="一键发布EOS服务" description="一键发布EOS服务">
+            <add-to-group group-id="VersionControlsGroup" anchor="last"/>
+        </action>
+    </actions>
+
+</idea-plugin>

@@ -14,6 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
+
 package com.sunsharing.eos.common.annotation;
 
 import com.sunsharing.eos.common.Constants;
@@ -45,6 +46,10 @@ public @interface EosService {
     String transporter() default Constants.DEFAULT_TRANSPORTER;
 
     String appId() default "";
+
+    String desc() default ""; //服务中文名称
+
+    String module() default ""; //服务所属模块
 
     String impl() default "";
 

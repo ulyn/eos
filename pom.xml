@@ -102,6 +102,20 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-net-cn</id>
+            <name>Maven China Mirror</name>
+            <url>http://192.168.0.62:7676/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
     <build>
         <plugins>
             <plugin>
@@ -164,7 +178,16 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>com.sunsharing</groupId>
+                <artifactId>gitbook_plugin2</artifactId>
+                <version>1.0.14</version>
+                <configuration>
+                    <gitbookserver>http://192.168.0.62:7878/gitbook</gitbookserver>
+                    <cnName>EOS</cnName>
+                    <desc>一个公司自主研发的分布式异步调用框架</desc>
+                </configuration>
+            </plugin>
 
         </plugins>
     </build>

@@ -43,16 +43,17 @@ public class DingTalkCall {
 
     public static void call(final EosCallData eosCallData) throws IOException {
         MarkdownMessage markdownMessage = new MarkdownMessage();
-        String content = eosCallData.getUserName() + "上传" + eosCallData.getSelectFileName() + "文件到EOS，更新的服务所属模块："
-            + eosCallData.getModule() + " ，服务中文名：" + eosCallData.getServiceName() + "!请相关研发人员知悉！";
+        String content = eosCallData.getUserName() + "上传" + eosCallData.getSelectFileName() + "文件到EOS，\n\n" +
+            "更新的服务所属模块："+ eosCallData.getModule() + " ，\n\n" +
+            "服务中文名：" + eosCallData.getServiceName() + "!\n\n" +
+            "请相关研发人员知悉！";
         String linkUrl = eosCallData.getEosURL() + "/index.html#/servicelist/" + eosCallData.getAppId() + "/0";
-        markdownMessage.setTitle("这是一条Eos服务审批的消息！");
-        markdownMessage.add(MarkdownMessage.getHeaderText(1, "这是一条Eos服务更新的消息，也是一条EOS服务审批的消息！"));
+        markdownMessage.setTitle("这是一条EOS服务审批的消息！");
+        markdownMessage.add(MarkdownMessage.getHeaderText(4, "这是一条EOS服务更新的消息，也是一条EOS服务审批的消息！"));
         markdownMessage.add("\n\n");
-        markdownMessage.add(content);
+        markdownMessage.add("> "+content);
         markdownMessage.add("\n\n");
-        //message.add(MarkdownMessage.getImageText("http://img01.taobaocdn.com/top/i1/LB1GCdYQXXXXXXtaFXXXXXXXXXX"));
-        markdownMessage.add(MarkdownMessage.getLinkText("点击跳转到Eos", linkUrl));
+        markdownMessage.add(MarkdownMessage.getLinkText("点击跳转到EOS", linkUrl));
         // message.add(MarkdownMessage.getLinkText("中文跳转", "dtmd://dingtalkclient/sendMessage?content=" + URLEncoder.encode("链接消息", "UTF-8")));
 
         TextMessage textMessage = new TextMessage("请审核人员及时审批！请研发人员注意服务版本变更影响！");

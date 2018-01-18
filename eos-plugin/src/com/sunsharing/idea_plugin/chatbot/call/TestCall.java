@@ -48,7 +48,7 @@ public class TestCall {
 
         MarkdownMessage markdownMessage = new MarkdownMessage();
         markdownMessage.setTitle("这是一条Eos服务审批的消息！");
-        markdownMessage.add(MarkdownMessage.getHeaderText(1, "这是一条Eos服务更新的消息，也是一条EOS服务审批的消息！"));
+        markdownMessage.add(MarkdownMessage.getHeaderText(1, "这是一条EOS服务更新的消息，也是一条EOS服务审批的消息！"));
         markdownMessage.add("\n\n");
         markdownMessage.add("addressServie 地址服务");
         markdownMessage.add("\n\n");

@@ -1,6 +1,7 @@
 # Eos服务一键发布 使用说明
 
-[eos-plugin 1.0.1 下载](release/eos-plugin1.0.1.zip)
+[eos-plugin 1.0.2 下载](http://192.168.0.62:7878/resource/eos-plugin1.0.2.zip)  
+~~[eos-plugin 1.0.1 下载](http://192.168.0.62:7878/resource/eos-plugin1.0.1.zip)~~
 ## 1.插件安装配置
 ### 1.1 插件安装
 

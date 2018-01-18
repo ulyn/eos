@@ -15,20 +15,21 @@
   ~ ————————————————————————————————
   -->
 
-<idea-plugin>
+<idea-plugin  url="http://192.168.0.62:7878/gitbook/document/eos-parent/3.2.5/_book/idea_plugin.html">
     <id>com.sunsharing.idea_plugin.eos</id>
     <name>EOS 一键发布服务</name>
-    <version>1.0.1</version>
-    <vendor email="ningyp@sunsharing.com.cn" url="http://www.sunsharing.com.cn">sunsharing</vendor>
+    <version>1.0.2</version>
+    <vendor email="ningyp@sunsharing.com.cn" url="http://www.sunsharing.com.cn">厦门畅享信息技术有限公司</vendor>
 
     <description><![CDATA[
-      EOS 一键发布服务 idea 插件.<br>
-     <!-- <em>most HTML tags may be used</em>-->
+       一键发布EOS服务 idea 插件.<br>
     ]]></description>
 
     <change-notes><![CDATA[
-      初始化版本发布.<br>
-    <!--  <em>most HTML tags may be used</em>-->
+    <ul>
+    <li>1.0.1 New:初始化版本发布</li>
+    <li>1.0.2 Improved:钉钉提示文字优化</li>
+    </ul>
     ]]>
     </change-notes>
 

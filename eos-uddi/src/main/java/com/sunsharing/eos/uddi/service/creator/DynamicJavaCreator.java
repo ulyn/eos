@@ -72,8 +72,8 @@ public class DynamicJavaCreator implements ICreator {
 
         sb.append("public class "+ serviceCode2ClassName(service.getServiceCode()) +" {\n" +
                 "\n" +
-                "    private final static String appId = \""+ service.getAppCode() +"\";\n" +
-                "    private final static String serviceId = \""+ service.getServiceCode() +"\";\n" +
+                "    private final static String APP_ID = \""+ service.getAppCode() +"\";\n" +
+                "    private final static String SERVICE_ID = \""+ service.getServiceCode() +"\";\n" +
                 "\n");
         for (TMethod method : serviceVersion.getMethods()) {
             if (!StringUtils.isBlank(method.getMockResult())) {
@@ -115,7 +115,7 @@ public class DynamicJavaCreator implements ICreator {
             }
             sb.append(") {\n" +
                     "        ServiceRequest.Builder builder = new ServiceRequest.Builder(\n" +
-                    "                appId,serviceId,\""+ methodName +"\",\""+ method.getMethodVersion() +"\");\n");
+                    "                APP_ID,SERVICE_ID,\""+ methodName +"\",\""+ method.getMethodVersion() +"\");\n");
             for(int i=0;i< inOutParameter.getInParameters().size();i++){
                 ParamsResolver.InParameter inParameter = inOutParameter.getInParameters().get(i);
                 sb.append("        builder.setParameter(\""+ inParameter.getName() +"\","+ inParameter.getName() +");\n" );

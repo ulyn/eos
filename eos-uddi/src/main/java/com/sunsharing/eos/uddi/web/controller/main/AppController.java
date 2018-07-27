@@ -1,9 +1,12 @@
 package com.sunsharing.eos.uddi.web.controller.main;
 
 import com.sunsharing.component.utils.base.DateUtils;
+import com.sunsharing.component.utils.base.MapHelper;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.db.AntZip;
 import com.sunsharing.eos.uddi.model.TApp;
+import com.sunsharing.eos.uddi.model.TUser;
+import com.sunsharing.eos.uddi.model.TUserApp;
 import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.MySqlExport;
 import com.sunsharing.eos.uddi.sys.SysInit;
@@ -19,8 +22,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by criss on 14-1-31.
@@ -38,7 +43,33 @@ public class AppController {
             throws Exception {
 
         List<TApp> apps = appService.listApp();
-        ResponseHelper.printOut(response, true, "", apps);
+        String appName = request.getParameter("appName");
+        List realApp = new ArrayList();
+        TUser user = (TUser)request.getSession().getAttribute("user");
+        String role = user.getRole();
+        if("1".equals(role) || "2".equals(role))
+        {
+            List<TUserApp> userApps = user.getUserApps();
+            for(TApp app :apps)
+            {
+                for(TUserApp userApp:userApps)
+                {
+                    if(app.getAppId()==userApp.getApp().getAppId()
+                           )
+                    {
+                        realApp.add(app);
+                    }
+                }
+
+            }
+        }else
+        {
+            realApp = apps;
+        }
+
+        Map rst = MapHelper.ofHashMap("applist",realApp,"userRole",role);
+
+        ResponseHelper.printOut(response, true, "", rst);
 
     }
     @RequestMapping(value="/saveApp.do",method= RequestMethod.POST)

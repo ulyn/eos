@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -47,26 +48,19 @@ public class UserController {
             JSONObject jonObject = JSONObject.parseObject(str);
             List<TUserApp> apps = user.getUserApps();
             Collections.sort(apps);
+            jonObject.put("userApps",new ArrayList());
 
-            if(apps.size()>0)
-            {
-                Integer appId = user.getUserApps().get(0).getApp().getAppId();
-                jonObject.put("url","servicelist/"+appId+"/0");
 
-            }else
+            if(user.getRole()==null)
             {
-                if(user.getRole().equals("3"))
-                {
-                    jonObject.put("url","applist");
-                }else
-                {
-                    jonObject.put("url","blank");
-                }
+                throw new RuntimeException("你的账号还没有开通，请联系管理员");
             }
+            jonObject.put("url","applist");
             ResponseHelper.printOut(response,true,"",jonObject);
         }else
         {
-            ResponseHelper.printOut(response, false, "", "{}");
+            throw new RuntimeException("用户名密码错误");
+           // ResponseHelper.printOut(response, false, "", "{}");
         }
     }
 
@@ -86,36 +80,40 @@ public class UserController {
         String str = JSONObject.toJSONString(user);
         JSONObject jonObject = JSONObject.parseObject(str);
         JSONArray array = jonObject.getJSONArray("userApps");
-        for(int i=0;i<array.size();i++)
-        {
+        array.clear();
+//        for(int i=0;i<array.size();i++)
+//        {
+//
+//            JSONObject obj = (JSONObject)array.get(i);
+//            JSONObject app = obj.getJSONObject("app");
+//            app.put("url","servicelist/"+app.getString("appId")+"/0");
+//        }
 
-            JSONObject obj = (JSONObject)array.get(i);
-            JSONObject app = obj.getJSONObject("app");
-            app.put("url","servicelist/"+app.getString("appId")+"/0");
-        }
+        JSONObject jsonObject3 = new JSONObject();
+        JSONObject app3 = new JSONObject();
+        app3.put("appName", "应用管理");
+        app3.put("appCode", "APP");
+        app3.put("url", "applist");
+        jsonObject3.put("app", app3);
+        array.add(jsonObject3);
+
+
         if(user.getRole().equals("3") || user.getRole().equals("4"))
         {
-            array.clear();
             //管理员
             List<TApp> apps = appService.listApp();
             Collections.sort(apps);
             String listStr = JSONArray.toJSONString(apps);
-            JSONArray arr = JSONArray.parseArray(listStr);
-            for(int i=0;i<arr.size();i++)
-            {
-                JSONObject obj = (JSONObject)arr.get(i);
-                obj.put("url","dblist/"+obj.getString("appId")+"");
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("app",obj);
-                array.add(jsonObject);
-            }
+
             if(user.getRole().equals("3")) {
+
                 JSONObject jsonObject = new JSONObject();
                 JSONObject app = new JSONObject();
-                app.put("appName", "应用管理");
-                app.put("appCode", "APP");
-                app.put("url", "applist");
-                jsonObject.put("app", app);
+                app.put("appName","系统监控");
+                app.put("appCode","MONITOR");
+                app.put("url","monitor");
+                jsonObject.put("app",app);
+                array.add(jsonObject);
 
                 JSONObject jsonObject2 = new JSONObject();
                 JSONObject app2 = new JSONObject();
@@ -123,19 +121,14 @@ public class UserController {
                 app2.put("appCode", "USER");
                 app2.put("url", "userlist");
                 jsonObject2.put("app", app2);
-
-                array.add(jsonObject);
                 array.add(jsonObject2);
             }
         }
 
-        JSONObject jsonObject = new JSONObject();
-        JSONObject app = new JSONObject();
-        app.put("appName","系统监控");
-        app.put("appCode","MONITOR");
-        app.put("url","monitor");
-        jsonObject.put("app",app);
-        array.add(jsonObject);
+
+
+
+
         for(int i=0;i<array.size();i++)
         {
             JSONObject obj = (JSONObject)array.get(i);

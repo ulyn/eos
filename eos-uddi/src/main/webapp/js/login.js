@@ -22,7 +22,7 @@ sampleApp.run(function($rootScope) {
                     }
                 }else
                 {
-                    alert("用户名密码错误");
+                    alert(data.msg);
                 }
             }
         });

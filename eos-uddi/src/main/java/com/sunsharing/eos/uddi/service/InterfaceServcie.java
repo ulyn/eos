@@ -124,10 +124,22 @@ public class InterfaceServcie {
                 }
                 value = line.substring(12, line.length() - 1);
 
-                value = value.replaceAll(",","\n");
+                //value = value.replaceAll(",","\n");
                 value = value.replaceAll("\"","");
-                Properties t = new Properties();
-                t.load(new ByteArrayInputStream(value.getBytes("UTF-8")));
+                //Properties t = new Properties();
+                String strArr[] = value.split(",");
+                Map t = new HashMap();
+                if(strArr!=null) {
+                    for (int j = 0; j < strArr.length; j++) {
+                        String kv = strArr[j];
+                        if(!StringUtils.isBlank(kv))
+                        {
+                            t.put(kv.split("=")[0].trim(),kv.split("=")[1]);
+                        }
+
+                    }
+                }
+
                 t.put("appId",appCode);
                 t.put("id",getInterfaceName(lines));
                 String result = "";

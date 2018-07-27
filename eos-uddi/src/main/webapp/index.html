@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+ <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8" />
@@ -241,7 +241,8 @@
 				<li onclick="clickMenu(this)" appid="{{app.app.appId}}"  class="js-menu {{app.appcss}} {{app.selectcss}}"
                     ng-repeat="app in user.userApps">
 					<a href="#{{app.app.url}}" title="General Info">
-						<span class="tab_label">{{app.app.appName}}</span>
+						<span ng-show="{{app.app.appName.length>=5}}" class="tab_label">{{app.app.appName.substr(0,5)}}</span>
+						<span ng-show="{{app.app.appName.length<5}}" class="tab_label">{{app.app.appName}}</span>
 						<span class="tab_info">{{app.app.appName}}</span>
 					</a>
 				</li>
@@ -262,4 +263,33 @@
 		</div>
 	</footer>
 </body>
+ <script>
+	 function change()
+	 {
+	     var appName = ($("#appName").val());
+
+	     $("#appList").children().each(function(i,row){
+	         var exist = false;
+	         if(appName=="")
+			 {
+                 exist = true;
+			 }else {
+                 $(row).children().each(function (i, td) {
+                     if (i == 0 || i == 1) {
+                         if ($(td).text().indexOf(appName) != -1) {
+                             exist = true;
+                         }
+                     }
+                 })
+             }
+			 if(exist)
+			 {
+			     $(row).show();
+			 }else
+			 {
+                 $(row).hide();
+			 }
+		 })
+	 }
+ </script>
 </html>

@@ -94,19 +94,26 @@ indexApp.config(['$routeProvider',
 
 
 indexApp.controller('showApp', function($scope,$routeParams,$http) {
-
     $http.post('/applist.do', {}).success(function(data){
         //var d = data.data;
         console.info(data);
         if(data.status)
         {
-            var applist = data.data;
+            var applist = data.data.applist;
             for(var i=0;i<applist.length;i++)
             {
                 if(i%2==0)
                     applist[i].rowclass = "odd";
                 else
                     applist[i].rowclass = "even";
+            }
+            var role = data.data.userRole;
+            if(role==3)
+            {
+                $scope.manager = true;
+            }else
+            {
+                $scope.manager = false;
             }
             $scope.applist = applist;
         }else
@@ -192,7 +199,7 @@ indexApp.controller('appAdd', function($scope, $routeParams,$http) {
         //saveApp.do
         var app_en = $("#app_en").val();
         var app_cn = $("#app_cn").val();
-        var app_modules = $("#app_modules").val();
+        var app_modules = $("#module").val();
         var dbs = $("#dbs").val();
         $http({
             url: '/saveApp.do',
@@ -258,7 +265,7 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
     $scope.saveApp = function(){
         var app_en = $("#app_en").val();
         var app_cn = $("#app_cn").val();
-        var app_modules = $("#app_modules").val();
+        var app_modules = $("#module").val();
         var dbs = $("#dbs").val();
         var id = $scope.appId;
         $http({
@@ -913,6 +920,11 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
                 role = roles[i].value;
             }
         }
+        if(role=="")
+        {
+            alert("角色不能为空")
+            return;
+        }
 
         var tests = document.getElementsByName("isTest");
         var isTest = "";
@@ -922,6 +934,11 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
             {
                 isTest = tests[i].value;
             }
+        }
+        if(isTest == "")
+        {
+            alert("使用范围不能为空")
+            return;
         }
 
         var app = "";

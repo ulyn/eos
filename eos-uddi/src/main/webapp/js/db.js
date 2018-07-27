@@ -28,6 +28,11 @@ indexApp.controller('dblist', function($scope, $routeParams,$http,$sce) {
         location.href = "#servicelist/"+appId+"/0";
     };
 
+    $scope.back = function()
+    {
+        location.href = "#applist";
+    };
+
     $scope.dbAddFun = function()
     {
         location.href = "#dbAdd/"+appId+"/ADD";

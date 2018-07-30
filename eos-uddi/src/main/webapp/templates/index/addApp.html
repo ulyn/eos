@@ -6,9 +6,7 @@
     </div>
 
     <div class="g_6 contents_options">
-        <div class="simple_buttons">
-            <a href="#applist"><div class="bwIcon i_16_help">返回</div></a>
-        </div>
+            <a class="simple_buttons" href="javascript:void(0)"   ng-click="back()"><div>返回</div></a>
     </div>
 
     <div class="g_12 separator"><span></span></div>
@@ -43,6 +41,19 @@
                 <div class="g_9">
                     <input ng-model="dbs" class="simple_field"
                           name="dbs" id="dbs" type="text" placeholder="多个库用半角逗号分隔，例如：代码库(WG_DM),资源库(WG_ZY)">
+                </div>
+            </div>
+            <div class="line_grid">
+                <div class="g_3"><span class="label">所属业务</span></div>
+                <div class="g_9">
+                    <select readonly="readonly"  ng-model="yw" id="yw">
+                        <option value="">请选择</option>
+                        <option value="1">社会治理业务</option>
+                        <option value="2">共享协同业务</option>
+                        <option value="3">信用业务</option>
+                        <option value="4">教育业务</option>
+                        <option value="5">其他</option>
+                    </select>
                 </div>
             </div>
             <input type="hidden" id="appId" name="appId" ng-model="appId" />

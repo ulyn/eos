@@ -1,7 +1,7 @@
 <div class="grid_wrapper">
 
 <div class="g_6 contents_header">
-    <h3 class="i_16_dashboard tab_label">应用管理</h3>
+    <h3 class="i_16_dashboard tab_label">{{ywname}}</h3>
     <div><span class="label">General Informations and Resume</span></div>
 </div>
 
@@ -35,7 +35,7 @@
                     <td class=" ">{{row.creatTime}}</td>
                     <td class=" " style="width:318px">
                         <a class="simple_buttons" href="#dblist/{{row.appId}}"><div>进入</div></a>
-                        <a class="simple_buttons" ng-if="manager" href="#updateAdd/{{row.appId}}"><div>编辑</div></a>
+                        <a class="simple_buttons" ng-if="manager" href="#updateAdd/{{row.appId}}/{{row.yw}}"><div>编辑</div></a>
                         <a class="simple_buttons" ng-if="manager" href="exportConfig.do?appId={{row.appId}}"><div>导出配置</div></a>
                         <a class="simple_buttons iframe" ng-if="manager" href="templates/config/import.html?appId={{row.appId}}"><div>导入配置</div></a>
                     </td>

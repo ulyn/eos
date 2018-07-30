@@ -11,6 +11,7 @@ import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.MySqlExport;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,104 +40,97 @@ public class AppController {
     @Autowired
     MySqlExport mysql;
 
-    @RequestMapping(value="/applist.do",method= RequestMethod.POST)
-    public void applist(Model model,HttpServletRequest request,HttpServletResponse response)
-            throws Exception {
+    @RequestMapping(value = "/applist.do", method = RequestMethod.POST)
+    public void applist(Model model, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
 
-        List<TApp> apps = appService.listApp();
-        String appName = request.getParameter("appName");
+        String yw = request.getParameter("yw");
+        List<TApp> apps = appService.listApp(yw);
+
         List realApp = new ArrayList();
-        TUser user = (TUser)request.getSession().getAttribute("user");
+        TUser user = (TUser) request.getSession().getAttribute("user");
         String role = user.getRole();
-        if("1".equals(role) || "2".equals(role))
-        {
+        if ("1".equals(role) || "2".equals(role)) {
             List<TUserApp> userApps = user.getUserApps();
-            for(TApp app :apps)
-            {
-                for(TUserApp userApp:userApps)
-                {
-                    if(app.getAppId()==userApp.getApp().getAppId()
-                           )
-                    {
+            for (TApp app : apps) {
+                for (TUserApp userApp : userApps) {
+                    if (app.getAppId() == userApp.getApp().getAppId()
+                        ) {
                         realApp.add(app);
                     }
                 }
 
             }
-        }else
-        {
+        } else {
             realApp = apps;
         }
 
-        Map rst = MapHelper.ofHashMap("applist",realApp,"userRole",role);
+        Map rst = MapHelper.ofHashMap("applist", realApp, "userRole", role);
 
         ResponseHelper.printOut(response, true, "", rst);
 
     }
-    @RequestMapping(value="/saveApp.do",method= RequestMethod.POST)
-    public void saveApp(String app_en,String app_cn,String app_modules,String dbs,HttpServletResponse response)
-            throws Exception {
 
-        appService.saveApp(app_en,app_cn,app_modules,dbs);
+    @RequestMapping(value = "/saveApp.do", method = RequestMethod.POST)
+    public void saveApp(String app_en, String app_cn, String app_modules, String dbs, String yw, HttpServletResponse response)
+        throws Exception {
+
+        appService.saveApp(app_en, app_cn, app_modules, dbs, yw);
         ResponseHelper.printOut(response, true, "", "");
 
     }
 
-    @RequestMapping(value="/updateApp.do",method= RequestMethod.POST)
-    public void updateApp(String id,String app_en,String app_cn,String app_modules,String dbs,HttpServletResponse response)
-            throws Exception {
+    @RequestMapping(value = "/updateApp.do", method = RequestMethod.POST)
+    public void updateApp(String id, String app_en, String app_cn, String app_modules, String dbs, String yw, HttpServletResponse response)
+        throws Exception {
 
-        appService.updateApp(id,app_en,app_cn,app_modules,dbs);
+        appService.updateApp(id, app_en, app_cn, app_modules, dbs, yw);
         ResponseHelper.printOut(response, true, "", "");
 
     }
 
-    @RequestMapping(value="/loadApp.do",method= RequestMethod.POST)
-    public void loadApp(String appId,HttpServletRequest request,HttpServletResponse response)
-            throws Exception {
+    @RequestMapping(value = "/loadApp.do", method = RequestMethod.POST)
+    public void loadApp(String appId, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
 
         TApp app = appService.loadApp(appId);
         ResponseHelper.printOut(response, true, "", app);
 
     }
-    @RequestMapping(value="/export.do",method= RequestMethod.GET)
-    public void export(HttpServletRequest request,HttpServletResponse response) throws Exception
-    {
+
+    @RequestMapping(value = "/export.do", method = RequestMethod.GET)
+    public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String uuid = StringUtils.genUUID();
         String apps = request.getParameter("apps");
-        mysql.export(apps,uuid);
-        String zipPath = SysInit.path+ File.separator+"zip"+File.separator+uuid;
+        mysql.export(apps, uuid);
+        String zipPath = SysInit.path + File.separator + "zip" + File.separator + uuid;
         AntZip zip = new AntZip();
 
         String d = DateUtils.getDBString(new Date());
         //ResponseHelper.printOut(response, true, "", "");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename="+new String((d.substring(0,8)+".zip").getBytes("UTF-8"), "ISO8859-1"));
-        zip.doZip(zipPath,response.getOutputStream());
+            + " filename=" + new String((d.substring(0, 8) + ".zip").getBytes("UTF-8"), "ISO8859-1"));
+        zip.doZip(zipPath, response.getOutputStream());
     }
 
 
-
-    @RequestMapping(value="/import.do",method= RequestMethod.POST)
-    public void importPkg(HttpServletRequest request,HttpServletResponse response) throws Exception
-    {
-        try
-        {
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-        // 获得文件
-        MultipartFile imgFile  =  multipartRequest.getFile("pkg");
-        String uuid = com.sunsharing.component.utils.base.StringUtils.generateUUID();
-        File f = new File(uuid+".zip");
-        imgFile.transferTo(f);
-        appService.loadZip(uuid+".zip");
-        String script = "<script>parent.alert(\"保存成功\");</script>";
-            ResponseHelper.printOut(response,script);
-        }catch (Exception e)
-        {
+    @RequestMapping(value = "/import.do", method = RequestMethod.POST)
+    public void importPkg(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            // 获得文件
+            MultipartFile imgFile = multipartRequest.getFile("pkg");
+            String uuid = com.sunsharing.component.utils.base.StringUtils.generateUUID();
+            File f = new File(uuid + ".zip");
+            imgFile.transferTo(f);
+            appService.loadZip(uuid + ".zip");
+            String script = "<script>parent.alert(\"保存成功\");</script>";
+            ResponseHelper.printOut(response, script);
+        } catch (Exception e) {
             e.printStackTrace();
             String script = "<script>parent.alert(\"保存失败\");</script>";
-            ResponseHelper.printOut(response,script);
+            ResponseHelper.printOut(response, script);
         }
 
     }

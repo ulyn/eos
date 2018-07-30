@@ -3,15 +3,15 @@ var indexApp = angular.module('indexApp', ['ngResource', 'ngRoute']);
 indexApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
-            when('/applist', {
+            when('/applist/:id', {
                 templateUrl: 'templates/index/app.html',
                 //template:'criss',
                 controller: 'showApp'
-            }).when('/appAdd', {
+            }).when('/appAdd/:yw', {
                 templateUrl: 'templates/index/addApp.html',
                 //template:'criss',
                 controller: 'appAdd'
-            }).when('/updateAdd/:id', {
+            }).when('/updateAdd/:id/:yw', {
                 templateUrl: 'templates/index/addApp.html',
                 //template:'criss',
                 controller: 'updateAdd'
@@ -94,7 +94,26 @@ indexApp.config(['$routeProvider',
 
 
 indexApp.controller('showApp', function($scope,$routeParams,$http) {
-    $http.post('/applist.do', {}).success(function(data){
+    var yw = $routeParams.id;
+    var ywname = "";
+    if(yw == "1"){
+        ywname = "社会治理业务";
+    }
+    if(yw == "2"){
+        ywname = "共享协同业务";
+    }
+    if(yw == "3"){
+        ywname = "信用业务"
+    }
+    if(yw == "4"){
+        ywname = "教育业务";
+    }
+    if(yw == "5"){
+        ywname = "其他";
+    }
+    $scope.ywname = ywname;
+
+    $http.post('/applist.do?yw='+yw,{}).success(function(data){
         //var d = data.data;
         console.info(data);
         if(data.status)
@@ -124,12 +143,12 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
 
     $scope.addApp = function()
     {
-        location.href = "#appAdd";
+        location.href = "#appAdd/"+yw;
     }
 
     $scope.edit = function(id)
     {
-        location.href = "#updateAdd/"+id;
+        location.href = "#updateAdd/"+id+"/"+yw;
     }
 
     $scope.import = function()
@@ -193,7 +212,12 @@ indexApp.controller('import', function($scope,$routeParams,$http) {
 
 indexApp.controller('appAdd', function($scope, $routeParams,$http) {
 //
+    var yw = $routeParams.yw;
 
+    $scope.yw = yw;
+    $scope.back = function(){
+        location.href = "#applist/"+yw;
+    }
 
     $scope.saveApp = function(){
         //saveApp.do
@@ -201,16 +225,17 @@ indexApp.controller('appAdd', function($scope, $routeParams,$http) {
         var app_cn = $("#app_cn").val();
         var app_modules = $("#module").val();
         var dbs = $("#dbs").val();
+        var yw = $("#yw").val();
         $http({
             url: '/saveApp.do',
             method: "POST",
-            data: "app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules+"&dbs="+dbs,
+            data: "app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules+"&dbs="+dbs+"&yw="+yw,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
                 if(data.status)
                 {
                     alert("保存成功");
-                    location.href="#applist";
+                    location.href="#applist/"+yw;
                 }else
                 {
                     alert(data.msg);
@@ -223,6 +248,10 @@ indexApp.controller('appAdd', function($scope, $routeParams,$http) {
 
 indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
     var id = $routeParams.id;
+    var yw = $routeParams.yw;
+    $scope.back = function(){
+        location.href = "#applist/"+yw;
+    }
     $http({
         url: '/loadApp.do',
         method: "POST",
@@ -237,6 +266,7 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
                 var appCode = app.appCode;
                 var modules = app.modules;
                 var dbs = app.dbs;
+                var yw = app.yw;
                 var module = "";
                 for(var i=0;i<modules.length;i++)
                 {
@@ -249,12 +279,14 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
                         module = module.substr(0,module.length-1);
                     }
                 }
+
+
                 $scope.appId = appId;
                 $scope.appName = appName;
                 $scope.appCode = appCode;
                 $scope.module = module;
                 $scope.dbs = dbs;
-
+                $scope.yw = yw;
             }else
             {
                 alert(data.msg);
@@ -267,17 +299,18 @@ indexApp.controller('updateAdd', function($scope, $routeParams,$http) {
         var app_cn = $("#app_cn").val();
         var app_modules = $("#module").val();
         var dbs = $("#dbs").val();
+        var yw = $("#yw").val();
         var id = $scope.appId;
         $http({
             url: '/updateApp.do',
             method: "POST",
-            data: "id="+id+"&app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules+"&dbs="+dbs,
+            data: "id="+id+"&app_en="+app_en+"&app_cn="+app_cn+"&app_modules="+app_modules+"&dbs="+dbs+"&yw="+yw,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
                 if(data.status)
                 {
                     alert("保存成功");
-                    location.href="#applist";
+                    location.href="#applist/"+yw;
                 }else
                 {
                     alert(data.msg);

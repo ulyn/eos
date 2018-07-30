@@ -55,7 +55,7 @@ public class UserController {
             {
                 throw new RuntimeException("你的账号还没有开通，请联系管理员");
             }
-            jonObject.put("url","applist");
+            jonObject.put("url","applist/1");
             ResponseHelper.printOut(response,true,"",jonObject);
         }else
         {
@@ -88,22 +88,20 @@ public class UserController {
 //            JSONObject app = obj.getJSONObject("app");
 //            app.put("url","servicelist/"+app.getString("appId")+"/0");
 //        }
-
-        JSONObject jsonObject3 = new JSONObject();
-        JSONObject app3 = new JSONObject();
-        app3.put("appName", "应用管理");
-        app3.put("appCode", "APP");
-        app3.put("url", "applist");
-        jsonObject3.put("app", app3);
-        array.add(jsonObject3);
+        addApp(array,"社会治理","applist/1");
+        addApp(array,"共享协同","applist/2");
+        addApp(array,"信用业务","applist/3");
+        addApp(array,"教育业务","applist/4");
+        addApp(array,"其他","applist/5");
+        //array.add(jsonObject3);
 
 
         if(user.getRole().equals("3") || user.getRole().equals("4"))
         {
             //管理员
-            List<TApp> apps = appService.listApp();
-            Collections.sort(apps);
-            String listStr = JSONArray.toJSONString(apps);
+//            List<TApp> apps = appService.listApp();
+//            Collections.sort(apps);
+//            String listStr = JSONArray.toJSONString(apps);
 
             if(user.getRole().equals("3")) {
 
@@ -183,7 +181,7 @@ public class UserController {
     {
         TUser user = service.loadUser(id);
 
-        List<TApp> list = appService.listApp();
+        List<TApp> list = appService.listApp("");
 
         String userStr = JSONObject.toJSONString(user);
         String listStr = JSONArray.toJSONString(list);
@@ -212,6 +210,16 @@ public class UserController {
     {
         TUser user = (TUser)request.getSession().getAttribute("user");
         ResponseHelper.printOut(response,JSONObject.toJSONString(user));
+    }
+
+    public void addApp(JSONArray array,String name,String url){
+        JSONObject jsonObject3 = new JSONObject();
+        JSONObject app3 = new JSONObject();
+        app3.put("appName", name);
+        app3.put("appCode", "APP");
+        app3.put("url", url);
+        jsonObject3.put("app", app3);
+        array.add(jsonObject3);
     }
 
 

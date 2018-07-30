@@ -17,6 +17,7 @@ public class TApp implements Comparable {
     private String appCode;
     private String dbs;
     private String creatTime;
+    private String yw;
 
     List<TModule> modules = new ArrayList<TModule>();
 
@@ -116,5 +117,15 @@ public class TApp implements Comparable {
         {
             return 0;
         }
+    }
+
+    @Basic
+    @Column(name = "YW")
+    public String getYw() {
+        return yw;
+    }
+
+    public void setYw(String yw) {
+        this.yw = yw;
     }
 }

@@ -52,19 +52,24 @@ public class AppService {
        return appDao.find(sql);
     }
 
-    public List<TApp> listApp()
+    public List<TApp> listApp(String yw)
     {
-        String app = "from TApp order by creatTime desc";
+        if(StringUtils.isBlank(yw)){
+            String app = "from TApp  order by creatTime desc";
+            return appDao.find(app);
+        }
+        String app = "from TApp where yw='"+yw+"' order by creatTime desc";
         return appDao.find(app);
     }
 
-    public void saveApp(String app_en,String app_cn,String modules,String dbs)
+    public void saveApp(String app_en,String app_cn,String modules,String dbs,String yw)
     {
         TApp app = new TApp();
         app.setAppCode(app_en);
         app.setAppName(app_cn);
         app.setDbs(dbs);
         app.setCreatTime(DateUtils.getDBString(new Date()));
+        app.setYw(yw);
 
 
         String[] moduleArr = modules.split(",");
@@ -79,12 +84,13 @@ public class AppService {
         appDao.save(app);
     }
 
-    public void updateApp(String appId,String app_en,String app_cn,String modules,String dbs)
+    public void updateApp(String appId,String app_en,String app_cn,String modules,String dbs,String yw)
     {
         TApp app = appDao.get(new Integer(appId));
         app.setAppCode(app_en);
         app.setAppName(app_cn);
         app.setDbs(dbs);
+        app.setYw(yw);
 
         app.getModules().clear();
 

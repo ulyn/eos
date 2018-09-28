@@ -7,7 +7,7 @@
     <groupId>com.sunsharing.component</groupId>
     <artifactId>eos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.3.0</version>
+    <version>3.3.1-SNAPSHOT</version>
     <modules>
         <module>eos-common</module>
         <module>eos-manager</module>
@@ -15,6 +15,7 @@
         <module>eos-server</module>
         <module>eos-uddi</module>
         <module>eos-client-proxy</module>
+        <module>eos-parameter-valid</module>
     </modules>
 
     <properties>
@@ -26,7 +27,7 @@
         <zookeeper_version>3.4.5</zookeeper_version>
         <resvalidate_version>1.2.8</resvalidate_version>
         <utils_version>2.0.1</utils_version>
-        <springframework_version>3.0.5.RELEASE</springframework_version>
+        <springframework_version>3.2.9.RELEASE</springframework_version>
     </properties>
     <distributionManagement>
         <repository>
@@ -92,6 +93,21 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
+                <version>${springframework_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${springframework_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${springframework_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
                 <version>${springframework_version}</version>
             </dependency>
             <dependency>

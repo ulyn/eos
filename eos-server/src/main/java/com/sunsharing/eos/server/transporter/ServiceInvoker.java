@@ -14,6 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
+
 package com.sunsharing.eos.server.transporter;
 
 import com.alibaba.fastjson.JSON;
@@ -26,6 +27,7 @@ import com.sunsharing.eos.common.filter.FilterChain;
 import com.sunsharing.eos.common.filter.ServiceFilterException;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.server.sys.EosServerProp;
+
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,23 +89,23 @@ public class ServiceInvoker extends AbstractServiceFilter {
                 ServiceMethod serviceMethod = serviceConfig.getMethod(req.getMethod());
                 if (serviceMethod == null) {
                     throw new NoSuchMethodException(
-                            String.format("服务%s没有指定的方法：%s",req.getServiceId(),req.getMethod()));
+                        String.format("服务%s没有指定的方法：%s", req.getServiceId(), req.getMethod()));
                 }
 
                 //这边暂时直接使用jdk代理执行
                 Method m = serviceMethod.getMethod();
                 String[] parameterNames = serviceMethod.getParameterNames();
                 Object[] args = null;
-                if(parameterNames != null){
+                if (parameterNames != null) {
                     Type[] parameterTypes = m.getGenericParameterTypes();
                     args = new Object[parameterTypes.length];
-                    for(int i=0,l= args.length;i<l;i++){
+                    for (int i = 0, l = args.length; i < l; i++) {
                         String parameterName = parameterNames[i];
                         Type paramType = parameterTypes[i];
-                        if(paramType instanceof ParameterizedType){
+                        if (paramType instanceof ParameterizedType) {
 //                            Type[]genericTypes = ((ParameterizedType)paramType).getActualTypeArguments();
-                            args[i] = req.getParameter(parameterName, (ParameterizedType)paramType);
-                        }else {
+                            args[i] = req.getParameter(parameterName, (ParameterizedType) paramType);
+                        } else {
                             args[i] = req.getParameter(parameterName, (Class) paramType);
                         }
                     }
@@ -116,6 +119,13 @@ public class ServiceInvoker extends AbstractServiceFilter {
             } catch (InvocationTargetException e) {
                 logger.error("处理服务InvocationTargetException异常", e);
                 res.writeError(e.getTargetException());
+            } catch (UndeclaredThrowableException e) {
+                logger.error("处理服务UndeclaredThrowableException异常", e);
+                if (e.getUndeclaredThrowable() instanceof InvocationTargetException) {
+                    res.writeError(((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException());
+                } else {
+                    res.writeError(e.getUndeclaredThrowable());
+                }
             } catch (Exception th) {
                 String errorMsg = "执行反射方法异常" + serviceConfig.getId() + " - " + req.getMethod();
                 logger.error(errorMsg, th);
@@ -125,7 +135,7 @@ public class ServiceInvoker extends AbstractServiceFilter {
             }
         } else {
             String errorMsg = String.format("%s(%s) 没有发现指定的serviceId：%s"
-                    ,EosServerProp.appId,EosServerProp.localIp,req.getServiceId());
+                , EosServerProp.appId, EosServerProp.localIp, req.getServiceId());
             logger.error(errorMsg);
             res.writeError(new IllegalArgumentException(errorMsg));
         }

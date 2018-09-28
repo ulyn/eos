@@ -32,6 +32,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @Aspect
@@ -40,6 +41,8 @@ public class ValidSupportAspect {
 
     @Autowired
     private Validator validator;
+    @Resource(name = "shareExceptionHandlerAdvice4Eos")
+    protected ShareExceptionHandlerAdvice4Eos shareExceptionHandlerAdvice4Eos;
 
     @Before("execution(* *(@org.springframework.validation.annotation.Validated (*)))")
     public void validated(JoinPoint jp) throws MethodArgumentNotValidException {
@@ -87,7 +90,9 @@ public class ValidSupportAspect {
                             validator.validate(arg, bindingResult);
                         }
                         if (bindingResult.hasErrors()) {
-                            throw new MethodArgumentNotValidException(new MethodParameter(interfaceMethod, i), bindingResult);
+                            throw shareExceptionHandlerAdvice4Eos.trans2ValidShareException(
+                                new MethodArgumentNotValidException(new MethodParameter(interfaceMethod, i), bindingResult)
+                            );
                         }
                     }
                 }
@@ -102,4 +107,6 @@ public class ValidSupportAspect {
             throw new RuntimeException("入参为null，无法校验");
         }
     }
+
+
 }

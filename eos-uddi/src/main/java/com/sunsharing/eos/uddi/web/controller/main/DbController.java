@@ -7,11 +7,16 @@ import com.sunsharing.component.resvalidate.util.Encoding;
 import com.sunsharing.component.resvalidate.util.SinoDetect;
 import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.component.utils.base.StringUtils;
-import com.sunsharing.eos.uddi.model.*;
+import com.sunsharing.eos.uddi.model.TApp;
+import com.sunsharing.eos.uddi.model.TDbChange;
+import com.sunsharing.eos.uddi.model.TDbChecklist;
+import com.sunsharing.eos.uddi.model.TDbPdm;
+import com.sunsharing.eos.uddi.model.TUser;
 import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.DbChangeService;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -25,13 +30,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by criss on 16/2/25.
@@ -43,7 +54,13 @@ public class DbController {
 
     @Autowired
     DbChangeService dbChangeService;
-
+    @RequestMapping(value="/setHasSend.do",method= RequestMethod.POST)
+    public void setHasSend(Model model,HttpServletRequest request,
+                    HttpServletResponse response) throws Exception {
+        String id = request.getParameter("id");
+        dbChangeService.setHasSend(id);
+        ResponseHelper.printOut(response, true, "", "");
+    }
     @RequestMapping(value="/listDb.do",method= RequestMethod.POST)
     public void eos(Model model,HttpServletRequest request,
                     HttpServletResponse response) throws Exception {

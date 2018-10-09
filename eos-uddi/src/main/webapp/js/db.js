@@ -42,7 +42,14 @@ indexApp.controller('dblist', function($scope, $routeParams,$http,$sce) {
     {
       location.href = "#dbAdd/"+appId+"/"+changeId;
     };
+    $scope.setHasSend = function (id) {
+        //设置为已发包
+        $http.post('/setHasSend.do?id='+id, {}).success(function(data){
+            alert("设置成功！");
+            $scope.getList("0");
+        });
 
+    }
     $scope.getList = function(status)
     {
         $http.post('/listDb.do?appId='+appId+"&status="+status, {}).success(function(data){

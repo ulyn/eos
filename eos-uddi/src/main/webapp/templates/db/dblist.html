@@ -83,8 +83,10 @@
                             <td class=" " ng-bind-html="row.changeLog"></td>
                             <td class=" ">
                                 <a href="#dbAdd/{{appId}}/{{row.id}}">修改</a>&nbsp;
-                                <a href="downloadDb.do?name=script&changeId={{row.id}}">下载脚本</a>
-                                <a href="#viewDbScript/{{appId}}/{{row.id}}">预览</a>
+                                <a href="#viewDbScript/{{appId}}/{{row.id}}">预览</a><br>
+                                <a href="downloadDb.do?name=script&changeId={{row.id}}">下载脚本</a><br>
+                                <a ng-if="row.send!='1'" href="javascript:void(0)" ng-click="setHasSend(row.id)">设为发包</a>
+                                <a ng-if="row.send=='1'" href="javascript:void(0)">已发包</a>
                             </td>
                         </tr>
                         </tbody>

@@ -3,7 +3,12 @@ package com.sunsharing.eos.uddi.service;
 import com.sunsharing.component.utils.base.DateUtils;
 import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.uddi.dao.SimpleHibernateDao;
-import com.sunsharing.eos.uddi.model.*;
+import com.sunsharing.eos.uddi.model.TApp;
+import com.sunsharing.eos.uddi.model.TDbChange;
+import com.sunsharing.eos.uddi.model.TDbChecklist;
+import com.sunsharing.eos.uddi.model.TDbPdm;
+import com.sunsharing.eos.uddi.model.TUser;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -205,5 +210,9 @@ public class DbChangeService {
     }
 
 
-
+    public void setHasSend(String id) {
+        TDbChange change = dbChangeDao.get(Integer.valueOf(id));
+        change.setHasSend("1");
+        dbChangeDao.update(change);
+    }
 }

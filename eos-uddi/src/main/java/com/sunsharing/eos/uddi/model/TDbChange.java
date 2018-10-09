@@ -1,8 +1,19 @@
 package com.sunsharing.eos.uddi.model;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * Created by criss on 16/2/24.
@@ -21,6 +32,7 @@ public class TDbChange {
     private String script;
     private String module;
     private String dbType;
+    private String hasSend;
 
     private List<TDbChecklist> dbChecklistList =
             new ArrayList<TDbChecklist>();
@@ -124,6 +136,15 @@ public class TDbChange {
 
     public void setDbType(String dbType) {
         this.dbType = dbType;
+    }
+    @Basic
+    @Column(name = "HAS_SEND")
+    public String getHasSend() {
+        return hasSend;
+    }
+
+    public void setHasSend(String hasSend) {
+        this.hasSend = hasSend;
     }
 
     @OneToMany(mappedBy="change")

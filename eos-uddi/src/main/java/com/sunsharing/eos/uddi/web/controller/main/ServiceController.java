@@ -58,10 +58,10 @@ public class ServiceController {
             List<TServiceVersion> versons =  service.getVersions();
             Collections.sort(versons, new Comparator<TServiceVersion>() {
                 public int compare(TServiceVersion tServiceVersion, TServiceVersion t1) {
-                    if(tServiceVersion.getVersionId()>t1.getVersionId())
+                    if(tServiceVersion.getVersionId().compareTo(t1.getVersionId()) > 0 )
                     {
                         return -1;
-                    }else if(tServiceVersion.getVersionId()<t1.getVersionId())
+                    }else if(tServiceVersion.getVersionId().compareTo(t1.getVersionId()) < 0)
                     {
                         return 1;
                     }else
@@ -203,7 +203,7 @@ public class ServiceController {
         {
             Map o = new HashMap();
             String v = version1.getServiceVersion();
-            int vId = version1.getVersionId();
+            String vId = version1.getVersionId();
             o.put("version",v);
             o.put("versionId",vId);
             //o.put("versionId",vId);

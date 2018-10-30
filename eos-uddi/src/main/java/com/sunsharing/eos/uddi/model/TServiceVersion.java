@@ -1,6 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,12 +15,16 @@ import java.util.List;
 @Entity
 @Table(name = "T_SERVICE_VERSION")
 public class TServiceVersion {
-    private int versionId;
+    private String versionId;
     private TService service;
     private String appCode;
     private String status;
     private String serviceVersion;
     private String createTime;
+
+    public TServiceVersion(){
+        this.versionId = StringUtils.genUUID();
+    }
 
     List<TMethod> methods = new ArrayList<TMethod>();
 
@@ -33,12 +40,12 @@ public class TServiceVersion {
 
     @Id
     @Column(name = "VERSION_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    public int getVersionId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getVersionId() {
         return versionId;
     }
 
-    public void setVersionId(int versionId) {
+    public void setVersionId(String versionId) {
         this.versionId = versionId;
     }
 
@@ -110,7 +117,7 @@ public class TServiceVersion {
 
     @Override
     public int hashCode() {
-        int result = versionId;
+        int result = versionId.hashCode();
         //result = 31 * result + (serviceId != null ? serviceId.hashCode() : 0);
         result = 31 * result + (appCode != null ? appCode.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);

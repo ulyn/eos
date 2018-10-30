@@ -30,28 +30,28 @@ public class DbChangeService {
     @Autowired
     JdbcTemplate jdbc;
 
-    private SimpleHibernateDao<TDbChange, Integer> dbChangeDao;//用户管理
-    private SimpleHibernateDao<TDbChecklist, Integer> dbCheckListDao;//用户管理
-    private SimpleHibernateDao<TDbPdm, Integer> pdmDao;//用户管理
-    private SimpleHibernateDao<TUser, Integer> userDao;//用户管理
-    private SimpleHibernateDao<TApp, Integer> appDao;//用户管理
-    private SimpleHibernateDao<TDbChecklist, Integer> checkListDao;//用户管理
+    private SimpleHibernateDao<TDbChange, String> dbChangeDao;//用户管理
+    private SimpleHibernateDao<TDbChecklist, String> dbCheckListDao;//用户管理
+    private SimpleHibernateDao<TDbPdm, String> pdmDao;//用户管理
+    private SimpleHibernateDao<TUser, String> userDao;//用户管理
+    private SimpleHibernateDao<TApp, String> appDao;//用户管理
+    private SimpleHibernateDao<TDbChecklist, String> checkListDao;//用户管理
 
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory) {
-        dbChangeDao = new SimpleHibernateDao<TDbChange, Integer>(sessionFactory, TDbChange.class);
-        dbCheckListDao = new SimpleHibernateDao<TDbChecklist, Integer>(sessionFactory, TDbChecklist.class);
-        pdmDao = new SimpleHibernateDao<TDbPdm, Integer>(sessionFactory, TDbPdm.class);
-        userDao = new SimpleHibernateDao<TUser, Integer>(sessionFactory, TUser.class);
-        appDao = new SimpleHibernateDao<TApp, Integer>(sessionFactory, TApp.class);
-        checkListDao = new SimpleHibernateDao<TDbChecklist, Integer>(sessionFactory, TDbChecklist.class);
+        dbChangeDao = new SimpleHibernateDao<TDbChange, String>(sessionFactory, TDbChange.class);
+        dbCheckListDao = new SimpleHibernateDao<TDbChecklist, String>(sessionFactory, TDbChecklist.class);
+        pdmDao = new SimpleHibernateDao<TDbPdm, String>(sessionFactory, TDbPdm.class);
+        userDao = new SimpleHibernateDao<TUser, String>(sessionFactory, TUser.class);
+        appDao = new SimpleHibernateDao<TApp, String>(sessionFactory, TApp.class);
+        checkListDao = new SimpleHibernateDao<TDbChecklist, String>(sessionFactory, TDbChecklist.class);
     }
 
     public List<TDbChange> list(String appId)
     {
         String hql = "from TDbChange where appId.appId=?  order by version desc";
-        Query query = dbCheckListDao.createQuery(hql,new Integer(appId));
+        Query query = dbCheckListDao.createQuery(hql,appId);
         query.setMaxResults(100);
         return  query.list();
     }
@@ -70,7 +70,7 @@ public class DbChangeService {
         return dbChangeDao.find(hql,new Integer(appId),beginVersion,endVersion);
     }
 
-    public TDbPdm isNotMyLock(int appId,int userId)
+    public TDbPdm isNotMyLock(String appId,String userId)
     {
         List<TDbPdm> pdmList = pdmDao.
                 find("from TDbPdm where lock=? and appId.appId=? and lockUserId.userId<>?",
@@ -86,7 +86,7 @@ public class DbChangeService {
 
     public TDbChange loadDbchange(String changeId)
     {
-        TDbChange change = dbChangeDao.get(new Integer(changeId));
+        TDbChange change = dbChangeDao.get(new String(changeId));
         change.getDbChecklistList().size();
         return change;
     }
@@ -95,7 +95,7 @@ public class DbChangeService {
     {
 
         String dt = DateUtils.getDBString(new Date()).substring(0,8);
-        String sql = "select count(*)+1 from T_DB_CHANGE where APP_ID="+appId+" AND PUBISH_TIME like '"+dt+"%'";
+        String sql = "select count(*)+1 from T_DB_CHANGE where APP_ID='"+appId+"' AND PUBISH_TIME like '"+dt+"%'";
         String num = jdbc.queryForInt(sql)+"";
         for(int i=0;i<3-num.length();i++)
         {
@@ -105,13 +105,13 @@ public class DbChangeService {
     }
 
     public void saveChange(String appId,String changelog,
-                           String db,int userId,String changeId,String module,String dbType)
+                           String db,String userId,String changeId,String module,String dbType)
     {
-        TApp app = appDao.get(new Integer(appId));
-        TUser user = userDao.get(new Integer(userId));
+        TApp app = appDao.get(new String(appId));
+        TUser user = userDao.get(new String(userId));
 
         List<TDbPdm> pdmList = pdmDao.find("from TDbPdm where appId.appId=?",
-                new Integer(appId));
+                appId);
         if(pdmList.size() == 0)
         {
             TDbPdm pdm = new TDbPdm();
@@ -167,7 +167,7 @@ public class DbChangeService {
     public TDbPdm loadDbPdm(String appId)
     {
         String hql = "from TDbPdm where appId.appId=?";
-        List<TDbPdm> pdmList = pdmDao.find(hql,new Integer(appId));
+        List<TDbPdm> pdmList = pdmDao.find(hql, appId);
         if(pdmList.size()>0)
         {
             return pdmList.get(0);
@@ -211,7 +211,7 @@ public class DbChangeService {
 
 
     public void setHasSend(String id) {
-        TDbChange change = dbChangeDao.get(Integer.valueOf(id));
+        TDbChange change = dbChangeDao.get((id));
         change.setHasSend("1");
         dbChangeDao.update(change);
     }

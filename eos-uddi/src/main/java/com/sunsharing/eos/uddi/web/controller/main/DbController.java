@@ -65,8 +65,8 @@ public class DbController {
     public void eos(Model model,HttpServletRequest request,
                     HttpServletResponse response) throws Exception {
 
-        Map<Integer,Boolean> changeStatus = new HashMap<Integer, Boolean>();
-        Map<Integer,String> userName = new HashMap<Integer, String>();
+        Map<String,Boolean> changeStatus = new HashMap<String, Boolean>();
+        Map<String,String> userName = new HashMap<String, String>();
 
         String appId = request.getParameter("appId");
         String status = request.getParameter("status");
@@ -82,7 +82,7 @@ public class DbController {
         for (Iterator iterator = arrayTo.iterator(); iterator.hasNext(); ) {
             JSONObject next =  (JSONObject)iterator.next();
             String pubishTime = (String)next.get("pubishTime");
-            int id = next.getInteger("id");
+            String id = next.getString("id");
             boolean checkStatus = changeStatus.get(id);
             if(status.equals("1"))
             {
@@ -317,7 +317,7 @@ public class DbController {
         try {
             TUser user = (TUser) request.getSession().getAttribute("user");
             changelog = request.getParameter("changelog");
-            TDbPdm pdm = dbChangeService.isNotMyLock(new Integer(appId), user.getUserId());
+            TDbPdm pdm = dbChangeService.isNotMyLock(new String(appId), user.getUserId());
             if (pdm != null) {
                 String result = ResponseHelper.covert2Json(false, "pdm已经被" + pdm.getLockUserId().
                         getUserName() + "锁定", "");

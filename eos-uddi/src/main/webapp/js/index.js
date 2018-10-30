@@ -77,13 +77,13 @@ indexApp.config(['$routeProvider',
                 controller: 'runval'
             })
 
-            .when('/dblist/:appId',{
+            .when('/dblist/:appId/:yw',{
                 templateUrl: 'templates/db/dblist.html',
                 controller: 'dblist'
-            }).when('/dbAdd/:appId/:changeId',{
+            }).when('/dbAdd/:appId/:changeId/:yw',{
                 templateUrl: 'templates/db/dbAdd.html',
                 controller: 'dbAdd'
-            }).when('/viewDbScript/:appId/:changeId',{
+            }).when('/viewDbScript/:appId/:changeId/:yw',{
                 templateUrl: 'templates/db/scriptview.html',
                 controller: 'viewDbScript'
             });
@@ -108,10 +108,11 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
     if(yw == "4"){
         ywname = "教育业务";
     }
-    if(yw == "5"){
+    if(yw == "5" || yw==""){
         ywname = "其他";
     }
     $scope.ywname = ywname;
+    $scope.yw = yw;
 
     $http.post('/applist.do?yw='+yw,{}).success(function(data){
         //var d = data.data;

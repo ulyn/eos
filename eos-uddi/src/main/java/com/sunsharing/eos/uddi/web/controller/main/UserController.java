@@ -181,7 +181,7 @@ public class UserController {
     {
         TUser user = service.loadUser(id);
 
-        List<TApp> list = appService.listApp("");
+        List<TApp> list = appService.listApp(user.getYw());
 
         String userStr = JSONObject.toJSONString(user);
         String listStr = JSONArray.toJSONString(list);
@@ -199,9 +199,9 @@ public class UserController {
     }
 
     @RequestMapping(value="/saveUser.do",method= RequestMethod.POST)
-    public void saveUser(String username,String pwd,String email,HttpServletRequest request,HttpServletResponse response)
+    public void saveUser(String username,String pwd,String email,String yw,HttpServletRequest request,HttpServletResponse response)
     {
-        service.addUser(username,pwd,email);
+        service.addUser(username,pwd,email,yw);
         ResponseHelper.printOut(response,true,"","");
     }
 

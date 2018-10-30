@@ -52,29 +52,29 @@ public class NodeJSService {
     Logger logger = Logger.getLogger(NodeJSService.class);
     @Autowired
     JdbcTemplate jdbc;
-    private SimpleHibernateDao<TService, Integer> serviceDao;//用户管理
-    private SimpleHibernateDao<TApp, Integer> appDao;//用户管理
-    private SimpleHibernateDao<TServiceVersion, Integer> versionDao;//用户管理
-    private SimpleHibernateDao<TUser, Integer> userDao;//用户管理
-    private SimpleHibernateDao<TUserApp, Integer> userAppDao;//用户管理
-    private SimpleHibernateDao<TMethod, Integer> methodDao;//用户管理
-    private SimpleHibernateDao<TModule, Integer> moduleDao;//用户管理
+    private SimpleHibernateDao<TService, String> serviceDao;//用户管理
+    private SimpleHibernateDao<TApp, String> appDao;//用户管理
+    private SimpleHibernateDao<TServiceVersion, String> versionDao;//用户管理
+    private SimpleHibernateDao<TUser, String> userDao;//用户管理
+    private SimpleHibernateDao<TUserApp, String> userAppDao;//用户管理
+    private SimpleHibernateDao<TMethod, String> methodDao;//用户管理
+    private SimpleHibernateDao<TModule, String> moduleDao;//用户管理
 
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory) {
-        serviceDao = new SimpleHibernateDao<TService, Integer>(sessionFactory, TService.class);
-        appDao = new SimpleHibernateDao<TApp, Integer>(sessionFactory, TApp.class);
-        versionDao = new SimpleHibernateDao<TServiceVersion, Integer>(sessionFactory, TServiceVersion.class);
-        userDao = new SimpleHibernateDao<TUser, Integer>(sessionFactory, TUser.class);
-        userAppDao = new SimpleHibernateDao<TUserApp, Integer>(sessionFactory, TUserApp.class);
-        methodDao = new SimpleHibernateDao<TMethod, Integer>(sessionFactory, TMethod.class);
-        moduleDao = new SimpleHibernateDao<TModule, Integer>(sessionFactory, TModule.class);
+        serviceDao = new SimpleHibernateDao<TService, String>(sessionFactory, TService.class);
+        appDao = new SimpleHibernateDao<TApp, String>(sessionFactory, TApp.class);
+        versionDao = new SimpleHibernateDao<TServiceVersion, String>(sessionFactory, TServiceVersion.class);
+        userDao = new SimpleHibernateDao<TUser, String>(sessionFactory, TUser.class);
+        userAppDao = new SimpleHibernateDao<TUserApp, String>(sessionFactory, TUserApp.class);
+        methodDao = new SimpleHibernateDao<TMethod, String>(sessionFactory, TMethod.class);
+        moduleDao = new SimpleHibernateDao<TModule, String>(sessionFactory, TModule.class);
     }
 
     public Map getNpmVersion(String appId) {
         Map map = new HashMap();
-        TApp app = appDao.get(new Integer(appId));
+        TApp app = appDao.get(new String(appId));
         String queryStr = "ss-eos-" + app.getAppCode();
         map.put("name", queryStr);
         String result = new WindowsExec().run("cnpm.cmd info " + queryStr + " version");
@@ -93,7 +93,7 @@ public class NodeJSService {
     }
 
     public Map publishCNPM(String appId, String oldVersion) throws Exception {
-        TApp app = appDao.get(new Integer(appId));
+        TApp app = appDao.get(new String(appId));
         List<TService> servicesTemp = serviceDao.find("from TService where appId=?", new Integer(appId));
         List<TService> services = new ArrayList<TService>();
         for (TService service : servicesTemp) {

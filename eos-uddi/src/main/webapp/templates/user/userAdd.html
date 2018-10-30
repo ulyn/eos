@@ -22,6 +22,17 @@
             </div>
 
             <div class="line_grid">
+                <div class="g_3"><span class="label">业务线</span></div>
+                <div class="g_9">
+                    <span ng-repeat="row in yws">
+                    <input type="checkbox" name="app" ng-checked="row.checked" value="{{row.appId}}"
+                           class="simple_form"/><span class="label">{{row.appName}}</span>
+                    </span>
+                    <!--<span class="label">[有个BUG无法默认选中，你选中的应用为:{{selectApp}}]</span>-->
+                </div>
+            </div>
+
+            <div class="line_grid">
                 <div class="g_3"><span class="label">授权应用</span></div>
                 <div class="g_9">
                     <span ng-repeat="row in apps">

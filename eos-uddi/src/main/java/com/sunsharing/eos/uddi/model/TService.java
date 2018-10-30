@@ -1,5 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "T_SERVICE")
 public class TService {
-    private int serviceId;
-    private Integer appId;
+    private String serviceId;
+    private String appId;
     private String module;
     private TUser user;
     private String serviceCode;
@@ -19,6 +23,10 @@ public class TService {
     private String appCode;
     private String createTime;
     private String test = "0";
+
+    public TService(){
+        this.serviceId = StringUtils.genUUID();
+    }
 
     private List<TServiceVersion> versions = new ArrayList<TServiceVersion>();
 
@@ -43,12 +51,12 @@ public class TService {
 
     @Id
     @Column(name = "SERVICE_ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    public int getServiceId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(int serviceId) {
+    public void setServiceId(String serviceId) {
         this.serviceId = serviceId;
     }
 
@@ -64,11 +72,11 @@ public class TService {
 
     @Basic
     @Column(name = "APP_ID")
-    public Integer getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(Integer appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 
@@ -144,7 +152,7 @@ public class TService {
 
     @Override
     public int hashCode() {
-        int result = serviceId;
+        int result = serviceId.hashCode();
         result = 31 * result + (appId != null ? appId.hashCode() : 0);
         result = 31 * result + (module != null ? module.hashCode() : 0);
         //result = 31 * result + (userId != null ? userId.hashCode() : 0);

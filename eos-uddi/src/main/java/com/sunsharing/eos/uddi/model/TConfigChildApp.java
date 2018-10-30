@@ -1,5 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -8,18 +12,22 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_CONFIG_CHILD_APP")
 public class TConfigChildApp {
-    private int childAppId;
+    private String childAppId;
     private String childAppName;
-    private Integer appId;
+    private String appId;
+
+    public TConfigChildApp(){
+        this.childAppId = StringUtils.genUUID();
+    }
 
     @Id
     @Column(name = "CHILD_APP_ID")
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public int getChildAppId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getChildAppId() {
         return childAppId;
     }
 
-    public void setChildAppId(int childAppId) {
+    public void setChildAppId(String childAppId) {
         this.childAppId = childAppId;
     }
 
@@ -48,18 +56,18 @@ public class TConfigChildApp {
 
     @Override
     public int hashCode() {
-        int result = childAppId;
+        int result = childAppId.hashCode();
         result = 31 * result + (childAppName != null ? childAppName.hashCode() : 0);
         return result;
     }
 
     @Basic
     @Column(name = "APP_ID")
-    public Integer getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(Integer appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 }

@@ -1,5 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -8,10 +12,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_USER_APP")
 public class TUserApp implements Comparable {
-    private int userAppId;
+    private String userAppId;
 
     private TUser user;
     private TApp app;
+
+    public TUserApp(){
+        userAppId = StringUtils.genUUID();
+    }
 
     @ManyToOne
     @JoinColumn(name="USER_ID")
@@ -34,13 +42,13 @@ public class TUserApp implements Comparable {
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "USER_APP_ID")
-    public int getUserAppId() {
+    public String getUserAppId() {
         return userAppId;
     }
 
-    public void setUserAppId(int userAppId) {
+    public void setUserAppId(String userAppId) {
         this.userAppId = userAppId;
     }
 
@@ -51,22 +59,20 @@ public class TUserApp implements Comparable {
 
         TUserApp tUserApp = (TUserApp) o;
 
-        if (userAppId != tUserApp.userAppId) return false;
-
-        return true;
+        return userAppId.equals(tUserApp.userAppId);
     }
 
     @Override
     public int hashCode() {
-        return userAppId;
+        return userAppId.hashCode();
     }
 
     @Override
     public int compareTo(Object o) {
-        if(this.getApp().getAppId()>((TUserApp)o).getApp().getAppId())
+        if(this.getApp().getAppId().compareTo (((TUserApp)o).getApp().getAppId()) > 0 )
         {
             return 1;
-        }else if(this.getApp().getAppId()<((TUserApp)o).getApp().getAppId())
+        }else if(this.getApp().getAppId().compareTo (((TUserApp)o).getApp().getAppId()) < 0)
         {
             return -1;
         }else

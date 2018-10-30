@@ -1,19 +1,12 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 
 /**
  * Created by criss on 16/2/24.
@@ -21,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "T_DB_CHANGE")
 public class TDbChange {
-    private int id;
+    private String id;
     private TApp appId;
     private String version;
     //private Integer user;
@@ -34,17 +27,21 @@ public class TDbChange {
     private String dbType;
     private String hasSend;
 
+    public TDbChange(){
+        this.id = StringUtils.genUUID();
+    }
+
     private List<TDbChecklist> dbChecklistList =
             new ArrayList<TDbChecklist>();
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    public int getId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -234,7 +231,7 @@ public class TDbChange {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id.hashCode();
         result = 31 * result + (appId != null ? appId.hashCode() : 0);
         result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);

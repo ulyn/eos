@@ -65,11 +65,16 @@ public class UserService {
         return userDao.get(id);
     }
 
-    public void updateUser(String id,String role,String apps,String isTest)
+    public void updateUser(String id,
+                           String role,
+                           String apps,
+                           String isTest,
+                           String yw)
     {
         TUser user = loadUser(id);
         user.setRole(role);
         user.setIsTest(isTest);
+        user.setYw(yw);
 
         user.getUserApps().clear();
 

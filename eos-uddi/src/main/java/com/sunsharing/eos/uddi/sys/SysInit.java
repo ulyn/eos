@@ -13,6 +13,9 @@ import java.util.Properties;
 /**
  *<pre><b><font color="blue">SysInit</font></b></pre>
  *
+ * scp -P 32772 /Users/criss/Desktop/projectDev/eos_git/eos-uddi/target/eos-uddi-3.3.1-SNAPSHOT.jar root@192.168.0.62:/opt/bak/eos-uddi-3.3.1.jar
+ * scp -P 32772 -r /Users/criss/Desktop/projectDev/eos_git/eos-uddi/src/main/webapp/templates root@192.168.0.62:/opt/bak/templates
+ * scp -P 32772 -r /Users/criss/Desktop/projectDev/eos_git/eos-uddi/src/main/webapp/js root@192.168.0.62:/opt/bak/js
  *<pre><b>&nbsp;--系统初始化--</b></pre>
  * JDK版本：JDK1.5.0
  * @author  <b>李自立</b> 

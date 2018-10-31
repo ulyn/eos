@@ -990,10 +990,12 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
             app = app.substr(0,app.length-1);
         }
 
+        var yw = document.getElementById("yw2").value;
+
         $http({
             url: '/updateUser.do',
             method: "POST",
-            data: "id="+id+"&role="+role+"&apps="+app+"&isTest="+isTest,
+            data: "id="+id+"&role="+role+"&apps="+app+"&isTest="+isTest+"&yw="+yw,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
 

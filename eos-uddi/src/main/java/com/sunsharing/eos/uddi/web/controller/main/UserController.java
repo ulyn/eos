@@ -188,13 +188,14 @@ public class UserController {
         JSONObject obj = JSONObject.parseObject(userStr);
         JSONArray arr = JSONArray.parseArray(listStr);
         obj.put("apps",arr);
+
         ResponseHelper.printOut(response,true,"",obj);
     }
 
     @RequestMapping(value="/updateUser.do",method= RequestMethod.POST)
-    public void updateUser(String id,String role,String apps,String isTest,Model model,HttpServletRequest request,HttpServletResponse response)
+    public void updateUser(String id,String role,String apps,String isTest,String yw,Model model,HttpServletRequest request,HttpServletResponse response)
     {
-        service.updateUser(id,role,apps,isTest);
+        service.updateUser(id,role,apps,isTest,yw);
         ResponseHelper.printOut(response,true,"","");
     }
 

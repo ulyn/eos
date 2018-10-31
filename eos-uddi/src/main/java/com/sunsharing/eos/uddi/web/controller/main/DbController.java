@@ -533,7 +533,7 @@ public class DbController {
         String fileName = SysInit.path + File.separator + "db" + File.separator + appCode +
                 File.separator + change.getScript();
         int code = SinoDetect.getInstance().detectEncoding(new File(fileName));
-        String encode = "";
+        String encode = "UTF-8";
         if(code == Encoding.UTF8 || code ==Encoding.UTF8S || code ==Encoding.UTF8T)
         {
             encode = "UTF-8";

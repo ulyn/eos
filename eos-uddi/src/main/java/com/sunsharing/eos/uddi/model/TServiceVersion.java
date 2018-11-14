@@ -21,6 +21,7 @@ public class TServiceVersion {
     private String status;
     private String serviceVersion;
     private String createTime;
+    private String versionNum;
 
     public TServiceVersion(){
         this.versionId = StringUtils.genUUID();
@@ -97,6 +98,16 @@ public class TServiceVersion {
 
     public void setServiceVersion(String serviceVersion) {
         this.serviceVersion = serviceVersion;
+    }
+
+    @Basic
+    @Column(name = "VERSION_NUM")
+    public String getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(String versionNum) {
+        this.versionNum = versionNum;
     }
 
     @Override

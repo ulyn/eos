@@ -54,10 +54,15 @@ public class UserService {
         userDao.update(user);
     }
 
-    public List<TUser> getUserlist()
+    public List<TUser> getUserlist(String yw)
     {
-        String sql = "from TUser order by  creatTime desc";
-        return userDao.find(sql);
+        if(StringUtils.isBlank(yw)){
+            String sql = "from TUser order by  creatTime desc";
+            return userDao.find(sql);
+        }else{
+            String sql = "from TUser where yw = '"+yw+"' order by  creatTime desc";
+            return userDao.find(sql);
+        }
     }
 
     public TUser loadUser(String id)

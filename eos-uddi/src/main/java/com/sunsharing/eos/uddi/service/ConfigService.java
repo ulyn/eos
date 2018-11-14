@@ -137,7 +137,7 @@ public class ConfigService {
 
     public void saveRunVal(String runId,String configId,String val)
     {
-        String hql = "from TConfigRunVal where runId = "+runId+" and configId="+configId;
+        String hql = "from TConfigRunVal where runId = '"+runId+"' and configId='"+configId+"'";
         List<TConfigRunVal> runVals = runValDao.find(hql);
         if(runVals.size()>0)
         {
@@ -155,7 +155,7 @@ public class ConfigService {
 
     public TConfigRunVal getRunVal(String runId,String configId)
     {
-        String hql = "from TConfigRunVal where runId = "+runId+" and configId="+configId;
+        String hql = "from TConfigRunVal where runId = '"+runId+"' and configId='"+configId+"'";
         List<TConfigRunVal> runVals = runValDao.find(hql);
         if(runVals.size()>0)
         {

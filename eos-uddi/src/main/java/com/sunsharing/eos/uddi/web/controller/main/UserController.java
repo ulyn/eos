@@ -8,6 +8,8 @@ import com.sunsharing.eos.uddi.model.TUserApp;
 import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.UserService;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +57,12 @@ public class UserController {
             {
                 throw new RuntimeException("你的账号还没有开通，请联系管理员");
             }
-            jonObject.put("url","applist/1");
+            if(StringUtils.isBlank(user.getYw())){
+                jonObject.put("url","applist/1");
+            }else{
+                jonObject.put("url","applist/"+user.getYw());
+            }
+
             ResponseHelper.printOut(response,true,"",jonObject);
         }else
         {
@@ -88,11 +95,21 @@ public class UserController {
 //            JSONObject app = obj.getJSONObject("app");
 //            app.put("url","servicelist/"+app.getString("appId")+"/0");
 //        }
-        addApp(array,"社会治理","applist/1");
-        addApp(array,"共享协同","applist/2");
-        addApp(array,"信用业务","applist/3");
-        addApp(array,"教育业务","applist/4");
-        addApp(array,"其他","applist/5");
+        String[] arr = new String[]{"社会治理","applist/1","共享协同","applist/2","信用业务","applist/3",
+            "教育业务","applist/4","其他","applist/5"};
+
+        if(StringUtils.isBlank(user.getYw())){
+            for(int i=0;i<arr.length;i+=2){
+                addApp(array,arr[i],arr[i+1]);
+            }
+        }else{
+            for(int i=1;i<arr.length;i+=2){
+                if(arr[i].indexOf(user.getYw())!=-1)
+                addApp(array,arr[i-1],arr[i]);
+            }
+        }
+
+
         //array.add(jsonObject3);
 
 
@@ -147,7 +164,8 @@ public class UserController {
     @RequestMapping(value="/userlist.do",method= RequestMethod.POST)
     public void userList(Model model,HttpServletRequest request,HttpServletResponse response)
     {
-        List<TUser> list = service.getUserlist();
+        TUser loginUser = (TUser)request.getSession().getAttribute("user");
+        List<TUser> list = service.getUserlist(loginUser.getYw());
 
         for(TUser user:list)
         {

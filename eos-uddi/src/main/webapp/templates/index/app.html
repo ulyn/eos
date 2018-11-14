@@ -34,10 +34,12 @@
                     <td class=" ">{{row.appName}}</td>
                     <td class=" ">{{row.creatTime}}</td>
                     <td class=" " style="width:318px">
-                        <a class="simple_buttons" href="#dblist/{{row.appId}}/{{row.yw}}"><div>进入</div></a>
+                        <a class="simple_buttons" href="#dblist/{{row.appId}}/{{row.yw}}"><div>数据库变更</div></a>
+                        <a class="simple_buttons" ng-if="row.yw==1" href="#servicelist/{{row.appId}}/0"><div>服务管理</div></a>
+                        <a class="simple_buttons" ng-if="row.yw==1" href="#config/{{row.appId}}/COMMON"><div>配置管理</div></a>
                         <a class="simple_buttons" ng-if="manager" href="#updateAdd/{{row.appId}}/{{row.yw}}"><div>编辑</div></a>
-                        <a class="simple_buttons" ng-if="manager" href="exportConfig.do?appId={{row.appId}}"><div>导出配置</div></a>
-                        <a class="simple_buttons iframe" ng-if="manager" href="templates/config/import.html?appId={{row.appId}}"><div>导入配置</div></a>
+                        <a class="simple_buttons"  href="exportConfig.do?appId={{row.appId}}"><div>导出配置</div></a>
+                        <a class="simple_buttons iframe" href="templates/config/import.html?appId={{row.appId}}"><div>导入配置</div></a>
                     </td>
                 </tr>
                 </tbody></table></div>

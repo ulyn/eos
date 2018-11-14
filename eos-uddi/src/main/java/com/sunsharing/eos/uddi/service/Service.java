@@ -120,8 +120,12 @@ public class Service {
         service.setCreateTime(DateUtils.getDBString(new Date()));
         service.setTest("0");
 
-        if (v == null)
+        if (v == null) {
+            sql = "from TServiceVersion where service.serviceId=?";
+            l2 = versionDao.find(sql,service.getServiceId());
             v = new TServiceVersion();
+            v.setVersionNum((l2.size()+1)+"");
+        }
         v.setStatus("0");
         v.setCreateTime(DateUtils.getDBString(new Date()));
         v.setServiceVersion(sv);

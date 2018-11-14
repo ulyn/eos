@@ -54,8 +54,8 @@ public class AppController {
             List<TUserApp> userApps = user.getUserApps();
             for (TApp app : apps) {
                 for (TUserApp userApp : userApps) {
-                    if (app.getAppId() == userApp.getApp().getAppId()
-                        ) {
+                    if (app.getAppId().equals(userApp.getApp().getAppId()))
+                         {
                         realApp.add(app);
                     }
                 }

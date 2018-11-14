@@ -446,7 +446,7 @@ public class ConfigController {
         for(Map m:list)
         {
             String rel = (String)m.get("REL_CONFIG_ID");
-            if(!"0".equals(rel) || !StringUtils.isBlank(rel))
+            if(!"0".equals(rel) && !StringUtils.isBlank(rel))
             {
                 TConfig config = configService.loadConfig(rel+"");
                 m.put("name",config.getKey());
@@ -546,7 +546,7 @@ public class ConfigController {
                 String name = group.getGroupName();
                 String sql = "select * from T_CONFIG_GROUP where CHILD_APP_ID = '"+childAppId+"' and GROUP_NAME='"+name+"'";
                 List<Map<String, Object>> list = jdbc.queryForList(sql);
-                int gId = (Integer)list.get(0).get("GROUP_ID");
+                String gId = (String)list.get(0).get("GROUP_ID");
 
 
 
@@ -559,7 +559,7 @@ public class ConfigController {
                 {
                     rconfig = configService.loadConfig(rconfig.getRelConfigId()+"");
                 }
-                String hql = "from TConfig where chlidAppId = "+childAppId + " and relConfigId = "+rconfig.getConfigId();
+                String hql = "from TConfig where chlidAppId = '"+childAppId + "' and relConfigId = '"+rconfig.getConfigId()+"'";
                 TConfig config2 = configService.findSql(hql);
                 if( config2==null ) {
                     config.setRelConfigId(rconfig.getConfigId());
@@ -607,17 +607,17 @@ public class ConfigController {
 
 
 
-        String sql = "select * from T_CONFIG_RUN where CHILD_APP_ID = "+childAppId;
+        String sql = "select * from T_CONFIG_RUN where CHILD_APP_ID = '"+childAppId+"'";
         List<Map<String, Object>> list = jdbc.queryForList(sql);
 
         Map rst = new HashMap();
         rst.put("list",list);
         rst.put("childAppId",childAppId);
         rst.put("appId",appId);
-        String sql2 = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId + "";
+        String sql2 = "select * from T_CONFIG_CHILD_APP where APP_ID='"+appId + "'";
         List<Map<String, Object>> list2 = jdbc.queryForList(sql2);
 
-        sql = "select * from T_APP where APP_ID = "+appId+"";
+        sql = "select * from T_APP where APP_ID = '"+appId+"'";
         List<Map<String, Object>> list5 = jdbc.queryForList(sql);
         String appCode = "";
         if(list5.size()>0)
@@ -767,16 +767,16 @@ public class ConfigController {
             }
 
             String key = (String)row.get("CON_KEY");
-            Integer rel = (Integer)row.get("REL_CONFIG_ID");
+            String rel = (String)row.get("REL_CONFIG_ID");
             row.put("IS_REL",false);
 
-            if(rel!=null && rel!=0)
+            if(rel!=null && !rel.equals("0") && !rel.equals(""))
             {
                 String sql2 = "select t1.GROUP_ID,t1.GROUP_NAME," +
                         "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
                         "t2.CONFIG_ID,t2.REL_CONFIG_ID from T_CONFIG_GROUP  t1 " +
                         "left join T_CONFIG t2 on t1.GROUP_ID = t2.GROUP_ID  " +
-                        "where   " +" CONFIG_ID="+rel;
+                        "where   " +" CONFIG_ID='"+rel+"'";
                 List<Map<String, Object>> list2 = jdbc.queryForList(sql2);
                 if(list2.size()>0)
                 {
@@ -794,7 +794,7 @@ public class ConfigController {
                 }
             }
             String defaultVal = (String) row.get("DEFAULT_VALUE");
-            String sql2 = "select VAL from T_CONFIG_RUN_VAL where CONFIG_ID = "+row.get("CONFIG_ID")+" and RUN_ID = "+runId;
+            String sql2 = "select VAL from T_CONFIG_RUN_VAL where CONFIG_ID = '"+row.get("CONFIG_ID")+"' and RUN_ID = '"+runId+"'";
             List<Map<String, Object>> list2 = jdbc.queryForList(sql2);
             if(list2.size()>0)
             {
@@ -921,12 +921,12 @@ public class ConfigController {
             ResponseHelper.printOut(response, false, appKey+"不存在", "");
             return;
         }
-        Integer appId = (Integer)list.get(0).get("APP_ID");
+        String appId = (String)list.get(0).get("APP_ID");
 
-        Integer childAppId = 0;
-        Integer runId =0;
+        String childAppId = "0";
+        String runId = "0";
         if(!StringUtils.isBlank(runKey)) {
-            sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = " + appId + " " +
+            sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = '" + appId + "'" +
                     "and RUN_KEY='" + runKey + "'";
 
 
@@ -935,18 +935,18 @@ public class ConfigController {
                 ResponseHelper.printOut(response, false, runKey + "不存在", "");
                 return;
             }
-            runId = (Integer) list.get(0).get("RUN_ID");
-            childAppId = (Integer) list.get(0).get("CHILD_APP_ID");
+            runId = (String) list.get(0).get("RUN_ID");
+            childAppId = (String) list.get(0).get("CHILD_APP_ID");
         }else
         {
-            sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = " + appId;
+            sql = "select RUN_ID,CHILD_APP_ID from T_CONFIG_RUN where APP_ID = '" + appId+"'";
             list = jdbc.queryForList(sql);
             if (list.size() == 0) {
                 ResponseHelper.printOut(response, false, runKey + "不存在", "");
                 return;
             }
-            runId = (Integer) list.get(0).get("RUN_ID");
-            childAppId = (Integer) list.get(0).get("CHILD_APP_ID");
+            runId = (String) list.get(0).get("RUN_ID");
+            childAppId = (String) list.get(0).get("CHILD_APP_ID");
         }
 
         sql = "select t3.GROUP_ID,t3.GROUP_NAME," +
@@ -955,7 +955,7 @@ public class ConfigController {
                 "T_CONFIG t2,T_CONFIG_GROUP t3 " +
                 "where t2.GROUP_ID=t3.GROUP_ID and  t2._DEL='0' " +
                 "and t2.IS_COMMIT = '1'  " +
-                "and t2.CHLID_APP_ID = "+childAppId;
+                "and t2.CHLID_APP_ID = '"+childAppId+"'";
 
         list = jdbc.queryForList(sql);
 
@@ -963,16 +963,16 @@ public class ConfigController {
         for(Map row:list)
         {
             String key = (String)row.get("CON_KEY");
-            Integer rel = (Integer)row.get("REL_CONFIG_ID");
+            String rel = (String)row.get("REL_CONFIG_ID");
             row.put("IS_REL",false);
 
-            if(rel!=null && rel!=0)
+            if(rel!=null && !rel.equals("0") && !rel.equals(""))
             {
                 String sql2 = "select t1.GROUP_ID,t1.GROUP_NAME," +
                         "t2.CON_KEY,t2.CON_DESC,t2.ATT,t2.DEFAULT_VALUE,t2.IS_COMMIT," +
                         "t2.CONFIG_ID,t2.REL_CONFIG_ID from T_CONFIG_GROUP  t1 " +
                         "left join T_CONFIG t2 on t1.GROUP_ID = t2.GROUP_ID  " +
-                        "where   " +" CONFIG_ID="+rel;
+                        "where   " +" CONFIG_ID='"+rel+"'";
                 List<Map<String, Object>> list2 = jdbc.queryForList(sql2);
                 if(list2.size()>0)
                 {
@@ -993,7 +993,7 @@ public class ConfigController {
             }
 
             String defaultVal = (String) row.get("DEFAULT_VALUE");
-            String sql2 = "select VAL from T_CONFIG_RUN_VAL where CONFIG_ID = "+row.get("CONFIG_ID")+ " and RUN_ID = "+runId ;
+            String sql2 = "select VAL from T_CONFIG_RUN_VAL where CONFIG_ID = '"+row.get("CONFIG_ID")+ "' and RUN_ID = '"+runId+"'" ;
             List<Map<String, Object>> list2 = jdbc.queryForList(sql2);
             if(list2.size()>0)
             {
@@ -1018,17 +1018,17 @@ public class ConfigController {
     {
         //app
         String appId = request.getParameter("appId");
-        String sql = "select * from T_APP where APP_ID="+appId;
+        String sql = "select * from T_APP where APP_ID='"+appId+"'";
         List list = jdbc.queryForList(sql);
         Map app = (Map)list.get(0);
         //childApp
-        sql = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId;
+        sql = "select * from T_CONFIG_CHILD_APP where APP_ID='"+appId+"'";
         List childApps = jdbc.queryForList(sql);
         //T_CONFIG_GROUP
-        sql = "select * from T_CONFIG_GROUP where (APP_ID = "+appId+" or  IS_COMMON = 1)";
+        sql = "select * from T_CONFIG_GROUP where (APP_ID = '"+appId+"' or  IS_COMMON = 1)";
         List groups = jdbc.queryForList(sql);
         //T_CONFIG
-        sql = "select * from T_CONFIG where (APP_ID = "+appId+" or  IS_BASIC = 1)";
+        sql = "select * from T_CONFIG where (APP_ID = '"+appId+"' or  IS_BASIC = 1)";
         List configs= jdbc.queryForList(sql);
 
         Map rst = new HashMap();
@@ -1090,7 +1090,7 @@ public class ConfigController {
 
 
         //处理备份
-        String backSql = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId2;
+        String backSql = "select * from T_CONFIG_CHILD_APP where APP_ID="+appId2+"";
         List<Map<String, Object>> childAppList = jdbc.queryForList(backSql);
         for(Map child:childAppList)
         {
@@ -1102,7 +1102,7 @@ public class ConfigController {
             }
 
             //String appCode = request.getParameter("appCode");
-            backSql = "select * from T_CONFIG_RUN where CHILD_APP_ID = "+childAppId2;
+            backSql = "select * from T_CONFIG_RUN where CHILD_APP_ID = "+childAppId2+"";
             List<Map<String, Object>> runs = jdbc.queryForList(backSql);
             for(Map run:runs)
             {

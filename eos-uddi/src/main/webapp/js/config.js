@@ -18,6 +18,20 @@ indexApp.controller('config', function($scope, $routeParams,$http) {
         location.href = "#runlist/"+appId+"/0";
     }
 
+    $http.post('/loadApp.do?appId='+appId, {}).success(function(data){
+        if(data.status)
+        {
+            $scope.back = function()
+            {
+                location.href = "#applist/"+data.data.yw;
+            }
+
+        }else
+        {
+            alert(data.msg);
+        }
+    });
+
     $scope.clickMe = function(target)
     {
         //console.info(target);
@@ -140,6 +154,20 @@ indexApp.controller('runlist', function($scope, $routeParams,$http) {
         location.href = "#runlist/"+appId+"/0";
     }
 
+    $http.post('/loadApp.do?appId='+appId, {}).success(function(data){
+        if(data.status)
+        {
+            $scope.back = function()
+            {
+                location.href = "#applist/"+data.data.yw;
+            }
+
+        }else
+        {
+            alert(data.msg);
+        }
+    });
+
     //加载列表
     $http({
         url: '/listRun.do',
@@ -178,6 +206,19 @@ indexApp.controller('runval', function($scope, $routeParams,$http) {
     {
         location.href = "#runlist/"+appId+"/0";
     }
+
+    $http.post('/loadApp.do?appId='+appId, {}).success(function(data){
+        if(data.status)
+        {
+            $scope.back = function()
+            {
+                location.href = "#applist/"+data.data.yw;
+            }
+        }else
+        {
+            alert(data.msg);
+        }
+    });
 
     //加载列表
     $http({

@@ -424,6 +424,11 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
         {
             $scope.appname = data.data.appName;
             $scope.modules = data.data.modules;
+            $scope.back = function()
+            {
+                location.href = "#applist/"+data.data.yw;
+            }
+
         }else
         {
             alert(data.msg);
@@ -469,6 +474,8 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
             alert(data.msg);
         }
     });
+
+
 
     $scope.test = function()
     {

@@ -67,7 +67,7 @@ public class DbChangeService {
             endVersion = "9999999999";
         }
         String hql = "from TDbChange where appId.appId=? and  version>=? and version<=? order by version desc";
-        return dbChangeDao.find(hql,new Integer(appId),beginVersion,endVersion);
+        return dbChangeDao.find(hql,new String(appId),beginVersion,endVersion);
     }
 
     public TDbPdm isNotMyLock(String appId,String userId)
@@ -180,7 +180,7 @@ public class DbChangeService {
     public void lockPdm(String appId,TUser user)
     {
         String hql = "from TDbPdm where appId.appId=?";
-        List<TDbPdm> pdmList = pdmDao.find(hql,new Integer(appId));
+        List<TDbPdm> pdmList = pdmDao.find(hql,new String(appId));
         if(pdmList.size()>0)
         {
             TDbPdm pdm = pdmList.get(0);
@@ -196,7 +196,7 @@ public class DbChangeService {
     public void unlockPdm(String appId)
     {
         String hql = "from TDbPdm where appId.appId=?";
-        List<TDbPdm> pdmList = pdmDao.find(hql,new Integer(appId));
+        List<TDbPdm> pdmList = pdmDao.find(hql,new String(appId));
         if(pdmList.size()>0)
         {
             TDbPdm pdm = pdmList.get(0);

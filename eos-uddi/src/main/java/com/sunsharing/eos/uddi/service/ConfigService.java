@@ -76,7 +76,7 @@ public class ConfigService {
         String sql = "";
         if(!StringUtils.isBlank(childAppId))
         {
-            sql = "from TConfig where key='"+key+"' and chlidAppId="+childAppId+" and _DEL = '0'";
+            sql = "from TConfig where key='"+key+"' and chlidAppId='"+childAppId+"' and _DEL = '0'";
         }else
         {
             return false;

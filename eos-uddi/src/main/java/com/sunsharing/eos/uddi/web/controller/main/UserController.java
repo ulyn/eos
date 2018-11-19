@@ -112,6 +112,13 @@ public class UserController {
 
         //array.add(jsonObject3);
 
+        JSONObject jsonObject = new JSONObject();
+        JSONObject app = new JSONObject();
+        app.put("appName","系统监控");
+        app.put("appCode","MONITOR");
+        app.put("url","monitor");
+        jsonObject.put("app",app);
+        array.add(jsonObject);
 
         if(user.getRole().equals("3") || user.getRole().equals("4"))
         {
@@ -121,15 +128,6 @@ public class UserController {
 //            String listStr = JSONArray.toJSONString(apps);
 
             if(user.getRole().equals("3")) {
-
-                JSONObject jsonObject = new JSONObject();
-                JSONObject app = new JSONObject();
-                app.put("appName","系统监控");
-                app.put("appCode","MONITOR");
-                app.put("url","monitor");
-                jsonObject.put("app",app);
-                array.add(jsonObject);
-
                 JSONObject jsonObject2 = new JSONObject();
                 JSONObject app2 = new JSONObject();
                 app2.put("appName", "用户管理");

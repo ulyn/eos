@@ -555,7 +555,7 @@ public class ConfigController {
                 config.setGroupId(gId+"");
                 config.setIsCommit("0");
                 TConfig rconfig = configService.loadConfig(id);
-                if(rconfig == null)
+                if(rconfig !=null && !StringUtils.isBlank(rconfig.getRelConfigId()))
                 {
                     rconfig = configService.loadConfig(rconfig.getRelConfigId()+"");
                 }
@@ -665,7 +665,7 @@ public class ConfigController {
                     int begin = fileName.indexOf("_");
                     int end = fileName.indexOf(".");
                     String runId = fileName.substring(0,begin);
-                    if(runId.equals((Integer)m.get("RUN_ID")+""))
+                    if(runId.equals(m.get("RUN_ID")+""))
                     {
                         String svn = fileName.substring(begin+1,end);
                         backs.add(svn);
@@ -703,7 +703,7 @@ public class ConfigController {
         String runKey = request.getParameter("runKey").trim();
         String xtcs = request.getParameter("xtcs");
 
-        String sql = "select count(*) from T_CONFIG_RUN where APP_ID = "+appId+" " +
+        String sql = "select count(*) from T_CONFIG_RUN where APP_ID = '"+appId+"' " +
                 "and RUN_KEY='"+runKey+"'";
         int i = jdbc.queryForInt(sql);
         if(i>0)
@@ -712,8 +712,8 @@ public class ConfigController {
         }
 
         TConfigRun run = new TConfigRun();
-        run.setAppId(new Integer(appId));
-        run.setChildAppId(new Integer(childAppId));
+        run.setAppId((appId));
+        run.setChildAppId(childAppId);
         run.setRunKey(runKey);
         run.setBswz(xtcs);
         configService.saveRun(run);
@@ -882,7 +882,7 @@ public class ConfigController {
         }
         TConfig config = configService.loadConfig(configId);
         String rel = config.getRelConfigId();
-        if(!StringUtils.isBlank(rel))
+        if(!StringUtils.isBlank(rel) && !"0".equals(rel))
         {
             TConfig relConfig = configService.loadConfig(rel+"");
             //只读

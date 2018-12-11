@@ -107,6 +107,12 @@ public class ConfigService {
 
     public void deleteGroup(String groupId)
     {
+        String hql = "select count(*) from  TConfig  where _delete = '0' and groupId = '"+groupId+"'";
+        long size = configDao.findLong(hql);
+        if(size>0){
+            throw new RuntimeException("删除失败，改分组下还有配置项");
+        }
+
         TConfigGroup group = groupDao.get(new String(groupId));
         group.set_delete("1");
         groupDao.saveOrUpdate(group);
@@ -117,7 +123,7 @@ public class ConfigService {
         TConfig group = configDao.get(new String(config));
         group.set_delete("1");
         configDao.saveOrUpdate(group);
-        String hql = "update TConfig set _delete = '1'  where relConfigId = "+config;
+        String hql = "update TConfig set _delete = '1'  where relConfigId = '"+config+"'";
         configDao.createQuery(hql).executeUpdate();
 
 

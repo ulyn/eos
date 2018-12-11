@@ -52,6 +52,12 @@ public class AppService {
        return appDao.find(sql);
     }
 
+    public long getAppSize(String appEn)
+    {
+        String sql = "select count(*) from TApp where appCode = '"+appEn+"'";
+        return appDao.findLong(sql);
+    }
+
     public List<TApp> listApp(String yw)
     {
         if(StringUtils.isBlank(yw)){
@@ -68,6 +74,11 @@ public class AppService {
 
     public void saveApp(String app_en,String app_cn,String modules,String dbs,String yw)
     {
+        long size = getAppSize(app_en);
+        if(size>0){
+            throw new RuntimeException("英文名已经存在");
+        }
+
         TApp app = new TApp();
         app.setAppCode(app_en);
         app.setAppName(app_cn);

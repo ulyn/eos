@@ -15,8 +15,8 @@ public class TConfigRun {
     private String runId;
     private String bswz;
     private String runKey;
-    private Integer childAppId;
-    private Integer appId;
+    private String childAppId;
+    private String appId;
 
     public TConfigRun(){
         this.runId = StringUtils.genUUID();
@@ -77,21 +77,21 @@ public class TConfigRun {
 
     @Basic
     @Column(name = "CHILD_APP_ID")
-    public Integer getChildAppId() {
+    public String getChildAppId() {
         return childAppId;
     }
 
-    public void setChildAppId(Integer childAppId) {
+    public void setChildAppId(String childAppId) {
         this.childAppId = childAppId;
     }
 
     @Basic
     @Column(name = "APP_ID")
-    public Integer getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(Integer appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 }

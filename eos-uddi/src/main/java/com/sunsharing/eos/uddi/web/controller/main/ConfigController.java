@@ -555,7 +555,7 @@ public class ConfigController {
                 config.setGroupId(gId+"");
                 config.setIsCommit("0");
                 TConfig rconfig = configService.loadConfig(id);
-                if(rconfig !=null && !StringUtils.isBlank(rconfig.getRelConfigId()))
+                if(rconfig !=null && !StringUtils.isBlank(rconfig.getRelConfigId()) && !"0".equals(rconfig.getRelConfigId()))
                 {
                     rconfig = configService.loadConfig(rconfig.getRelConfigId()+"");
                 }
@@ -1286,7 +1286,7 @@ public class ConfigController {
         String defaultValue = request.getParameter("default_value").trim();
 
         String sql = "update T_CONFIG set DEFAULT_VALUE = '"+defaultValue+"' " +
-                "where CONFIG_ID = "+configId;
+                "where CONFIG_ID = '"+configId+"'";
         jdbc.execute(sql);
         ResponseHelper.printOut(response, true, "", "");
     }

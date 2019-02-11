@@ -10,6 +10,7 @@
 
 package com.sunsharing.eos.server.paranamer;
 
+import com.sunsharing.component.utils.crypto.Md5;
 import com.sunsharing.eos.common.annotation.EosService;
 import com.sunsharing.eos.common.utils.StringUtils;
 
@@ -19,6 +20,8 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -39,8 +42,10 @@ import javax.tools.JavaFileObject;
 @SupportedAnnotationTypes("com.sunsharing.eos.common.annotation.EosService")
 public class EosServiceProcessor extends AbstractProcessor {
 
-    //生成的类的前缀名称  APH：annotation processor holder,注解处理生成盛放器
-    public final static String GENERATED_HOLDER_CLASSNAME = "APH";
+    //生成的类的名称  APH：annotation processor holder,注解处理生成盛放器
+    public final static String GENERATED_HOLDER_CLASSNAME = "Aph";
+    //生成的包名
+    public final static String GENERATED_PKG = EosServiceProcessor.class.getPackage().getName();
 
     private ProcessingEnvironment processingEnv;
 
@@ -70,13 +75,21 @@ public class EosServiceProcessor extends AbstractProcessor {
         if (elements.isEmpty()) {
             return false;
         }
+        Collections.sort(elements,new Comparator<Element>() {
+            @Override
+            public int compare(Element o1, Element o2) {
+                return o1.getSimpleName().toString().compareTo(o2.getSimpleName().toString());
+            }
+        });
+
 
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
             "******************** eos service processor start **********************");
-        String pkg = ParameterNamesFinder.class.getPackage().getName();
-        String generatedClassName = GENERATED_HOLDER_CLASSNAME + StringUtils.genUUID().toUpperCase();
+        String pkg = GENERATED_PKG;
+        String generatedClassName = GENERATED_HOLDER_CLASSNAME + Md5.MD5(elements.get(0).getClass().getPackage().getName()).toLowerCase();
         StringBuilder sb = new StringBuilder("package " + pkg + ";\n"
             + "\n"
+            + "import com.sunsharing.eos.server.paranamer.ParameterNamesHolder;\n"
             + "import com.sunsharing.eos.server.paranamer.ParameterNamesNotFoundException;\n"
             + "import java.lang.reflect.Method;\n"
             + "import java.util.HashMap;\n"
@@ -87,7 +100,7 @@ public class EosServiceProcessor extends AbstractProcessor {
             + "\n"
             + "    public Map<String,Map<String,String[]>> container = new HashMap<String, Map<String, String[]>>();\n"
             + "\n"
-            + "    public " + generatedClassName + "() { Map<String,String[]> methods = null;\n");
+            + "    public " + generatedClassName + "() { \n        Map<String,String[]> methods = null;\n");
         // 初始化将参数名放入容器
         for (Element element : elements) {
             List<? extends Element> elementList = ((TypeElement) element).getEnclosedElements();

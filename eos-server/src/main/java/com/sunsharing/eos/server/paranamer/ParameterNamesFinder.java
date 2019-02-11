@@ -25,7 +25,7 @@ public class ParameterNamesFinder {
             synchronized (this) {
                 if (holder == null) {
                     try {
-                        List<Class> classes = ClassUtils.scanPackage(ParameterNamesFinder.class.getPackage().getName(), new ClassFilter() {
+                        List<Class> classes = ClassUtils.scanPackage(EosServiceProcessor.GENERATED_PKG, new ClassFilter() {
                             @Override
                             public boolean accept(Class clazz) {
                                 return ParameterNamesHolder.class.isAssignableFrom(clazz)

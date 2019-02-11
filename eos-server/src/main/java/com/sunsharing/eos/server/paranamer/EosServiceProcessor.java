@@ -39,6 +39,9 @@ import javax.tools.JavaFileObject;
 @SupportedAnnotationTypes("com.sunsharing.eos.common.annotation.EosService")
 public class EosServiceProcessor extends AbstractProcessor {
 
+    //生成的类的前缀名称  APH：annotation processor holder,注解处理生成盛放器
+    public final static String GENERATED_HOLDER_CLASSNAME = "APH";
+
     private ProcessingEnvironment processingEnv;
 
     @Override
@@ -57,12 +60,24 @@ public class EosServiceProcessor extends AbstractProcessor {
         if (annotations.isEmpty()) {
             return false;
         }
+        List<Element> elements = new ArrayList();
+        for (Element element : roundEnv.getElementsAnnotatedWith(EosService.class)) {
+            if (element.getKind() != ElementKind.INTERFACE) {
+                continue; // 退出处理
+            }
+            elements.add(element);
+        }
+        if (elements.isEmpty()) {
+            return false;
+        }
+
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
             "******************** eos service processor start **********************");
-        // String generatedClassName = "AutoGen" + System.currentTimeMillis();
-        String generatedClassName = ParameterNamesFinder.GENERATED_HOLDER_CLASSNAME;
-        StringBuilder sb = new StringBuilder("package com.sunsharing.eos.server.paranamer;\n"
+        String pkg = ParameterNamesFinder.class.getPackage().getName();
+        String generatedClassName = GENERATED_HOLDER_CLASSNAME + StringUtils.genUUID().toUpperCase();
+        StringBuilder sb = new StringBuilder("package " + pkg + ";\n"
             + "\n"
+            + "import com.sunsharing.eos.server.paranamer.ParameterNamesNotFoundException;\n"
             + "import java.lang.reflect.Method;\n"
             + "import java.util.HashMap;\n"
             + "import java.util.Map;\n"
@@ -73,12 +88,8 @@ public class EosServiceProcessor extends AbstractProcessor {
             + "    public Map<String,Map<String,String[]>> container = new HashMap<String, Map<String, String[]>>();\n"
             + "\n"
             + "    public " + generatedClassName + "() { Map<String,String[]> methods = null;\n");
-        // 初始化
-        //获取所有被CustomAnnotation修饰的代码元素
-        for (Element element : roundEnv.getElementsAnnotatedWith(EosService.class)) {
-            if (element.getKind() != ElementKind.INTERFACE) {
-                continue; // 退出处理
-            }
+        // 初始化将参数名放入容器
+        for (Element element : elements) {
             List<? extends Element> elementList = ((TypeElement) element).getEnclosedElements();
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
                 "find " + ((TypeElement) element).getQualifiedName() + " methods:" + elementList);
@@ -105,13 +116,13 @@ public class EosServiceProcessor extends AbstractProcessor {
             + "    @Override\n"
             + "    public String[] getParameterNames(Class interfaces, Method method) {\n"
             + "        if(!container.containsKey(interfaces.getName())){\n"
-            + "            throw new RuntimeException(\"该服务接口未能正常编译方法参数：\" + interfaces.getName());\n"
+            + "            throw new ParameterNamesNotFoundException(\"该服务接口未能找到方法参数名：\" + interfaces.getName());\n"
             + "        }\n"
             + "        String[] arr = container.get(interfaces.getName()).get(method.getName());\n"
             + "        return Arrays.copyOf(arr,arr.length);\n"
             + "    }\n"
             + "}");
-        String generatedClass = ParameterNamesFinder.class.getPackage().getName() + "." + generatedClassName;
+        String generatedClass = pkg + "." + generatedClassName;
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "create class " + generatedClassName + "\n\n" + sb);
         OutputStream outputStream = null;
         try {

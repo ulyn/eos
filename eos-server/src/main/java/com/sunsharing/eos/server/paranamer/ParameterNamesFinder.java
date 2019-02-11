@@ -10,9 +10,13 @@
 
 package com.sunsharing.eos.server.paranamer;
 
-public class ParameterNamesFinder {
+import com.sunsharing.eos.common.utils.ClassFilter;
+import com.sunsharing.eos.common.utils.ClassUtils;
 
-    public final static String GENERATED_HOLDER_CLASSNAME = "AnnotationProcessorHolderImpl";
+import java.util.ArrayList;
+import java.util.List;
+
+public class ParameterNamesFinder {
 
     private ParameterNamesHolder holder = null;
 
@@ -21,11 +25,21 @@ public class ParameterNamesFinder {
             synchronized (this) {
                 if (holder == null) {
                     try {
-                        String generatedClass = ParameterNamesFinder.class.getPackage().getName() + "." + GENERATED_HOLDER_CLASSNAME;
-                        Class cls = Class.forName(generatedClass);
-                        holder = new EnhanceHolderImpl((ParameterNamesHolder) cls.newInstance());
+                        List<Class> classes = ClassUtils.scanPackage(ParameterNamesFinder.class.getPackage().getName(), new ClassFilter() {
+                            @Override
+                            public boolean accept(Class clazz) {
+                                return ParameterNamesHolder.class.isAssignableFrom(clazz)
+                                    && !clazz.isInterface()
+                                    && clazz != EnhanceHolderImpl.class;
+                            }
+                        });
+                        List<ParameterNamesHolder> parameterNamesHolders = new ArrayList<ParameterNamesHolder>();
+                        for (Class cls : classes) {
+                            parameterNamesHolders.add((ParameterNamesHolder) cls.newInstance());
+                        }
+                        holder = new EnhanceHolderImpl(parameterNamesHolders);
                     } catch (Exception e) {
-                        holder = new EnhanceHolderImpl(null);
+                        holder = new EnhanceHolderImpl(new ArrayList<ParameterNamesHolder>());
                     }
                 }
             }

@@ -11,33 +11,35 @@
 package com.sunsharing.eos.server.paranamer;
 
 import com.thoughtworks.paranamer.AdaptiveParanamer;
-import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * 兼容旧版本服务使用Paranamer的holder
  */
 public class EnhanceHolderImpl implements ParameterNamesHolder {
 
-    private ParameterNamesHolder holder;
+    private List<ParameterNamesHolder> holders;
 
-    public EnhanceHolderImpl(ParameterNamesHolder holder) {
-        this.holder = holder;
+    public EnhanceHolderImpl(List<ParameterNamesHolder> holders) {
+        this.holders = holders;
     }
 
     private Paranamer adaptiveParanamer = new AdaptiveParanamer();
 
     @Override
     public String[] getParameterNames(Class interfaces, Method method) {
-        try {
-            return adaptiveParanamer.lookupParameterNames(method, true);
-        } catch (ParameterNamesNotFoundException e) {
-            if (holder == null) {
-                throw new RuntimeException("该服务接口未能正常编译方法参数：" + interfaces.getName());
+        for (ParameterNamesHolder holder : holders) {
+            try {
+                String[] parameterNames = holder.getParameterNames(interfaces, method);
+                return parameterNames;
+            } catch (com.sunsharing.eos.server.paranamer.ParameterNamesNotFoundException e) {
+                //ignor...
+                continue;
             }
-            return holder.getParameterNames(interfaces, method);
         }
+        return adaptiveParanamer.lookupParameterNames(method, false);
     }
 }

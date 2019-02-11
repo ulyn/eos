@@ -222,12 +222,12 @@
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-server</artifactId>
-            <version>3.1.2</version>
+            <version>3.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sunsharing.component</groupId>
             <artifactId>eos-client</artifactId>
-            <version>3.1.2</version>
+            <version>3.3.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <distributionManagement>
@@ -271,35 +271,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-archetype-plugin</artifactId>
                 <version>2.2</version>
-            </plugin>
-            <plugin>
-                <groupId>com.thoughtworks.paranamer</groupId>
-                <artifactId>paranamer-maven-plugin</artifactId>
-                <version>2.7</version>
-                <executions>
-                    <execution>
-                        <id>paranamer-compile</id>
-                        <phase>compile</phase>
-                        <configuration>
-                            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                        </configuration>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>paranamer-test-compile</id>
-                        <phase>test-compile</phase>
-                        <configuration>
-                            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
-                            <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
-                        </configuration>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

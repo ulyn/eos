@@ -14,12 +14,14 @@
  *    修改原因：
  *————————————————————————————————
  */
+
 package com.sunsharing.eos.server.sys;
 
 import com.sunsharing.component.resvalidate.config.annotation.Configuration;
 import com.sunsharing.component.resvalidate.config.annotation.ParamField;
 import com.sunsharing.component.resvalidate.config.annotation.validate.IpValidate;
 import com.sunsharing.component.resvalidate.config.annotation.validate.NumValidate;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -35,7 +37,7 @@ import org.apache.log4j.Logger;
  * <br>
  */
 @Configuration(value = "eos-server.properties")
-public class EosServerProp{
+public class EosServerProp {
     private static final Logger logger = Logger.getLogger(EosServerProp.class);
 
     @ParamField(name = "app_id")

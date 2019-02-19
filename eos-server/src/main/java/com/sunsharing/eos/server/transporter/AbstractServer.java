@@ -14,6 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
+
 package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.ServiceRequest;
@@ -25,6 +26,7 @@ import com.sunsharing.eos.common.rpc.RpcContextContainer;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.server.ServerServiceContext;
 import com.sunsharing.eos.server.sys.EosServerProp;
+
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -83,7 +85,7 @@ public abstract class AbstractServer implements RpcServer {
         response = new ServiceResponse(request);
         try {
             FilterChain filterChain = ServerServiceContext.getInstance().getFilterManager()
-                    .createFilterChain(EosServerProp.appId, request.getServiceId());
+                .createFilterChain(EosServerProp.appId, request.getServiceId());
             filterChain.addFilter(serviceInvoker);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
@@ -91,7 +93,7 @@ public abstract class AbstractServer implements RpcServer {
         }
         //尝试处理全局异常
         ExceptionHandler.tryHandleException(request, response,
-                ServerServiceContext.getInstance().getExceptionResolver());
+            ServerServiceContext.getInstance().getExceptionResolver());
 
         return response;
     }

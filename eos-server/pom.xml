@@ -66,30 +66,29 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.thoughtworks.paranamer</groupId>
-                <artifactId>paranamer-maven-plugin</artifactId>
-                <version>2.7</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>paranamer-compile</id>
-                        <phase>compile</phase>
+                        <id>default-compile</id>
                         <configuration>
-                            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <compilerArgument>-proc:none</compilerArgument>
+                            <includes>
+                                <include>com/sunsharing/eos/server/paranamer/EosServiceProcessor.java</include>
+                                <!--include dependencies required for EosServiceProcessor -->
+                            </includes>
                         </configuration>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
                     </execution>
                     <execution>
-                        <id>paranamer-test-compile</id>
-                        <phase>test-compile</phase>
-                        <configuration>
-                            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
-                            <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
-                        </configuration>
+                        <id>compile-project</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>

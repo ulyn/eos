@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 
@@ -1380,7 +1381,8 @@ public class ConfigController {
 
     public static void main(String[]a)
     {
-        System.out.println("agc='"+"'".toString().replaceAll("'","\\\\'")+"'");
+        System.out.println(new BigDecimal("1.00000").stripTrailingZeros().toString());
+
     }
 
 

@@ -6,6 +6,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -33,6 +35,27 @@ public class TService {
     @OneToMany(mappedBy="service",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
     @OrderBy(value = "versionId desc ")
     public List<TServiceVersion> getVersions() {
+        Collections.sort(versions, new Comparator<TServiceVersion>() {
+            @Override
+            public int compare(TServiceVersion o1, TServiceVersion o2) {
+                String v1 = o1.getVersionNum();
+                String v2 = o2.getVersionNum();
+                if(StringUtils.isBlank(v1)){
+                    v1 = "0";
+                }
+                if(StringUtils.isBlank(v2)){
+                    v2 = "0";
+                }
+                if(new Integer(v1) > new Integer(v2)){
+                    return -1;
+                }else if(new Integer(v1) == new Integer(v2)){
+                    return 0;
+                }else{
+                    return 1;
+                }
+            }
+        });
+
         return versions;
     }
 

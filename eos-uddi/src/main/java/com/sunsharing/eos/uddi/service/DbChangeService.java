@@ -50,7 +50,7 @@ public class DbChangeService {
 
     public List<TDbChange> list(String appId)
     {
-        String hql = "from TDbChange where appId.appId=?  order by version desc";
+        String hql = "from TDbChange where appId.appId=?  order by pubishTime desc";
         Query query = dbCheckListDao.createQuery(hql,appId);
         query.setMaxResults(100);
         return  query.list();

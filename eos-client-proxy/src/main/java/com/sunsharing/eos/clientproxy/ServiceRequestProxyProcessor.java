@@ -16,8 +16,19 @@
  */
 package com.sunsharing.eos.clientproxy;
 
+import com.alibaba.fastjson.JSONObject;
+import com.sunsharing.component.utils.crypto.Base64;
 import com.sunsharing.eos.client.rpc.DynamicRpc;
+import com.sunsharing.eos.client.sys.EosClientProp;
+import com.sunsharing.eos.common.rpc.RpcException;
+import com.sunsharing.eos.common.rpc.protocol.RequestPro;
+import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
+import com.sunsharing.eos.common.rpc.remoting.RpcClientFactory;
+import com.sunsharing.eos.common.utils.StringUtils;
 import com.sunsharing.eos.common.utils.VersionUtil;
+
+import org.apache.log4j.Logger;
+import org.jboss.netty.buffer.ChannelBuffers;
 
 /**
  * <pre></pre>
@@ -37,7 +48,10 @@ public class ServiceRequestProxyProcessor {
             // 针对测试，返回
             return "success eos" + VersionUtil.getVersion();
         }
-        return DynamicRpc.invoke(serviceReqBase64Str);
+        RequestPro requestPro = new RequestPro();
+        requestPro.createFromChannel(ChannelBuffers.wrappedBuffer(Base64.decode(serviceReqBase64Str)));
+        ResponsePro responsePro = DynamicRpc.getCaller().call(requestPro);
+        return Base64.encode(responsePro.generate().array());
     }
 
 }

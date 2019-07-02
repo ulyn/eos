@@ -14,6 +14,7 @@
  *    修改原因：
  *————————————————————————————————
  */
+
 package com.sunsharing.eos.client.rpc;
 
 import com.alibaba.fastjson.JSON;
@@ -41,11 +42,16 @@ import java.lang.reflect.Type;
  * <br>----------------------------------------------------------------------
  * <br>
  */
-public class DynamicRpc{
+public class DynamicRpc {
 
+    private static RpcCaller caller = new RpcCaller();
+
+    public static RpcCaller getCaller() {
+        return caller;
+    }
 
     public static void invoke(ServiceRequest request) throws RpcException {
-        invoke(request,void.class);
+        invoke(request, void.class);
     }
 
     /**
@@ -56,7 +62,7 @@ public class DynamicRpc{
      * @return
      * @throws com.sunsharing.eos.common.rpc.RpcException
      */
-    public static <T> T invoke(ServiceRequest request,Type retType) throws RpcException {
+    public static <T> T invoke(ServiceRequest request, Type retType) throws RpcException {
         ServiceResponse serviceResponse = new ServiceResponse(request);
 
         invoke(request, serviceResponse);
@@ -68,31 +74,11 @@ public class DynamicRpc{
             throw new RpcException(e.getMessage(), e);
         }
     }
-    /**
-     * 执行调用
-     *
-     * @param retType
-     * @param <T>
-     * @return
-     * @throws com.sunsharing.eos.common.rpc.RpcException
-     */
-    public static <T> T invoke(ServiceRequest request,Class<T> retType) throws RpcException {
-        ServiceResponse serviceResponse = new ServiceResponse(request);
 
-        invoke(request, serviceResponse);
-        try {
-            return getResult(request, serviceResponse, retType);
-        } catch (RpcException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RpcException(e.getMessage(), e);
-        }
-    }
 
     public static void invoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
         FilterChain filterChain =
-                ServiceContext.getInstance().getFilterManager().createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
-        RpcCaller caller = new RpcCaller();
+            ServiceContext.getInstance().getFilterManager().createFilterChain(serviceRequest.getAppId(), serviceRequest.getServiceId());
         filterChain.addFilter(caller);
         try {
             filterChain.doFilter(serviceRequest, serviceResponse);
@@ -100,28 +86,30 @@ public class DynamicRpc{
             serviceResponse.writeError(e);
         }
         ExceptionHandler.tryHandleException(serviceRequest, serviceResponse,
-                ServiceContext.getInstance().getExceptionResolver());
+            ServiceContext.getInstance().getExceptionResolver());
     }
 
     /**
+     * 此方法存在当作为proxy的时候，不存在对象类导致对象序列化类型丢失的风险
      * @param serviceReqBase64Str ServiceRequest对象的base64字符串
      * @return
      */
+    @Deprecated
     public static String invoke(String serviceReqBase64Str) throws RpcException {
         ServiceRequest request = null;
         try {
             request = ServiceRequest.formBytes(Base64.decode(serviceReqBase64Str));
         } catch (IOException e) {
-            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION,e);
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e);
         } catch (ClassNotFoundException e) {
-            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION,e);
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e);
         }
         ServiceResponse response = new ServiceResponse(request);
         invoke(request, response);
         try {
             return Base64.encode(response.toBytes());
         } catch (IOException e) {
-            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION,e);
+            throw new RpcException(RpcException.SERIALIZATION_EXCEPTION, e);
         }
     }
 
@@ -137,14 +125,15 @@ public class DynamicRpc{
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class<T> retType) throws RpcException {
         checkException(serviceResponse);
         Object value = serviceResponse.getValue();
-        return CompatibleTypeUtils.expectConvert(value,retType);
+        return CompatibleTypeUtils.expectConvert(value, retType);
     }
+
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Type retType) throws RpcException {
         checkException(serviceResponse);
         Object value = serviceResponse.getValue();
-        if(value instanceof String){
-            return JSON.parseObject((String)value, retType);
-        }else{
+        if (value instanceof String) {
+            return JSON.parseObject((String) value, retType);
+        } else {
             return JSON.parseObject(JSON.toJSONString(value), retType);
         }
     }
@@ -152,10 +141,10 @@ public class DynamicRpc{
     private static void checkException(ServiceResponse serviceResponse) {
         if (serviceResponse.hasException()) {
             Throwable t = serviceResponse.getException();
-            if(t instanceof RpcException){
-                throw (RpcException)t;
-            }else
-                throw new RpcException(t.getMessage() , t);
+            if (t instanceof RpcException) {
+                throw (RpcException) t;
+            } else
+                throw new RpcException(t.getMessage(), t);
         }
     }
 }

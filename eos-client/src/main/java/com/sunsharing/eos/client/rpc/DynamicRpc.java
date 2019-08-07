@@ -74,7 +74,18 @@ public class DynamicRpc {
             throw new RpcException(e.getMessage(), e);
         }
     }
-
+    /**
+     * 执行调用
+     *
+     * @param retType
+     * @param <T>
+     * @return
+     * @throws com.sunsharing.eos.common.rpc.RpcException
+     */
+    @Deprecated
+    public static <T> T invoke(ServiceRequest request,Class<T> retType) throws RpcException {
+        return invoke(request,(Type)retType);
+    }
 
     public static void invoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
         FilterChain filterChain =

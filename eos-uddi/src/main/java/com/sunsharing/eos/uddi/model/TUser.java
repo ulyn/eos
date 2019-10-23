@@ -1,9 +1,6 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,20 +11,15 @@ import java.util.List;
 @Entity
 @Table(name = "T_USER")
 public class TUser {
-    private String userId;
+    private int userId;
     private String userName;
     private String pwd;
     private String role;
     private String creatTime;
     private String eamil;
     private String isTest;
-    private String yw;
 
     private TApp defaultApp;
-
-    public TUser(){
-        this.userId = StringUtils.genUUID();
-    }
 
     @Basic
     @Column(name = "IS_TEST")
@@ -84,13 +76,13 @@ public class TUser {
     }
 
     @Id
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "USER_ID")
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -124,16 +116,6 @@ public class TUser {
         this.role = role;
     }
 
-    @Basic
-    @Column(name = "YW")
-    public String getYw() {
-        return yw;
-    }
-
-    public void setYw(String yw) {
-        this.yw = yw;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -151,7 +133,7 @@ public class TUser {
 
     @Override
     public int hashCode() {
-        int result = userId.hashCode();
+        int result = userId;
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
         result = 31 * result + (pwd != null ? pwd.hashCode() : 0);
         result = 31 * result + (role != null ? role.hashCode() : 0);

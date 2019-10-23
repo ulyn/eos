@@ -21,13 +21,13 @@ import java.util.List;
 @Transactional
 public class UserService {
 
-    private SimpleHibernateDao<TUser,String> userDao;//用户管理
-    private SimpleHibernateDao<TApp,String> appDao;//用户管理
+    private SimpleHibernateDao<TUser,Integer> userDao;//用户管理
+    private SimpleHibernateDao<TApp,Integer> appDao;//用户管理
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory){
-        userDao = new SimpleHibernateDao<TUser,String>(sessionFactory,TUser.class);
-        appDao = new SimpleHibernateDao<TApp,String>(sessionFactory,TApp.class);
+        userDao = new SimpleHibernateDao<TUser,Integer>(sessionFactory,TUser.class);
+        appDao = new SimpleHibernateDao<TApp,Integer>(sessionFactory,TApp.class);
     }
 
     public TUser login(String username,String password)
@@ -54,32 +54,22 @@ public class UserService {
         userDao.update(user);
     }
 
-    public List<TUser> getUserlist(String yw)
+    public List<TUser> getUserlist()
     {
-        if(StringUtils.isBlank(yw)){
-            String sql = "from TUser order by  creatTime desc";
-            return userDao.find(sql);
-        }else{
-            String sql = "from TUser where yw = '"+yw+"' order by  creatTime desc";
-            return userDao.find(sql);
-        }
+        String sql = "from TUser order by  creatTime desc";
+        return userDao.find(sql);
     }
 
     public TUser loadUser(String id)
     {
-        return userDao.get(id);
+        return userDao.get(new Integer(id));
     }
 
-    public void updateUser(String id,
-                           String role,
-                           String apps,
-                           String isTest,
-                           String yw)
+    public void updateUser(String id,String role,String apps,String isTest)
     {
         TUser user = loadUser(id);
         user.setRole(role);
         user.setIsTest(isTest);
-        user.setYw(yw);
 
         user.getUserApps().clear();
 
@@ -90,14 +80,14 @@ public class UserService {
             {
                 TUserApp userApp = new TUserApp();
                 userApp.setUser(user);
-                userApp.setApp(appDao.get(arr[i]));
+                userApp.setApp(appDao.get(new Integer(arr[i])));
                 user.getUserApps().add(userApp);
             }
         }
         userDao.update(user);
     }
 
-    public void addUser(String username,String pwd,String email,String yw)
+    public void addUser(String username,String pwd,String email)
     {
         String sql = "from TUser where userName=?";
         List list = userDao.find(sql,username);
@@ -109,7 +99,6 @@ public class UserService {
         user.setUserName(username);
         user.setEamil(email);
         user.setPwd(pwd);
-        user.setYw(yw);
         user.setCreatTime(DateUtils.getDBString(new Date()));
         userDao.save(user);
     }

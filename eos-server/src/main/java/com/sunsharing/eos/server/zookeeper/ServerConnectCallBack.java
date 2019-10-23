@@ -8,7 +8,6 @@ import com.sunsharing.eos.common.zookeeper.PathConstant;
 import com.sunsharing.eos.common.zookeeper.ZookeeperCallBack;
 import com.sunsharing.eos.server.ServerServiceContext;
 import com.sunsharing.eos.server.sys.EosServerProp;
-
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
 
@@ -40,7 +39,8 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 
             List<JSONObject> services = new ArrayList<JSONObject>();
             for (ServiceConfig config : serviceConfigs) {
-                if (StringUtils.isBlank(config.getAppId())) {
+                if(StringUtils.isBlank(config.getAppId()))
+                {
                     //你可以在这里注册服务下面是示例
                     JSONObject obj = new JSONObject();
                     obj.put("appId", EosServerProp.appId);
@@ -52,35 +52,37 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
                     obj.put("timeout", config.getTimeout());
                     obj.put("port", EosServerProp.nettyServerPort);
                     obj.put("ip", EosServerProp.localIp);
-                    obj.put("real_ip", getRealIp());
+                    obj.put("real_ip",getRealIp());
                     obj.put("eosIds", EosServerProp.eosId);
-                    obj.put("totalServiceSize", totalServiceSize);
+                    obj.put("totalServiceSize",totalServiceSize);
                     //增加方法的版权
                     JSONObject methodMap = new JSONObject();
                     List<ServiceMethod> serviceMethodList =
-                        config.getServiceMethodList();
+                            config.getServiceMethodList();
                     List<String> methods = new ArrayList<String>();
-                    for (ServiceMethod serviceMethod : serviceMethodList) {
+                    for(ServiceMethod serviceMethod:serviceMethodList)
+                    {
                         String methodName = serviceMethod.getMethodName();
-                        if (methods.contains(methodName)) {
-                            logger.error("服务:" + config.getId() + ",存在同名函数" + methodName + "不支持");
+                        if(methods.contains(methodName))
+                        {
+                            logger.error("服务:"+config.getId()+",存在同名函数"+methodName+"不支持");
                             System.exit(0);
                         }
                         String version = serviceMethod.getVersion();
                         methods.add(methodName);
-                        methodMap.put(methodName, version);
+                        methodMap.put(methodName,version);
                     }
 
-                    obj.put("methodVersion", methodMap);
+                    obj.put("methodVersion",methodMap);
 
                     //serviceRegister.registerService(EosServerProp.eosId, EosServerProp.appId, obj.toJSONString());
                     services.add(obj);
                 }
             }
-            serviceRegister.registerServices(EosServerProp.appId, services);
+            serviceRegister.registerServices(EosServerProp.appId,services);
 
-            serviceRegister.registerEos(EosServerProp.eosId, EosServerProp.appId, EosServerProp.localIp, EosServerProp.nettyServerPort + "",
-                totalServiceSize);
+            serviceRegister.registerEos(EosServerProp.eosId, EosServerProp.appId, EosServerProp.localIp, EosServerProp.nettyServerPort+"",
+                     totalServiceSize);
 
 
 //            utils.printNode("/");
@@ -121,7 +123,8 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
     }
 
 
-    private String getRealIp() {
+    private String getRealIp()
+    {
         String ip = "";
         Enumeration<NetworkInterface> netInterfaces = null;
         try {
@@ -133,8 +136,9 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
 //                    System.out.println("IP:"
 //                            + ips.nextElement().getHostAddress());
                     String tmp = ips.nextElement().getHostAddress();
-                    if (!tmp.equals("127.0.0.1") && getOccur(tmp, ".") == 3) {
-                        ip += tmp + ",";
+                    if(!tmp.equals("127.0.0.1") && getOccur(tmp,".")==3)
+                    {
+                        ip+=tmp+",";
                     }
                 }
             }
@@ -143,11 +147,10 @@ public class ServerConnectCallBack implements ZookeeperCallBack {
         }
         return ip;
     }
-
-    private int getOccur(String src, String find) {
+    private  int getOccur(String src,String find){
         int o = 0;
-        int index = -1;
-        while ((index = src.indexOf(find, index)) > -1) {
+        int index=-1;
+        while((index=src.indexOf(find,index))>-1){
             ++index;
             ++o;
         }

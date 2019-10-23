@@ -1,9 +1,5 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "T_DB_CHANGE")
 public class TDbChange {
-    private String id;
+    private int id;
     private TApp appId;
     private String version;
     //private Integer user;
@@ -25,23 +21,18 @@ public class TDbChange {
     private String script;
     private String module;
     private String dbType;
-    private String hasSend;
-
-    public TDbChange(){
-        this.id = StringUtils.genUUID();
-    }
 
     private List<TDbChecklist> dbChecklistList =
             new ArrayList<TDbChecklist>();
 
     @Id
     @Column(name = "ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getId() {
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -134,15 +125,6 @@ public class TDbChange {
     public void setDbType(String dbType) {
         this.dbType = dbType;
     }
-    @Basic
-    @Column(name = "HAS_SEND")
-    public String getHasSend() {
-        return hasSend;
-    }
-
-    public void setHasSend(String hasSend) {
-        this.hasSend = hasSend;
-    }
 
     @OneToMany(mappedBy="change")
     @OrderBy(value="checkTime desc")
@@ -231,7 +213,7 @@ public class TDbChange {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id;
         result = 31 * result + (appId != null ? appId.hashCode() : 0);
         result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);

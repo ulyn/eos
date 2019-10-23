@@ -14,13 +14,11 @@
  *    修改原因：
  *————————————————————————————————
  */
-
 package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.Constants;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.server.sys.EosServerProp;
-
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -47,11 +45,13 @@ public class ServerFactory {
             logger.info("server为空,重新New");
             if (Constants.SHORT_NETTY.equals(transporter)) {
                 server = new NettyRpcServer(EosServerProp.nettyServerPort);
-                serverMap.put(transporter, server);
-            } else if (Constants.LONG_NETTY.equals(transporter)) {
+                serverMap.put(transporter,server);
+            } else if (Constants.LONG_NETTY.equals(transporter))
+            {
                 server = new NettyRpcServer(EosServerProp.nettyServerPort);
-                serverMap.put(transporter, server);
-            } else {
+                serverMap.put(transporter,server);
+            }else
+            {
                 throw new RuntimeException("没有该transporter的实现Server:" + transporter);
             }
         }

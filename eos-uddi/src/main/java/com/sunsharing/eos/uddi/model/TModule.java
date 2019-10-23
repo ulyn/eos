@@ -1,9 +1,5 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 
 /**
@@ -12,13 +8,10 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_MODULE")
 public class TModule {
-    private String moduleId;
+    private int moduleId;
     private String moduleName;
     private TApp app;
-
-    public TModule(){
-        this.moduleId = StringUtils.genUUID();
-    }
+    private Integer column4;
 
     @ManyToOne
     @JoinColumn(name="APP_ID")
@@ -31,13 +24,13 @@ public class TModule {
     }
 
     @Id
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "MODULE_ID")
-    public String getModuleId() {
+    public int getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(String moduleId) {
+    public void setModuleId(int moduleId) {
         this.moduleId = moduleId;
     }
 
@@ -53,6 +46,15 @@ public class TModule {
 
 
 
+    @Basic
+    @Column(name = "Column_4")
+    public Integer getColumn4() {
+        return column4;
+    }
+
+    public void setColumn4(Integer column4) {
+        this.column4 = column4;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -62,6 +64,7 @@ public class TModule {
         TModule tModule = (TModule) o;
 
         if (moduleId != tModule.moduleId) return false;
+        if (column4 != null ? !column4.equals(tModule.column4) : tModule.column4 != null) return false;
         if (moduleName != null ? !moduleName.equals(tModule.moduleName) : tModule.moduleName != null) return false;
 
         return true;
@@ -69,8 +72,9 @@ public class TModule {
 
     @Override
     public int hashCode() {
-        int result = moduleId.hashCode();
+        int result = moduleId;
         result = 31 * result + (moduleName != null ? moduleName.hashCode() : 0);
+        result = 31 * result + (column4 != null ? column4.hashCode() : 0);
         return result;
     }
 }

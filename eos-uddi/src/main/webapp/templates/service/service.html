@@ -16,10 +16,9 @@
     </div>
 
     <div class="g_6 contents_options">
-        <div class="submitIt simple_buttons" ng-click="back()">返回</div>
         <div class="submitIt simple_buttons" ng-click="addService()">添加服务</div>
-        <div style="display:none" class="submitIt simple_buttons" ng-click="toDbUrl()">数据库变更管理</div>
-        <div style="display:none" class="submitIt simple_buttons" ng-click="toConfig()">配置管理</div>
+        <div class="submitIt simple_buttons" ng-click="toDbUrl()">数据库变更管理</div>
+        <div class="submitIt simple_buttons" ng-click="toConfig()">配置管理</div>
     </div>
 
     <div class="g_12 separator"><span></span></div>
@@ -96,10 +95,10 @@
                             <td class=" ">{{row.user}}</td>
                             <td style="word-break: break-word;" class=" "><a class="{{v.class}}" style="margin-left: 5px"
                                              href="#method/{{row.appId}}/{{row.serviceId}}/{{v.serviceVersion}}"
-                                             ng-repeat="v in row.versions">{{v.versionNum}}</a></td>
+                                             ng-repeat="v in row.versions">{{v.versionId}}</a></td>
                             <td style="word-break: break-word;" class=" "><a class="{{v.class}}" style="margin-left: 5px"
                                              href="#getjava/{{row.appId}}/{{v.versionId}}"
-                                             ng-repeat="v in row.versions">{{v.versionNum}}</a></td>
+                                             ng-repeat="v in row.versions">{{v.versionId}}</a></td>
                             <td class=" "><a href="#delete/{{row.appId}}/{{row.serviceId}}">删除</a></td>
                         </tr>
                         </tbody>

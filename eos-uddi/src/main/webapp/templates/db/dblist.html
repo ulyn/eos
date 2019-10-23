@@ -17,8 +17,8 @@
 
     <div class="g_6 contents_options">
         <div class="submitIt simple_buttons" ng-click="back()" >返回</div>
-        <div class="submitIt simple_buttons" ng-click="dbAddFun()" >添加数据库变更</div>
-        <div style="display: none" class="submitIt simple_buttons" ng-click="toServiceList()" >服务管理</div>
+        <div class="submitIt simple_buttons" ng-click="dbAddFun()" >添加变更</div>
+        <div class="submitIt simple_buttons" ng-click="toServiceList()" >服务管理</div>
     </div>
 
     <div class="g_12 separator"><span></span></div>
@@ -61,11 +61,6 @@
                             <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
                                 rowspan="1" colspan="1" aria-sort="ascending"
                                 aria-label="Rendering engine: activate to sort column descending" style="width: 100px;">
-                                所属库
-                            </th>
-                            <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
-                                rowspan="1" colspan="1" aria-sort="ascending"
-                                aria-label="Rendering engine: activate to sort column descending" style="width: 100px;">
                                 发布人
                             </th>
                             <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0"
@@ -83,16 +78,13 @@
 
                         <tbody role="alert" aria-live="polite" aria-relevant="all">
                         <tr class="{{row.rowclass}}" ng-repeat="row in dbs">
-                            <td class=" " style="color:{{row.checkColor}}">{{row.version}}</td>
-                            <td class=" " >{{row.db}}</td>
+                            <td class=" " style="color:{{row.checkColor}}">{{row.scriptName}}</td>
                             <td class=" ">{{row.userName}}</td>
                             <td class=" " ng-bind-html="row.changeLog"></td>
                             <td class=" ">
-                                <a href="#dbAdd/{{appId}}/{{row.id}}/{{yw}}">修改</a>&nbsp;
-                                <a href="#viewDbScript/{{appId}}/{{row.id}}/{{yw}}">预览</a><br>
-                                <a href="downloadDb.do?name=script&changeId={{row.id}}">下载脚本</a><br>
-                                <a ng-if="row.hasSend!='1' && row.checkStatus == true" href="javascript:void(0)" ng-click="setHasSend(row.id)">设置已为发包</a>
-                                <a ng-if="row.hasSend=='1'" href="javascript:void(0)"><font color="green">已发包</font></a>
+                                <a href="#dbAdd/{{appId}}/{{row.id}}">修改</a>&nbsp;
+                                <a href="downloadDb.do?name=script&changeId={{row.id}}">下载脚本</a>
+                                <a href="#viewDbScript/{{appId}}/{{row.id}}">预览</a>
                             </td>
                         </tr>
                         </tbody>

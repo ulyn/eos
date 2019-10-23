@@ -20,20 +20,20 @@ public class ConfigService {
     @Autowired
     JdbcTemplate jdbc;
 
-    private SimpleHibernateDao<TConfigGroup, String> groupDao;//用户管理
-    private SimpleHibernateDao<TConfig, String> configDao;//用户管理
-    private SimpleHibernateDao<TConfigChildApp, String> childDao;//用户管理
-    private SimpleHibernateDao<TConfigRun, String> runDao;//用户管理
-    private SimpleHibernateDao<TConfigRunVal, String> runValDao;//用户管理
+    private SimpleHibernateDao<TConfigGroup, Integer> groupDao;//用户管理
+    private SimpleHibernateDao<TConfig, Integer> configDao;//用户管理
+    private SimpleHibernateDao<TConfigChildApp, Integer> childDao;//用户管理
+    private SimpleHibernateDao<TConfigRun, Integer> runDao;//用户管理
+    private SimpleHibernateDao<TConfigRunVal, Integer> runValDao;//用户管理
 
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory) {
-        groupDao = new SimpleHibernateDao<TConfigGroup, String>(sessionFactory, TConfigGroup.class);
-        configDao = new SimpleHibernateDao<TConfig, String>(sessionFactory, TConfig.class);
-        childDao = new SimpleHibernateDao<TConfigChildApp, String>(sessionFactory, TConfigChildApp.class);
-        runDao = new SimpleHibernateDao<TConfigRun, String>(sessionFactory, TConfigRun.class);
-        runValDao = new SimpleHibernateDao<TConfigRunVal, String>(sessionFactory, TConfigRunVal.class);
+        groupDao = new SimpleHibernateDao<TConfigGroup, Integer>(sessionFactory, TConfigGroup.class);
+        configDao = new SimpleHibernateDao<TConfig, Integer>(sessionFactory, TConfig.class);
+        childDao = new SimpleHibernateDao<TConfigChildApp, Integer>(sessionFactory, TConfigChildApp.class);
+        runDao = new SimpleHibernateDao<TConfigRun, Integer>(sessionFactory, TConfigRun.class);
+        runValDao = new SimpleHibernateDao<TConfigRunVal, Integer>(sessionFactory, TConfigRunVal.class);
     }
 
     public void saveGroup(TConfigGroup group)
@@ -58,7 +58,7 @@ public class ConfigService {
 
     public void commitConfig(String configId)
     {
-        TConfig  config = configDao.get(new String(configId));
+        TConfig  config = configDao.get(new Integer(configId));
         config.setIsCommit("1");
         configDao.update(config);
 //        if(config.getRelConfigId()!=null && config.getRelConfigId()!=0)
@@ -67,7 +67,7 @@ public class ConfigService {
 //            config1.setIsCommit("1");
 //            configDao.update(config1);
 //        }
-        String hql = "update TConfig set isCommit = '1'  where relConfigId = '"+configId+"'";
+        String hql = "update TConfig set isCommit = '1'  where relConfigId = "+configId;
         configDao.createQuery(hql).executeUpdate();
     }
 
@@ -76,7 +76,7 @@ public class ConfigService {
         String sql = "";
         if(!StringUtils.isBlank(childAppId))
         {
-            sql = "from TConfig where key='"+key+"' and chlidAppId='"+childAppId+"' and _DEL = '0'";
+            sql = "from TConfig where key='"+key+"' and chlidAppId="+childAppId+" and _DEL = '0'";
         }else
         {
             return false;
@@ -97,33 +97,27 @@ public class ConfigService {
 
     public TConfigGroup loadGroup(String groupId)
     {
-        return groupDao.get(new String(groupId));
+        return groupDao.get(new Integer(groupId));
     }
 
     public TConfig loadConfig(String configId)
     {
-        return configDao.get(new String(configId));
+        return configDao.get(new Integer(configId));
     }
 
     public void deleteGroup(String groupId)
     {
-        String hql = "select count(*) from  TConfig  where _delete = '0' and groupId = '"+groupId+"'";
-        long size = configDao.findLong(hql);
-        if(size>0){
-            throw new RuntimeException("删除失败，改分组下还有配置项");
-        }
-
-        TConfigGroup group = groupDao.get(new String(groupId));
+        TConfigGroup group = groupDao.get(new Integer(groupId));
         group.set_delete("1");
         groupDao.saveOrUpdate(group);
     }
 
     public void deleteConfig(String config)
     {
-        TConfig group = configDao.get(new String(config));
+        TConfig group = configDao.get(new Integer(config));
         group.set_delete("1");
         configDao.saveOrUpdate(group);
-        String hql = "update TConfig set _delete = '1'  where relConfigId = '"+config+"'";
+        String hql = "update TConfig set _delete = '1'  where relConfigId = "+config;
         configDao.createQuery(hql).executeUpdate();
 
 
@@ -132,7 +126,7 @@ public class ConfigService {
 
     public TConfigRun loadRun(String runId)
     {
-        TConfigRun run = runDao.get(new String(runId));
+        TConfigRun run = runDao.get(new Integer(runId));
         return run;
     }
 
@@ -143,7 +137,7 @@ public class ConfigService {
 
     public void saveRunVal(String runId,String configId,String val)
     {
-        String hql = "from TConfigRunVal where runId = '"+runId+"' and configId='"+configId+"'";
+        String hql = "from TConfigRunVal where runId = "+runId+" and configId="+configId;
         List<TConfigRunVal> runVals = runValDao.find(hql);
         if(runVals.size()>0)
         {
@@ -153,15 +147,15 @@ public class ConfigService {
         {
             TConfigRunVal runVal = new TConfigRunVal();
             runVal.setVal(val);
-            runVal.setConfigId(new String(configId));
-            runVal.setRunId(new String(runId));
+            runVal.setConfigId(new Integer(configId));
+            runVal.setRunId(new Integer(runId));
             runValDao.saveObject(runVal);
         }
     }
 
     public TConfigRunVal getRunVal(String runId,String configId)
     {
-        String hql = "from TConfigRunVal where runId = '"+runId+"' and configId='"+configId+"'";
+        String hql = "from TConfigRunVal where runId = "+runId+" and configId="+configId;
         List<TConfigRunVal> runVals = runValDao.find(hql);
         if(runVals.size()>0)
         {

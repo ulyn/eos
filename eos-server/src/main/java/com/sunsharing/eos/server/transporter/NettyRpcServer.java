@@ -14,7 +14,6 @@
  *    修改原因：
  *————————————————————————————————
  */
-
 package com.sunsharing.eos.server.transporter;
 
 import com.sunsharing.eos.common.rpc.RpcServer;
@@ -22,7 +21,6 @@ import com.sunsharing.eos.common.rpc.remoting.netty.ExDecode;
 import com.sunsharing.eos.common.rpc.remoting.netty.ExEncode;
 import com.sunsharing.eos.common.rpc.remoting.netty.NettyServer;
 import com.sunsharing.eos.server.transporter.netty.MsgHandler;
-
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;

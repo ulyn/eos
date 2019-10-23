@@ -1,9 +1,5 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 
 /**
@@ -12,25 +8,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_DB_CHECKLIST")
 public class TDbChecklist {
-    private String id;
+    private int id;
     private TUser checkUser;
     private TDbChange change;
     private String checkContent;
     private String checkStatus;
     private String checkTime;
 
-    public TDbChecklist(){
-        this.id = StringUtils.genUUID();
-    }
-
     @Id
     @Column(name = "ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getId() {
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -101,7 +93,7 @@ public class TDbChecklist {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id;
         result = 31 * result + (checkUser != null ? checkUser.hashCode() : 0);
         result = 31 * result + (checkContent != null ? checkContent.hashCode() : 0);
         result = 31 * result + (checkStatus != null ? checkStatus.hashCode() : 0);

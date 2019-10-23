@@ -14,7 +14,6 @@
  *    修改原因：
  *————————————————————————————————
  */
-
 package com.sunsharing.eos.server;
 
 import com.sunsharing.eos.common.annotation.EosService;
@@ -25,10 +24,8 @@ import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
-import com.sunsharing.eos.server.paranamer.ParameterNamesFinder;
-import com.sunsharing.eos.server.paranamer.ParameterNamesHolder;
 import com.sunsharing.eos.server.transporter.ServerFactory;
-
+import com.thoughtworks.paranamer.*;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
@@ -58,11 +55,13 @@ public class ServerServiceContext extends AbstractServiceContext {
 
     ApplicationContext ctx;
 
-    private ServerServiceContext() {
+    private ServerServiceContext()
+    {
 
     }
 
-    public static ServerServiceContext getInstance() {
+    public static ServerServiceContext getInstance()
+    {
         return sc;
     }
 
@@ -87,7 +86,7 @@ public class ServerServiceContext extends AbstractServiceContext {
     }
 
 
-    public void initService() {
+    public void initService(){
 
         ClassFilter filter = new ClassFilter() {
             @Override
@@ -147,20 +146,21 @@ public class ServerServiceContext extends AbstractServiceContext {
     private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
-        ParameterNamesHolder parameterNamesHolder = new ParameterNamesFinder().find();
+        Paranamer adaptiveParanamer = new AdaptiveParanamer();
         for (Method method : methods) {
-            if (!method.isAnnotationPresent(Version.class)) {
+            if(!method.isAnnotationPresent(Version.class)){
                 logger.error(String.format("服务接口[%s]的方法[%s]上必须注解Version",
-                    interfaces.getName(), method.getName()));
+                        interfaces.getName(),method.getName()));
                 System.exit(0);
             }
             String[] parameterNames = null;
-            if (method.getParameterTypes() != null && method.getParameterTypes().length > 0) {
+            if(method.getParameterTypes() != null && method.getParameterTypes().length >0){
                 //取参数名
-                parameterNames = parameterNamesHolder.getParameterNames(interfaces, method);
-                if (parameterNames == null || parameterNames.length <= 0) {
-                    logger.error(String.format("服务接口类 %s - %s 未能正确编译打包，无法获取参数名~~",
-                        interfaces.getName(), method.getName()));
+                parameterNames = adaptiveParanamer.lookupParameterNames(method,false);
+                if(parameterNames == null || parameterNames.length <= 0){
+                    logger.error(String.format("服务接口类 %s - %s 编译期未加入Paranamer，无法获取参数名，系统无法启动！" +
+                                    "请在pom.xml中添加paranamer-maven-plugin插件重新编译打包~~",
+                            interfaces.getName(),method.getName()));
                     System.exit(0);
                 }
             }
@@ -172,15 +172,15 @@ public class ServerServiceContext extends AbstractServiceContext {
     }
 
 
-    public Map<String, ServiceConfig> getServiceConfigMap() {
+    public  Map<String, ServiceConfig> getServiceConfigMap() {
         return serviceConfigMap;
     }
 
-    public ServiceConfig getServiceConfig(String appId, String serviceId) {
+    public  ServiceConfig getServiceConfig(String appId, String serviceId) {
         return serviceConfigMap.get(getServiceConfigKey(appId, serviceId));
     }
 
-    public List<ServiceConfig> getServiceConfigList() {
+    public  List<ServiceConfig> getServiceConfigList() {
         return new ArrayList<ServiceConfig>(serviceConfigMap.values());
     }
 

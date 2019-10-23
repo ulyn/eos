@@ -77,13 +77,13 @@ indexApp.config(['$routeProvider',
                 controller: 'runval'
             })
 
-            .when('/dblist/:appId/:yw',{
+            .when('/dblist/:appId',{
                 templateUrl: 'templates/db/dblist.html',
                 controller: 'dblist'
-            }).when('/dbAdd/:appId/:changeId/:yw',{
+            }).when('/dbAdd/:appId/:changeId',{
                 templateUrl: 'templates/db/dbAdd.html',
                 controller: 'dbAdd'
-            }).when('/viewDbScript/:appId/:changeId/:yw',{
+            }).when('/viewDbScript/:appId/:changeId',{
                 templateUrl: 'templates/db/scriptview.html',
                 controller: 'viewDbScript'
             });
@@ -108,11 +108,10 @@ indexApp.controller('showApp', function($scope,$routeParams,$http) {
     if(yw == "4"){
         ywname = "教育业务";
     }
-    if(yw == "5" || yw==""){
+    if(yw == "5"){
         ywname = "其他";
     }
     $scope.ywname = ywname;
-    $scope.yw = yw;
 
     $http.post('/applist.do?yw='+yw,{}).success(function(data){
         //var d = data.data;
@@ -424,11 +423,6 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
         {
             $scope.appname = data.data.appName;
             $scope.modules = data.data.modules;
-            $scope.back = function()
-            {
-                location.href = "#applist/"+data.data.yw;
-            }
-
         }else
         {
             alert(data.msg);
@@ -474,8 +468,6 @@ indexApp.controller('servicelist', function($scope, $routeParams,$http) {
             alert(data.msg);
         }
     });
-
-
 
     $scope.test = function()
     {
@@ -997,12 +989,10 @@ indexApp.controller('userEdit', function($scope, $routeParams,$http) {
             app = app.substr(0,app.length-1);
         }
 
-        var yw = document.getElementById("yw2").value;
-
         $http({
             url: '/updateUser.do',
             method: "POST",
-            data: "id="+id+"&role="+role+"&apps="+app+"&isTest="+isTest+"&yw="+yw,
+            data: "id="+id+"&role="+role+"&apps="+app+"&isTest="+isTest,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
 

@@ -9,13 +9,8 @@ import com.sunsharing.eos.common.rpc.protocol.RequestPro;
 import com.sunsharing.eos.common.rpc.protocol.ResponsePro;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerCache;
 import com.sunsharing.eos.common.rpc.remoting.netty.channel.ServerChannel;
-
 import org.apache.log4j.Logger;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.*;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,7 +57,7 @@ public class MsgHandler extends SimpleChannelHandler {
                         ServiceResponse response = rpcServer.callService(ServiceRequest.createServiceRequest(req));
                         responsePro = response.toResponsePro();
                     } catch (Exception e) {
-                        ServiceResponse response = new ServiceResponse(basePro.getMsgId(), basePro.getSerialization());
+                        ServiceResponse response = new ServiceResponse(basePro.getMsgId(),basePro.getSerialization());
                         response.writeError(e);
                         responsePro = response.toResponsePro();
                     } finally {

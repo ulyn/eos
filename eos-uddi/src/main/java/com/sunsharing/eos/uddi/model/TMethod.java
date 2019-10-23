@@ -1,9 +1,5 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 
 /**
@@ -12,24 +8,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_METHOD")
 public class TMethod {
-    private String methodId;
+    private int methodId;
     private TServiceVersion versionObj;
     private String methodName;
     private String mockResult;
     private String params;
     private String methodVersion;
-    public TMethod(){
-        this.methodId = StringUtils.genUUID();
-    }
 
     @Id
     @Column(name = "METHOD_ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getMethodId() {
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getMethodId() {
         return methodId;
     }
 
-    public void setMethodId(String methodId) {
+    public void setMethodId(int methodId) {
         this.methodId = methodId;
     }
 
@@ -100,7 +93,7 @@ public class TMethod {
 
     @Override
     public int hashCode() {
-        int result = methodId.hashCode();
+        int result = methodId;
         //result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
         result = 31 * result + (mockResult != null ? mockResult.hashCode() : 0);

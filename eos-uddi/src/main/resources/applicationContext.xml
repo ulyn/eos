@@ -26,7 +26,7 @@
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url"
-                  value="jdbc:mysql://192.168.0.62:3406/eos_1?useUnicode=yes&amp;characterEncoding=UTF-8&amp;connectionCollation=utf8_general_ci"/>
+                  value="jdbc:mysql://localhost:3306/eos?useUnicode=yes&amp;characterEncoding=UTF-8&amp;connectionCollation=utf8_general_ci"/>
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
@@ -65,7 +65,6 @@
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.jdbc.batch_size">0</prop>
-                <prop key="hibernate.hbm2ddl.auto">none</prop>
             </props>
         </property>
         <property name="packagesToScan">

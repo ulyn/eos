@@ -1,12 +1,8 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,20 +12,16 @@ import java.util.List;
 @Entity
 @Table(name = "T_APP")
 public class TApp implements Comparable {
-    private String appId;
+    private int appId;
     private String appName;
     private String appCode;
     private String dbs;
     private String creatTime;
     private String yw;
 
-    public TApp(){
-        this.appId = StringUtils.genUUID();
-    }
-
     List<TModule> modules = new ArrayList<TModule>();
 
-    @OneToMany(mappedBy = "app", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="app",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     public List<TModule> getModules() {
         return modules;
@@ -51,12 +43,12 @@ public class TApp implements Comparable {
 
     @Id
     @Column(name = "APP_ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getAppId() {
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(int appId) {
         this.appId = appId;
     }
 
@@ -106,7 +98,7 @@ public class TApp implements Comparable {
 
     @Override
     public int hashCode() {
-        int result = appId.hashCode();
+        int result = appId;
         result = 31 * result + (appName != null ? appName.hashCode() : 0);
         result = 31 * result + (appCode != null ? appCode.hashCode() : 0);
         return result;
@@ -114,12 +106,15 @@ public class TApp implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        TApp app = (TApp) o;
-        if (this.creatTime.compareTo(((TApp) o).getCreatTime()) > 0) {
+        TApp app = (TApp)o;
+        if(this.appId>((TApp) o).getAppId())
+        {
             return 1;
-        } else if (this.creatTime.compareTo(((TApp) o).getCreatTime()) < 0) {
+        }else if(this.appId<((TApp) o).getAppId())
+        {
             return -1;
-        } else {
+        }else
+        {
             return 0;
         }
     }

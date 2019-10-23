@@ -1,13 +1,7 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -16,8 +10,8 @@ import java.util.List;
 @Entity
 @Table(name = "T_SERVICE")
 public class TService {
-    private String serviceId;
-    private String appId;
+    private int serviceId;
+    private Integer appId;
     private String module;
     private TUser user;
     private String serviceCode;
@@ -26,36 +20,11 @@ public class TService {
     private String createTime;
     private String test = "0";
 
-    public TService(){
-        this.serviceId = StringUtils.genUUID();
-    }
-
     private List<TServiceVersion> versions = new ArrayList<TServiceVersion>();
 
     @OneToMany(mappedBy="service",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
     @OrderBy(value = "versionId desc ")
     public List<TServiceVersion> getVersions() {
-        Collections.sort(versions, new Comparator<TServiceVersion>() {
-            @Override
-            public int compare(TServiceVersion o1, TServiceVersion o2) {
-                String v1 = o1.getVersionNum();
-                String v2 = o2.getVersionNum();
-                if(StringUtils.isBlank(v1)){
-                    v1 = "0";
-                }
-                if(StringUtils.isBlank(v2)){
-                    v2 = "0";
-                }
-                if(new Integer(v1) > new Integer(v2)){
-                    return -1;
-                }else if(new Integer(v1) == new Integer(v2)){
-                    return 0;
-                }else{
-                    return 1;
-                }
-            }
-        });
-
         return versions;
     }
 
@@ -74,12 +43,12 @@ public class TService {
 
     @Id
     @Column(name = "SERVICE_ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getServiceId() {
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(String serviceId) {
+    public void setServiceId(int serviceId) {
         this.serviceId = serviceId;
     }
 
@@ -95,11 +64,11 @@ public class TService {
 
     @Basic
     @Column(name = "APP_ID")
-    public String getAppId() {
+    public Integer getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(Integer appId) {
         this.appId = appId;
     }
 
@@ -175,7 +144,7 @@ public class TService {
 
     @Override
     public int hashCode() {
-        int result = serviceId.hashCode();
+        int result = serviceId;
         result = 31 * result + (appId != null ? appId.hashCode() : 0);
         result = 31 * result + (module != null ? module.hashCode() : 0);
         //result = 31 * result + (userId != null ? userId.hashCode() : 0);

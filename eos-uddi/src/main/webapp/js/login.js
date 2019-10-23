@@ -72,8 +72,6 @@ sampleApp.controller('ShowOrderController', function($scope, $routeParams,$http)
         var username = $('#regname').val();
         var pwd = $('#hehe').val();
         var email = $('#email').val();
-        var yw = $('#yw').val();
-
         if(username == "")
         {
             alert("用户名不能空");
@@ -89,15 +87,10 @@ sampleApp.controller('ShowOrderController', function($scope, $routeParams,$http)
             alert("email不能为空");
             return;
         }
-        if(yw == "")
-        {
-            alert("所属业务不能为空");
-            return;
-        }
         $http({
             url: '/saveUser.do',
             method: "POST",
-            data: "username="+username+"&pwd="+pwd+"&email="+email+"&yw="+yw,
+            data: "username="+username+"&pwd="+pwd+"&email="+email,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {
 

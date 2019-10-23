@@ -1,9 +1,5 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 
 /**
@@ -12,24 +8,20 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_DB_PDM")
 public class TDbPdm {
-    private String id;
+    private int id;
     private TApp appId;
     private String pdm;
     private String lock;
     private TUser lockUserId;
 
-    public TDbPdm(){
-        this.id = StringUtils.genUUID();
-    }
-
     @Id
     @Column(name = "ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getId() {
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -90,7 +82,7 @@ public class TDbPdm {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id;
         result = 31 * result + (pdm != null ? pdm.hashCode() : 0);
         result = 31 * result + (lock != null ? lock.hashCode() : 0);
         result = 31 * result + (lockUserId != null ? lockUserId.hashCode() : 0);

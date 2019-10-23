@@ -1,9 +1,5 @@
 package com.sunsharing.eos.uddi.model;
 
-import com.sunsharing.eos.common.utils.StringUtils;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 
 /**
@@ -12,35 +8,31 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_CONFIG_GROUP")
 public class TConfigGroup {
-    private String groupId;
-    private String appId;
+    private int groupId;
+    private Integer appId;
     private String groupName;
     private String isCommon;
-    private String childAppId;
+    private Integer childAppId;
     private String _delete ="0";
-
-    public TConfigGroup(){
-        this.groupId = StringUtils.genUUID();
-    }
 
     @Id
     @Column(name = "GROUP_ID")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    public String getGroupId() {
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
 
     @Basic
     @Column(name = "APP_ID")
-    public String getAppId() {
+    public Integer getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(Integer appId) {
         this.appId = appId;
     }
 
@@ -91,7 +83,7 @@ public class TConfigGroup {
 
     @Override
     public int hashCode() {
-        int result = groupId.hashCode();
+        int result = groupId;
         result = 31 * result + (appId != null ? appId.hashCode() : 0);
         result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
         result = 31 * result + (isCommon != null ? isCommon.hashCode() : 0);
@@ -100,11 +92,11 @@ public class TConfigGroup {
 
     @Basic
     @Column(name = "CHILD_APP_ID")
-    public String getChildAppId() {
+    public Integer getChildAppId() {
         return childAppId;
     }
 
-    public void setChildAppId(String childAppId) {
+    public void setChildAppId(Integer childAppId) {
         this.childAppId = childAppId;
     }
 }

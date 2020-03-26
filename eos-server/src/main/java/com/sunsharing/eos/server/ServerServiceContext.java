@@ -24,6 +24,8 @@ import com.sunsharing.eos.common.config.ServiceMethod;
 import com.sunsharing.eos.common.rpc.RpcServer;
 import com.sunsharing.eos.common.utils.ClassFilter;
 import com.sunsharing.eos.common.utils.ClassUtils;
+import com.sunsharing.eos.server.paranamer.ParameterNamesFinder;
+import com.sunsharing.eos.server.paranamer.ParameterNamesHolder;
 import com.sunsharing.eos.server.transporter.ServerFactory;
 import com.thoughtworks.paranamer.*;
 import org.apache.log4j.Logger;
@@ -146,7 +148,7 @@ public class ServerServiceContext extends AbstractServiceContext {
     private List<ServiceMethod> getInterfaceMethodList(Class interfaces) {
         List<ServiceMethod> list = new ArrayList<ServiceMethod>();
         Method[] methods = interfaces.getDeclaredMethods();
-        Paranamer adaptiveParanamer = new AdaptiveParanamer();
+        ParameterNamesHolder parameterNamesHolder = new ParameterNamesFinder().find();
         for (Method method : methods) {
             if(!method.isAnnotationPresent(Version.class)){
                 logger.error(String.format("服务接口[%s]的方法[%s]上必须注解Version",
@@ -156,11 +158,10 @@ public class ServerServiceContext extends AbstractServiceContext {
             String[] parameterNames = null;
             if(method.getParameterTypes() != null && method.getParameterTypes().length >0){
                 //取参数名
-                parameterNames = adaptiveParanamer.lookupParameterNames(method,false);
+                parameterNames = parameterNamesHolder.getParameterNames(interfaces, method);
                 if(parameterNames == null || parameterNames.length <= 0){
-                    logger.error(String.format("服务接口类 %s - %s 编译期未加入Paranamer，无法获取参数名，系统无法启动！" +
-                                    "请在pom.xml中添加paranamer-maven-plugin插件重新编译打包~~",
-                            interfaces.getName(),method.getName()));
+                    logger.error(String.format("服务接口类 %s - %s 未能正确编译打包，无法获取参数名~~",
+                        interfaces.getName(), method.getName()));
                     System.exit(0);
                 }
             }

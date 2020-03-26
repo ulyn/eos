@@ -16,6 +16,7 @@ import com.sunsharing.eos.uddi.service.creator.CreatorService;
 import com.sunsharing.eos.uddi.service.creator.CreatorType;
 import com.sunsharing.eos.uddi.sys.SysInit;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.*;
 
 /**
  * Created by criss on 14-2-1.
@@ -48,24 +60,20 @@ public class ServiceController {
 
     @RequestMapping(value = "/servicelist.do", method = RequestMethod.POST)
     public void servicelist(String appId, String module, Model model, HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+        throws Exception {
 
 
         List<TService> services = service.query(appId, module);
 
-        for(TService service:services)
-        {
-            List<TServiceVersion> versons =  service.getVersions();
+        for (TService service : services) {
+            List<TServiceVersion> versons = service.getVersions();
             Collections.sort(versons, new Comparator<TServiceVersion>() {
                 public int compare(TServiceVersion tServiceVersion, TServiceVersion t1) {
-                    if(tServiceVersion.getVersionId()>t1.getVersionId())
-                    {
+                    if (tServiceVersion.getVersionId().compareTo(t1.getVersionId()) > 0) {
                         return -1;
-                    }else if(tServiceVersion.getVersionId()<t1.getVersionId())
-                    {
+                    } else if (tServiceVersion.getVersionId().compareTo(t1.getVersionId()) < 0) {
                         return 1;
-                    }else
-                    {
+                    } else {
                         return 0;
                     }
                 }
@@ -120,7 +128,7 @@ public class ServiceController {
                     }
                     // 获得文件名
                     File source = new File(SysInit.path + File.separator + "tmp" + File.separator +
-                            StringUtils.generateUUID());
+                        StringUtils.generateUUID());
                     if (!source.exists()) {
                         source.mkdirs();
                     }
@@ -142,7 +150,7 @@ public class ServiceController {
                         service.addAppCode(appcode, lines);
                         Map functionMap = new HashMap();
                         //去掉注解，不增加注解
-                        service.getMethodParame(lines,functionMap);
+                        service.getMethodParame(lines, functionMap);
                         for (int i = 0; i < lines.length; i++) {
                             //System.out.println(lines[i]);
                         }
@@ -163,7 +171,7 @@ public class ServiceController {
                             w.write("\n".getBytes("UTF-8"));
                         }
                         TUser u = (TUser) request.getSession().getAttribute("user");
-                        this.service.saveService(servicename, appId, module, str2.toArray(new String[]{}), u.getUserId(),functionMap);
+                        this.service.saveService(servicename, appId, module, str2.toArray(new String[]{}), u.getUserId(), functionMap);
                     } catch (Exception e) {
                         logger.error("", e);
                         //ResponseHelper.printOut(response, false, "上传JAVA文件出错", "");
@@ -199,13 +207,12 @@ public class ServiceController {
         List<Object[]> method = service.seachmethod(appId, serviceId, version);
         List<TServiceVersion> versions = service.searchVersion(serviceId);
         List lists = new ArrayList();
-        for(TServiceVersion version1 : versions)
-        {
+        for (TServiceVersion version1 : versions) {
             Map o = new HashMap();
             String v = version1.getServiceVersion();
-            int vId = version1.getVersionId();
-            o.put("version",v);
-            o.put("versionId",vId);
+            String vId = version1.getVersionId();
+            o.put("version", v);
+            o.put("versionId", vId);
             //o.put("versionId",vId);
             lists.add(o);
         }
@@ -216,35 +223,32 @@ public class ServiceController {
             m.put("methodId", obj[0].toString());
             m.put("methodName", obj[1].toString());
             m.put("mockResult", JSONArray.parseArray(sortMock(obj[2].toString())));
-            if(obj[3]!=null) {
+            if (obj[3] != null) {
                 m.put("params", obj[3].toString());
-            }else {
+            } else {
                 m.put("params", "");
             }
-            m.put("methodVersion",obj[4].toString());
+            m.put("methodVersion", obj[4].toString());
             result.add(m);
         }
         Map rs = new HashMap();
-        rs.put("versions",lists);
-        rs.put("list",result);
+        rs.put("versions", lists);
+        rs.put("list", result);
         String result2 = ResponseHelper.covert2Json(true, "", rs);
         ResponseHelper.printOut(response, result2);
     }
 
-    private String sortMock(String result)
-    {
+    private String sortMock(String result) {
         List<Map> list = JSON.parseObject(result, List.class);
         Collections.sort(list, new Comparator<Map>() {
             public int compare(Map t1, Map t2) {
-                String desc1 = (String)t1.get("desc");
-                String desc2 = (String)t2.get("desc");
-                if(com.sunsharing.eos.common.utils.StringUtils.isBlank(desc1))
-                {
-                    desc1 = (String)t1.get("status");
+                String desc1 = (String) t1.get("desc");
+                String desc2 = (String) t2.get("desc");
+                if (com.sunsharing.eos.common.utils.StringUtils.isBlank(desc1)) {
+                    desc1 = (String) t1.get("status");
                 }
-                if(com.sunsharing.eos.common.utils.StringUtils.isBlank(desc2))
-                {
-                    desc2 = (String)t2.get("status");
+                if (com.sunsharing.eos.common.utils.StringUtils.isBlank(desc2)) {
+                    desc2 = (String) t2.get("status");
                 }
                 return desc1.compareTo(desc2);
             }
@@ -253,17 +257,15 @@ public class ServiceController {
     }
 
     @RequestMapping(value = {"/rollbackMock.do"}, method = RequestMethod.POST)
-    public void rollbackMock(String appId, String serviceId, String oldVersion,String newVersion,String methodName,String methodId,
-                           HttpServletResponse response, HttpServletRequest request)
-    {
+    public void rollbackMock(String appId, String serviceId, String oldVersion, String newVersion, String methodName, String methodId,
+                             HttpServletResponse response, HttpServletRequest request) {
         List<Object[]> method = service.seachmethod(appId, serviceId, oldVersion);
         List<Object[]> newMethod = service.seachmethod(appId, serviceId, newVersion);
 
-        for(Object[] newM:newMethod)
-        {
+        for (Object[] newM : newMethod) {
             String newMethodId = newM[0].toString();
-            String newMethodName =  newM[1].toString();
-            if(newMethodName.equals(methodName)) {
+            String newMethodName = newM[1].toString();
+            if (newMethodName.equals(methodName)) {
                 for (Object[] oldM : method) {
                     String oldMethodId = oldM[0].toString();
                     String oldMethodName = oldM[1].toString();
@@ -276,7 +278,7 @@ public class ServiceController {
         }
 
         String[] mock = service.getMock(methodId);
-        service.save2JavaFile(methodId,mock);
+        service.save2JavaFile(methodId, mock);
 
         ResponseHelper.printOut(response, "{}");
 
@@ -285,7 +287,7 @@ public class ServiceController {
 
     @RequestMapping(value = {"/saveMethod.do"}, method = RequestMethod.POST)
     public void getMethods(
-            HttpServletResponse response, HttpServletRequest request) throws Exception {
+        HttpServletResponse response, HttpServletRequest request) throws Exception {
         Map<String, String[]> m = request.getParameterMap();
         String m2 = "";
         for (String key : m.keySet()) {
@@ -309,25 +311,26 @@ public class ServiceController {
 
     @RequestMapping(value = {"/addTestCode.do"}, method = RequestMethod.POST)
     public void addTestCode(
-            HttpServletResponse response, HttpServletRequest request) throws Exception {
+        HttpServletResponse response, HttpServletRequest request) throws Exception {
         String methodId = request.getParameter("method_id");
         String status = request.getParameter("status");
         String desc = request.getParameter("desc");
         String content = request.getParameter("content");
         String source_status = request.getParameter("source_status");
-        service.addTestCode(methodId,status,desc,content,source_status);
+        service.addTestCode(methodId, status, desc, content, source_status);
 
         String[] mock = service.getMock(methodId);
-        service.save2JavaFile(methodId,mock);
+        service.save2JavaFile(methodId, mock);
         ResponseHelper.printOut(response, "{}");
     }
+
     @RequestMapping(value = {"/deleteTestCode.do"}, method = RequestMethod.POST)
-    public void deleteTestCode(HttpServletResponse response, HttpServletRequest request) throws Exception{
+    public void deleteTestCode(HttpServletResponse response, HttpServletRequest request) throws Exception {
         String methodId = request.getParameter("method_id");
         String status = request.getParameter("status");
-        service.deleteTestCode(methodId,status);
+        service.deleteTestCode(methodId, status);
         String[] mock = service.getMock(methodId);
-        service.save2JavaFile(methodId,mock);
+        service.save2JavaFile(methodId, mock);
         ResponseHelper.printOut(response, "{}");
     }
 
@@ -347,14 +350,14 @@ public class ServiceController {
                              HttpServletResponse response, HttpServletRequest request) throws Exception {
         //application/octet-stream
         String type = request.getParameter("type");
-        Map map = creatorService.createService(versionId,type);
+        Map map = creatorService.createService(versionId, type);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename=" + new String(MapUtils.getString(map,"name").getBytes("UTF-8"), "ISO8859-1"));
+            + " filename=" + new String(MapUtils.getString(map, "name").getBytes("UTF-8"), "ISO8859-1"));
         OutputStream out = response.getOutputStream();
-        response.setHeader("Content-Length", MapUtils.getString(map,"content").getBytes("UTF-8").length + "");
-        response.getOutputStream().write(MapUtils.getString(map,"content").getBytes("UTF-8"));
+        response.setHeader("Content-Length", MapUtils.getString(map, "content").getBytes("UTF-8").length + "");
+        response.getOutputStream().write(MapUtils.getString(map, "content").getBytes("UTF-8"));
         out.close();
     }
 
@@ -420,7 +423,7 @@ public class ServiceController {
         TApp app = appService.loadApp(appId);
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;"
-                + " filename=" + new String((app.getAppCode() + "-" + vstr + "-" + type + ".zip").getBytes("UTF-8"), "ISO8859-1"));
-        creatorService.writeServicesZip(appId, vstr, CreatorType.valueOf(type),response.getOutputStream());
+            + " filename=" + new String((app.getAppCode() + "-" + vstr + "-" + type + ".zip").getBytes("UTF-8"), "ISO8859-1"));
+        creatorService.writeServicesZip(appId, vstr, CreatorType.valueOf(type), response.getOutputStream());
     }
 }

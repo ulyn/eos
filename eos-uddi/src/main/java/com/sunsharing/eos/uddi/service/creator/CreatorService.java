@@ -85,9 +85,9 @@ public class CreatorService {
             Collections.sort(list,new Comparator<TServiceVersion>() {
                 @Override
                 public int compare(TServiceVersion o1, TServiceVersion o2) {
-                    if(o1.getVersionId() < o2.getVersionId()){
+                    if(o1.getVersionId().compareTo(o2.getVersionId()) < 0) {
                         return 1;
-                    }else if(o1.getVersionId() > o2.getVersionId()){
+                    }else if(o1.getVersionId().compareTo( o2.getVersionId())>0){
                         return -1;
                     }else{
                         return 0;

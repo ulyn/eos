@@ -24,7 +24,6 @@ import com.sunsharing.eos.common.ServiceRequest;
 import com.sunsharing.eos.common.ServiceResponse;
 import com.sunsharing.eos.common.exception.ExceptionHandler;
 import com.sunsharing.eos.common.filter.FilterChain;
-import com.sunsharing.eos.common.filter.FilterManager;
 import com.sunsharing.eos.common.rpc.RpcException;
 import com.sunsharing.eos.common.utils.CompatibleTypeUtils;
 
@@ -74,6 +73,7 @@ public class DynamicRpc {
             throw new RpcException(e.getMessage(), e);
         }
     }
+
     /**
      * 执行调用
      *
@@ -83,8 +83,8 @@ public class DynamicRpc {
      * @throws com.sunsharing.eos.common.rpc.RpcException
      */
     @Deprecated
-    public static <T> T invoke(ServiceRequest request,Class<T> retType) throws RpcException {
-        return invoke(request,(Type)retType);
+    public static <T> T invoke(ServiceRequest request, Class<T> retType) throws RpcException {
+        return invoke(request, (Type) retType);
     }
 
     public static void invoke(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
@@ -142,7 +142,10 @@ public class DynamicRpc {
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Type retType) throws RpcException {
         checkException(serviceResponse);
         Object value = serviceResponse.getValue();
-        if (value instanceof String) {
+        //对象的属性存在泛型对象，比如 List<T>导致，序列化过程丢失对象类型。
+        if (CompatibleTypeUtils.isBaseDataType(retType.getClass())) {
+            return (T) CompatibleTypeUtils.expectConvert(value, retType.getClass());
+        } else if (value instanceof String) {
             return JSON.parseObject((String) value, retType);
         } else {
             return JSON.parseObject(JSON.toJSONString(value), retType);

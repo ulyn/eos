@@ -133,6 +133,7 @@ public class DynamicRpc {
      * @return
      * @throws Throwable
      */
+    @Deprecated
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Class<T> retType) throws RpcException {
         checkException(serviceResponse);
         Object value = serviceResponse.getValue();
@@ -142,13 +143,15 @@ public class DynamicRpc {
     protected static <T> T getResult(ServiceRequest serviceRequest, ServiceResponse serviceResponse, Type retType) throws RpcException {
         checkException(serviceResponse);
         Object value = serviceResponse.getValue();
-        //对象的属性存在泛型对象，比如 List<T>导致，序列化过程丢失对象类型。
-        if (CompatibleTypeUtils.isBaseDataType(retType.getClass())) {
-            return (T) CompatibleTypeUtils.expectConvert(value, retType.getClass());
-        } else if (value instanceof String) {
-            return JSON.parseObject((String) value, retType);
+
+        if (retType.getClass() == Class.class) {
+            return CompatibleTypeUtils.expectConvert(value, (Class<? extends T>) retType);
         } else {
-            return JSON.parseObject(JSON.toJSONString(value), retType);
+            if (value instanceof String) {
+                return JSON.parseObject((String) value, retType);
+            } else {
+                return JSON.parseObject(JSON.toJSONString(value), retType);
+            }
         }
     }
 
@@ -160,6 +163,16 @@ public class DynamicRpc {
             } else
                 throw new RpcException(t.getMessage(), t);
         }
+    }
+
+    private static void s(Class cls) {
+        System.out.println(cls);
+        System.out.println(cls == Class.class);
+        System.out.println(cls.isAssignableFrom(Class.class));
+    }
+
+    public static void main(String[] args) {
+        s(String.class);
     }
 }
 

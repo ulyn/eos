@@ -14,30 +14,39 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 兼容旧版本服务使用Paranamer的holder
  */
 public class EnhanceHolderImpl implements ParameterNamesHolder {
 
-    private List<ParameterNamesHolder> holders;
+    private Map<Class, ParameterNamesHolder> holderMap = new HashMap<Class, ParameterNamesHolder>();
 
     public EnhanceHolderImpl(List<ParameterNamesHolder> holders) {
-        this.holders = holders;
+        for (ParameterNamesHolder holder : holders) {
+            holderMap.put(holder.getInterfaceClass(), holder);
+        }
     }
 
     private Paranamer adaptiveParanamer = new AdaptiveParanamer();
 
     @Override
+    public Class getInterfaceClass() {
+        return this.getClass();
+    }
+
+    @Override
     public String[] getParameterNames(Class interfaces, Method method) {
-        for (ParameterNamesHolder holder : holders) {
+        if (holderMap.containsKey(interfaces)) {
             try {
+                ParameterNamesHolder holder = holderMap.get(interfaces);
                 String[] parameterNames = holder.getParameterNames(interfaces, method);
                 return parameterNames;
             } catch (com.sunsharing.eos.server.paranamer.ParameterNamesNotFoundException e) {
                 //ignor...
-                continue;
             }
         }
         return adaptiveParanamer.lookupParameterNames(method, false);

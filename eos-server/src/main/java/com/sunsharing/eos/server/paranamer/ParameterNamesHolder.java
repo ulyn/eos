@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
  */
 public interface ParameterNamesHolder {
 
+    Class getInterfaceClass();
+
     String[] getParameterNames(Class interfaces, Method method);
 
 }

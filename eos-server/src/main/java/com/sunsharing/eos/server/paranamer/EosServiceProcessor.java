@@ -42,10 +42,8 @@ import javax.tools.JavaFileObject;
 @SupportedAnnotationTypes("com.sunsharing.eos.common.annotation.EosService")
 public class EosServiceProcessor extends AbstractProcessor {
 
-    //生成的类的名称  APH：annotation processor holder,注解处理生成盛放器
-    public final static String GENERATED_HOLDER_CLASSNAME = "Aph";
     //生成的包名
-    public final static String GENERATED_PKG = EosServiceProcessor.class.getPackage().getName();
+    public final static String GENERATED_PKG = "eos";
 
     private ProcessingEnvironment processingEnv;
 
@@ -85,29 +83,31 @@ public class EosServiceProcessor extends AbstractProcessor {
 
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
             "******************** eos service processor start **********************");
-        String pkg = GENERATED_PKG;
-        String generatedClassName = GENERATED_HOLDER_CLASSNAME + Md5.MD5(elements.get(0).getClass().getPackage().getName()).toLowerCase();
-        StringBuilder sb = new StringBuilder("package " + pkg + ";\n"
-            + "\n"
-            + "import com.sunsharing.eos.server.paranamer.ParameterNamesHolder;\n"
-            + "import com.sunsharing.eos.server.paranamer.ParameterNamesNotFoundException;\n"
-            + "import java.lang.reflect.Method;\n"
-            + "import java.util.HashMap;\n"
-            + "import java.util.Map;\n"
-            + "import java.util.Arrays;\n"
-            + "\n"
-            + "public class " + generatedClassName + " implements ParameterNamesHolder {\n"
-            + "\n"
-            + "    public Map<String,Map<String,String[]>> container = new HashMap<String, Map<String, String[]>>();\n"
-            + "\n"
-            + "    public " + generatedClassName + "() { \n        Map<String,String[]> methods = null;\n");
+
         // 初始化将参数名放入容器
         for (Element element : elements) {
             List<? extends Element> elementList = ((TypeElement) element).getEnclosedElements();
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
                 "find " + ((TypeElement) element).getQualifiedName() + " methods:" + elementList);
-            sb.append("        methods = new HashMap<String, String[]>();\n"
-                + "        container.put(\"" + ((TypeElement) element).getQualifiedName() + "\", methods);\n");
+
+            String generatedClassName = ((TypeElement) element).getSimpleName().toString();
+            String generatedClass = GENERATED_PKG + "." + ((TypeElement) element).getQualifiedName().toString();
+            String pkg = generatedClass.substring(0,generatedClass.lastIndexOf("."));
+
+            StringBuilder sb = new StringBuilder("package " + pkg + ";\n" +
+                "\n" +
+                "import com.sunsharing.eos.server.paranamer.ParameterNamesHolder;\n" +
+                "\n" +
+                "import java.lang.reflect.Method;\n" +
+                "import java.util.Arrays;\n" +
+                "import java.util.HashMap;\n" +
+                "import java.util.Map;\n" +
+                "\n" +
+                "public class " + generatedClassName + " implements ParameterNamesHolder {\n" +
+                "\n" +
+                "    private final Map<String,String[]> container = new HashMap<String, String[]>();\n" +
+                "\n" +
+                "    public " + generatedClassName + "(){\n");
             for (Element el : elementList) {
                 if (el.getKind() == ElementKind.METHOD) {
                     ExecutableElement ee = (ExecutableElement) el;
@@ -120,38 +120,44 @@ public class EosServiceProcessor extends AbstractProcessor {
                     if (!paramNames.isEmpty()) {
                         strParamNames = "\"" + strParamNames + "\"";
                     }
-                    sb.append("        methods.put(\"" + ee.getSimpleName() + "\",new String[]{" + strParamNames + "});\n");
+                    sb.append("        container.put(\"" + ee.getSimpleName() + "\",new String[]{" + strParamNames + "});\n");
                 }
             }
-        }
-        sb.append("    }\n"
-            + "\n"
-            + "    @Override\n"
-            + "    public String[] getParameterNames(Class interfaces, Method method) {\n"
-            + "        if(!container.containsKey(interfaces.getName())){\n"
-            + "            throw new ParameterNamesNotFoundException(\"该服务接口未能找到方法参数名：\" + interfaces.getName());\n"
-            + "        }\n"
-            + "        String[] arr = container.get(interfaces.getName()).get(method.getName());\n"
-            + "        return Arrays.copyOf(arr,arr.length);\n"
-            + "    }\n"
-            + "}");
-        String generatedClass = pkg + "." + generatedClassName;
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "create class " + generatedClassName + "\n\n" + sb);
-        OutputStream outputStream = null;
-        try {
-            JavaFileObject source = processingEnv.getFiler().createSourceFile(generatedClass);
+            sb.append(
+                "    }\n" +
+                "    \n" +
+                "    @Override\n" +
+                "    public Class getInterfaceClass() {\n" +
+                "        return " + ((TypeElement) element).getQualifiedName().toString() + ".class;\n" +
+                "    }\n" +
+                "\n" +
+                "    @Override\n" +
+                "    public String[] getParameterNames(Class interfaces, Method method) {\n" +
+                "        String[] arr = container.get(method.getName());\n" +
+                "        return Arrays.copyOf(arr,arr.length);\n" +
+                "    }\n" +
+                "\n" +
+                "}\n"
+            );
 
-            outputStream = source.openOutputStream();
-            outputStream.write(sb.toString().getBytes(Charsets.UTF_8));
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(outputStream);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "create class " + generatedClassName + "\n\n" + sb);
+            OutputStream outputStream = null;
+            try {
+                JavaFileObject source = processingEnv.getFiler().createSourceFile(generatedClass);
+
+                outputStream = source.openOutputStream();
+                outputStream.write(sb.toString().getBytes(Charsets.UTF_8));
+                outputStream.flush();
+                outputStream.close();
+            } catch (IOException e) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(outputStream);
+            }
         }
+
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
             "******************** eos service processor end **********************");
         return true;

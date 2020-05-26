@@ -8,6 +8,8 @@ import com.sunsharing.eos.uddi.model.TUserApp;
 import com.sunsharing.eos.uddi.service.AppService;
 import com.sunsharing.eos.uddi.service.UserService;
 import com.sunsharing.eos.uddi.web.common.ResponseHelper;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +57,12 @@ public class UserController {
             {
                 throw new RuntimeException("你的账号还没有开通，请联系管理员");
             }
-            jonObject.put("url","applist/1");
+            if(StringUtils.isBlank(user.getYw())){
+                jonObject.put("url","applist/1");
+            }else{
+                jonObject.put("url","applist/"+user.getYw());
+            }
+
             ResponseHelper.printOut(response,true,"",jonObject);
         }else
         {
@@ -88,13 +95,30 @@ public class UserController {
 //            JSONObject app = obj.getJSONObject("app");
 //            app.put("url","servicelist/"+app.getString("appId")+"/0");
 //        }
-        addApp(array,"社会治理","applist/1");
-        addApp(array,"共享协同","applist/2");
-        addApp(array,"信用业务","applist/3");
-        addApp(array,"教育业务","applist/4");
-        addApp(array,"其他","applist/5");
+        String[] arr = new String[]{"社会治理","applist/1","共享协同","applist/2","信用业务","applist/3",
+            "教育业务","applist/4","其他","applist/5"};
+
+        if(StringUtils.isBlank(user.getYw())){
+            for(int i=0;i<arr.length;i+=2){
+                addApp(array,arr[i],arr[i+1]);
+            }
+        }else{
+            for(int i=1;i<arr.length;i+=2){
+                if(arr[i].indexOf(user.getYw())!=-1)
+                addApp(array,arr[i-1],arr[i]);
+            }
+        }
+
+
         //array.add(jsonObject3);
 
+        JSONObject jsonObject = new JSONObject();
+        JSONObject app = new JSONObject();
+        app.put("appName","系统监控");
+        app.put("appCode","MONITOR");
+        app.put("url","monitor");
+        jsonObject.put("app",app);
+        array.add(jsonObject);
 
         if(user.getRole().equals("3") || user.getRole().equals("4"))
         {
@@ -104,15 +128,6 @@ public class UserController {
 //            String listStr = JSONArray.toJSONString(apps);
 
             if(user.getRole().equals("3")) {
-
-                JSONObject jsonObject = new JSONObject();
-                JSONObject app = new JSONObject();
-                app.put("appName","系统监控");
-                app.put("appCode","MONITOR");
-                app.put("url","monitor");
-                jsonObject.put("app",app);
-                array.add(jsonObject);
-
                 JSONObject jsonObject2 = new JSONObject();
                 JSONObject app2 = new JSONObject();
                 app2.put("appName", "用户管理");
@@ -147,7 +162,8 @@ public class UserController {
     @RequestMapping(value="/userlist.do",method= RequestMethod.POST)
     public void userList(Model model,HttpServletRequest request,HttpServletResponse response)
     {
-        List<TUser> list = service.getUserlist();
+        TUser loginUser = (TUser)request.getSession().getAttribute("user");
+        List<TUser> list = service.getUserlist(loginUser.getYw());
 
         for(TUser user:list)
         {
@@ -181,27 +197,28 @@ public class UserController {
     {
         TUser user = service.loadUser(id);
 
-        List<TApp> list = appService.listApp("");
+        List<TApp> list = appService.listApp(user.getYw());
 
         String userStr = JSONObject.toJSONString(user);
         String listStr = JSONArray.toJSONString(list);
         JSONObject obj = JSONObject.parseObject(userStr);
         JSONArray arr = JSONArray.parseArray(listStr);
         obj.put("apps",arr);
+
         ResponseHelper.printOut(response,true,"",obj);
     }
 
     @RequestMapping(value="/updateUser.do",method= RequestMethod.POST)
-    public void updateUser(String id,String role,String apps,String isTest,Model model,HttpServletRequest request,HttpServletResponse response)
+    public void updateUser(String id,String role,String apps,String isTest,String yw,Model model,HttpServletRequest request,HttpServletResponse response)
     {
-        service.updateUser(id,role,apps,isTest);
+        service.updateUser(id,role,apps,isTest,yw);
         ResponseHelper.printOut(response,true,"","");
     }
 
     @RequestMapping(value="/saveUser.do",method= RequestMethod.POST)
-    public void saveUser(String username,String pwd,String email,HttpServletRequest request,HttpServletResponse response)
+    public void saveUser(String username,String pwd,String email,String yw,HttpServletRequest request,HttpServletResponse response)
     {
-        service.addUser(username,pwd,email);
+        service.addUser(username,pwd,email,yw);
         ResponseHelper.printOut(response,true,"","");
     }
 

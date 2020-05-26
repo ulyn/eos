@@ -35,21 +35,27 @@ public class AppService {
     @Autowired
     JdbcTemplate jdbc;
 
-    private SimpleHibernateDao<TApp,Integer> appDao;//用户管理
+    private SimpleHibernateDao<TApp,String> appDao;//用户管理
     private SimpleHibernateDao<TModule,String> moduleDao;//用户管理
-    private SimpleHibernateDao<TService, Integer> serviceDao;
+    private SimpleHibernateDao<TService, String> serviceDao;
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory){
-        appDao = new SimpleHibernateDao<TApp,Integer>(sessionFactory,TApp.class);
+        appDao = new SimpleHibernateDao<TApp,String>(sessionFactory,TApp.class);
         moduleDao = new SimpleHibernateDao<TModule,String>(sessionFactory,TModule.class);
-        serviceDao = new SimpleHibernateDao<TService,Integer>(sessionFactory,TService.class);
+        serviceDao = new SimpleHibernateDao<TService,String>(sessionFactory,TService.class);
     }
 
     public List getAppName(String apps)
     {
         String sql = "from TApp where appId in("+apps+")";
        return appDao.find(sql);
+    }
+
+    public long getAppSize(String appEn)
+    {
+        String sql = "select count(*) from TApp where appCode = '"+appEn+"'";
+        return appDao.findLong(sql);
     }
 
     public List<TApp> listApp(String yw)
@@ -59,11 +65,20 @@ public class AppService {
             return appDao.find(app);
         }
         String app = "from TApp where yw='"+yw+"' order by creatTime desc";
+        if("5".equals(yw)){
+            app = "from TApp where yw='5' or yw = '' or yw is null order by creatTime desc";
+        }
+
         return appDao.find(app);
     }
 
     public void saveApp(String app_en,String app_cn,String modules,String dbs,String yw)
     {
+        long size = getAppSize(app_en);
+        if(size>0){
+            throw new RuntimeException("英文名已经存在");
+        }
+
         TApp app = new TApp();
         app.setAppCode(app_en);
         app.setAppName(app_cn);
@@ -86,7 +101,7 @@ public class AppService {
 
     public void updateApp(String appId,String app_en,String app_cn,String modules,String dbs,String yw)
     {
-        TApp app = appDao.get(new Integer(appId));
+        TApp app = appDao.get(new String(appId));
         app.setAppCode(app_en);
         app.setAppName(app_cn);
         app.setDbs(dbs);
@@ -107,7 +122,7 @@ public class AppService {
 
     public TApp loadApp(String id)
     {
-        return appDao.get(new Integer(id));
+        return appDao.get(new String(id));
     }
 
     public void changeJava(String appId,String dirId)

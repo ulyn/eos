@@ -1,5 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -8,57 +12,61 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_CONFIG")
 public class TConfig {
-    private int configId;
-    private Integer appId = 0;
-    private Integer chlidAppId = 0;
-    private Integer groupId;
+    private String configId;
+    private String appId = "0";
+    private String chlidAppId = "0";
+    private String groupId;
     private String key;
     private String isBasic;
-    private Integer relConfigId = 0;
+    private String relConfigId = "0";
     private String defaultValue;
     private String isCommit;
     private String att;
     private String conDesc;
     private String _delete = "0";
 
+    public TConfig(){
+        this.configId = StringUtils.genUUID();
+    }
+
     @Id
     @Column(name = "CONFIG_ID")
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public int getConfigId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getConfigId() {
         return configId;
     }
 
-    public void setConfigId(int configId) {
+    public void setConfigId(String configId) {
         this.configId = configId;
     }
 
     @Basic
     @Column(name = "APP_ID")
-    public Integer getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(Integer appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 
     @Basic
     @Column(name = "CHLID_APP_ID")
-    public Integer getChlidAppId() {
+    public String getChlidAppId() {
         return chlidAppId;
     }
 
-    public void setChlidAppId(Integer chlidAppId) {
+    public void setChlidAppId(String chlidAppId) {
         this.chlidAppId = chlidAppId;
     }
 
     @Basic
     @Column(name = "GROUP_ID")
-    public Integer getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
@@ -84,11 +92,11 @@ public class TConfig {
 
     @Basic
     @Column(name = "REL_CONFIG_ID")
-    public Integer getRelConfigId() {
+    public String getRelConfigId() {
         return relConfigId;
     }
 
-    public void setRelConfigId(Integer relConfigId) {
+    public void setRelConfigId(String relConfigId) {
         this.relConfigId = relConfigId;
     }
 
@@ -167,7 +175,7 @@ public class TConfig {
 
     @Override
     public int hashCode() {
-        int result = configId;
+        int result = configId.hashCode();
         result = 31 * result + (appId != null ? appId.hashCode() : 0);
         result = 31 * result + (chlidAppId != null ? chlidAppId.hashCode() : 0);
         result = 31 * result + (groupId != null ? groupId.hashCode() : 0);

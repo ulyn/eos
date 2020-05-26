@@ -1,5 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -8,39 +12,43 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_CONFIG_RUN_VAL")
 public class TConfigRunVal {
-    private int runValId;
-    private Integer runId;
-    private Integer configId;
+    private String runValId;
+    private String runId;
+    private String configId;
     private String val;
+
+    public TConfigRunVal(){
+        this.runValId = StringUtils.genUUID();
+    }
 
     @Id
     @Column(name = "RUN_VAL_ID")
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public int getRunValId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getRunValId() {
         return runValId;
     }
 
-    public void setRunValId(int runValId) {
+    public void setRunValId(String runValId) {
         this.runValId = runValId;
     }
 
     @Basic
     @Column(name = "RUN_ID")
-    public Integer getRunId() {
+    public String getRunId() {
         return runId;
     }
 
-    public void setRunId(Integer runId) {
+    public void setRunId(String runId) {
         this.runId = runId;
     }
 
     @Basic
     @Column(name = "CONFIG_ID")
-    public Integer getConfigId() {
+    public String getConfigId() {
         return configId;
     }
 
-    public void setConfigId(Integer configId) {
+    public void setConfigId(String configId) {
         this.configId = configId;
     }
 
@@ -71,7 +79,7 @@ public class TConfigRunVal {
 
     @Override
     public int hashCode() {
-        int result = runValId;
+        int result = runValId.hashCode();
         result = 31 * result + (runId != null ? runId.hashCode() : 0);
         result = 31 * result + (configId != null ? configId.hashCode() : 0);
         result = 31 * result + (val != null ? val.hashCode() : 0);

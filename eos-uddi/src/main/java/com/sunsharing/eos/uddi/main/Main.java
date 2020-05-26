@@ -2,6 +2,8 @@ package com.sunsharing.eos.uddi.main;
 
 import com.sunsharing.component.resvalidate.config.ConfigContext;
 import com.sunsharing.eos.uddi.sys.SysProp;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -14,14 +16,16 @@ import java.net.URLDecoder;
 public class Main {
 
     public static void main(String[] a) throws Exception {
-        start(8100);
+        String port = System.getProperty("uddi.port");
+        System.out.println("uddi.port:" + port);
+        start(StringUtils.isNumeric(port) ? Integer.valueOf(port) : 8100);
     }
 
     public static void start(int port) throws Exception {
 
         ConfigContext.instancesBean(SysProp.class);
 
-        String webapp = "/Users/criss/Desktop/projectDev/eosgit/eos-uddi/src/main/webapp";
+        String webapp = "C:\\Users\\chenyl\\workplace\\eos\\eos-uddi\\src\\main\\webapp";
 
 
         if (port == 0) {
@@ -59,7 +63,7 @@ public class Main {
     public static String getClassPath() throws Exception {
 
         String keyfilePath = URLDecoder.decode(Main.class.getProtectionDomain().
-                getCodeSource().getLocation().getFile(), "UTF-8");
+            getCodeSource().getLocation().getFile(), "UTF-8");
         keyfilePath = keyfilePath.replaceAll("\\\\", "/");
         File temp = new File(keyfilePath);
         if (temp.isFile() && keyfilePath.endsWith("jar") == true) {

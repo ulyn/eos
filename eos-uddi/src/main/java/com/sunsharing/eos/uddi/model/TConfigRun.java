@@ -1,5 +1,9 @@
 package com.sunsharing.eos.uddi.model;
 
+import com.sunsharing.eos.common.utils.StringUtils;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -8,20 +12,24 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_CONFIG_RUN")
 public class TConfigRun {
-    private int runId;
+    private String runId;
     private String bswz;
     private String runKey;
-    private Integer childAppId;
-    private Integer appId;
+    private String childAppId;
+    private String appId;
+
+    public TConfigRun(){
+        this.runId = StringUtils.genUUID();
+    }
 
     @Id
     @Column(name = "RUN_ID")
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public int getRunId() {
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    public String getRunId() {
         return runId;
     }
 
-    public void setRunId(int runId) {
+    public void setRunId(String runId) {
         this.runId = runId;
     }
 
@@ -61,7 +69,7 @@ public class TConfigRun {
 
     @Override
     public int hashCode() {
-        int result = runId;
+        int result = runId.hashCode();
         result = 31 * result + (bswz != null ? bswz.hashCode() : 0);
         result = 31 * result + (runKey != null ? runKey.hashCode() : 0);
         return result;
@@ -69,21 +77,21 @@ public class TConfigRun {
 
     @Basic
     @Column(name = "CHILD_APP_ID")
-    public Integer getChildAppId() {
+    public String getChildAppId() {
         return childAppId;
     }
 
-    public void setChildAppId(Integer childAppId) {
+    public void setChildAppId(String childAppId) {
         this.childAppId = childAppId;
     }
 
     @Basic
     @Column(name = "APP_ID")
-    public Integer getAppId() {
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(Integer appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 }

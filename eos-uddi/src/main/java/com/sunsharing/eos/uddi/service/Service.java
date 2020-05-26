@@ -30,24 +30,24 @@ import java.util.*;
 @Transactional
 public class Service {
 
-    private SimpleHibernateDao<TService, Integer> serviceDao;//用户管理
-    private SimpleHibernateDao<TApp, Integer> appDao;//用户管理
-    private SimpleHibernateDao<TServiceVersion, Integer> versionDao;//用户管理
-    private SimpleHibernateDao<TUser, Integer> userDao;//用户管理
-    private SimpleHibernateDao<TUserApp, Integer> userAppDao;//用户管理
-    private SimpleHibernateDao<TMethod, Integer> methodDao;//用户管理
-    private SimpleHibernateDao<TModule, Integer> moduleDao;//用户管理
+    private SimpleHibernateDao<TService, String> serviceDao;//用户管理
+    private SimpleHibernateDao<TApp, String> appDao;//用户管理
+    private SimpleHibernateDao<TServiceVersion, String> versionDao;//用户管理
+    private SimpleHibernateDao<TUser, String> userDao;//用户管理
+    private SimpleHibernateDao<TUserApp, String> userAppDao;//用户管理
+    private SimpleHibernateDao<TMethod, String> methodDao;//用户管理
+    private SimpleHibernateDao<TModule, String> moduleDao;//用户管理
 
 
     @Autowired
     public void setSessionFactory(SessionFactory sessionFactory) {
-        serviceDao = new SimpleHibernateDao<TService, Integer>(sessionFactory, TService.class);
-        appDao = new SimpleHibernateDao<TApp, Integer>(sessionFactory, TApp.class);
-        versionDao = new SimpleHibernateDao<TServiceVersion, Integer>(sessionFactory, TServiceVersion.class);
-        userDao = new SimpleHibernateDao<TUser, Integer>(sessionFactory, TUser.class);
-        userAppDao = new SimpleHibernateDao<TUserApp, Integer>(sessionFactory, TUserApp.class);
-        methodDao = new SimpleHibernateDao<TMethod, Integer>(sessionFactory, TMethod.class);
-        moduleDao = new SimpleHibernateDao<TModule, Integer>(sessionFactory, TModule.class);
+        serviceDao = new SimpleHibernateDao<TService, String>(sessionFactory, TService.class);
+        appDao = new SimpleHibernateDao<TApp, String>(sessionFactory, TApp.class);
+        versionDao = new SimpleHibernateDao<TServiceVersion, String>(sessionFactory, TServiceVersion.class);
+        userDao = new SimpleHibernateDao<TUser, String>(sessionFactory, TUser.class);
+        userAppDao = new SimpleHibernateDao<TUserApp, String>(sessionFactory, TUserApp.class);
+        methodDao = new SimpleHibernateDao<TMethod, String>(sessionFactory, TMethod.class);
+        moduleDao = new SimpleHibernateDao<TModule, String>(sessionFactory, TModule.class);
     }
 
     public List<TService> query(String appId, String module) {
@@ -57,15 +57,15 @@ public class Service {
         }
         if (!StringUtils.isBlank(module)) {
             sql += " and module=?";
-            TModule m = moduleDao.get(new Integer(module));
-            List<TService> list = serviceDao.find(sql, new Integer(appId), m.getModuleName());
+            TModule m = moduleDao.get(new String(module));
+            List<TService> list = serviceDao.find(sql, new String(appId), m.getModuleName());
             for(TService service:list)
             {
                 service.getUser().getUserName();
             }
             return list;
         } else {
-            List<TService> list = serviceDao.find(sql, new Integer(appId));
+            List<TService> list = serviceDao.find(sql, new String(appId));
             for(TService service:list)
             {
                System.out.println("..:" + service.getUser().getUserName());
@@ -75,8 +75,8 @@ public class Service {
         }
     }
 
-    public void saveService(String servicename, String appId, String module,String[] lines, int userId,Map functionMap) throws Exception {
-        TApp app = appDao.get(new Integer(appId));
+    public void saveService(String servicename, String appId, String module,String[] lines, String userId,Map functionMap) throws Exception {
+        TApp app = appDao.get(new String(appId));
 
         InterfaceServcie s = new InterfaceServcie();
         Map methondVersion = s.getFuntionVersion(lines);
@@ -104,9 +104,13 @@ public class Service {
             service = l3.get(0);
         }
 
-        TUser user = userDao.get(new Integer(userId));
-        if (service == null)
+        TUser user = userDao.get(new String(userId));
+        boolean addService = false;
+        if (service == null){
             service = new TService();
+            addService = true;
+        }
+
         service.setAppCode(app.getAppCode());
         service.setAppId(app.getAppId());
         service.setModule(module);
@@ -116,8 +120,12 @@ public class Service {
         service.setCreateTime(DateUtils.getDBString(new Date()));
         service.setTest("0");
 
-        if (v == null)
+        if (v == null) {
+            sql = "from TServiceVersion where service.serviceId=?";
+            l2 = versionDao.find(sql,service.getServiceId());
             v = new TServiceVersion();
+            v.setVersionNum((l2.size()+1)+"");
+        }
         v.setStatus("0");
         v.setCreateTime(DateUtils.getDBString(new Date()));
         v.setServiceVersion(sv);
@@ -155,7 +163,7 @@ public class Service {
             v.getMethods().add(me);
         }
 
-        if (service.getServiceId() == 0) {
+        if (addService) {
             serviceDao.saveOrUpdate(service);
         }
         versionDao.saveOrUpdate(v);
@@ -163,7 +171,7 @@ public class Service {
 
         //发送邮件通知
         sql = "from TUserApp where app.appId=?";
-        List<TUserApp> list = userAppDao.find(sql,new Integer(appId));
+        List<TUserApp> list = userAppDao.find(sql,new String(appId));
         for(TUserApp userApp : list)
         {
             final String email = userApp.getUser().getEamil();
@@ -218,7 +226,7 @@ public class Service {
 
     public void deleteService(String serviceId)
     {
-        TService service = serviceDao.get(new Integer(serviceId));
+        TService service = serviceDao.get(new String(serviceId));
 //        List<TServiceVersion> versions = service.getVersions();
 //        for(TServiceVersion version:versions)
 //        {
@@ -247,30 +255,30 @@ public class Service {
 
     public List<Object[]> seachmethod(String appId, String serviceId, String version) {
         String sql = "select methodId,methodName,mockResult,params,methodVersion from TMethod where  versionObj.appCode=? and versionObj.service.serviceId=? and versionObj.serviceVersion=?";
-        TApp app = appDao.get(new Integer(appId));
-        Query query = versionDao.createQuery(sql, app.getAppCode(), new Integer(serviceId), version);
+        TApp app = appDao.get(new String(appId));
+        Query query = versionDao.createQuery(sql, app.getAppCode(), new String(serviceId), version);
         return query.list();
     }
 
     public List<TServiceVersion> searchVersion(String serviceId)
     {
         String sql = "from TServiceVersion where service.serviceId=?";
-        List<TServiceVersion> list = versionDao.find(sql,new Integer(serviceId));
+        List<TServiceVersion> list = versionDao.find(sql,new String(serviceId));
         return list;
     }
 
     public void copyMock(String fromMethodId,String toMethodId)
     {
         //String sql = "select MOCK_RESULT from T_METHOD where METHOD_ID =  "+fromMethodId;
-        TMethod oldMethod = methodDao.get(new Integer(fromMethodId));
-        TMethod newMethod = methodDao.get(new Integer(toMethodId));
+        TMethod oldMethod = methodDao.get(new String(fromMethodId));
+        TMethod newMethod = methodDao.get(new String(toMethodId));
         //String sql = "update T_SERVICE_VERSION set ";
         newMethod.setMockResult(oldMethod.getMockResult());
         methodDao.update(newMethod);
     }
 
     public void saveMethod(String methodId, String status, String content) {
-        TMethod method = methodDao.get(new Integer(methodId));
+        TMethod method = methodDao.get(new String(methodId));
         String result = method.getMockResult();
         JSONArray array = JSONArray.parseArray(result);
         for (int i = 0; i < array.size(); i++) {
@@ -286,12 +294,12 @@ public class Service {
     }
 
     public String getName(String versionId) {
-        TServiceVersion version = versionDao.get(new Integer(versionId));
+        TServiceVersion version = versionDao.get(new String(versionId));
         return version.getService().getServiceCode();
     }
 
     public File getJavaFile(String versionId){
-        TServiceVersion version = versionDao.get(new Integer(versionId));
+        TServiceVersion version = versionDao.get(new String(versionId));
         String version2 = version.getServiceVersion();
         String serviceCode = version.getService().getServiceCode();
         String appcode = version.getAppCode();
@@ -339,7 +347,7 @@ public class Service {
     }
 
     public void commit(String versionId) throws Exception {
-        TServiceVersion version = versionDao.get(new Integer(versionId));
+        TServiceVersion version = versionDao.get(new String(versionId));
         version.setStatus("1");
 
         String appCode = version.getAppCode();
@@ -364,7 +372,7 @@ public class Service {
 
         //发送邮件通知
         String sql = "from TUserApp where app.appId=?";
-        List<TUserApp> list = userAppDao.find(sql,new Integer(version.getService().getAppId()));
+        List<TUserApp> list = userAppDao.find(sql,new String(version.getService().getAppId()));
         sql = "from TApp where appId=?";
         List<TApp> apps = appDao.find(sql, version.getService().getAppId());
         for(TUserApp userApp : list)
@@ -394,7 +402,7 @@ public class Service {
     public void addTestCode(String methodId,
                             String status,String desc,String content,String source_status)
     {
-        TMethod method = methodDao.get(new Integer(methodId));
+        TMethod method = methodDao.get(new String(methodId));
         JSONArray array = JSONArray.parseArray(method.getMockResult());
         JSONObject obj = null;
 
@@ -453,7 +461,7 @@ public class Service {
     public String[] getMock(String methodId)
     {
         List<String> mock = new ArrayList<String>();
-        TMethod method = methodDao.get(new Integer(methodId));
+        TMethod method = methodDao.get(new String(methodId));
         JSONArray array = null;
 
         List<Map> list = JSON.parseObject(method.getMockResult(),List.class);
@@ -520,7 +528,7 @@ public class Service {
 
     public void save2JavaFile(String methodId,String[] mocks)
     {
-        TMethod method = methodDao.get(new Integer(methodId));
+        TMethod method = methodDao.get(new String(methodId));
         String methodName = method.getMethodName();
         String appId = method.getVersionObj().getAppCode();
         String serviceId = method.getVersionObj().getService().getServiceCode();
@@ -609,7 +617,7 @@ public class Service {
 
     public void deleteTestCode(String methodId,String status)
     {
-        TMethod method = methodDao.get(new Integer(methodId));
+        TMethod method = methodDao.get(new String(methodId));
         JSONArray array = JSONArray.parseArray(method.getMockResult());
         for(int i=0;i<array.size();i++)
         {
@@ -632,7 +640,7 @@ public class Service {
     }
 
     public void updateTestCode(String methodId) throws Exception {
-        TMethod method = methodDao.get(new Integer(methodId));
+        TMethod method = methodDao.get(new String(methodId));
         if (method.getVersionObj().getStatus().equals("0")) {
             throw new RuntimeException("未审批");
         }
@@ -659,7 +667,7 @@ public class Service {
     }
 
     public void changeTest(String versionId) {
-        TServiceVersion version = versionDao.get(new Integer(versionId));
+        TServiceVersion version = versionDao.get(new String(versionId));
         TService service = version.getService();
         service.setTest("1");
         serviceDao.update(service);

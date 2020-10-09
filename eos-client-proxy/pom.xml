@@ -5,7 +5,7 @@
     <parent>
         <artifactId>eos-parent</artifactId>
         <groupId>com.sunsharing.component</groupId>
-        <version>3.3.4-SNAPSHOT</version>
+        <version>3.3.4</version>
     </parent>
     <artifactId>eos-client-proxy</artifactId>
     <packaging>war</packaging>

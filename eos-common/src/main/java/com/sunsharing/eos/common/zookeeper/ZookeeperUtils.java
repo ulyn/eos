@@ -104,7 +104,10 @@ public class ZookeeperUtils {
                 {
                     connectString = zooKeeperIP;
                 }
-                zookeeper =new ZooKeeper(connectString , 30000 , new DefaultWatcher());
+                if(zookeeper != null && zookeeper.getState().isAlive()){
+                    zookeeper.close();
+                }
+                zookeeper = new ZooKeeper(connectString , 30000 , new DefaultWatcher());
                 logger.info("连接完成");
                 //在使用zookeeper对象前，等待连接建立。这里利用Java的CountDownLatch类
                 //（java.util.concurrent.CountDownLatch）来阻塞，直到zookeeper实例准备好。
@@ -293,7 +296,7 @@ public class ZookeeperUtils {
     private class DefaultWatcher implements Watcher {
         @Override
         public void process(WatchedEvent event) {
-            logger.info("已经触发了" + event.getType() + "事件！::path:"+event.getPath());
+            logger.info("已经触发了" + event.getType() + "事件！" + event.toString());
             if(event.getState() == Event.KeeperState.SyncConnected && connectedSignal !=null)
             {
                 //在收到连接事件KeeperState.SyncConnected时，
@@ -313,7 +316,8 @@ public class ZookeeperUtils {
                         }
                     }
                 }
-            } else if(event.getState() == Event.KeeperState.Expired) {//注意KeeperState的Expired枚举值
+            } else if(event.getState() == Event.KeeperState.Expired
+                || event.getState() == Event.KeeperState.Disconnected) {//注意KeeperState的Expired枚举值
                 connected =false;
                 connect();
             } else if(event.getType() == Event.EventType.NodeChildrenChanged ||

@@ -13,7 +13,7 @@
         <!-- 设置变量:用于统一管理Library的版本 -->
         <javax.version>6.0</javax.version>
         <javax.servlet.version>1.2</javax.servlet.version>
-        <junit.version>3.8.2</junit.version>
+        <junit.version>4.13.1</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <org.aspectj.version>1.6.2</org.aspectj.version>
         <net.sf.ehcache.version>2.3.2</net.sf.ehcache.version>

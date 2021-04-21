@@ -8,6 +8,7 @@ public class Hessian2SerializerFactory extends SerializerFactory {
 
     private Hessian2SerializerFactory() {
         this.addFactory(new BigDecimalSerializerFactory());
+        this.addFactory(Java8SerializerFactory.INSTANCE);
     }
 
     @Override

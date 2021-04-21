@@ -24,7 +24,7 @@
         <hessian_version>4.0.33</hessian_version>
         <junit_version>4.10</junit_version>
         <log4j_version>1.2.16</log4j_version>
-        <zookeeper_version>3.4.5</zookeeper_version>
+        <zookeeper_version>3.4.14</zookeeper_version>
         <resvalidate_version>1.2.8</resvalidate_version>
         <utils_version>2.0.1</utils_version>
         <springframework_version>3.2.9.RELEASE</springframework_version>

@@ -17,7 +17,7 @@
         <org.slf4j.version>1.6.1</org.slf4j.version>
         <oracle.jdbc.version>10.2.0.1.0</oracle.jdbc.version>
         <org.hibernate.entitymanager.version>3.5.6-Final</org.hibernate.entitymanager.version>
-        <org.springframework.version>3.0.2.RELEASE</org.springframework.version>
+        <org.springframework.version>5.2.22.RELEASE</org.springframework.version>
         <axis.version>1.4</axis.version>
     </properties>
 

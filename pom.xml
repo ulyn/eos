@@ -27,7 +27,7 @@
         <zookeeper_version>3.4.5</zookeeper_version>
         <resvalidate_version>1.2.8</resvalidate_version>
         <utils_version>2.0.1</utils_version>
-        <springframework_version>3.2.9.RELEASE</springframework_version>
+        <springframework_version>6.0.0</springframework_version>
     </properties>
     <distributionManagement>
         <repository>
